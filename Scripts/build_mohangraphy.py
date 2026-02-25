@@ -1,6 +1,6 @@
 import os
 
-# --- STRUCTURE CONFIGURATION (Matches image_329b9c.png) ---
+# --- STRUCTURE CONFIGURATION (Verified folders) ---
 STRUCTURE = {
     "Architecture": ["Photos/Architecture"],
     "Birds": ["Photos/Birds"],
@@ -30,100 +30,98 @@ def generate_html():
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>Mohangraphy</title>
         <style>
-            :root { --accent: #fff; --bg: #000; --text-dim: #555; }
-            body, html { height: 100%; margin: 0; background: var(--bg); color: #fff; font-family: 'Inter', -apple-system, sans-serif; overflow: hidden; }
+            :root { --bg: #000; --menu-grey: #222; --text-white: #fff; --footer-bright: #fff; }
+            body, html { height: 100%; margin: 0; background: var(--bg); color: var(--text-white); font-family: 'Inter', sans-serif; overflow: hidden; }
             
-            /* STATIC TOP SECTION */
+            /* 1. COMPLETELY FROZEN TOP SECTION */
             header {
-                position: fixed; top: 0; width: 100%; height: 150px;
-                background: var(--bg); border-bottom: 1px solid #111;
+                position: fixed; top: 0; width: 100%; 
+                height: 200px; /* Increased height to fit everything */
+                background: var(--bg); 
                 display: flex; flex-direction: column; align-items: center; justify-content: center;
                 z-index: 1000;
+                border-bottom: 1px solid #1a1a1a;
             }
-            .logo { font-size: 30px; font-weight: 200; letter-spacing: 12px; text-transform: uppercase; margin-bottom: 20px; color: var(--accent); }
+            .logo { 
+                font-size: 42px; font-weight: 200; letter-spacing: 18px; 
+                text-transform: uppercase; margin-bottom: 25px; color: var(--text-white); 
+                line-height: 1;
+            }
             
-            nav { display: flex; list-style: none; padding: 0; margin: 0; gap: 20px; }
+            nav { display: flex; list-style: none; padding: 0; margin: 0; gap: 12px; }
             .nav-item { position: relative; }
-            .nav-item a { color: var(--text-dim); text-decoration: none; font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 2px; transition: 0.3s; }
-            .nav-item:hover > a { color: var(--accent); }
+            .nav-item > a { 
+                background: var(--menu-grey); color: var(--text-white); 
+                padding: 14px 28px; text-decoration: none; font-size: 12px; 
+                font-weight: 800; text-transform: uppercase; letter-spacing: 2px; 
+                display: block; transition: 0.2s; border: 1px solid #333;
+            }
+            .nav-item:hover > a { background: #444; border-color: #555; }
             
-            .dropdown { display: none; position: absolute; top: 100%; left: 0; background: #080808; border: 1px solid #111; min-width: 160px; padding: 10px 0; box-shadow: 0 10px 20px rgba(0,0,0,0.5); }
+            /* Dropdowns */
+            .dropdown { display: none; position: absolute; top: 100%; left: 0; background: #111; border: 1px solid #333; min-width: 200px; z-index: 1001; }
             .nav-item:hover .dropdown { display: block; }
-            .dropdown a { padding: 8px 20px; display: block; text-transform: capitalize; color: #777; letter-spacing: 1px; }
-            .dropdown a:hover { color: var(--accent); background: #111; }
+            .dropdown a { padding: 12px 20px; display: block; color: #aaa; text-decoration: none; font-size: 11px; border-bottom: 1px solid #222; }
+            .dropdown a:hover { color: #fff; background: #222; }
 
-            /* SCROLLABLE MIDDLE GALLERY */
-            main { position: absolute; top: 150px; bottom: 60px; width: 100%; overflow-y: auto; scroll-behavior: smooth; }
-            .container { max-width: 1600px; margin: 0 auto; padding: 40px 20px; }
+            /* 2. SCROLLABLE GALLERY - Starts after the 200px header */
+            main { 
+                position: absolute; top: 200px; bottom: 70px; 
+                width: 100%; overflow-y: auto; scroll-behavior: smooth; 
+            }
+            .container { max-width: 1600px; margin: 0 auto; padding: 60px 20px; }
             
-            .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(400px, 1fr)); gap: 15px; margin-bottom: 100px; }
+            /* Photo Grid */
+            .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(450px, 1fr)); gap: 20px; margin-bottom: 150px; }
+            .img-wrapper { position: relative; overflow: hidden; background: #0a0a0a; height: 550px; cursor: pointer; }
+            .grid img { width: 100%; height: 100%; object-fit: cover; filter: brightness(0.8); transition: 0.5s ease; }
+            .img-wrapper:hover img { filter: brightness(1); transform: scale(1.02); }
             
-            /* IMAGE STYLING & HOVER */
-            .img-wrapper { position: relative; overflow: hidden; background: #050505; height: 500px; cursor: zoom-in; }
-            .grid img { width: 100%; height: 100%; object-fit: cover; opacity: 0; transition: opacity 0.8s, transform 0.8s ease; filter: brightness(0.8); }
-            .grid img.loaded { opacity: 1; }
-            .img-wrapper:hover img { transform: scale(1.03); filter: brightness(1); }
-            
-            /* HOVER CAPTION */
-            .caption { position: absolute; bottom: 0; left: 0; width: 100%; padding: 20px; background: linear-gradient(transparent, rgba(0,0,0,0.8)); font-size: 10px; letter-spacing: 1px; color: #fff; opacity: 0; transition: 0.3s; pointer-events: none; }
-            .img-wrapper:hover .caption { opacity: 1; }
+            h1 { font-size: 32px; font-weight: 200; letter-spacing: 8px; border-left: 6px solid #fff; padding-left: 25px; margin-top: 100px; text-transform: uppercase; }
+            .count { font-size: 13px; color: #444; margin-left: 20px; font-weight: 800; }
 
-            h1 { font-size: 22px; font-weight: 300; letter-spacing: 5px; border-left: 3px solid var(--accent); padding-left: 15px; margin-top: 60px; text-transform: uppercase; display: flex; align-items: baseline; }
-            .count { font-size: 10px; color: #333; margin-left: 15px; font-weight: 700; }
-
-            /* STATIC BOTTOM SECTION */
+            /* 3. BRIGHTER FIXED FOOTER */
             footer {
-                position: fixed; bottom: 0; width: 100%; height: 60px;
-                background: var(--bg); border-top: 1px solid #111;
-                display: flex; align-items: center; justify-content: center; gap: 40px;
+                position: fixed; bottom: 0; width: 100%; height: 70px;
+                background: #0a0a0a; border-top: 1px solid #222;
+                display: flex; align-items: center; justify-content: center; gap: 60px;
                 z-index: 1000;
             }
-            footer a { color: var(--text-dim); text-decoration: none; font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 2px; transition: 0.3s; }
-            footer a:hover { color: var(--accent); }
+            footer a { color: var(--footer-bright); text-decoration: none; font-size: 12px; font-weight: 900; text-transform: uppercase; letter-spacing: 3px; transition: 0.3s; }
+            footer a:hover { text-shadow: 0 0 15px #fff; }
 
-            /* LIGHTBOX (MODAL) */
-            #lightbox { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); display: none; align-items: center; justify-content: center; z-index: 2000; }
-            #lightbox img { max-width: 90%; max-height: 90%; object-fit: contain; box-shadow: 0 0 50px rgba(0,0,0,1); }
-            #lightbox:target { display: flex; }
-
-            /* MOBILE FIXES */
-            @media (max-width: 768px) {
-                header { height: 120px; }
-                main { top: 120px; }
-                .grid { grid-template-columns: 1fr; }
-                .logo { font-size: 22px; letter-spacing: 6px; }
-                nav { gap: 10px; }
-                .nav-item a { font-size: 8px; }
-            }
+            /* Lightbox */
+            #lightbox { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.98); display: none; align-items: center; justify-content: center; z-index: 2000; }
+            #lightbox img { max-width: 95%; max-height: 95%; object-fit: contain; }
         </style>
     </head>
     <body>
 
     <header>
         <div class="logo">Mohangraphy</div>
-        <ul class="nav">
+        <nav>
     """
 
-    # 1. Navigation Builder
+    # 1. Navigation Builder (Grey Buttons)
     for main, content in STRUCTURE.items():
         m_id = main.replace(" ", "").replace("&", "")
-        html_start += f'<li class="nav-item"><a href="#{m_id}">{main}</a>'
+        html_start += f'<div class="nav-item"><a href="#{m_id}">{main}</a>'
         if isinstance(content, dict):
             html_start += '<div class="dropdown">'
             for sub in content.keys():
                 s_id = sub.replace(" ", "").replace("&", "")
                 html_start += f'<a href="#{m_id}-{s_id}">{sub}</a>'
             html_start += '</div>'
-        html_start += '</li>'
+        html_start += '</div>'
     
-    html_start += "</ul></header><main><div class='container' id='top'>"
+    html_start += "</nav></header><main><div class='container' id='top'>"
 
-    # 2. Section Builder with Counts
+    # 2. Section Builder
     content_html = ""
     for main, content in STRUCTURE.items():
         m_id = main.replace(" ", "").replace("&", "")
         
-        # Calculate Image Count for the category
+        # Calculate image count
         img_list = []
         if isinstance(content, dict):
             for paths in content.values():
@@ -144,11 +142,9 @@ def generate_html():
                     for img in sorted(os.listdir(path)):
                         if img.lower().endswith(('.jpg', '.jpeg', '.png')):
                             img_path = os.path.join(path, img)
-                            name = img.split('.')[0].replace('_', ' ')
                             grid_html += f'''
                             <div class="img-wrapper" onclick="openLightbox('{img_path}')">
-                                <img data-src="{img_path}" class="lazy" alt="{name}">
-                                <div class="caption">{name}</div>
+                                <img src="{img_path}" loading="lazy">
                             </div>'''
             return grid_html + "</div>"
 
@@ -159,47 +155,27 @@ def generate_html():
         else:
             content_html += render_grid(content)
 
-    # 3. Footer, Lightbox, and Javascript (Lazy Loading & Modal)
     footer = """
     </div></main>
     <footer>
         <a href="#top">Home</a>
         <a href="#top">Back to Top</a>
-        <a href="https://instagram.com/mohangraphy" target="_blank">@mohangraphy</a>
+        <a href="https://instagram.com/mohangraphy" target="_blank">Instagram: @mohangraphy</a>
     </footer>
 
     <div id="lightbox" onclick="this.style.display='none'"><img id="lightbox-img"></div>
 
     <script>
-        // Lightbox Logic
         function openLightbox(src) {
             document.getElementById('lightbox-img').src = src;
             document.getElementById('lightbox').style.display = 'flex';
         }
-
-        // Lazy Loading Logic
-        document.addEventListener("DOMContentLoaded", function() {
-            var lazyImages = [].slice.call(document.querySelectorAll("img.lazy"));
-            if ("IntersectionObserver" in window) {
-                let imgObserver = new IntersectionObserver(function(entries, observer) {
-                    entries.forEach(function(entry) {
-                        if (entry.isIntersecting) {
-                            let img = entry.target;
-                            img.src = img.dataset.src;
-                            img.classList.add("loaded");
-                            imgObserver.unobserve(img);
-                        }
-                    });
-                });
-                lazyImages.forEach(function(img) { imgObserver.observe(img); });
-            }
-        });
     </script>
     </body></html>"""
 
     with open(OUTPUT_FILE, "w") as f:
         f.write(html_start + content_html + footer)
-    print("✨ SUCCESS: Portfolio built with Lightbox, Lazy Loading, and Metadata.")
+    print("✅ Build Complete: Mohangraphy logo and menu are now perfectly frozen at the top.")
 
 if __name__ == "__main__":
     generate_html()
