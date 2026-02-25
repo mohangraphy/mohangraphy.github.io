@@ -229,7 +229,7 @@ def generate_html():
 
     # Cover photo per main category (use thumb)
     cat_covers = {}
-    for m_cat, subs in MANUAL_STRUCTURE.items():
+    for m_cat, subs in sorted(MANUAL_STRUCTURE.items(), key=lambda x: x[0].lower()):
         pool = []
         if m_cat == "Places":
             for grp in place_map.values():
@@ -793,14 +793,18 @@ footer {
     gallery_blocks = ""
     sub_panels     = ""
 
-    for m_cat, subs in MANUAL_STRUCTURE.items():
+    # Sort main categories A→Z; sub-lists are also sorted A→Z below
+    sorted_structure = sorted(MANUAL_STRUCTURE.items(), key=lambda x: x[0].lower())
+
+    for m_cat, subs in sorted_structure:
+        subs = sorted(subs, key=lambda s: s.lower())   # sort sub-categories A→Z
         sub_items = []
 
         if m_cat == "Places":
-            for group in ["National", "International"]:
+            for group in sorted(["National", "International"]):   # A→Z: International, National
                 places = place_map[group]
                 if places:
-                    for p_name, p_paths_raw in places.items():
+                    for p_name, p_paths_raw in sorted(places.items(), key=lambda x: x[0].lower()):
                         disk_folder = os.path.join(ROOT_DIR, "Photos", m_cat, group, p_name)
                         disk_paths  = scan_folder_for_photos(disk_folder)
                         orig_paths  = disk_paths if disk_paths else list(dict.fromkeys(p_paths_raw))
@@ -914,7 +918,7 @@ footer {
 
     # ── MAIN CATEGORY TILES ───────────────────────────────────────────────────
     cat_tiles_html = ""
-    for m_cat, subs in MANUAL_STRUCTURE.items():
+    for m_cat, subs in sorted(MANUAL_STRUCTURE.items(), key=lambda x: x[0].lower()):
         # Thumbnail: use a cover photo from this category (already thumb-mapped)
         raw_cover = cat_covers.get(m_cat, "")
         thumb_cover = thumb_map.get(raw_cover, raw_cover) if raw_cover else ""
