@@ -2,6 +2,7 @@ import os
 import json
 import hashlib
 import subprocess
+import sys
 
 # --- SETTINGS ---
 ROOT_DIR = "/Users/ncm/Pictures/Mohangraphy"
@@ -85,7 +86,6 @@ def run_curator():
     if mode == "Edit Existing":
         search_query = ask_mac_input("Search", "Enter keyword (e.g., Munnar):").lower()
         results = []
-        # Gather all matching full paths and info
         for h, v in data.items():
             if any(search_query in str(v.get(key, '')).lower() for key in ['filename', 'place', 'categories']):
                 results.append(v)
@@ -94,12 +94,14 @@ def run_curator():
             ask_mac_question("Search", "No results found.", ["Back"])
             return run_curator()
 
-        for info in sorted(results, key=lambda x: x['filename']):
+        # FIXED LOGIC HERE:
+        # Results is a list of dictionaries, so we sort them by filename key inside the dict
+        for info in sorted(results, key=lambda x: x.get('filename', '')):
             full_path = os.path.join(ROOT_DIR, info['path'])
             status, _, _ = process_photo(full_path, info['filename'], info['categories'], info['place'], data, is_new=False)
             
             if status == "EXIT": break
-            if status == "CONTINUE": # After editing one, ask if user wants to continue or exit
+            if status == "CONTINUE":
                 if ask_mac_question("Done", "Photo Updated. Continue with next search result?", ["Yes", "Exit"]) == "Exit": break
         return
 
@@ -116,7 +118,7 @@ def run_curator():
         return
 
     prev_cats, prev_place = [], ""
-    for i, path in enumerate(new_files):
+    for path in new_files:
         status, prev_cats, prev_place = process_photo(path, os.path.basename(path), prev_cats, prev_place, data)
         if status == "EXIT": break
 
