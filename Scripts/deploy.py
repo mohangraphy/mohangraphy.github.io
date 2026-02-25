@@ -1,38 +1,42 @@
 import os
 import subprocess
 import time
+import sys
 
 def master_deploy():
-    # 1. Path Setup
+    # Ensure we are in the right directory
     root_dir = "/Users/ncm/Pictures/Mohangraphy"
     os.chdir(root_dir)
     
-    # 2. Run the Master Build Script
-    print("🔨 Building the Master Cinematic Gallery...")
-    subprocess.run(["python3", "Scripts/build_mohangraphy.py"])
+    print("\n--- STARTING MOHANGRAPHY WORKFLOW ---")
 
-    # 3. Add, Commit, and Force Push
-    print("📤 Forcing push to GitHub...")
+    # 1. RUN THE CURATOR
+    # This MUST open the window if there are new hashes
+    print("🔍 Step 1: Scanning for un-indexed photos...")
     try:
-        subprocess.run(["git", "add", "."], check=True)
-        
-        # We use a unique timestamp in the message to force GitHub to refresh
-        timestamp = time.strftime('%Y-%m-%d %H:%M:%S')
-        commit_msg = f"Master Build Refresh: {timestamp}"
-        
-        subprocess.run(["git", "commit", "-m", commit_msg], capture_output=True)
-        
-        # Use --force to ensure the remote repository matches your Mac exactly
-        result = subprocess.run(["git", "push", "origin", "main", "--force"], capture_output=True, text=True)
-        
-        if result.returncode == 0:
-            print(f"\n✅ SUCCESS! Site pushed at {timestamp}")
-            print("💡 IMPORTANT: Wait 60 seconds, then use 'Cmd + Shift + R' to refresh.")
-        else:
-            print(f"❌ Error: {result.stderr}")
-            
-    except Exception as e:
-        print(f"❌ Script Error: {e}")
+        # We use sys.executable to ensure it uses the same Python environment
+        subprocess.run([sys.executable, "Scripts/curator.py"], check=True)
+    except subprocess.CalledProcessError as e:
+        print(f"❌ Curator failed or was closed early: {e}")
+        # We continue anyway to build with whatever data we have
+
+    # 2. RUN THE BUILDER
+    print("🔨 Step 2: Building the gallery from your index...")
+    subprocess.run([sys.executable, "Scripts/build_mohangraphy.py"], check=True)
+
+    # 3. SYNC TO GITHUB
+    print("📤 Step 3: Syncing to GitHub...")
+    subprocess.run(["git", "add", "."], check=True)
+    
+    timestamp = time.strftime('%Y-%m-%d %H:%M:%S')
+    commit_msg = f"Gallery Index Update: {timestamp}"
+    
+    # We hide the output of commit/push to keep your terminal clean
+    subprocess.run(["git", "commit", "-m", commit_msg], capture_output=True)
+    subprocess.run(["git", "push", "origin", "main", "--force"], capture_output=True)
+    
+    print(f"✅ DEPLOYMENT COMPLETE at {timestamp}")
+    print("--- Use 'Cmd + Shift + R' in your browser in 60 seconds ---\n")
 
 if __name__ == "__main__":
     master_deploy()
