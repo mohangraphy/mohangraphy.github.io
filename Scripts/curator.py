@@ -45,22 +45,19 @@ def ask_mac_input(title, prompt, default=""):
     return default
 
 def process_photo(path, filename, prev_cats, prev_place, data, is_new=True):
-    # Open the photo immediately so you can see what you are editing
     subprocess.run(["open", path])
-    
     cat_summary = ", ".join(prev_cats) if prev_cats else "None"
     place_summary = prev_place if prev_place else "None"
     
-    if is_new and prev_cats:
+    if is_new:
         msg = f"PHOTO: {filename}\n\nRepeat: {cat_summary}\nLocation: {place_summary}?"
         action = ask_mac_question("Curator", msg, ["New Selection", "Repeat Last", "Stop"])
     else:
-        # In edit mode, we confirm if this is the right photo first
-        msg = f"EDITING: {filename}\nCategories: {cat_summary}\nPlace: {place_summary}\n\nIs this the correct photo?"
-        action = ask_mac_question("Verify Photo", msg, ["Edit This", "Wrong One", "Stop"])
+        msg = f"EDITING: {filename}\nCategories: {cat_summary}\nPlace: {place_summary}\n\nIs this the one?"
+        action = ask_mac_question("Verify Photo", msg, ["Edit This", "Wrong One (Next)", "Exit Search"])
 
-    if action == "Stop" or action == "Wrong One": 
-        return action, prev_cats, prev_place
+    if action in ["Stop", "Exit Search"]: return "EXIT", prev_cats, prev_place
+    if action == "Wrong One (Next)": return "NEXT", prev_cats, prev_place
     
     if action == "Repeat Last":
         current_cats, current_place = prev_cats, prev_place
@@ -82,31 +79,28 @@ def run_curator():
     if not os.path.exists(os.path.dirname(DATA_FILE)): os.makedirs(os.path.dirname(DATA_FILE))
     data = (json.load(open(DATA_FILE)) if os.path.exists(DATA_FILE) else {})
     
-    mode = ask_mac_question("Mohangraphy", "Main Menu", ["Index New", "Edit Existing", "Cancel"])
-    if mode == "Cancel": return
+    mode = ask_mac_question("Mohangraphy", "Main Menu", ["Index New", "Edit Existing", "Exit"])
+    if mode == "Exit": return
 
     if mode == "Edit Existing":
-        while True: # Loop to allow multiple searches/edits
-            search_query = ask_mac_input("Search", "Keyword or filename (blank for all):").lower()
-            # Search logic improved to check categories too
-            results = []
-            for h, v in data.items():
-                if any(search_query in str(v.get(key, '')).lower() for key in ['filename', 'place', 'categories']):
-                    results.append(v['filename'])
-            
-            if not results:
-                if ask_mac_question("Search", "No results.", ["Try Again", "Menu"]) == "Menu": break
-                continue
+        search_query = ask_mac_input("Search", "Enter keyword (e.g., Munnar):").lower()
+        results = []
+        # Gather all matching full paths and info
+        for h, v in data.items():
+            if any(search_query in str(v.get(key, '')).lower() for key in ['filename', 'place', 'categories']):
+                results.append(v)
+        
+        if not results:
+            ask_mac_question("Search", "No results found.", ["Back"])
+            return run_curator()
 
-            choice = choose_from_mac_list("Edit Photo", f"Select to Preview/Edit:", sorted(results))
-            if choice:
-                for h, info in data.items():
-                    if info['filename'] == choice[0]:
-                        full_path = os.path.join(ROOT_DIR, info['path'])
-                        status, _, _ = process_photo(full_path, choice[0], info['categories'], info['place'], data, is_new=False)
-                        if status == "Edit This": print(f"✅ Updated {choice[0]}")
+        for info in sorted(results, key=lambda x: x['filename']):
+            full_path = os.path.join(ROOT_DIR, info['path'])
+            status, _, _ = process_photo(full_path, info['filename'], info['categories'], info['place'], data, is_new=False)
             
-            if ask_mac_question("Finish?", "Do you want to edit another?", ["Yes", "No"]) == "No": break
+            if status == "EXIT": break
+            if status == "CONTINUE": # After editing one, ask if user wants to continue or exit
+                if ask_mac_question("Done", "Photo Updated. Continue with next search result?", ["Yes", "Exit"]) == "Exit": break
         return
 
     # Indexing Logic
@@ -124,7 +118,7 @@ def run_curator():
     prev_cats, prev_place = [], ""
     for i, path in enumerate(new_files):
         status, prev_cats, prev_place = process_photo(path, os.path.basename(path), prev_cats, prev_place, data)
-        if status == "STOP": break
+        if status == "EXIT": break
 
 if __name__ == "__main__":
     run_curator()

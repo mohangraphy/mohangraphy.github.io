@@ -128,8 +128,7 @@
     "a0d1f3216e1583b6333790d8dd155b55": {
         "path": "Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4998.jpg",
         "categories": [
-            "Nature/Landscape/Mountains",
-            "Places/National"
+            "Nature/Landscape"
         ],
         "place": "Megamalai",
         "filename": "2026-0127-Megamalai-NCM-4998.jpg"
@@ -137,8 +136,7 @@
     "0740f0fe43849b719bd33cc72aa8432b": {
         "path": "Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4730-32.jpg",
         "categories": [
-            "Nature/Landscape/Mountains",
-            "Places/National"
+            "Nature/Landscape"
         ],
         "place": "Megamalai",
         "filename": "2026-0127-Megamalai-NCM-4730-32.jpg"
@@ -218,7 +216,7 @@
     "38fb418c5cb26d593acef9c54427b2c7": {
         "path": "Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4897.jpg",
         "categories": [
-            "Places/National"
+            "Nature/Landscape"
         ],
         "place": "Megamalai",
         "filename": "2026-0127-Megamalai-NCM-4897.jpg"
