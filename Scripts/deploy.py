@@ -11,14 +11,19 @@ def master_deploy():
     print("\n--- STARTING MOHANGRAPHY WORKFLOW ---")
 
     # 1. RUN THE CURATOR
-    # This MUST open the window if there are new hashes
     print("🔍 Step 1: Scanning for un-indexed photos...")
     try:
-        # We use sys.executable to ensure it uses the same Python environment
         subprocess.run([sys.executable, "Scripts/curator.py"], check=True)
     except subprocess.CalledProcessError as e:
         print(f"❌ Curator failed or was closed early: {e}")
-        # We continue anyway to build with whatever data we have
+
+    # 1.5 NEW: RUN THE MEGAMALAI FIXER
+    # This ensures those 20 photos are always tagged correctly before building
+    print("📍 Step 1.5: Applying Megamalai & Mountains tags...")
+    try:
+        subprocess.run([sys.executable, "Scripts/fix_megamalai.py"], check=True)
+    except Exception as e:
+        print(f"⚠️ Megamalai fixer skipped or failed: {e}")
 
     # 2. RUN THE BUILDER
     print("🔨 Step 2: Building the gallery from your index...")

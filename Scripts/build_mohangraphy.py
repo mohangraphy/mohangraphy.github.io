@@ -6,10 +6,10 @@ import random
 ROOT_DIR = "/Users/ncm/Pictures/Mohangraphy"
 DATA_FILE = os.path.join(ROOT_DIR, "Scripts/photo_metadata.json")
 
-# THE GUARANTEED STRUCTURE
+# THE UPDATED STRUCTURE - Added 'Mountains' here
 MANUAL_STRUCTURE = {
     "Places": ["National", "International"],
-    "Nature": ["Landscape", "Sunsets and Sunrises", "Wildlife"],
+    "Nature": ["Landscape", "Sunsets and Sunrises", "Wildlife", "Mountains"],
     "People": ["Portraits"],
     "Architecture": [],
     "Birds": [],
@@ -37,7 +37,7 @@ def generate_html():
             if tag not in photo_map: photo_map[tag] = []
             photo_map[tag].append(path)
             
-            # Specific logic for Places Submenu
+            # Place specific logic
             if "Places/National" in tag:
                 if place_name not in place_map["National"]: place_map["National"][place_name] = []
                 place_map["National"][place_name].append(path)
@@ -48,7 +48,6 @@ def generate_html():
     all_pics = [i.get('path') for i in index_data.values()]
     slides = random.sample(all_pics, min(len(all_pics), 10)) if all_pics else []
 
-    # IMPROVED VECTOR LOGO (Larger & More Spaced)
     logo_svg = """
     <svg viewBox="0 0 1200 100" xmlns="http://www.w3.org/2000/svg" class="logo-vector" onclick="goHome()">
         <text x="50%" y="50%" text-anchor="middle" dominant-baseline="middle" 
@@ -68,50 +67,30 @@ def generate_html():
             @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;900&display=swap');
             * {{ box-sizing: border-box; }}
             body, html {{ background: #000; color: #fff; font-family: 'Inter', sans-serif; margin: 0; padding: 0; scroll-behavior: smooth; overflow-x: hidden; }}
-            
-            header {{ 
-                position: fixed; top: 0; width: 100%; background: #000; z-index: 9999; 
-                padding: 40px 0 30px 0; border-bottom: 1px solid #111;
-                display: flex; flex-direction: column; align-items: center;
-            }}
+            header {{ position: fixed; top: 0; width: 100%; background: #000; z-index: 9999; padding: 40px 0 30px 0; border-bottom: 1px solid #111; display: flex; flex-direction: column; align-items: center; }}
             .logo-vector {{ width: 95%; max-width: 800px; height: auto; cursor: pointer; margin-bottom: 25px; }}
-
             nav {{ display: flex; gap: 20px; justify-content: center; flex-wrap: wrap; width: 100%; }}
             @media (min-width: 768px) {{ nav {{ gap: 45px; }} }}
-
             .nav-item {{ position: relative; padding-bottom: 10px; }}
             .nav-link {{ color: #555; text-decoration: none; font-size: 13px; font-weight: 900; text-transform: uppercase; letter-spacing: 2px; transition: 0.3s; }}
             .nav-item:hover > .nav-link {{ color: #fff; }}
-            
-            /* SUBMENU STYLING */
-            .submenu {{ 
-                position: absolute; top: 100%; left: 50%; transform: translateX(-50%); 
-                background: #000; border: 1px solid #222; min-width: 240px; 
-                display: none; flex-direction: column; padding: 10px 0; z-index: 10000;
-                box-shadow: 0 10px 40px rgba(0,0,0,0.9);
-            }}
+            .submenu {{ position: absolute; top: 100%; left: 50%; transform: translateX(-50%); background: #000; border: 1px solid #222; min-width: 240px; display: none; flex-direction: column; padding: 10px 0; z-index: 10000; box-shadow: 0 10px 40px rgba(0,0,0,0.9); }}
             .nav-item:hover .submenu {{ display: flex; }}
             .submenu a {{ color: #777; padding: 12px 20px; text-decoration: none; font-size: 11px; letter-spacing: 1px; text-transform: uppercase; text-align: center; display: block; }}
             .submenu a:hover {{ color: #fff; background: #111; }}
-            
             .nested-group {{ border-top: 1px solid #111; margin-top: 5px; padding-top: 5px; }}
             .nested-header {{ color: #999; font-weight: 900; font-size: 10px; text-transform: uppercase; text-align: center; padding: 10px 0 5px 0; letter-spacing: 2px; pointer-events: none; }}
-            
             #hero {{ height: 100vh; width: 100%; position: relative; display: flex; align-items: center; justify-content: center; background: #000; z-index: 1; }}
             .slide {{ position: absolute; width: 100%; height: 100%; object-fit: cover; opacity: 0; transition: 3s; filter: brightness(0.4); }}
             .slide.active {{ opacity: 1; }}
-            
             main {{ padding-top: 240px; display: none; width: 100%; min-height: 100vh; }}
             @media (min-width: 768px) {{ main {{ padding-top: 280px; }} }}
-            
             .section-block {{ max-width: 1600px; margin: 0 auto 100px; padding: 0 20px; display: none; }}
             .grid {{ display: grid; grid-template-columns: 1fr; gap: 20px; }}
             @media (min-width: 768px) {{ .grid {{ grid-template-columns: 1fr 1fr; gap: 30px; }} }}
             @media (min-width: 1200px) {{ .grid {{ grid-template-columns: repeat(auto-fill, minmax(600px, 1fr)); }} }}
-
             .grid img {{ width: 100%; height: auto; aspect-ratio: 3/2; object-fit: cover; filter: grayscale(1); transition: 0.8s; }}
             .grid img:hover {{ filter: grayscale(0); }}
-            
             .wip-message {{ text-align: center; font-size: 14px; color: #444; text-transform: uppercase; margin-top: 150px; letter-spacing: 2px; }}
             footer {{ position: fixed; bottom: 0; width: 100%; height: 50px; background: rgba(0,0,0,0.9); z-index: 9999; display: flex; align-items: center; justify-content: center; gap: 40px; }}
             .footer-link {{ color: #555; text-decoration: none; font-size: 11px; font-weight: 900; text-transform: uppercase; }}
@@ -135,7 +114,6 @@ def generate_html():
                 if place_map[group]:
                     for p_name, p_list in place_map[group].items():
                         safe_id = f"place-{p_name.replace(' ', '-')}"
-                        # THIS LINE INJECTS MEGAMALAI ETC.
                         nav_html += f'<a href="#" onclick="showSection(\'{safe_id}\')">{p_name}</a>'
                         m_photos.extend(p_list)
                         content_html += f'<div class="section-block" id="{safe_id}"><div class="grid">' + "".join([f'<img src="{img}">' for img in p_list]) + '</div></div>'
@@ -149,13 +127,20 @@ def generate_html():
             for s_cat in subs:
                 safe_id = f"sub-{m_cat}-{s_cat.replace(' ', '-')}"
                 nav_html += f'<a href="#" onclick="showSection(\'{safe_id}\')">{s_cat}</a>'
+                
+                # Logic to handle both "Nature/Landscape" and "Nature/Mountains"
                 tag = f"{m_cat}/{s_cat}"
                 photos = photo_map.get(tag, [])
+                
+                # Special check for Mountains if they are nested deeper like Nature/Landscape/Mountains
+                if s_cat == "Mountains":
+                    photos += photo_map.get("Nature/Landscape/Mountains", [])
+                    photos = list(set(photos)) # Remove duplicates
+
                 m_photos.extend(photos)
                 content_html += f'<div class="section-block" id="{safe_id}">' + (f'<div class="grid">{"".join([f"<img src='{p}'>" for p in photos])}</div>' if photos else '<div class="wip-message">Work in progress</div>') + '</div>'
             nav_html += '</div>'
 
-        # Main Category Section
         content_html += f'<div class="section-block" id="sec-{m_cat}">'
         photos_to_show = list(set(m_photos)) if m_photos else photo_map.get(m_cat, [])
         if photos_to_show:
@@ -186,7 +171,7 @@ def generate_html():
     """
     with open("index.html", "w") as f:
         f.write(html_start + nav_html + html_end)
-    print("✅ Build Finalized: Header enlarged and Place Submenus (Megamalai) restored.")
+    print("✅ Build Finalized: Mountains menu added to Nature.")
 
 if __name__ == "__main__":
     generate_html()
