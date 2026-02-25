@@ -2,7 +2,7 @@ import os
 import subprocess
 
 # --- PASTE YOUR NEW TOKEN HERE ---
-TOKEN = "ghp_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" 
+TOKEN = "ghp_PASTE_YOUR_NEW_TOKEN_HERE" 
 USER = "mohangraphy"
 OLD_NAME = "mohangraphy"
 NEW_NAME = "mohangraphy.github.io"

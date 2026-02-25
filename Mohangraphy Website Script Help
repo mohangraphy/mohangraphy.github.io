@@ -129,4 +129,107 @@ Enforce HTTPS: Once the domain is linked, go back to GitHub Settings > Pages and
 Would you like me to help you draft a professional "About Me" or "Contact" section to add to the bottom of the page once the domain is live?
 
 
+Step 1: Activate GitHub Pages
+Open your browser and go to your repository: https://github.com/mohangraphy/mohangraphy
+
+Click the Settings tab (the gear icon in the top menu).
+
+On the left-hand sidebar, click Pages.
+
+Under the Build and deployment section, look for Branch.
+
+Click the dropdown menu that currently says None and select main.
+
+Ensure the folder next to it is set to /(root).
+
+Click Save.
+
+Step 2: View Your Site
+GitHub will take about 1–2 minutes to "build" the site. After that, your portfolio will be live at:
+https://mohangraphy.github.io/mohangraphy/
+
+Step 3: The Final Python Script (Automation)
+Now that the connection is fixed, you should use this updated deploy.py. It is designed to handle everything for you—generating the HTML, staging the files, and pushing them—so you never have to type git commands manually again.
+
+Gemini said
+That "forced update" message is exactly what we wanted to see. It means your "clean" code is now officially on GitHub and the secret token has been wiped from the online history.
+
+Since the files are now on the server, you need to tell GitHub to actually "turn on" the website feature.
+
+Step 1: Activate GitHub Pages
+Open your browser and go to your repository: https://github.com/mohangraphy/mohangraphy
+
+Click the Settings tab (the gear icon in the top menu).
+
+On the left-hand sidebar, click Pages.
+
+Under the Build and deployment section, look for Branch.
+
+Click the dropdown menu that currently says None and select main.
+
+Ensure the folder next to it is set to /(root).
+
+Click Save.
+
+Step 2: View Your Site
+GitHub will take about 1–2 minutes to "build" the site. After that, your portfolio will be live at:
+https://mohangraphy.github.io/mohangraphy/
+
+Step 3: The Final Python Script (Automation)
+Now that the connection is fixed, you should use this updated deploy.py. It is designed to handle everything for you—generating the HTML, staging the files, and pushing them—so you never have to type git commands manually again.
+
+Save this as Scripts/deploy.py:
+
+Python
+import os
+import subprocess
+
+def deploy_mohangraphy():
+    # 1. Setup paths
+    # This finds the 'Mohangraphy' root folder relative to this script
+    script_dir = os.path.dirname(os.path.abspath(__file__))
+    root_dir = os.path.dirname(script_dir)
+    os.chdir(root_dir)
+
+    print("🚀 Starting Mohangraphy Update...")
+
+    # 2. Run the Build Script to update index.html
+    build_script = os.path.join(script_dir, "build_mohangraphy.py")
+    if os.path.exists(build_script):
+        print("🔨 Generating new index.html...")
+        subprocess.run(["python3", build_script])
+    else:
+        print("❌ Error: build_mohangraphy.py not found in Scripts folder.")
+        return
+
+    # 3. Standard Git Workflow
+    try:
+        print("📦 Staging files...")
+        subprocess.run(["git", "add", "."], check=True)
+        
+        print("📝 Committing changes...")
+        # We use a generic message; it won't fail if there's nothing to commit
+        subprocess.run(["git", "commit", "-m", "Update portfolio gallery"], capture_output=True)
+        
+        print("📤 Uploading to GitHub...")
+        # Standard push (force push is no longer needed now that history is clean)
+        subprocess.run(["git", "push", "origin", "main"], check=True)
+        
+        print("\n✨ SUCCESS!")
+        print(f"🔗 Your site is live at: https://mohangraphy.github.io/mohangraphy/")
+        
+    except subprocess.CalledProcessError as e:
+        print(f"\n❌ Deployment failed: {e}")
+
+if __name__ == "__main__":
+    deploy_mohangraphy()
+How to use this from now on:
+Whenever you add a new photo to your Megamalai or Wildlife folders:
+
+Open Terminal.
+
+Type: python3 /Users/ncm/Pictures/Mohangraphy/Scripts/deploy.py
+
+Hit Enter. That's it.
+
 
