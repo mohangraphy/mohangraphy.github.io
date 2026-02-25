@@ -44,46 +44,65 @@ def generate_html():
         <title>M O H A N G R A P H Y</title>
         <style>
             @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;900&display=swap');
-            body, html {{ background: #000; color: #fff; font-family: 'Inter', sans-serif; margin: 0; scroll-behavior: smooth; overflow-x: hidden; width: 100%; }}
+            body, html {{ background: #000; color: #fff; font-family: 'Inter', sans-serif; margin: 0; scroll-behavior: smooth; }}
             
-            header {{ position: fixed; top: 0; width: 100%; background: #000; z-index: 2000; display: flex; flex-direction: column; align-items: center; padding: 60px 0 40px 0; border-bottom: 1px solid #111; }}
-            .logo {{ font-size: 80px; letter-spacing: 25px; font-weight: 900; text-transform: uppercase; margin-bottom: 40px; cursor: pointer; color: #fff; }}
+            /* FIXED HEADER WITH OVERFLOW VISIBLE FOR SUBMENUS */
+            header {{ 
+                position: fixed; top: 0; width: 100%; background: #000; z-index: 3000; 
+                display: flex; flex-direction: column; align-items: center; 
+                padding: 40px 0 30px 0; border-bottom: 1px solid #111;
+            }}
+            .logo {{ 
+                font-size: 55px; letter-spacing: 12px; font-weight: 900; 
+                text-transform: uppercase; margin-bottom: 25px; cursor: pointer; color: #fff; 
+            }}
             
-            nav {{ display: flex; gap: 60px; position: relative; }}
-            .nav-item {{ position: relative; padding-bottom: 10px; }}
-            .nav-item > a {{ color: #444; text-decoration: none; font-size: 22px; font-weight: 900; text-transform: uppercase; letter-spacing: 5px; transition: 0.3s; }}
+            nav {{ display: flex; gap: 40px; position: relative; }}
+            .nav-item {{ position: relative; padding-bottom: 15px; }}
+            .nav-item > a {{ 
+                color: #555; text-decoration: none; font-size: 13px; font-weight: 900; 
+                text-transform: uppercase; letter-spacing: 3px; transition: 0.3s; 
+            }}
             .nav-item:hover > a, .nav-item.active > a {{ color: #fff; }}
             
-            /* SUBMENU OPTIMIZATION */
-            .submenu {{ position: absolute; top: 35px; left: 0; background: #000; border: 1px solid #222; min-width: 250px; display: none; flex-direction: column; padding: 15px 0; z-index: 2100; }}
+            /* RESTORED SUBMENU LOGIC */
+            .submenu {{ 
+                position: absolute; top: 35px; left: 0; background: #000; 
+                border: 1px solid #222; min-width: 200px; display: none; 
+                flex-direction: column; padding: 10px 0; z-index: 3100;
+            }}
             .nav-item:hover .submenu {{ display: flex; }}
-            .submenu a {{ color: #666; padding: 12px 25px; text-decoration: none; font-size: 14px; letter-spacing: 3px; text-transform: uppercase; transition: 0.2s; }}
+            .submenu a {{ 
+                color: #666; padding: 10px 20px; text-decoration: none; 
+                font-size: 11px; letter-spacing: 2px; text-transform: uppercase; transition: 0.2s; 
+            }}
             .submenu a:hover {{ color: #fff; background: #111; }}
             
             .has-nested {{ position: relative; }}
-            .nested-menu {{ position: absolute; top: 0; left: 100%; background: #000; border: 1px solid #222; display: none; flex-direction: column; min-width: 200px; }}
+            .nested-menu {{ 
+                position: absolute; top: 0; left: 100%; background: #000; 
+                border: 1px solid #222; display: none; flex-direction: column; min-width: 180px; 
+            }}
             .has-nested:hover .nested-menu {{ display: flex; }}
             
-            /* SCREEN-EDGE SAFETY */
-            .nav-item:last-child .submenu, .nav-item:nth-last-child(2) .submenu {{ left: auto; right: 0; }}
-            .nav-item:last-child .nested-menu, .nav-item:nth-last-child(2) .nested-menu {{ left: auto; right: 100%; }}
+            /* PREVENT OFF-SCREEN MENUS */
+            .nav-item:nth-last-child(-n+2) .submenu {{ left: auto; right: 0; }}
+            .nav-item:nth-last-child(-n+2) .nested-menu {{ left: auto; right: 100%; }}
 
             #hero {{ height: 100vh; width: 100%; position: relative; display: flex; align-items: center; justify-content: center; background: #000; }}
             .slide {{ position: absolute; width: 100%; height: 100%; object-fit: cover; opacity: 0; transition: 3s; filter: brightness(0.4); }}
             .slide.active {{ opacity: 1; }}
 
-            main {{ padding-top: 350px; display: none; width: 100%; }}
-            .section-block {{ max-width: 1800px; margin: 0 auto 100px; padding: 0 40px; display: none; }}
+            main {{ padding-top: 220px; display: none; width: 100%; }}
+            .section-block {{ max-width: 1600px; margin: 0 auto 50px; padding: 0 40px; display: none; }}
             
-            /* PLACE LABELS - ONLY VISIBLE IN PLACES */
-            .place-label {{ font-size: 14px; letter-spacing: 5px; color: #666; text-transform: uppercase; margin: 60px 0 30px; font-weight: 400; border-left: 3px solid #444; padding-left: 20px; }}
+            /* PURE PHOTO GRID - NO TEXT */
+            .grid {{ display: grid; grid-template-columns: repeat(auto-fill, minmax(650px, 1fr)); gap: 30px; margin-top: 20px; }}
+            .grid img {{ width: 100%; height: auto; aspect-ratio: 3/2; object-fit: cover; filter: grayscale(1); transition: 1s cubic-bezier(0.19, 1, 0.22, 1); cursor: pointer; }}
+            .grid img:hover {{ filter: grayscale(0); transform: scale(1.02); }}
 
-            .grid {{ display: grid; grid-template-columns: repeat(auto-fill, minmax(600px, 1fr)); gap: 50px; margin-bottom: 100px; }}
-            .grid img {{ width: 100%; height: 850px; object-fit: cover; filter: grayscale(1); transition: 0.8s; cursor: pointer; }}
-            .grid img:hover {{ filter: grayscale(0); }}
-
-            footer {{ position: fixed; bottom: 0; width: 100%; height: 60px; background: rgba(0,0,0,0.95); border-top: 1px solid #111; z-index: 2000; display: flex; align-items: center; justify-content: center; gap: 40px; }}
-            footer a {{ color: #444; text-decoration: none; font-size: 11px; font-weight: 900; text-transform: uppercase; letter-spacing: 2px; }}
+            footer {{ position: fixed; bottom: 0; width: 100%; height: 50px; background: rgba(0,0,0,0.95); border-top: 1px solid #111; z-index: 3000; display: flex; align-items: center; justify-content: center; gap: 40px; }}
+            footer a {{ color: #444; text-decoration: none; font-size: 9px; font-weight: 900; text-transform: uppercase; letter-spacing: 2px; }}
         </style>
     </head>
     <body>
@@ -97,6 +116,8 @@ def generate_html():
         has_images = any(len(p_list) > 0 for s in gallery[m_cat].values() for p_list in s.values())
         link_action = f"onclick=\"showSection('{m_cat}')\"" if has_images else "onclick=\"goHome()\""
         nav_html += f'<div class="nav-item" id="nav-{m_cat}"><a href="#" {link_action}>{m_cat}</a>'
+        
+        # Submenu generation
         if has_images and gallery[m_cat]:
             nav_html += '<div class="submenu">'
             for s_cat, p_dict in gallery[m_cat].items():
@@ -117,20 +138,11 @@ def generate_html():
         if any(s_dict.values()):
             content += f'<div class="section-block" id="sec-{m_cat}">'
             for s_cat, p_dict in s_dict.items():
-                # HARD RULE: Place names only for the PLACES category
-                if m_cat == "Places":
-                    for place, photos in p_dict.items():
-                        div_id = f"{m_cat}-{s_cat}-{place}"
-                        content += f'<div class="place-label" id="{div_id}">{s_cat} &mdash; {place}</div>'
-                        content += '<div class="grid">'
-                        for p in photos: content += f'<img src="{p}">'
-                        content += '</div>'
-                else:
-                    # NATURE, FLOWERS, etc. - Absolutely no text labels
-                    content += '<div class="grid">'
-                    for place, photos in p_dict.items():
-                        for p in photos: content += f'<img src="{p}">'
-                    content += '</div>'
+                # Zero text logic for all sections including Places
+                content += '<div class="grid">'
+                for place, photos in p_dict.items():
+                    for p in photos: content += f'<img src="{p}">'
+                content += '</div>'
             content += '</div>'
 
     html_end = """
@@ -143,7 +155,6 @@ def generate_html():
         function goHome() { 
             document.getElementById('hero').style.display = 'flex'; 
             document.getElementById('gallery-container').style.display = 'none'; 
-            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
             window.scrollTo(0,0); 
         }
 
@@ -153,8 +164,7 @@ def generate_html():
             document.querySelectorAll('.section-block').forEach(sec => sec.style.display = 'none');
             let target = document.getElementById('sec-'+id);
             if(target) target.style.display = 'block';
-            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-            document.getElementById('nav-'+id).classList.add('active');
+            window.scrollTo(0,0);
         }
     </script>
     </body></html>
@@ -163,7 +173,7 @@ def generate_html():
         f.write(html_start + nav_html + "</nav></header>" + 
                 '<div id="hero">' + "".join([f'<img src="{p}" class="slide">' for p in slides]) + '</div>' + 
                 '<main id="gallery-container">' + content + html_end)
-    print("✅ Build Complete: Clean Nature Grids + Screen-Safe Submenus.")
+    print("✅ Build Fixed: Submenus restored, clean grids everywhere.")
 
 if __name__ == "__main__":
     generate_html()
