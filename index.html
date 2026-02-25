@@ -288,46 +288,80 @@ header {
 .sub-panel { display: none; }
 .sub-panel.active { display: block; }
 
-/* Sub-tiles — shorter than main tiles */
+/* ── SUB-TILES — compact rows, same pattern as main menu ── */
 .sub-tile {
-  position: relative; width: 100%;
-  height: clamp(110px, 24svh, 240px);
+  width: 100%;
+  height: clamp(72px, 14vw, 115px);  /* slightly shorter than main tiles */
   overflow: hidden; cursor: pointer;
-  border-bottom: 1px solid rgba(201,169,110,0.06);
+  border-bottom: 1px solid rgba(201,169,110,0.07);
+  display: flex; align-items: stretch;
+  background: #111;
   -webkit-tap-highlight-color: transparent;
+  transition: background .3s;
 }
-.sub-tile-bg {
-  position: absolute; inset: 0;
-  background-size: cover; background-position: center;
-  filter: brightness(0.23) saturate(0.45);
-  transition: filter .55s, transform .65s;
-}
-.sub-tile:hover .sub-tile-bg,
-.sub-tile:active .sub-tile-bg {
-  filter: brightness(0.48) saturate(0.82);
-  transform: scale(1.05);
-}
-.sub-tile-vignette {
-  position: absolute; inset: 0;
-  background: linear-gradient(to top, rgba(0,0,0,0.88) 0%, transparent 60%);
-}
-.sub-tile-content {
-  position: absolute; bottom: 0; left: 0; right: 0;
-  padding: clamp(8px,1.8vw,20px) clamp(14px,4vw,44px);
-  display: flex; align-items: flex-end; justify-content: space-between; gap: 8px;
+.sub-tile:hover,
+.sub-tile:active { background: #1c1c1c; }
+
+/* LEFT: sub-category name + count */
+.sub-tile-left {
+  flex: 1 1 0;
+  display: flex; flex-direction: column; justify-content: center;
+  padding: clamp(8px,1.8vw,16px) clamp(14px,3.5vw,36px);
+  min-width: 0;
+  border-right: 1px solid rgba(201,169,110,0.07);
 }
 .sub-tile-name {
   font-family: 'Cormorant Garamond', serif;
-  font-size: clamp(16px, 3.5vw, 34px);
-  letter-spacing: clamp(1px,.6vw,3px); text-transform: uppercase;
-  color: #fff; transition: color .3s; line-height: 1.1;
+  font-size: clamp(15px, 3.2vw, 30px);
+  font-weight: 600;
+  letter-spacing: clamp(1px,.5vw,4px);
+  text-transform: uppercase; color: #fff; line-height: 1;
+  transition: color .25s;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
 }
 .sub-tile:hover .sub-tile-name,
 .sub-tile:active .sub-tile-name { color: var(--gold); }
 .sub-tile-count {
-  font-size: 8px; letter-spacing: 2px;
+  margin-top: 4px;
+  font-size: 7px; letter-spacing: 2px;
   color: rgba(255,255,255,0.25); text-transform: uppercase;
-  flex-shrink: 0; padding-left: 8px; text-align: right;
+}
+.sub-tile-arrow {
+  display: inline-block; margin-left: 7px;
+  color: var(--gold); opacity: 0;
+  transform: translateX(-4px);
+  transition: opacity .25s, transform .25s;
+  font-size: 12px;
+}
+.sub-tile:hover .sub-tile-arrow { opacity: 1; transform: translateX(0); }
+
+/* RIGHT: thumbnail or Coming Soon */
+.sub-tile-thumb {
+  flex: 0 0 clamp(95px, 19vw, 160px);
+  position: relative; overflow: hidden;
+  background: #1a1a1a;
+}
+.sub-tile-thumb img {
+  width: 100%; height: 100%;
+  object-fit: cover; object-position: center; display: block;
+  filter: brightness(0.80) saturate(0.82);
+  transition: filter .45s, transform .45s;
+}
+.sub-tile:hover .sub-tile-thumb img,
+.sub-tile:active .sub-tile-thumb img {
+  filter: brightness(1) saturate(1);
+  transform: scale(1.07);
+}
+.sub-tile-thumb-placeholder {
+  width: 100%; height: 100%;
+  display: flex; align-items: center; justify-content: center;
+  background: linear-gradient(135deg, #181818 0%, #222 100%);
+  border-left: 1px solid rgba(201,169,110,0.07);
+}
+.sub-tile-thumb-placeholder span {
+  font-size: 7px; letter-spacing: 3px;
+  color: rgba(201,169,110,0.3); text-transform: uppercase;
+  text-align: center; padding: 0 6px; line-height: 1.6;
 }
 
 /* ── GALLERY ── */
@@ -553,10 +587,10 @@ footer {
   <div class="tile-nav-label">Collections</div>
 
 <div class="cat-tile" onclick="openCategory('Places')" role="button" tabindex="0" onkeypress="if(event.key==='Enter') this.click()">
-  <div class="cat-tile-left"><div class="cat-tile-name">Places<span class="cat-tile-arrow">&rarr;</span></div><div class="cat-tile-count">Coming Soon</div></div><div class="cat-tile-thumb"><img src="Thumbs/Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4921-23.jpg" loading="lazy" decoding="async" alt=""></div>
+  <div class="cat-tile-left"><div class="cat-tile-name">Places<span class="cat-tile-arrow">&rarr;</span></div><div class="cat-tile-count">Coming Soon</div></div><div class="cat-tile-thumb"><img src="Thumbs/Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4997.jpg" loading="lazy" decoding="async" alt=""></div>
 </div>
 <div class="cat-tile" onclick="openCategory('Nature')" role="button" tabindex="0" onkeypress="if(event.key==='Enter') this.click()">
-  <div class="cat-tile-left"><div class="cat-tile-name">Nature<span class="cat-tile-arrow">&rarr;</span></div><div class="cat-tile-count">33 Photos</div></div><div class="cat-tile-thumb"><img src="Thumbs/Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4712-14.jpg" loading="lazy" decoding="async" alt=""></div>
+  <div class="cat-tile-left"><div class="cat-tile-name">Nature<span class="cat-tile-arrow">&rarr;</span></div><div class="cat-tile-count">33 Photos</div></div><div class="cat-tile-thumb"><img src="Thumbs/Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4736-38.jpg" loading="lazy" decoding="async" alt=""></div>
 </div>
 <div class="cat-tile" onclick="openCategory('People')" role="button" tabindex="0" onkeypress="if(event.key==='Enter') this.click()">
   <div class="cat-tile-left"><div class="cat-tile-name">People<span class="cat-tile-arrow">&rarr;</span></div><div class="cat-tile-count">Coming Soon</div></div><div class="cat-tile-thumb"><div class="cat-tile-thumb-placeholder"><span>Coming<br>Soon</span></div></div>
@@ -582,64 +616,44 @@ footer {
 
 <div class="sub-panel" id="subpanel-Places">
 <div class="sub-tile" onclick="showGallery('place-National-Megamalai')">
-  <div class="sub-tile-bg" style="background-image:url("Thumbs/Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4736-38.jpg");"></div>
-  <div class="sub-tile-vignette"></div>
-  <div class="sub-tile-content"><div class="sub-tile-name">Megamalai</div><div class="sub-tile-count">33 Photos</div></div>
+  <div class="sub-tile-left"><div class="sub-tile-name">Megamalai<span class="sub-tile-arrow">&rarr;</span></div><div class="sub-tile-count">33 Photos</div></div><div class="sub-tile-thumb"><img src="Thumbs/Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4912-14.jpg" loading="lazy" decoding="async" alt=""></div>
 </div>
 <div class="sub-tile" onclick="showGallery('wip-Places-International')">
-  <div class="sub-tile-bg" style="background:var(--mid);"></div>
-  <div class="sub-tile-vignette"></div>
-  <div class="sub-tile-content"><div class="sub-tile-name">International</div><div class="sub-tile-count">Coming Soon</div></div>
+  <div class="sub-tile-left"><div class="sub-tile-name">International<span class="sub-tile-arrow">&rarr;</span></div><div class="sub-tile-count">Coming Soon</div></div><div class="sub-tile-thumb"><div class="sub-tile-thumb-placeholder"><span>Coming<br>Soon</span></div></div>
 </div>
 </div>
 <div class="sub-panel" id="subpanel-Nature">
 <div class="sub-tile" onclick="showGallery('sub-Nature-Landscape')">
-  <div class="sub-tile-bg" style="background-image:url("Thumbs/Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4912-14.jpg");"></div>
-  <div class="sub-tile-vignette"></div>
-  <div class="sub-tile-content"><div class="sub-tile-name">Landscape</div><div class="sub-tile-count">33 Photos</div></div>
+  <div class="sub-tile-left"><div class="sub-tile-name">Landscape<span class="sub-tile-arrow">&rarr;</span></div><div class="sub-tile-count">33 Photos</div></div><div class="sub-tile-thumb"><img src="Thumbs/Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4907.jpg" loading="lazy" decoding="async" alt=""></div>
 </div>
 <div class="sub-tile" onclick="showGallery('sub-Nature-Sunsets-and-Sunrises')">
-  <div class="sub-tile-bg" style="background:var(--mid);"></div>
-  <div class="sub-tile-vignette"></div>
-  <div class="sub-tile-content"><div class="sub-tile-name">Sunsets and Sunrises</div><div class="sub-tile-count">Coming Soon</div></div>
+  <div class="sub-tile-left"><div class="sub-tile-name">Sunsets and Sunrises<span class="sub-tile-arrow">&rarr;</span></div><div class="sub-tile-count">Coming Soon</div></div><div class="sub-tile-thumb"><div class="sub-tile-thumb-placeholder"><span>Coming<br>Soon</span></div></div>
 </div>
 <div class="sub-tile" onclick="showGallery('sub-Nature-Wildlife')">
-  <div class="sub-tile-bg" style="background:var(--mid);"></div>
-  <div class="sub-tile-vignette"></div>
-  <div class="sub-tile-content"><div class="sub-tile-name">Wildlife</div><div class="sub-tile-count">Coming Soon</div></div>
+  <div class="sub-tile-left"><div class="sub-tile-name">Wildlife<span class="sub-tile-arrow">&rarr;</span></div><div class="sub-tile-count">Coming Soon</div></div><div class="sub-tile-thumb"><div class="sub-tile-thumb-placeholder"><span>Coming<br>Soon</span></div></div>
 </div>
 <div class="sub-tile" onclick="showGallery('sub-Nature-Mountains')">
-  <div class="sub-tile-bg" style="background-image:url("Thumbs/Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4912-14.jpg");"></div>
-  <div class="sub-tile-vignette"></div>
-  <div class="sub-tile-content"><div class="sub-tile-name">Mountains</div><div class="sub-tile-count">32 Photos</div></div>
+  <div class="sub-tile-left"><div class="sub-tile-name">Mountains<span class="sub-tile-arrow">&rarr;</span></div><div class="sub-tile-count">32 Photos</div></div><div class="sub-tile-thumb"><img src="Thumbs/Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4865-69.jpg" loading="lazy" decoding="async" alt=""></div>
 </div>
 </div>
 <div class="sub-panel" id="subpanel-People">
 <div class="sub-tile" onclick="showGallery('sub-People-Portraits')">
-  <div class="sub-tile-bg" style="background:var(--mid);"></div>
-  <div class="sub-tile-vignette"></div>
-  <div class="sub-tile-content"><div class="sub-tile-name">Portraits</div><div class="sub-tile-count">Coming Soon</div></div>
+  <div class="sub-tile-left"><div class="sub-tile-name">Portraits<span class="sub-tile-arrow">&rarr;</span></div><div class="sub-tile-count">Coming Soon</div></div><div class="sub-tile-thumb"><div class="sub-tile-thumb-placeholder"><span>Coming<br>Soon</span></div></div>
 </div>
 </div>
 <div class="sub-panel" id="subpanel-Architecture">
 <div class="sub-tile" onclick="showGallery('direct-Architecture')">
-  <div class="sub-tile-bg" style="background:var(--mid);"></div>
-  <div class="sub-tile-vignette"></div>
-  <div class="sub-tile-content"><div class="sub-tile-name">Architecture</div><div class="sub-tile-count">Coming Soon</div></div>
+  <div class="sub-tile-left"><div class="sub-tile-name">Architecture<span class="sub-tile-arrow">&rarr;</span></div><div class="sub-tile-count">Coming Soon</div></div><div class="sub-tile-thumb"><div class="sub-tile-thumb-placeholder"><span>Coming<br>Soon</span></div></div>
 </div>
 </div>
 <div class="sub-panel" id="subpanel-Birds">
 <div class="sub-tile" onclick="showGallery('direct-Birds')">
-  <div class="sub-tile-bg" style="background:var(--mid);"></div>
-  <div class="sub-tile-vignette"></div>
-  <div class="sub-tile-content"><div class="sub-tile-name">Birds</div><div class="sub-tile-count">Coming Soon</div></div>
+  <div class="sub-tile-left"><div class="sub-tile-name">Birds<span class="sub-tile-arrow">&rarr;</span></div><div class="sub-tile-count">Coming Soon</div></div><div class="sub-tile-thumb"><div class="sub-tile-thumb-placeholder"><span>Coming<br>Soon</span></div></div>
 </div>
 </div>
 <div class="sub-panel" id="subpanel-Flowers">
 <div class="sub-tile" onclick="showGallery('direct-Flowers')">
-  <div class="sub-tile-bg" style="background:var(--mid);"></div>
-  <div class="sub-tile-vignette"></div>
-  <div class="sub-tile-content"><div class="sub-tile-name">Flowers</div><div class="sub-tile-count">Coming Soon</div></div>
+  <div class="sub-tile-left"><div class="sub-tile-name">Flowers<span class="sub-tile-arrow">&rarr;</span></div><div class="sub-tile-count">Coming Soon</div></div><div class="sub-tile-thumb"><div class="sub-tile-thumb-placeholder"><span>Coming<br>Soon</span></div></div>
 </div>
 </div>
 </div>
@@ -717,7 +731,7 @@ var currentCat = null;
 
 /* ── Hero slideshow: Megamalai thumbs, 3-second rotation ── */
 (function(){
-  var thumbs = ["Thumbs/Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4727-29.jpg", "Thumbs/Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4912-14.jpg", "Thumbs/Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4759.jpg", "Thumbs/Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4998.jpg", "Thumbs/Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4730-32.jpg", "Thumbs/Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-5010-12.jpg", "Thumbs/Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-5004-06.jpg", "Thumbs/Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4736-38.jpg", "Thumbs/Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4897.jpg", "Thumbs/Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4921-23.jpg", "Thumbs/Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4984-86.jpg", "Thumbs/Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4987-89.jpg", "Thumbs/Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4987-89a.jpg", "Thumbs/Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4907.jpg", "Thumbs/Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4724-26.jpg"];
+  var thumbs = ["Thumbs/Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4745-47.jpg", "Thumbs/Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4987-89a.jpg", "Thumbs/Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-5004-06.jpg", "Thumbs/Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4736-38.jpg", "Thumbs/Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4990-92.jpg", "Thumbs/Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4715-17.jpg", "Thumbs/Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4756-58.jpg", "Thumbs/Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4855.jpg", "Thumbs/Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4907.jpg", "Thumbs/Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4909-11.jpg", "Thumbs/Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4730-32.jpg", "Thumbs/Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4997.jpg", "Thumbs/Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4727-29.jpg", "Thumbs/Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4897.jpg", "Thumbs/Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4912-14.jpg"];
   var hero   = document.getElementById('hero');
   if (!thumbs.length) return;
   var imgs = thumbs.map(function(src){
