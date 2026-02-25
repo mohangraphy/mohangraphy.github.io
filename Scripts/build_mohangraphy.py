@@ -44,64 +44,64 @@ def generate_html():
         <title>M O H A N G R A P H Y</title>
         <style>
             @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;900&display=swap');
-            body, html {{ background: #000; color: #fff; font-family: 'Inter', sans-serif; margin: 0; scroll-behavior: smooth; }}
+            body, html {{ background: #000; color: #fff; font-family: 'Inter', sans-serif; margin: 0; padding: 0; scroll-behavior: smooth; overflow-x: hidden; }}
             
-            /* FIXED HEADER WITH OVERFLOW VISIBLE FOR SUBMENUS */
             header {{ 
-                position: fixed; top: 0; width: 100%; background: #000; z-index: 3000; 
+                position: fixed; top: 0; width: 100%; background: #000; z-index: 5000; 
                 display: flex; flex-direction: column; align-items: center; 
-                padding: 40px 0 30px 0; border-bottom: 1px solid #111;
+                padding: 40px 0 25px 0; border-bottom: 1px solid #111;
             }}
             .logo {{ 
-                font-size: 55px; letter-spacing: 12px; font-weight: 900; 
+                font-size: 55px; letter-spacing: 10px; font-weight: 900; 
                 text-transform: uppercase; margin-bottom: 25px; cursor: pointer; color: #fff; 
             }}
             
             nav {{ display: flex; gap: 40px; position: relative; }}
-            .nav-item {{ position: relative; padding-bottom: 15px; }}
+            
+            /* CENTERED DROP-DOWN SYSTEM */
+            .nav-item {{ position: relative; padding-bottom: 15px; display: flex; justify-content: center; }}
             .nav-item > a {{ 
                 color: #555; text-decoration: none; font-size: 13px; font-weight: 900; 
-                text-transform: uppercase; letter-spacing: 3px; transition: 0.3s; 
+                text-transform: uppercase; letter-spacing: 2px; transition: 0.3s; 
             }}
             .nav-item:hover > a, .nav-item.active > a {{ color: #fff; }}
             
-            /* RESTORED SUBMENU LOGIC */
+            /* SUBMENU: DIRECTLY BELOW WITH SMALL GAP */
             .submenu {{ 
-                position: absolute; top: 35px; left: 0; background: #000; 
-                border: 1px solid #222; min-width: 200px; display: none; 
-                flex-direction: column; padding: 10px 0; z-index: 3100;
+                position: absolute; top: 30px; left: 50%; transform: translateX(-50%); 
+                background: #000; border: 1px solid #222; min-width: 180px; 
+                display: none; flex-direction: column; padding: 10px 0; z-index: 5100;
             }}
             .nav-item:hover .submenu {{ display: flex; }}
             .submenu a {{ 
                 color: #666; padding: 10px 20px; text-decoration: none; 
-                font-size: 11px; letter-spacing: 2px; text-transform: uppercase; transition: 0.2s; 
+                font-size: 11px; letter-spacing: 2px; text-transform: uppercase; 
+                transition: 0.2s; text-align: center;
             }}
             .submenu a:hover {{ color: #fff; background: #111; }}
             
+            /* NESTED MENU: ALSO CENTERED BELOW */
             .has-nested {{ position: relative; }}
             .nested-menu {{ 
-                position: absolute; top: 0; left: 100%; background: #000; 
-                border: 1px solid #222; display: none; flex-direction: column; min-width: 180px; 
+                position: absolute; top: 100%; left: 0; width: 100%; 
+                background: #000; border: 1px solid #222; display: none; 
+                flex-direction: column; z-index: 5200;
             }}
             .has-nested:hover .nested-menu {{ display: flex; }}
             
-            /* PREVENT OFF-SCREEN MENUS */
-            .nav-item:nth-last-child(-n+2) .submenu {{ left: auto; right: 0; }}
-            .nav-item:nth-last-child(-n+2) .nested-menu {{ left: auto; right: 100%; }}
-
-            #hero {{ height: 100vh; width: 100%; position: relative; display: flex; align-items: center; justify-content: center; background: #000; }}
+            #hero {{ height: 100vh; width: 100%; position: relative; display: flex; align-items: center; justify-content: center; background: #000; z-index: 1; }}
             .slide {{ position: absolute; width: 100%; height: 100%; object-fit: cover; opacity: 0; transition: 3s; filter: brightness(0.4); }}
             .slide.active {{ opacity: 1; }}
 
-            main {{ padding-top: 220px; display: none; width: 100%; }}
-            .section-block {{ max-width: 1600px; margin: 0 auto 50px; padding: 0 40px; display: none; }}
+            main {{ padding-top: 180px; display: none; width: 100%; }}
+            .section-block {{ max-width: 1500px; margin: 0 auto 100px; padding: 0 40px; display: none; }}
             
-            /* PURE PHOTO GRID - NO TEXT */
-            .grid {{ display: grid; grid-template-columns: repeat(auto-fill, minmax(650px, 1fr)); gap: 30px; margin-top: 20px; }}
-            .grid img {{ width: 100%; height: auto; aspect-ratio: 3/2; object-fit: cover; filter: grayscale(1); transition: 1s cubic-bezier(0.19, 1, 0.22, 1); cursor: pointer; }}
-            .grid img:hover {{ filter: grayscale(0); transform: scale(1.02); }}
+            /* CLEAN GRID: NO LABELS, NO PLACE NAMES */
+            .grid {{ display: grid; grid-template-columns: repeat(auto-fill, minmax(600px, 1fr)); gap: 40px; }}
+            .grid img {{ width: 100%; height: auto; aspect-ratio: 3/2; object-fit: cover; filter: grayscale(1); transition: 0.8s; cursor: pointer; }}
+            .grid img:hover {{ filter: grayscale(0); }}
 
-            footer {{ position: fixed; bottom: 0; width: 100%; height: 50px; background: rgba(0,0,0,0.95); border-top: 1px solid #111; z-index: 3000; display: flex; align-items: center; justify-content: center; gap: 40px; }}
+            footer {{ position: fixed; bottom: 0; width: 100%; height: 50px; background: rgba(0,0,0,0.9); border-top: 1px solid #111; z-index: 5000; display: flex; align-items: center; justify-content: center; gap: 40px; }}
             footer a {{ color: #444; text-decoration: none; font-size: 9px; font-weight: 900; text-transform: uppercase; letter-spacing: 2px; }}
         </style>
     </head>
@@ -117,7 +117,6 @@ def generate_html():
         link_action = f"onclick=\"showSection('{m_cat}')\"" if has_images else "onclick=\"goHome()\""
         nav_html += f'<div class="nav-item" id="nav-{m_cat}"><a href="#" {link_action}>{m_cat}</a>'
         
-        # Submenu generation
         if has_images and gallery[m_cat]:
             nav_html += '<div class="submenu">'
             for s_cat, p_dict in gallery[m_cat].items():
@@ -125,7 +124,7 @@ def generate_html():
                     for place in p_dict.keys():
                         nav_html += f'<a href="#{m_cat}-{place}" onclick="showSection(\'{m_cat}\')">{place}</a>'
                 else:
-                    nav_html += f'<div class="has-nested"><a href="#">{s_cat} &raquo;</a>'
+                    nav_html += f'<div class="has-nested"><a href="#">{s_cat} &darr;</a>'
                     nav_html += '<div class="nested-menu">'
                     for place in p_dict.keys():
                         nav_html += f'<a href="#{m_cat}-{s_cat}-{place}" onclick="showSection(\'{m_cat}\')">{place}</a>'
@@ -137,24 +136,27 @@ def generate_html():
     for m_cat, s_dict in gallery.items():
         if any(s_dict.values()):
             content += f'<div class="section-block" id="sec-{m_cat}">'
+            content += '<div class="grid">'
             for s_cat, p_dict in s_dict.items():
-                # Zero text logic for all sections including Places
-                content += '<div class="grid">'
                 for place, photos in p_dict.items():
-                    for p in photos: content += f'<img src="{p}">'
-                content += '</div>'
-            content += '</div>'
+                    for p in photos:
+                        content += f'<img src="{p}">'
+            content += '</div></div>'
 
     html_end = """
     </main>
     <footer><a href="#" onclick="goHome()">Home</a><a href="#main-nav">Top</a></footer>
     <script>
-        let s = document.querySelectorAll('.slide'); let cur = 0;
-        if(s.length) { s[0].classList.add('active'); setInterval(() => { s[cur].classList.remove('active'); cur=(cur+1)%s.length; s[cur].classList.add('active'); }, 5000); }
+        let slides = document.querySelectorAll('.slide'); let cur = 0;
+        if(slides.length) { 
+            slides[0].classList.add('active'); 
+            setInterval(() => { slides[cur].classList.remove('active'); cur=(cur+1)%slides.length; slides[cur].classList.add('active'); }, 5000); 
+        }
         
         function goHome() { 
-            document.getElementById('hero').style.display = 'flex'; 
             document.getElementById('gallery-container').style.display = 'none'; 
+            document.getElementById('hero').style.display = 'flex'; 
+            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
             window.scrollTo(0,0); 
         }
 
@@ -164,6 +166,8 @@ def generate_html():
             document.querySelectorAll('.section-block').forEach(sec => sec.style.display = 'none');
             let target = document.getElementById('sec-'+id);
             if(target) target.style.display = 'block';
+            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+            document.getElementById('nav-'+id).classList.add('active');
             window.scrollTo(0,0);
         }
     </script>
@@ -173,7 +177,7 @@ def generate_html():
         f.write(html_start + nav_html + "</nav></header>" + 
                 '<div id="hero">' + "".join([f'<img src="{p}" class="slide">' for p in slides]) + '</div>' + 
                 '<main id="gallery-container">' + content + html_end)
-    print("✅ Build Fixed: Submenus restored, clean grids everywhere.")
+    print("✅ Build Complete: Top-Down Center Submenus + Clean Photo Grid.")
 
 if __name__ == "__main__":
     generate_html()
