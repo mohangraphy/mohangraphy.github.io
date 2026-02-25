@@ -1,1 +1,10 @@
 python3 /Users/ncm/Pictures/Mohangraphy/Scripts/deploy.py
+
+python3 /Users/ncm/Pictures/Mohangraphy/Scripts/curator.py && \
+python3 /Users/ncm/Pictures/Mohangraphy/Scripts/build_visual.py && \
+open /Users/ncm/Pictures/Mohangraphy/index.html
+
+CLAUDE
+
+cd /Users/ncm/Pictures/Mohangraphy
+python3 Scripts/Claude_Deploy.py
