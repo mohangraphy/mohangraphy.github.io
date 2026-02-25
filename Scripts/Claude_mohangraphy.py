@@ -276,18 +276,34 @@ header {
   border-bottom: 1px solid rgba(201,169,110,0.15);
   z-index: 1000;
   display: flex; align-items: center; justify-content: center;
-  padding: 0 16px;
+  padding: 0 10px;
+  overflow: hidden; /* never let title push header wider than screen */
 }
-/* MOHANGRAPHY — largest text on the page */
+/*
+  MOHANGRAPHY — largest text on the page.
+  font-size uses a viewport-relative value so it ALWAYS fits on one line.
+  The spaced letters "M O H A N G R A P H Y" are 11 chars + 10 spaces.
+  At 320px (smallest phone) we need ~26px to stay contained.
+  container-type lets us use cqi in future; for now plain vw is reliable.
+*/
 .site-title {
   font-family: 'Cormorant Garamond', serif;
   font-weight: 700;
-  font-size: clamp(20px, 4.5vw, 46px);
-  letter-spacing: clamp(6px, 2.5vw, 22px);
+  /* 
+    vw formula: "MOHANGRAPHY" with letter-spacing needs ~90% of viewport.
+    3.8vw gives ~28px on 320px → ~55px on 1440px. Never wraps.
+  */
+  font-size: clamp(16px, 3.8vw, 48px);
+  letter-spacing: clamp(4px, 1.8vw, 20px);
   color: #fff; text-transform: uppercase;
   cursor: pointer; user-select: none;
-  transition: color 0.3s; white-space: nowrap;
-  padding-right: clamp(6px, 2.5vw, 22px); /* compensate letter-spacing on last char */
+  transition: color 0.3s;
+  white-space: nowrap;
+  /* letter-spacing adds space AFTER last char — compensate so it looks centred */
+  padding-right: clamp(4px, 1.8vw, 20px);
+  /* Scale down further on very narrow screens using a container trick */
+  max-width: 100%;
+  overflow: hidden;
 }
 .site-title:hover { color: var(--gold); }
 
@@ -325,13 +341,22 @@ header {
 .hero-tagline {
   font-family: 'Cormorant Garamond', serif;
   font-weight: 300;
-  font-size: clamp(18px, 5vw, 52px);
-  letter-spacing: clamp(4px, 2vw, 16px);
-  color: rgba(255,255,255,0.88);
+  /*
+    "LIGHT · MOMENT · STORY" must always be ONE line.
+    4.2vw gives ~26px on 320px (fits), ~60px on 1440px.
+    white-space: nowrap + overflow hidden guarantees no wrapping.
+  */
+  font-size: clamp(14px, 4.2vw, 52px);
+  letter-spacing: clamp(3px, 1.5vw, 14px);
+  color: rgba(255,255,255,0.9);
   text-transform: uppercase;
-  line-height: 1.2;
+  line-height: 1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: clip;
+  max-width: 100%;
 }
-.hero-tagline .dot { color: var(--gold); margin: 0 0.3em; }
+.hero-tagline .dot { color: var(--gold); margin: 0 0.4em; }
 
 .hero-byline {
   margin-top: clamp(10px, 2vw, 22px);
@@ -367,13 +392,18 @@ header {
   50%      { transform: translateX(-50%) translateY(7px); opacity:.8; }
 }
 
-/* ── VERTICAL TILE NAV ── */
+/* ── MAIN VERTICAL TILE NAV ── */
+/*
+  Each menu row is a COMPACT HORIZONTAL ROW:
+    [ category name + photo count ]  [ thumbnail OR "Coming Soon" box ]
+  Height is fixed and compact so all 6 items fit on one screen scroll.
+*/
 #tile-nav {
   display: none;
   padding-top: var(--hdr);
   background: var(--dark);
   min-height: 100svh;
-  padding-bottom: 56px; /* footer clearance */
+  padding-bottom: 56px;
 }
 #tile-nav.visible { display: block; }
 
@@ -381,64 +411,87 @@ header {
   font-size: 8px; letter-spacing: 6px;
   color: var(--gold); text-transform: uppercase;
   opacity: .5; text-align: center;
-  padding: 20px 0 12px;
+  padding: 18px 0 10px;
 }
 
-/* Each main-category tile is full-width, ~38% viewport tall */
+/* Each row */
 .cat-tile {
   position: relative; width: 100%;
-  height: clamp(160px, 36svh, 380px);
+  height: clamp(80px, 16vw, 130px);  /* compact — ~6 rows visible on phone */
   overflow: hidden; cursor: pointer;
-  border-bottom: 1px solid rgba(201,169,110,0.06);
-  display: block;
+  border-bottom: 1px solid rgba(201,169,110,0.09);
+  display: flex; align-items: stretch;
+  background: var(--mid);
   -webkit-tap-highlight-color: transparent;
+  transition: background .3s;
 }
-.cat-tile-bg {
-  position: absolute; inset: 0;
-  background-size: cover; background-position: center;
-  filter: brightness(0.27) saturate(0.5);
-  transition: filter .6s, transform .7s;
-  will-change: transform, filter;
-}
-.cat-tile:hover .cat-tile-bg { filter: brightness(0.48) saturate(0.85); transform: scale(1.04); }
-/* Touch devices: show brightened state when tapped */
-.cat-tile:active .cat-tile-bg { filter: brightness(0.55) saturate(0.9); }
+.cat-tile:hover,
+.cat-tile:active { background: #1f1f1f; }
 
-.cat-tile-vignette {
-  position: absolute; inset: 0;
-  background:
-    linear-gradient(to right, rgba(0,0,0,0.65) 0%, transparent 50%),
-    linear-gradient(to top, rgba(0,0,0,0.8) 0%, transparent 50%);
+/* LEFT side: category name + count */
+.cat-tile-left {
+  flex: 1 1 0;
+  display: flex; flex-direction: column;
+  justify-content: center;
+  padding: clamp(10px,2vw,20px) clamp(14px,3.5vw,36px);
+  min-width: 0; /* allow text to shrink */
+  border-right: 1px solid rgba(201,169,110,0.07);
 }
-.cat-tile-content {
-  position: absolute; bottom: 0; left: 0; right: 0;
-  padding: clamp(12px,2vw,28px) clamp(16px,4vw,52px);
-  display: flex; align-items: flex-end; justify-content: space-between;
-  gap: 8px;
-}
-/* Category name — SMALLER than MOHANGRAPHY header */
 .cat-tile-name {
   font-family: 'Cormorant Garamond', serif;
-  font-size: clamp(20px, 4vw, 40px);  /* capped below site-title */
+  font-size: clamp(18px, 3.8vw, 36px);
   font-weight: 600;
-  letter-spacing: clamp(2px, .7vw, 5px);
+  letter-spacing: clamp(2px, .6vw, 5px);
   text-transform: uppercase; color: #fff; line-height: 1;
-  transition: color .3s;
+  transition: color .25s;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
 }
 .cat-tile:hover .cat-tile-name,
 .cat-tile:active .cat-tile-name { color: var(--gold); }
-
-.cat-tile-meta { text-align: right; flex-shrink: 0; }
 .cat-tile-count {
-  display: block; font-size: 8px; letter-spacing: 2px;
-  color: rgba(255,255,255,0.3); text-transform: uppercase; margin-bottom: 4px;
+  margin-top: 5px;
+  font-size: 8px; letter-spacing: 2px;
+  color: rgba(255,255,255,0.28); text-transform: uppercase;
 }
 .cat-tile-arrow {
-  display: block; font-size: 18px; color: var(--gold);
-  opacity: 0; transform: translateX(-5px);
-  transition: opacity .3s, transform .3s;
+  display: inline-block; margin-left: 8px;
+  color: var(--gold); opacity: 0;
+  transform: translateX(-4px);
+  transition: opacity .25s, transform .25s;
+  font-size: 14px;
 }
 .cat-tile:hover .cat-tile-arrow { opacity: 1; transform: translateX(0); }
+
+/* RIGHT side: thumbnail image OR "Coming Soon" placeholder */
+.cat-tile-thumb {
+  flex: 0 0 clamp(110px, 22vw, 190px);
+  position: relative; overflow: hidden;
+  background: #1a1a1a;
+}
+.cat-tile-thumb img {
+  width: 100%; height: 100%;
+  object-fit: cover; object-position: center;
+  display: block;
+  filter: brightness(0.82) saturate(0.85);
+  transition: filter .5s, transform .5s;
+}
+.cat-tile:hover .cat-tile-thumb img,
+.cat-tile:active .cat-tile-thumb img {
+  filter: brightness(1) saturate(1);
+  transform: scale(1.06);
+}
+/* Coming Soon placeholder */
+.cat-tile-thumb-placeholder {
+  width: 100%; height: 100%;
+  display: flex; align-items: center; justify-content: center;
+  background: linear-gradient(135deg, #1a1a1a 0%, #242424 100%);
+  border-left: 1px solid rgba(201,169,110,0.07);
+}
+.cat-tile-thumb-placeholder span {
+  font-size: 7px; letter-spacing: 3px;
+  color: rgba(201,169,110,0.35); text-transform: uppercase;
+  text-align: center; padding: 0 8px; line-height: 1.6;
+}
 
 /* ── SUB-CATEGORY PAGE ── */
 #sub-nav {
@@ -577,12 +630,13 @@ header {
 }
 .grid-item img {
   width: 100%; height: 100%; object-fit: cover; display: block;
-  filter: grayscale(0.45) brightness(0.92);
-  transition: filter .6s, transform .6s;
+  /* Always full colour — no desaturation */
+  filter: brightness(0.94);
+  transition: filter .5s, transform .5s;
 }
 .grid-item:hover img,
 .grid-item:active img {
-  filter: grayscale(0) brightness(1.02);
+  filter: brightness(1.05);
   transform: scale(1.04);
 }
 .grid-item-overlay {
@@ -811,24 +865,40 @@ footer {
     # ── MAIN CATEGORY TILES ───────────────────────────────────────────────────
     cat_tiles_html = ""
     for m_cat, subs in MANUAL_STRUCTURE.items():
-        cover = cat_covers.get(m_cat, "")
-        bg    = ('background-image:url("' + cover + '");' if cover
-                 else "background:var(--mid);")
+        # Thumbnail: use a cover photo from this category (already thumb-mapped)
+        raw_cover = cat_covers.get(m_cat, "")
+        thumb_cover = thumb_map.get(raw_cover, raw_cover) if raw_cover else ""
+
         disk_cnt  = count_folder(os.path.join(ROOT_DIR, "Photos", m_cat))
         count_lbl = str(disk_cnt) + " Photos" if disk_cnt else "Coming Soon"
-        click = ("openCategory('" + m_cat + "')" if subs
-                 else "showGallery('direct-" + m_cat + "')")
+        click     = ("openCategory('" + m_cat + "')" if subs
+                     else "showGallery('direct-" + m_cat + "')")
+
+        # Right-side thumbnail or "Coming Soon" placeholder
+        if thumb_cover:
+            thumb_html = (
+                '<div class="cat-tile-thumb">'
+                '<img src="' + thumb_cover + '" loading="lazy" decoding="async" alt="">'
+                '</div>'
+            )
+        else:
+            thumb_html = (
+                '<div class="cat-tile-thumb">'
+                '<div class="cat-tile-thumb-placeholder">'
+                '<span>Coming<br>Soon</span>'
+                '</div>'
+                '</div>'
+            )
+
         cat_tiles_html += (
             '\n<div class="cat-tile" onclick="' + click + '" role="button" tabindex="0"'
             ' onkeypress="if(event.key===\'Enter\') this.click()">'
-            '\n  <div class="cat-tile-bg" style="' + bg + '"></div>'
-            '\n  <div class="cat-tile-vignette"></div>'
-            '\n  <div class="cat-tile-content">'
-            '<div class="cat-tile-name">' + m_cat + '</div>'
-            '<div class="cat-tile-meta">'
-            '<span class="cat-tile-count">' + count_lbl + '</span>'
-            '<span class="cat-tile-arrow">&rarr;</span>'
-            '</div></div>\n</div>'
+            '\n  <div class="cat-tile-left">'
+            '<div class="cat-tile-name">' + m_cat + '<span class="cat-tile-arrow">&rarr;</span></div>'
+            '<div class="cat-tile-count">' + count_lbl + '</div>'
+            '</div>'
+            + thumb_html +
+            '\n</div>'
         )
 
     # ── JAVASCRIPT ────────────────────────────────────────────────────────────
