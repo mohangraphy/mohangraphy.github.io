@@ -22,6 +22,14 @@ def get_file_hash(filepath):
             hasher.update(chunk)
     return hasher.hexdigest()
 
+def ask_mac_input(title, prompt, default=""):
+    applescript = f'display dialog "{prompt}" with title "{title}" default answer "{default}" buttons {{"OK"}} default button "OK"'
+    proc = subprocess.Popen(['osascript', '-e', applescript], stdout=subprocess.PIPE)
+    out, _ = proc.communicate()
+    if "text returned:" in out.decode('utf-8'):
+        return out.decode('utf-8').split("text returned:")[-1].strip()
+    return default
+
 def clean_and_load_data():
     """Forces the JSON to only have ONE entry per unique file path."""
     if not os.path.exists(DATA_FILE):
@@ -31,13 +39,10 @@ def clean_and_load_data():
         raw_data = json.load(f)
     
     clean_data = {}
-    # We map by PATH to ensure 1 photo = 1 entry
     for _, info in raw_data.items():
         path = info.get('path')
-        # This overwrites any previous duplicate entry for this same path
         clean_data[path] = info 
         
-    # Re-index by hash for the script's internal logic, but keep it unique
     final_data = {}
     for path, info in clean_data.items():
         full_path = os.path.join(ROOT_DIR, path)
@@ -69,7 +74,6 @@ def ask_mac_question(title, prompt, buttons=["Next", "Stop"]):
 def run_curator():
     data = clean_and_load_data()
 
-    # Get all actual files on disk
     disk_files = []
     for root, _, files in os.walk(PHOTOS_DIR):
         for f in files:
@@ -81,27 +85,34 @@ def run_curator():
         filename = os.path.basename(path)
         rel_path = os.path.relpath(path, ROOT_DIR)
         
-        # If photo already exists, show it and ask if user wants to EDIT
         exists = f_hash in data
         status_msg = "ALREADY TAGGED" if exists else "NEW PHOTO"
-        current_tags = data[f_hash]['categories'] if exists else []
+        current_tags = data[f_hash].get('categories', []) if exists else []
+        current_place = data[f_hash].get('place', "") if exists else ""
         
         subprocess.run(["open", path])
-        action = ask_mac_question("Curator", f"{status_msg}: {filename}\nTags: {current_tags}", ["Edit/Tag", "Skip", "Stop"])
+        action = ask_mac_question("Curator", f"{status_msg}: {filename}\nTags: {current_tags}\nPlace: {current_place}", ["Edit/Tag", "Skip", "Stop"])
         
         if action == "Stop": break
         if action == "Skip": continue
         
-        # Fresh selection: remove everything and start over
-        selected = choose_from_mac_list("Select Categories", f"Tagging: {filename}", FLAT_CATEGORIES)
-        if selected:
-            data[f_hash] = {
-                "path": rel_path,
-                "categories": selected,
-                "filename": filename
-            }
-            with open(DATA_FILE, 'w') as f:
-                json.dump(data, f, indent=4)
+        # 1. Select Categories
+        selected_cats = choose_from_mac_list("Select Categories", f"Tagging: {filename}", FLAT_CATEGORIES)
+        if selected_cats is None: continue
+        
+        # 2. ASK FOR PLACE NAME (The fixed part)
+        selected_place = ask_mac_input("Location", "Enter Place Name (e.g., Megamalai):", current_place)
+        
+        # 3. Overwrite with Fresh Data
+        data[f_hash] = {
+            "path": rel_path,
+            "categories": selected_cats,
+            "place": selected_place,
+            "filename": filename
+        }
+        
+        with open(DATA_FILE, 'w') as f:
+            json.dump(data, f, indent=4)
 
     print(f"✅ Finished! Total photos in database: {len(data)}")
 
