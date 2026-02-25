@@ -2,32 +2,47 @@ import os
 import subprocess
 
 # --- CONFIGURATION ---
+# Use your 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 token here
 TOKEN = "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" 
 USER = "mohangraphy"
 REPO = "mohangraphy.github.io"
 # ---------------------
 
-def run_deployment():
-    root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-    os.chdir(root)
+def final_push():
+    root = os.path.dirname(os.path.abspath(__file__))
+    # Ensure we are in the main Mohangraphy folder
+    os.chdir(os.path.dirname(root))
     
-    # 1. Build the index.html first
+    print("🧹 Cleaning old connection settings...")
+    # This removes the old 'origin' that is asking for a password
+    subprocess.run(["git", "remote", "remove", "origin"], capture_output=True)
+
+    # Re-build the index.html
+    print("🔨 Building your gallery...")
     subprocess.run(["python3", "Scripts/build_mohangraphy.py"])
 
-    # 2. Push to GitHub
+    # Set the NEW remote URL using the token
+    # We use the token twice to satisfy Git's 'username:password' requirement
+    remote_url = f"https://{TOKEN}@github.com/{USER}/{REPO}.git"
+    subprocess.run(["git", "remote", "add", "origin", remote_url])
+
     try:
         subprocess.run(["git", "add", "."], check=True)
-        subprocess.run(["git", "commit", "-m", "Portfolio Structure Finalized"], capture_output=True)
+        subprocess.run(["git", "commit", "-m", "Categorized Update"], capture_output=True)
         
-        # Link to the public repo
-        remote_url = f"https://{TOKEN}@github.com/{USER}/{REPO}.git"
-        subprocess.run(["git", "remote", "set-url", "origin", remote_url])
+        print(f"📤 Pushing to {REPO} (No password should be required)...")
+        # We tell Git to ignore the Mac keychain for this one push
+        result = subprocess.run([
+            "git", "-c", "credential.helper=", "push", "-u", "origin", "main", "--force"
+        ], capture_output=True, text=True)
         
-        print(f"📤 Syncing to https://{REPO}...")
-        subprocess.run(["git", "push", "-u", "origin", "main", "--force"], check=True)
-        print(f"\n✨ SUCCESS! Your gallery is live with the new structure.")
+        if result.returncode == 0:
+            print(f"\n✅ SUCCESS! Site is live at https://{REPO}")
+        else:
+            print(f"\n❌ ERROR: {result.stderr}")
+            
     except Exception as e:
-        print(f"❌ Deployment Failed: {e}")
+        print(f"❌ Script Error: {e}")
 
 if __name__ == "__main__":
-    run_deployment()
+    final_push()
