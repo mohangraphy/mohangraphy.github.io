@@ -1,42 +1,38 @@
 import os
 import subprocess
+import time
 
-# --- CONFIGURATION ---
-USER = "mohangraphy"
-REPO = "mohangraphy.github.io"
-# ---------------------
-
-def ssh_deploy():
-    # Identify the folder path
-    script_path = os.path.abspath(__file__)
-    root_dir = os.path.dirname(os.path.dirname(script_path))
+def master_deploy():
+    # 1. Path Setup
+    root_dir = "/Users/ncm/Pictures/Mohangraphy"
     os.chdir(root_dir)
     
-    # 1. Build the gallery (Handling Megamalai/Categories)
-    print("🔨 Building your categorized gallery...")
+    # 2. Run the Master Build Script
+    print("🔨 Building the Master Cinematic Gallery...")
     subprocess.run(["python3", "Scripts/build_mohangraphy.py"])
 
-    # 2. Ensure we are using the SSH URL
-    ssh_url = f"git@github.com:{USER}/{REPO}.git"
-    subprocess.run(["git", "remote", "remove", "origin"], capture_output=True)
-    subprocess.run(["git", "remote", "add", "origin", ssh_url])
-
-    # 3. Push the files
-    print(f"📤 Uploading via SSH key...")
+    # 3. Add, Commit, and Force Push
+    print("📤 Forcing push to GitHub...")
     try:
         subprocess.run(["git", "add", "."], check=True)
-        subprocess.run(["git", "commit", "-m", "Final SSH Setup"], capture_output=True)
         
-        # Force push to main branch
-        result = subprocess.run(["git", "push", "-u", "origin", "main", "--force"], capture_output=True, text=True)
+        # We use a unique timestamp in the message to force GitHub to refresh
+        timestamp = time.strftime('%Y-%m-%d %H:%M:%S')
+        commit_msg = f"Master Build Refresh: {timestamp}"
+        
+        subprocess.run(["git", "commit", "-m", commit_msg], capture_output=True)
+        
+        # Use --force to ensure the remote repository matches your Mac exactly
+        result = subprocess.run(["git", "push", "origin", "main", "--force"], capture_output=True, text=True)
         
         if result.returncode == 0:
-            print(f"\n✅ SUCCESS! Site is live: https://{REPO}")
+            print(f"\n✅ SUCCESS! Site pushed at {timestamp}")
+            print("💡 IMPORTANT: Wait 60 seconds, then use 'Cmd + Shift + R' to refresh.")
         else:
-            print(f"\n❌ ERROR: {result.stderr}")
+            print(f"❌ Error: {result.stderr}")
             
     except Exception as e:
         print(f"❌ Script Error: {e}")
 
 if __name__ == "__main__":
-    ssh_deploy()
+    master_deploy()
