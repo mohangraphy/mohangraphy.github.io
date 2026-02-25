@@ -1,7 +1,0 @@
-body { background-color: #0d0d0d; color: white; font-family: sans-serif; display: flex; flex-direction: column; align-items: center; margin: 0; }
-.main-title { margin-top: 50px; letter-spacing: 10px; text-transform: uppercase; }
-.tile-container { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; width: 90%; padding: 40px; }
-.category-tile { position: relative; height: 250px; border-radius: 15px; background-size: cover; background-position: center; display: flex; justify-content: center; align-items: center; border: 1px solid #333; }
-.overlay { position: absolute; inset: 0; background: rgba(0,0,0,0.5); border-radius: 15px; }
-.bevel-button { position: relative; z-index: 10; padding: 15px 30px; background: linear-gradient(145deg, #444, #111); border: 1px solid #555; border-radius: 8px; color: white; text-decoration: none; font-weight: bold; box-shadow: 5px 5px 15px #000; text-transform: uppercase; }
-.sub-nav { display: flex; gap: 10px; padding: 20px; overflow-x: auto; width: 90%; }
