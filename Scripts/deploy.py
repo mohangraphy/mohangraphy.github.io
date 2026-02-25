@@ -2,44 +2,42 @@ import os
 import subprocess
 
 # --- CONFIGURATION ---
-TOKEN = "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" 
 USER = "mohangraphy"
 REPO = "mohangraphy.github.io"
 # ---------------------
 
-def master_deploy():
-    # Set the path correctly
+def ssh_deploy():
+    # Set the path to your Mohangraphy folder
     script_path = os.path.abspath(__file__)
     root_dir = os.path.dirname(os.path.dirname(script_path))
     os.chdir(root_dir)
     
-    # 1. Run the gallery builder
+    # 1. Build the gallery (Handling Megamalai cross-links)
     print("🔨 Building your categorized gallery...")
     subprocess.run(["python3", "Scripts/build_mohangraphy.py"])
 
-    # 2. Prepare the files
-    print("📦 Preparing files for upload...")
-    subprocess.run(["git", "add", "."], capture_output=True)
-    subprocess.run(["git", "commit", "-m", "Final Sync"], capture_output=True)
+    # 2. Reset the connection to use SSH instead of HTTPS
+    # This is what stops the password prompt!
+    ssh_url = f"git@github.com:{USER}/{REPO}.git"
+    subprocess.run(["git", "remote", "remove", "origin"], capture_output=True)
+    subprocess.run(["git", "remote", "add", "origin", ssh_url])
 
-    # 3. THE "BRUTE FORCE" PUSH
-    # We bypass the 'origin' nickname and push directly to the URL with the token
-    print(f"📤 Uploading to {REPO}...")
-    direct_url = f"https://{TOKEN}@github.com/{USER}/{REPO}.git"
-    
-    # We use -c credential.helper= to ensure Mac doesn't try to use an old password
-    result = subprocess.run([
-        "git", "-c", "credential.helper=", "push", direct_url, "main", "--force"
-    ], capture_output=True, text=True)
-
-    if result.returncode == 0:
-        print(f"\n✅ SUCCESS! Your portfolio is live.")
-        print(f"🌍 View it here: https://{REPO}")
-    else:
-        print(f"\n❌ STILL BLOCKED")
-        print(f"Details: {result.stderr}")
-        print("\n💡 PEER TIP: If it still fails, your token might have expired.")
-        print("Please check GitHub Settings -> Developer Settings -> Personal Access Tokens.")
+    # 3. Push the files
+    print(f"📤 Uploading via SSH key...")
+    try:
+        subprocess.run(["git", "add", "."], check=True)
+        subprocess.run(["git", "commit", "-m", "Switching to SSH"], capture_output=True)
+        
+        # The first time you do this, it might ask if you trust GitHub. Type 'yes'.
+        result = subprocess.run(["git", "push", "-u", "origin", "main", "--force"], capture_output=True, text=True)
+        
+        if result.returncode == 0:
+            print(f"\n✅ SUCCESS! Site is live: https://{REPO}")
+        else:
+            print(f"\n❌ ERROR: {result.stderr}")
+            
+    except Exception as e:
+        print(f"❌ Script Error: {e}")
 
 if __name__ == "__main__":
-    master_deploy()
+    ssh_deploy()
