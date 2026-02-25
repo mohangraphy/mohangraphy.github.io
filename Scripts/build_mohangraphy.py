@@ -5,23 +5,13 @@ import random
 ROOT_DIR = "/Users/ncm/Pictures/Mohangraphy"
 DATA_FILE = os.path.join(ROOT_DIR, "Scripts/photo_metadata.json")
 
-# THE MASTER LIST: Your specific structure
-STRUCTURE = {
-    "Places": {
-        "type": "deep",
-        "subs": ["National", "International"]
-    },
-    "Nature": {
-        "type": "flat",
-        "subs": ["Landscape", "Sunsets and Sunrises", "Wildlife"]
-    },
-    "People": {
-        "type": "flat",
-        "subs": ["Portraits"]
-    },
-    "Architecture": {"type": "flat", "subs": []},
-    "Birds": {"type": "flat", "subs": []},
-    "Flowers": {"type": "flat", "subs": []}
+# Master structure for non-Places menus
+MANUAL_STRUCTURE = {
+    "Nature": ["Landscape", "Sunsets and Sunrises", "Wildlife"],
+    "People": ["Portraits"],
+    "Architecture": [],
+    "Birds": [],
+    "Flowers": []
 }
 
 def load_index():
@@ -34,18 +24,28 @@ def load_index():
 def generate_html():
     index_data = load_index()
     
-    # Process photos into a searchable dictionary
-    photo_map = {} # Key: "MainCat/SubCat" or "PlaceName"
+    # Organize data for quick lookup
+    # category_map tracks: "Nature/Landscape" -> [paths]
+    # place_map tracks: "National" -> {"Megamalai": [paths]}
+    category_map = {}
+    place_map = {"National": {}, "International": {}}
+
     for info in index_data.values():
         path = info.get('path')
         tags = info.get('categories', [])
-        place = info.get('place', 'General')
+        place_name = info.get('place', 'General')
+
         for tag in tags:
-            if tag not in photo_map: photo_map[tag] = []
-            photo_map[tag].append(path)
-            # Also map by place name for the deep links
-            if place not in photo_map: photo_map[place] = []
-            photo_map[place].append(path)
+            if tag not in category_map: category_map[tag] = []
+            category_map[tag].append(path)
+            
+            # If it's a Places tag, sort the place name into the right bucket
+            if tag.startswith("Places/"):
+                bucket = tag.split('/')[-1] # National or International
+                if bucket in place_map:
+                    if place_name not in place_map[bucket]:
+                        place_map[bucket][place_name] = []
+                    place_map[bucket][place_name].append(path)
 
     all_pics = [i.get('path') for i in index_data.values()]
     slides = random.sample(all_pics, min(len(all_pics), 10)) if all_pics else []
@@ -67,13 +67,14 @@ def generate_html():
             .nav-link, .footer-link {{ color: #555; text-decoration: none; font-size: 13px; font-weight: 900; text-transform: uppercase; letter-spacing: 2px; transition: 0.3s; }}
             .nav-item:hover > .nav-link, .footer-link:hover {{ color: #fff; }}
             
-            .submenu {{ position: absolute; top: 35px; left: 50%; transform: translateX(-50%); background: #000; border: 1px solid #222; min-width: 220px; display: none; flex-direction: column; padding: 10px 0; z-index: 5100; }}
+            .submenu {{ position: absolute; top: 35px; left: 50%; transform: translateX(-50%); background: #000; border: 1px solid #222; min-width: 240px; display: none; flex-direction: column; padding: 10px 0; z-index: 5100; }}
             .nav-item:hover .submenu {{ display: flex; }}
-            .submenu a, .nested-header {{ color: #666; padding: 12px 20px; text-decoration: none; font-size: 11px; letter-spacing: 2px; text-transform: uppercase; text-align: center; display: block; }}
+            .submenu a, .nested-header {{ color: #666; padding: 10px 20px; text-decoration: none; font-size: 11px; letter-spacing: 2px; text-transform: uppercase; text-align: center; display: block; }}
             .submenu a:hover {{ color: #fff; background: #111; }}
             
-            .nested-group {{ border-top: 1px solid #111; background: #050505; }}
+            .nested-group {{ border-top: 1px solid #111; background: #050505; padding: 5px 0; }}
             .nested-header {{ color: #888; font-weight: 900; pointer-events: none; }}
+            .nested-item {{ font-size: 10px !important; color: #444 !important; }}
             
             #hero {{ height: 100vh; width: 100%; position: relative; display: flex; align-items: center; justify-content: center; background: #000; z-index: 1; }}
             .slide {{ position: absolute; width: 100%; height: 100%; object-fit: cover; opacity: 0; transition: 3s; filter: brightness(0.4); }}
@@ -86,7 +87,6 @@ def generate_html():
             .grid img:hover {{ filter: grayscale(0); }}
             
             .wip-message {{ text-align: center; font-size: 14px; letter-spacing: 3px; color: #444; text-transform: uppercase; margin-top: 150px; }}
-            
             footer {{ position: fixed; bottom: 0; width: 100%; height: 60px; background: rgba(0,0,0,0.95); border-top: 1px solid #111; z-index: 5000; display: flex; align-items: center; justify-content: center; gap: 60px; }}
         </style>
     </head>
@@ -97,53 +97,56 @@ def generate_html():
     nav_html = ""
     content_html = ""
 
-    for m_cat, config in STRUCTURE.items():
-        # Main Menu Link
+    # --- BUILD PLACES MENU (DYNAMIC) ---
+    nav_html += '<div class="nav-item"><a href="#" class="nav-link" onclick="showSection(\'sec-Places\')">Places</a><div class="submenu">'
+    all_place_photos = []
+    for group in ["National", "International"]:
+        nav_html += f'<div class="nested-group"><div class="nested-header">{group}</div>'
+        if place_map[group]:
+            for p_name, p_list in place_map[group].items():
+                safe_id = f"place-{p_name.replace(' ', '-')}"
+                nav_html += f'<a href="#" class="nested-item" onclick="showSection(\'{safe_id}\')">{p_name}</a>'
+                all_place_photos.extend(p_list)
+                # Create section for specific place
+                content_html += f'<div class="section-block" id="{safe_id}"><div class="grid">' + "".join([f'<img src="{img}">' for img in p_list]) + '</div></div>'
+        else:
+            nav_html += '<a href="#" class="nested-item">Work in progress</a>'
+        nav_html += '</div>'
+    nav_html += '</div></div>'
+    
+    # General Places section (View All)
+    content_html += '<div class="section-block" id="sec-Places"><div class="grid">' + "".join([f'<img src="{img}">' for img in list(set(all_place_photos))]) + '</div></div>'
+
+    # --- BUILD MANUAL MENUS (NATURE, PEOPLE, etc) ---
+    for m_cat, subs in MANUAL_STRUCTURE.items():
         nav_html += f'<div class="nav-item"><a href="#" class="nav-link" onclick="showSection(\'sec-{m_cat}\')">{m_cat}</a>'
+        m_photos = []
         
-        # Build Content Blocks for Submenus
-        if config["subs"]:
+        if subs:
             nav_html += '<div class="submenu">'
-            for s_cat in config["subs"]:
-                safe_id = f"{m_cat}-{s_cat}".replace(" ", "-")
+            for s_cat in subs:
+                safe_id = f"sub-{m_cat}-{s_cat.replace(' ', '-')}"
+                nav_html += f'<a href="#" onclick="showSection(\'{safe_id}\')">{s_cat}</a>'
                 
-                # Navigation Item
-                if config["type"] == "deep":
-                    nav_html += f'<div class="nested-group"><div class="nested-header">{s_cat}</div>'
-                    # Example places to show structure - in real use, this would loop your place names
-                    # For now, let's link the sub-header click to the section
-                    nav_html += f'<a href="#" onclick="showSection(\'sec-{safe_id}\')">View All</a></div>'
-                else:
-                    nav_html += f'<a href="#" onclick="showSection(\'sec-{safe_id}\')">{s_cat}</a>'
+                tag = f"{m_cat}/{s_cat}"
+                photos = category_map.get(tag, [])
+                m_photos.extend(photos)
                 
-                # Content Generation
-                tag_key = f"{m_cat}/{s_cat}"
-                photos = photo_map.get(tag_key, [])
-                
-                content_html += f'<div class="section-block" id="sec-{safe_id}">'
+                content_html += f'<div class="section-block" id="{safe_id}">'
                 if photos:
-                    content_html += '<div class="grid">'
-                    for p in photos: content_html += f'<img src="{p}">'
-                    content_html += '</div>'
+                    content_html += '<div class="grid">' + "".join([f'<img src="{p}">' for p in photos]) + '</div>'
                 else:
                     content_html += '<div class="wip-message">Work in progress</div>'
                 content_html += '</div>'
             nav_html += '</div>'
         
-        # Also create a block for the Main Category itself (Show all photos in that category)
-        main_photos = []
-        for key, paths in photo_map.items():
-            if key.startswith(m_cat): main_photos.extend(paths)
-        
+        # Main Category View All
         content_html += f'<div class="section-block" id="sec-{m_cat}">'
-        if main_photos:
-            content_html += '<div class="grid">'
-            for p in list(set(main_photos)): content_html += f'<img src="{p}">'
-            content_html += '</div>'
+        if m_photos:
+            content_html += '<div class="grid">' + "".join([f'<img src="{p}">' for p in list(set(m_photos))]) + '</div>'
         else:
             content_html += '<div class="wip-message">Work in progress</div>'
         content_html += '</div>'
-        
         nav_html += '</div>'
 
     html_end = """
@@ -157,7 +160,8 @@ def generate_html():
             document.getElementById('hero').style.display = 'none'; document.getElementById('gallery-container').style.display = 'block';
             document.querySelectorAll('.section-block').forEach(sec => sec.style.display = 'none');
             let target = document.getElementById(id);
-            if(target) target.style.display = 'block'; window.scrollTo(0,0);
+            if(target) target.style.display = 'block'; else goHome();
+            window.scrollTo(0,0);
         }
     </script>
     </body></html>
@@ -166,7 +170,7 @@ def generate_html():
         f.write(html_start + nav_html + "</nav></header>" + 
                 '<div id="hero">' + "".join([f'<img src="{p}" class="slide">' for p in slides]) + '</div>' + 
                 '<main id="gallery-container">' + content_html + html_end)
-    print("✅ Build Fixed: Specific submenus hardcoded with 'Work in progress' fallbacks.")
+    print("✅ Build Complete: Places list names dynamically. Nature/People are hardcoded.")
 
 if __name__ == "__main__":
     generate_html()
