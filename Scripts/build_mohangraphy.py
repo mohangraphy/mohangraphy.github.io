@@ -49,21 +49,28 @@ def generate_html():
             .nav-item {{ position: relative; padding-bottom: 15px; }}
             .nav-link, .footer-link {{ color: #555; text-decoration: none; font-size: 13px; font-weight: 900; text-transform: uppercase; letter-spacing: 2px; transition: 0.3s; }}
             .nav-item:hover > .nav-link, .nav-item.active > .nav-link, .footer-link:hover {{ color: #fff; }}
+            
             .submenu {{ position: absolute; top: 35px; left: 50%; transform: translateX(-50%); background: #000; border: 1px solid #222; min-width: 200px; display: none; flex-direction: column; padding: 5px 0; z-index: 5100; }}
             .nav-item:hover .submenu {{ display: flex; }}
             .submenu a, .nested-header {{ color: #666; padding: 12px 20px; text-decoration: none; font-size: 11px; letter-spacing: 2px; text-transform: uppercase; text-align: center; display: block; }}
             .submenu a:hover {{ color: #fff; background: #111; }}
+            
             .nested-group {{ border-top: 1px solid #111; background: #050505; }}
             .nested-header {{ color: #888; font-weight: 900; pointer-events: none; }}
             .nested-item {{ padding-left: 20px !important; font-size: 10px !important; color: #444 !important; }}
+            
             #hero {{ height: 100vh; width: 100%; position: relative; display: flex; align-items: center; justify-content: center; background: #000; z-index: 1; }}
             .slide {{ position: absolute; width: 100%; height: 100%; object-fit: cover; opacity: 0; transition: 3s; filter: brightness(0.4); }}
             .slide.active {{ opacity: 1; }}
-            main {{ padding-top: 180px; display: none; width: 100%; min-height: 100vh; }}
+            
+            main {{ padding-top: 220px; display: none; width: 100%; min-height: 100vh; }}
             .section-block {{ max-width: 1600px; margin: 0 auto 100px; padding: 0 40px; display: none; }}
             .grid {{ display: grid; grid-template-columns: repeat(auto-fill, minmax(600px, 1fr)); gap: 30px; }}
             .grid img {{ width: 100%; height: auto; aspect-ratio: 3/2; object-fit: cover; filter: grayscale(1); transition: 0.8s; cursor: pointer; }}
             .grid img:hover {{ filter: grayscale(0); }}
+            
+            .wip-message {{ text-align: center; font-size: 14px; letter-spacing: 3px; color: #333; text-transform: uppercase; margin-top: 100px; font-weight: 400; }}
+            
             footer {{ position: fixed; bottom: 0; width: 100%; height: 60px; background: rgba(0,0,0,0.95); border-top: 1px solid #111; z-index: 5000; display: flex; align-items: center; justify-content: center; gap: 60px; }}
         </style>
     </head>
@@ -76,34 +83,40 @@ def generate_html():
 
     for m_cat in main_cats:
         all_m_photos = []
-        has_submenu = bool(gallery_data[m_cat])
-        has_any_photos = any(any(ps) for s in gallery_data[m_cat].values() for ps in s.values())
-        nav_action = f"showSection('{m_cat}')" if has_any_photos else "goHome()"
+        nav_html += f'<div class="nav-item" id="nav-{m_cat}"><a href="#" class="nav-link" onclick="showSection(\'{m_cat}\')">{m_cat}</a>'
         
-        nav_html += f'<div class="nav-item" id="nav-{m_cat}"><a href="#{m_cat}" class="nav-link" onclick="{nav_action}">{m_cat}</a>'
-        
-        if has_submenu:
+        # Build Submenus
+        if gallery_data[m_cat]:
             nav_html += '<div class="submenu">'
             for s_cat, p_dict in gallery_data[m_cat].items():
                 s_photos = [img for photos in p_dict.values() for img in photos]
                 all_m_photos.extend(s_photos)
+                
                 if m_cat == "Places" and s_cat != "General":
                     nav_html += f'<div class="nested-group"><div class="nested-header">{s_cat}</div>'
                     for place in p_dict.keys():
-                        nav_html += f'<a href="#{m_cat}" class="nested-item" onclick="showSection(\'{m_cat}\')">{place}</a>'
+                        nav_html += f'<a href="#" class="nested-item" onclick="showSection(\'{m_cat}\')">{place}</a>'
                     nav_html += '</div>'
                 else:
                     if s_cat != "General":
-                        nav_html += f'<a href="#{m_cat}" onclick="showSection(\'{m_cat}\')">{s_cat}</a>'
+                        nav_html += f'<a href="#" onclick="showSection(\'{m_cat}\')">{s_cat}</a>'
                     elif m_cat != "Places":
+                        # Restore submenu links for single-level categories
                         for place in p_dict.keys():
-                            nav_html += f'<a href="#{m_cat}" onclick="showSection(\'{m_cat}\')">{place}</a>'
+                            if place != "General":
+                                nav_html += f'<a href="#" onclick="showSection(\'{m_cat}\')">{place}</a>'
             nav_html += '</div>'
         
+        # Build Content Block
+        content_html += f'<div class="section-block" id="sec-{m_cat}">'
         if all_m_photos:
-            content_html += f'<div class="section-block" id="sec-{m_cat}"><div class="grid">'
+            content_html += '<div class="grid">'
             for p in all_m_photos: content_html += f'<img src="{p}">'
-            content_html += '</div></div>'
+            content_html += '</div>'
+        else:
+            content_html += '<div class="wip-message">Currently site work is in progress.</div>'
+        content_html += '</div>'
+        
         nav_html += '</div>'
 
     html_end = """
@@ -114,19 +127,18 @@ def generate_html():
         if(slides.length) { slides[0].classList.add('active'); setInterval(() => { slides[cur].classList.remove('active'); cur=(cur+1)%slides.length; slides[cur].classList.add('active'); }, 5000); }
         
         function goHome() { 
-            history.pushState("", document.title, window.location.pathname);
             document.getElementById('gallery-container').style.display = 'none'; 
             document.getElementById('hero').style.display = 'flex'; 
             window.scrollTo(0,0); 
         }
 
         function showSection(id) { 
-            let target = document.getElementById('sec-'+id);
-            if(!target) { goHome(); return; }
             document.getElementById('hero').style.display = 'none'; 
             document.getElementById('gallery-container').style.display = 'block';
             document.querySelectorAll('.section-block').forEach(sec => sec.style.display = 'none');
-            target.style.display = 'block'; window.scrollTo(0,0);
+            let target = document.getElementById('sec-'+id);
+            if(target) target.style.display = 'block';
+            window.scrollTo(0,0);
         }
     </script>
     </body></html>
@@ -135,7 +147,7 @@ def generate_html():
         f.write(html_start + nav_html + "</nav></header>" + 
                 '<div id="hero">' + "".join([f'<img src="{p}" class="slide">' for p in slides]) + '</div>' + 
                 '<main id="gallery-container">' + content_html + html_end)
-    print("✅ Build Complete: Home screen optimized.")
+    print("✅ Build Fixed: All submenus restored. WIP message added.")
 
 if __name__ == "__main__":
     generate_html()
