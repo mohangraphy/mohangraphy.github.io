@@ -46,7 +46,12 @@ def ask_mac_input(title, prompt, default=""):
     return default
 
 def process_photo(path, filename, prev_cats, prev_place, data, is_new=True):
-    subprocess.run(["open", path])
+    # Try to open the photo for the user to see
+    if os.path.exists(path):
+        subprocess.run(["open", path])
+    else:
+        print(f"⚠️ Warning: File not found at {path}")
+
     cat_summary = ", ".join(prev_cats) if prev_cats else "None"
     place_summary = prev_place if prev_place else "None"
     
@@ -54,7 +59,7 @@ def process_photo(path, filename, prev_cats, prev_place, data, is_new=True):
         msg = f"PHOTO: {filename}\n\nRepeat: {cat_summary}\nLocation: {place_summary}?"
         action = ask_mac_question("Curator", msg, ["New Selection", "Repeat Last", "Stop"])
     else:
-        msg = f"EDITING: {filename}\nCategories: {cat_summary}\nPlace: {place_summary}\n\nIs this the one?"
+        msg = f"EDITING: {filename}\nCategories: {cat_summary}\nPlace: {place_summary}\n\nWhat would you like to do?"
         action = ask_mac_question("Verify Photo", msg, ["Edit This", "Wrong One (Next)", "Exit Search"])
 
     if action in ["Stop", "Exit Search"]: return "EXIT", prev_cats, prev_place
@@ -67,42 +72,49 @@ def process_photo(path, filename, prev_cats, prev_place, data, is_new=True):
         if not current_cats: current_cats = ["Uncategorized"]
         current_place = ask_mac_input("Location", "Enter Place Name:", prev_place)
 
+    # Save with 'filename' key to prevent future crashes
     data[get_file_hash(path)] = {
         "path": os.path.relpath(path, ROOT_DIR),
         "categories": current_cats,
         "place": current_place,
         "filename": filename
     }
-    with open(DATA_FILE, 'w') as f: json.dump(data, f, indent=4)
+    with open(DATA_FILE, 'w') as f: 
+        json.dump(data, f, indent=4)
     return "CONTINUE", current_cats, current_place
 
 def run_curator():
-    if not os.path.exists(os.path.dirname(DATA_FILE)): os.makedirs(os.path.dirname(DATA_FILE))
+    if not os.path.exists(os.path.dirname(DATA_FILE)): 
+        os.makedirs(os.path.dirname(DATA_FILE))
+    
     data = (json.load(open(DATA_FILE)) if os.path.exists(DATA_FILE) else {})
     
     mode = ask_mac_question("Mohangraphy", "Main Menu", ["Index New", "Edit Existing", "Exit"])
     if mode == "Exit": return
 
     if mode == "Edit Existing":
-        search_query = ask_mac_input("Search", "Enter keyword (e.g., Munnar):").lower()
+        search_query = ask_mac_input("Search", "Enter keyword (e.g., Megamalai):").lower()
         results = []
         for h, v in data.items():
-            if any(search_query in str(v.get(key, '')).lower() for key in ['filename', 'place', 'categories']):
+            # Create a combined search string from all available data
+            search_text = f"{v.get('filename', '')} {v.get('place', '')} {' '.join(v.get('categories', []))}".lower()
+            if search_query in search_text:
                 results.append(v)
         
         if not results:
             ask_mac_question("Search", "No results found.", ["Back"])
             return run_curator()
 
-        # FIXED LOGIC HERE:
-        # Results is a list of dictionaries, so we sort them by filename key inside the dict
-        for info in sorted(results, key=lambda x: x.get('filename', '')):
+        # Sort by filename or path basename if filename is missing
+        for info in sorted(results, key=lambda x: x.get('filename', os.path.basename(x.get('path', '')))):
             full_path = os.path.join(ROOT_DIR, info['path'])
-            status, _, _ = process_photo(full_path, info['filename'], info['categories'], info['place'], data, is_new=False)
+            fname = info.get('filename', os.path.basename(info['path']))
+            
+            status, _, _ = process_photo(full_path, fname, info.get('categories', []), info.get('place', ''), data, is_new=False)
             
             if status == "EXIT": break
             if status == "CONTINUE":
-                if ask_mac_question("Done", "Photo Updated. Continue with next search result?", ["Yes", "Exit"]) == "Exit": break
+                if ask_mac_question("Done", "Photo Updated. Continue?", ["Yes", "Exit"]) == "Exit": break
         return
 
     # Indexing Logic
