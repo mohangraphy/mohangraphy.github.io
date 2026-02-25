@@ -23,7 +23,7 @@ def get_file_hash(filepath):
     return hasher.hexdigest()
 
 def choose_from_mac_list(title, prompt, items):
-    applescript = f'choose from list {json.dumps(items)} with title "{title}" with prompt "{prompt}" with multiple selections allowed'
+    applescript = f'choose from list {json.dumps(items)} with title "{title}" with prompt "{prompt}"'
     proc = subprocess.Popen(['osascript', '-e', applescript], stdout=subprocess.PIPE)
     out, _ = proc.communicate()
     result = out.decode('utf-8').strip()
@@ -45,16 +45,22 @@ def ask_mac_input(title, prompt, default=""):
     return default
 
 def process_photo(path, filename, prev_cats, prev_place, data, is_new=True):
+    # Open the photo immediately so you can see what you are editing
     subprocess.run(["open", path])
+    
     cat_summary = ", ".join(prev_cats) if prev_cats else "None"
     place_summary = prev_place if prev_place else "None"
     
     if is_new and prev_cats:
-        action = ask_mac_question("Curator", f"PHOTO: {filename}\n\nRepeat: {cat_summary}\nLocation: {place_summary}?", ["New Selection", "Repeat Last", "Stop"])
+        msg = f"PHOTO: {filename}\n\nRepeat: {cat_summary}\nLocation: {place_summary}?"
+        action = ask_mac_question("Curator", msg, ["New Selection", "Repeat Last", "Stop"])
     else:
-        action = "New Selection"
+        # In edit mode, we confirm if this is the right photo first
+        msg = f"EDITING: {filename}\nCategories: {cat_summary}\nPlace: {place_summary}\n\nIs this the correct photo?"
+        action = ask_mac_question("Verify Photo", msg, ["Edit This", "Wrong One", "Stop"])
 
-    if action == "Stop": return "STOP", prev_cats, prev_place
+    if action == "Stop" or action == "Wrong One": 
+        return action, prev_cats, prev_place
     
     if action == "Repeat Last":
         current_cats, current_place = prev_cats, prev_place
@@ -80,22 +86,30 @@ def run_curator():
     if mode == "Cancel": return
 
     if mode == "Edit Existing":
-        search_query = ask_mac_input("Search", "Enter filename or keyword (or leave blank for all):").lower()
-        existing_files = [v['filename'] for v in data.values() if search_query in v['filename'].lower() or search_query in v['place'].lower()]
-        
-        if not existing_files:
-            ask_mac_question("Search", "No matching files found.", ["Back"])
-            return run_curator()
+        while True: # Loop to allow multiple searches/edits
+            search_query = ask_mac_input("Search", "Keyword or filename (blank for all):").lower()
+            # Search logic improved to check categories too
+            results = []
+            for h, v in data.items():
+                if any(search_query in str(v.get(key, '')).lower() for key in ['filename', 'place', 'categories']):
+                    results.append(v['filename'])
+            
+            if not results:
+                if ask_mac_question("Search", "No results.", ["Try Again", "Menu"]) == "Menu": break
+                continue
 
-        choice = choose_from_mac_list("Edit Photo", f"Found {len(existing_files)} results:", sorted(existing_files))
-        if choice:
-            for h, info in data.items():
-                if info['filename'] == choice[0]:
-                    full_path = os.path.join(ROOT_DIR, info['path'])
-                    process_photo(full_path, choice[0], info['categories'], info['place'], data, is_new=False)
-            return
+            choice = choose_from_mac_list("Edit Photo", f"Select to Preview/Edit:", sorted(results))
+            if choice:
+                for h, info in data.items():
+                    if info['filename'] == choice[0]:
+                        full_path = os.path.join(ROOT_DIR, info['path'])
+                        status, _, _ = process_photo(full_path, choice[0], info['categories'], info['place'], data, is_new=False)
+                        if status == "Edit This": print(f"✅ Updated {choice[0]}")
+            
+            if ask_mac_question("Finish?", "Do you want to edit another?", ["Yes", "No"]) == "No": break
+        return
 
-    # Index New Photos
+    # Indexing Logic
     all_files = []
     for root, _, files in os.walk(PHOTOS_DIR):
         for f in files:
@@ -103,7 +117,6 @@ def run_curator():
                 all_files.append(os.path.join(root, f))
                 
     new_files = [f for f in all_files if get_file_hash(f) not in data]
-    
     if not new_files:
         ask_mac_question("Curator", "All photos indexed!", ["OK"])
         return
