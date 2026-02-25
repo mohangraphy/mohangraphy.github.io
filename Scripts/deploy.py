@@ -7,42 +7,39 @@ USER = "mohangraphy"
 REPO = "mohangraphy.github.io"
 # ---------------------
 
-def final_push():
+def master_deploy():
     # Set the path correctly
     script_path = os.path.abspath(__file__)
     root_dir = os.path.dirname(os.path.dirname(script_path))
     os.chdir(root_dir)
     
-    print("🧹 Resetting Git configuration...")
-    subprocess.run(["git", "remote", "remove", "origin"], capture_output=True)
-
-    # Re-build the gallery
-    print("🔨 Building gallery...")
+    # 1. Run the gallery builder
+    print("🔨 Building your categorized gallery...")
     subprocess.run(["python3", "Scripts/build_mohangraphy.py"])
 
-    # THE FIX: We use 'x-access-token' as the username. 
-    # This is the official way to tell Git NOT to ask for a password.
-    remote_url = f"https://x-access-token:{TOKEN}@github.com/{USER}/{REPO}.git"
-    subprocess.run(["git", "remote", "add", "origin", remote_url])
+    # 2. Prepare the files
+    print("📦 Preparing files for upload...")
+    subprocess.run(["git", "add", "."], capture_output=True)
+    subprocess.run(["git", "commit", "-m", "Final Sync"], capture_output=True)
 
-    try:
-        subprocess.run(["git", "add", "."], check=True)
-        subprocess.run(["git", "commit", "-m", "Structure Update"], capture_output=True)
-        
-        print(f"📤 Uploading to {REPO}...")
-        # We temporarily disable the Mac Credential Manager to prevent the popup
-        result = subprocess.run([
-            "git", "-c", "credential.helper=", "push", "-u", "origin", "main", "--force"
-        ], capture_output=True, text=True)
-        
-        if result.returncode == 0:
-            print(f"\n✅ SUCCESS! Site is live: https://{REPO}")
-        else:
-            print(f"\n❌ PUSH FAILED")
-            print(f"Details: {result.stderr}")
-            
-    except Exception as e:
-        print(f"❌ Script Error: {e}")
+    # 3. THE "BRUTE FORCE" PUSH
+    # We bypass the 'origin' nickname and push directly to the URL with the token
+    print(f"📤 Uploading to {REPO}...")
+    direct_url = f"https://{TOKEN}@github.com/{USER}/{REPO}.git"
+    
+    # We use -c credential.helper= to ensure Mac doesn't try to use an old password
+    result = subprocess.run([
+        "git", "-c", "credential.helper=", "push", direct_url, "main", "--force"
+    ], capture_output=True, text=True)
+
+    if result.returncode == 0:
+        print(f"\n✅ SUCCESS! Your portfolio is live.")
+        print(f"🌍 View it here: https://{REPO}")
+    else:
+        print(f"\n❌ STILL BLOCKED")
+        print(f"Details: {result.stderr}")
+        print("\n💡 PEER TIP: If it still fails, your token might have expired.")
+        print("Please check GitHub Settings -> Developer Settings -> Personal Access Tokens.")
 
 if __name__ == "__main__":
-    final_push()
+    master_deploy()
