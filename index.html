@@ -3,32 +3,66 @@
     <html lang="en">
     <head>
         <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>Mohangraphy | Portfolio</title>
         <style>
-    :root { --bg: #050505; --text: #ffffff; --accent: #a0a0a0; --dim: #444; }
-    body { margin: 0; background: var(--bg); color: var(--text); font-family: 'Inter', sans-serif; line-height: 1.6; }
-    header { padding: 120px 20px; text-align: center; }
-    h1 { font-size: 3rem; letter-spacing: 12px; text-transform: uppercase; font-weight: 200; margin: 0; }
-    .container { max-width: 1200px; margin: 0 auto; padding: 0 30px; }
-    h2 { font-size: 1.1rem; letter-spacing: 5px; text-transform: uppercase; margin: 80px 0 30px; border-bottom: 1px solid #222; padding-bottom: 10px; color: var(--accent); }
-    .gallery { display: grid; grid-template-columns: repeat(auto-fill, minmax(350px, 1fr)); gap: 25px; }
-    .photo-card img { width: 100%; height: 450px; object-fit: cover; transition: 0.6s ease; filter: grayscale(80%) brightness(0.7); }
-    .photo-card:hover img { transform: scale(1.02); filter: grayscale(0%) brightness(1); }
-    .profile-section { margin-top: 100px; padding: 80px 0; border-top: 1px solid #222; display: grid; grid-template-columns: 1fr 1fr; gap: 50px; }
-    footer { padding: 50px; text-align: center; font-size: 0.7rem; color: var(--dim); letter-spacing: 2px; }
-    </style>
+            body { font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; background: #050505; color: #fff; margin: 0; }
+            
+            /* Horizontal Top Nav */
+            nav { 
+                background: #000; 
+                display: flex; 
+                justify-content: center; 
+                position: sticky; 
+                top: 0; 
+                z-index: 999; 
+                border-bottom: 1px solid #222; 
+            }
+            .nav-menu { display: flex; list-style: none; margin: 0; padding: 0; }
+            .nav-item { position: relative; padding: 25px 20px; }
+            .nav-item a { color: #888; text-decoration: none; font-weight: bold; text-transform: uppercase; letter-spacing: 2px; font-size: 13px; }
+            .nav-item:hover > a { color: #fff; }
+
+            /* Pull-down Dropdowns */
+            .dropdown { 
+                display: none; 
+                position: absolute; 
+                top: 100%; 
+                left: 0; 
+                background: #111; 
+                min-width: 200px; 
+                border: 1px solid #222; 
+                box-shadow: 0 10px 20px rgba(0,0,0,0.5);
+            }
+            .nav-item:hover .dropdown { display: block; }
+            .dropdown a { 
+                padding: 15px 20px; 
+                display: block; 
+                font-size: 12px; 
+                border-bottom: 1px solid #1a1a1a; 
+                text-transform: capitalize; 
+            }
+            .dropdown a:hover { background: #222; color: #fff; }
+
+            /* Gallery Layout */
+            .container { padding: 50px 5%; max-width: 1400px; margin: auto; }
+            .grid { 
+                display: grid; 
+                grid-template-columns: repeat(auto-fill, minmax(400px, 1fr)); 
+                gap: 25px; 
+                margin-bottom: 70px; 
+            }
+            .grid img { 
+                width: 100%; 
+                height: 450px; 
+                object-fit: cover; 
+                border-radius: 3px; 
+                transition: 0.4s; 
+                filter: grayscale(30%); 
+            }
+            .grid img:hover { filter: grayscale(0%); transform: scale(1.01); }
+            
+            h1 { font-weight: 200; font-size: 35px; letter-spacing: 5px; text-transform: uppercase; margin-bottom: 30px; border-left: 5px solid #fff; padding-left: 20px; }
+            h3 { color: #555; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 20px; }
+        </style>
     </head>
-    <body>
-        <header><h1>Mohangraphy</h1></header>
-        <div class="container">
-            <h2>Landscape</h2><div class='gallery'><div class="photo-card"><img src="Landscape/Megamalai/2026-0127-Megamalai-NCM-4712-14.jpg" loading="lazy"></div><div class="photo-card"><img src="Landscape/Megamalai/2026-0127-Megamalai-NCM-4715-17.jpg" loading="lazy"></div><div class="photo-card"><img src="Landscape/Megamalai/2026-0127-Megamalai-NCM-4724-26.jpg" loading="lazy"></div><div class="photo-card"><img src="Landscape/Megamalai/2026-0127-Megamalai-NCM-4727-29.jpg" loading="lazy"></div><div class="photo-card"><img src="Landscape/Megamalai/2026-0127-Megamalai-NCM-4730-32.jpg" loading="lazy"></div><div class="photo-card"><img src="Landscape/Megamalai/2026-0127-Megamalai-NCM-4733-35.jpg" loading="lazy"></div><div class="photo-card"><img src="Landscape/Megamalai/2026-0127-Megamalai-NCM-4736-38.jpg" loading="lazy"></div><div class="photo-card"><img src="Landscape/Megamalai/2026-0127-Megamalai-NCM-4739-41.jpg" loading="lazy"></div><div class="photo-card"><img src="Landscape/Megamalai/2026-0127-Megamalai-NCM-4742-44.jpg" loading="lazy"></div><div class="photo-card"><img src="Landscape/Megamalai/2026-0127-Megamalai-NCM-4745-47.jpg" loading="lazy"></div><div class="photo-card"><img src="Landscape/Megamalai/2026-0127-Megamalai-NCM-4751-53.jpg" loading="lazy"></div><div class="photo-card"><img src="Landscape/Megamalai/2026-0127-Megamalai-NCM-4756-58.jpg" loading="lazy"></div><div class="photo-card"><img src="Landscape/Megamalai/2026-0127-Megamalai-NCM-4759.jpg" loading="lazy"></div><div class="photo-card"><img src="Landscape/Megamalai/2026-0127-Megamalai-NCM-4760-64.jpg" loading="lazy"></div><div class="photo-card"><img src="Landscape/Megamalai/2026-0127-Megamalai-NCM-4855.jpg" loading="lazy"></div><div class="photo-card"><img src="Landscape/Megamalai/2026-0127-Megamalai-NCM-4865-69.jpg" loading="lazy"></div><div class="photo-card"><img src="Landscape/Megamalai/2026-0127-Megamalai-NCM-4897.jpg" loading="lazy"></div><div class="photo-card"><img src="Landscape/Megamalai/2026-0127-Megamalai-NCM-4907.jpg" loading="lazy"></div><div class="photo-card"><img src="Landscape/Megamalai/2026-0127-Megamalai-NCM-4909-11.jpg" loading="lazy"></div><div class="photo-card"><img src="Landscape/Megamalai/2026-0127-Megamalai-NCM-4912-14.jpg" loading="lazy"></div><div class="photo-card"><img src="Landscape/Megamalai/2026-0127-Megamalai-NCM-4915-17.jpg" loading="lazy"></div><div class="photo-card"><img src="Landscape/Megamalai/2026-0127-Megamalai-NCM-4921-23.jpg" loading="lazy"></div><div class="photo-card"><img src="Landscape/Megamalai/2026-0127-Megamalai-NCM-4950.jpg" loading="lazy"></div><div class="photo-card"><img src="Landscape/Megamalai/2026-0127-Megamalai-NCM-4955.jpg" loading="lazy"></div><div class="photo-card"><img src="Landscape/Megamalai/2026-0127-Megamalai-NCM-4984-86.jpg" loading="lazy"></div><div class="photo-card"><img src="Landscape/Megamalai/2026-0127-Megamalai-NCM-4987-89.jpg" loading="lazy"></div><div class="photo-card"><img src="Landscape/Megamalai/2026-0127-Megamalai-NCM-4987-89a.jpg" loading="lazy"></div><div class="photo-card"><img src="Landscape/Megamalai/2026-0127-Megamalai-NCM-4990-92.jpg" loading="lazy"></div><div class="photo-card"><img src="Landscape/Megamalai/2026-0127-Megamalai-NCM-4997.jpg" loading="lazy"></div><div class="photo-card"><img src="Landscape/Megamalai/2026-0127-Megamalai-NCM-4998.jpg" loading="lazy"></div><div class="photo-card"><img src="Landscape/Megamalai/2026-0127-Megamalai-NCM-5004-06.jpg" loading="lazy"></div><div class="photo-card"><img src="Landscape/Megamalai/2026-0127-Megamalai-NCM-5010-12.jpg" loading="lazy"></div><div class="photo-card"><img src="Landscape/Megamalai/2026-0127-Megamalai-NCM-5022-23.jpg" loading="lazy"></div></div><h2>Scripts</h2><div class='gallery'></div>
-            <section class="profile-section">
-                <div><h4>About</h4><p>Nature & Wildlife Photographer based in Bangalore.</p></div>
-                <div><h4>Contact</h4><p>Email: hello@mohangraphy.com<br>Instagram: @mohangraphy</p></div>
-            </section>
-        </div>
-        <footer>&copy; 2026 MOHANGRAPHY</footer>
-    </body>
-    </html>
-    
+    <body><nav><ul class="nav-menu"><li class="nav-item"><a href="#Architecture">Architecture</a></li><li class="nav-item"><a href="#Birds">Birds</a></li><li class="nav-item"><a href="#Flowers">Flowers</a></li><li class="nav-item"><a href="#Nature">Nature</a><div class="dropdown"><a href="#Nature-Landscape">Landscape</a><a href="#Nature-SunsetsSunrises">Sunsets & Sunrises</a><a href="#Nature-Wildlife">Wildlife</a></div></li><li class="nav-item"><a href="#People">People</a><div class="dropdown"><a href="#People-Portraits">Portraits</a></div></li><li class="nav-item"><a href="#Places">Places</a><div class="dropdown"><a href="#Places-International">International</a><a href="#Places-National">National</a></div></li></ul></nav><div class='container'><h1 id="Architecture">Architecture</h1><div class="grid"></div><h1 id="Birds">Birds</h1><div class="grid"></div><h1 id="Flowers">Flowers</h1><div class="grid"></div><h1 id="Nature">Nature</h1><div id="Nature-Landscape"><h3>Landscape</h3><div class="grid"><img src="Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4712-14.jpg" loading="lazy"><img src="Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4715-17.jpg" loading="lazy"><img src="Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4724-26.jpg" loading="lazy"><img src="Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4727-29.jpg" loading="lazy"><img src="Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4730-32.jpg" loading="lazy"><img src="Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4733-35.jpg" loading="lazy"><img src="Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4736-38.jpg" loading="lazy"><img src="Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4739-41.jpg" loading="lazy"><img src="Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4742-44.jpg" loading="lazy"><img src="Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4745-47.jpg" loading="lazy"><img src="Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4751-53.jpg" loading="lazy"><img src="Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4756-58.jpg" loading="lazy"><img src="Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4759.jpg" loading="lazy"><img src="Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4760-64.jpg" loading="lazy"><img src="Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4855.jpg" loading="lazy"><img src="Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4865-69.jpg" loading="lazy"><img src="Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4897.jpg" loading="lazy"><img src="Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4907.jpg" loading="lazy"><img src="Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4909-11.jpg" loading="lazy"><img src="Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4912-14.jpg" loading="lazy"><img src="Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4915-17.jpg" loading="lazy"><img src="Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4921-23.jpg" loading="lazy"><img src="Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4950.jpg" loading="lazy"><img src="Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4955.jpg" loading="lazy"><img src="Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4984-86.jpg" loading="lazy"><img src="Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4987-89.jpg" loading="lazy"><img src="Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4987-89a.jpg" loading="lazy"><img src="Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4990-92.jpg" loading="lazy"><img src="Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4997.jpg" loading="lazy"><img src="Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4998.jpg" loading="lazy"><img src="Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-5004-06.jpg" loading="lazy"><img src="Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-5010-12.jpg" loading="lazy"><img src="Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-5022-23.jpg" loading="lazy"></div></div><div id="Nature-SunsetsSunrises"><h3>Sunsets & Sunrises</h3><div class="grid"></div></div><div id="Nature-Wildlife"><h3>Wildlife</h3><div class="grid"></div></div><h1 id="People">People</h1><div id="People-Portraits"><h3>Portraits</h3><div class="grid"></div></div><h1 id="Places">Places</h1><div id="Places-International"><h3>International</h3><div class="grid"></div></div><div id="Places-National"><h3>National</h3><div class="grid"><img src="Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4712-14.jpg" loading="lazy"><img src="Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4715-17.jpg" loading="lazy"><img src="Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4724-26.jpg" loading="lazy"><img src="Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4727-29.jpg" loading="lazy"><img src="Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4730-32.jpg" loading="lazy"><img src="Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4733-35.jpg" loading="lazy"><img src="Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4736-38.jpg" loading="lazy"><img src="Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4739-41.jpg" loading="lazy"><img src="Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4742-44.jpg" loading="lazy"><img src="Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4745-47.jpg" loading="lazy"><img src="Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4751-53.jpg" loading="lazy"><img src="Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4756-58.jpg" loading="lazy"><img src="Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4759.jpg" loading="lazy"><img src="Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4760-64.jpg" loading="lazy"><img src="Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4855.jpg" loading="lazy"><img src="Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4865-69.jpg" loading="lazy"><img src="Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4897.jpg" loading="lazy"><img src="Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4907.jpg" loading="lazy"><img src="Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4909-11.jpg" loading="lazy"><img src="Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4912-14.jpg" loading="lazy"><img src="Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4915-17.jpg" loading="lazy"><img src="Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4921-23.jpg" loading="lazy"><img src="Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4950.jpg" loading="lazy"><img src="Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4955.jpg" loading="lazy"><img src="Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4984-86.jpg" loading="lazy"><img src="Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4987-89.jpg" loading="lazy"><img src="Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4987-89a.jpg" loading="lazy"><img src="Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4990-92.jpg" loading="lazy"><img src="Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4997.jpg" loading="lazy"><img src="Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4998.jpg" loading="lazy"><img src="Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-5004-06.jpg" loading="lazy"><img src="Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-5010-12.jpg" loading="lazy"><img src="Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-5022-23.jpg" loading="lazy"></div></div></div></body></html>

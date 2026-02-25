@@ -1,74 +1,139 @@
 import os
 
-# Configuration
-# This points to the main 'Mohangraphy' folder
-BASE_PATH = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-OUTPUT_FILE = os.path.join(BASE_PATH, "index.html")
+# --- MAPPING THE NEW STRUCTURE ---
+# This matches your image_329b9c.png exactly
+STRUCTURE = {
+    "Architecture": ["Photos/Architecture"],
+    "Birds": ["Photos/Birds"],
+    "Flowers": ["Photos/Flowers"],
+    "Nature": {
+        "Landscape": ["Photos/Nature/Landscape", "Photos/Nature/Landscape/Megamalai"],
+        "Sunsets & Sunrises": ["Photos/Nature/Sunsets and Sunrises"],
+        "Wildlife": ["Photos/Nature/Wildlife"]
+    },
+    "People": {
+        "Portraits": ["Photos/People/Portraits"]
+    },
+    "Places": {
+        "International": ["Photos/Places/International"],
+        "National": ["Photos/Places/National", "Photos/Nature/Landscape/Megamalai"] # Cross-links Megamalai here
+    }
+}
 
-def generate_mohangraphy():
-    # --- Professional Minimalist CSS ---
-    css = """
-    :root { --bg: #050505; --text: #ffffff; --accent: #a0a0a0; --dim: #444; }
-    body { margin: 0; background: var(--bg); color: var(--text); font-family: 'Inter', sans-serif; line-height: 1.6; }
-    header { padding: 120px 20px; text-align: center; }
-    h1 { font-size: 3rem; letter-spacing: 12px; text-transform: uppercase; font-weight: 200; margin: 0; }
-    .container { max-width: 1200px; margin: 0 auto; padding: 0 30px; }
-    h2 { font-size: 1.1rem; letter-spacing: 5px; text-transform: uppercase; margin: 80px 0 30px; border-bottom: 1px solid #222; padding-bottom: 10px; color: var(--accent); }
-    .gallery { display: grid; grid-template-columns: repeat(auto-fill, minmax(350px, 1fr)); gap: 25px; }
-    .photo-card img { width: 100%; height: 450px; object-fit: cover; transition: 0.6s ease; filter: grayscale(80%) brightness(0.7); }
-    .photo-card:hover img { transform: scale(1.02); filter: grayscale(0%) brightness(1); }
-    .profile-section { margin-top: 100px; padding: 80px 0; border-top: 1px solid #222; display: grid; grid-template-columns: 1fr 1fr; gap: 50px; }
-    footer { padding: 50px; text-align: center; font-size: 0.7rem; color: var(--dim); letter-spacing: 2px; }
-    """
+OUTPUT_FILE = "index.html"
 
-    content_html = ""
-    valid_exts = ('.jpg', '.jpeg', '.png', '.webp')
-    
-    # SAFETY UPDATE: Filter out 'scripts', '.git', and any file/folder containing 'Token'
-    categories = sorted([d for d in os.listdir(BASE_PATH) 
-                        if os.path.isdir(os.path.join(BASE_PATH, d)) 
-                        and d not in ["scripts", ".git", "CNAME"] 
-                        and "Token" not in d
-                        and not d.startswith('.')])
-    
-    for cat in categories:
-        cat_path = os.path.join(BASE_PATH, cat)
-        content_html += f"<h2>{cat}</h2><div class='gallery'>"
-        
-        # Get all images in this category (including subfolders)
-        for root, dirs, files in os.walk(cat_path):
-            for img in sorted(files):
-                if img.lower().endswith(valid_exts):
-                    rel_path = os.path.relpath(os.path.join(root, img), BASE_PATH)
-                    content_html += f'<div class="photo-card"><img src="{rel_path}" loading="lazy"></div>'
-        content_html += '</div>'
-
-    full_html = f"""
+def generate_html():
+    html_start = """
     <!DOCTYPE html>
     <html lang="en">
     <head>
         <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>Mohangraphy | Portfolio</title>
-        <style>{css}</style>
+        <style>
+            body { font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; background: #050505; color: #fff; margin: 0; }
+            
+            /* Horizontal Top Nav */
+            nav { 
+                background: #000; 
+                display: flex; 
+                justify-content: center; 
+                position: sticky; 
+                top: 0; 
+                z-index: 999; 
+                border-bottom: 1px solid #222; 
+            }
+            .nav-menu { display: flex; list-style: none; margin: 0; padding: 0; }
+            .nav-item { position: relative; padding: 25px 20px; }
+            .nav-item a { color: #888; text-decoration: none; font-weight: bold; text-transform: uppercase; letter-spacing: 2px; font-size: 13px; }
+            .nav-item:hover > a { color: #fff; }
+
+            /* Pull-down Dropdowns */
+            .dropdown { 
+                display: none; 
+                position: absolute; 
+                top: 100%; 
+                left: 0; 
+                background: #111; 
+                min-width: 200px; 
+                border: 1px solid #222; 
+                box-shadow: 0 10px 20px rgba(0,0,0,0.5);
+            }
+            .nav-item:hover .dropdown { display: block; }
+            .dropdown a { 
+                padding: 15px 20px; 
+                display: block; 
+                font-size: 12px; 
+                border-bottom: 1px solid #1a1a1a; 
+                text-transform: capitalize; 
+            }
+            .dropdown a:hover { background: #222; color: #fff; }
+
+            /* Gallery Layout */
+            .container { padding: 50px 5%; max-width: 1400px; margin: auto; }
+            .grid { 
+                display: grid; 
+                grid-template-columns: repeat(auto-fill, minmax(400px, 1fr)); 
+                gap: 25px; 
+                margin-bottom: 70px; 
+            }
+            .grid img { 
+                width: 100%; 
+                height: 450px; 
+                object-fit: cover; 
+                border-radius: 3px; 
+                transition: 0.4s; 
+                filter: grayscale(30%); 
+            }
+            .grid img:hover { filter: grayscale(0%); transform: scale(1.01); }
+            
+            h1 { font-weight: 200; font-size: 35px; letter-spacing: 5px; text-transform: uppercase; margin-bottom: 30px; border-left: 5px solid #fff; padding-left: 20px; }
+            h3 { color: #555; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 20px; }
+        </style>
     </head>
-    <body>
-        <header><h1>Mohangraphy</h1></header>
-        <div class="container">
-            {content_html}
-            <section class="profile-section">
-                <div><h4>About</h4><p>Nature & Wildlife Photographer based in Bangalore.</p></div>
-                <div><h4>Contact</h4><p>Email: hello@mohangraphy.com<br>Instagram: @mohangraphy</p></div>
-            </section>
-        </div>
-        <footer>&copy; 2026 MOHANGRAPHY</footer>
-    </body>
-    </html>
-    """
+    <body><nav><ul class="nav-menu">"""
+
+    # 1. Navigation Builder
+    for main, content in STRUCTURE.items():
+        m_id = main.replace(" ", "").replace("&", "")
+        html_start += f'<li class="nav-item"><a href="#{m_id}">{main}</a>'
+        if isinstance(content, dict):
+            html_start += '<div class="dropdown">'
+            for sub in content.keys():
+                s_id = sub.replace(" ", "").replace("&", "")
+                html_start += f'<a href="#{m_id}-{s_id}">{sub}</a>'
+            html_start += '</div>'
+        html_start += '</li>'
+    
+    html_start += "</ul></nav><div class='container'>"
+
+    # 2. Section Content Builder
+    content_html = ""
+    for main, content in STRUCTURE.items():
+        m_id = main.replace(" ", "").replace("&", "")
+        content_html += f'<h1 id="{m_id}">{main}</h1>'
+        
+        if isinstance(content, dict):
+            for sub, paths in content.items():
+                s_id = sub.replace(" ", "").replace("&", "")
+                content_html += f'<div id="{m_id}-{s_id}"><h3>{sub}</h3><div class="grid">'
+                for path in paths:
+                    if os.path.exists(path):
+                        for img in sorted(os.listdir(path)):
+                            if img.lower().endswith(('.jpg', '.jpeg', '.png')):
+                                content_html += f'<img src="{os.path.join(path, img)}" loading="lazy">'
+                content_html += "</div></div>"
+        else:
+            content_html += '<div class="grid">'
+            for path in content:
+                if os.path.exists(path):
+                    for img in sorted(os.listdir(path)):
+                        if img.lower().endswith(('.jpg', '.jpeg', '.png')):
+                            content_html += f'<img src="{os.path.join(path, img)}" loading="lazy">'
+            content_html += "</div>"
 
     with open(OUTPUT_FILE, "w") as f:
-        f.write(full_html)
-    print(f"✨ Website updated successfully at {OUTPUT_FILE}")
+        f.write(html_start + content_html + "</div></body></html>")
+    print("✅ Build Complete: Categories and 'Megamalai' cross-linking are ready.")
 
 if __name__ == "__main__":
-    generate_mohangraphy()
+    generate_html()
