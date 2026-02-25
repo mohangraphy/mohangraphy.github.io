@@ -24,11 +24,30 @@ def get_file_hash(filepath):
     return hasher.hexdigest()
 
 def choose_from_mac_list(title, prompt, items):
-    applescript = f'choose from list {json.dumps(items)} with title "{title}" with prompt "{prompt}"'
+    """
+    Opens a Mac dialog. 
+    - Click to select one.
+    - Command (⌘) + Click to toggle multiple.
+    - Click any single item without ⌘ to reset to just that one.
+    """
+    applescript = (
+        f'choose from list {json.dumps(items)} '
+        f'with title "{title}" '
+        f'with prompt "{prompt}" '
+        f'with multiple selections allowed '
+        f'and empty selection allowed'
+    )
     proc = subprocess.Popen(['osascript', '-e', applescript], stdout=subprocess.PIPE)
     out, _ = proc.communicate()
     result = out.decode('utf-8').strip()
-    return [x.strip() for x in result.split(',')] if result != "false" else None
+    
+    if result == "false": # User clicked Cancel
+        return None
+    if result == "": # User clicked OK with nothing selected
+        return ["Uncategorized"]
+        
+    # AppleScript returns items separated by commas
+    return [x.strip() for x in result.split(',')]
 
 def ask_mac_question(title, prompt, buttons=["Next", "Repeat Last", "Stop"]):
     btn_str = '", "'.join(buttons)
@@ -46,7 +65,6 @@ def ask_mac_input(title, prompt, default=""):
     return default
 
 def process_photo(path, filename, prev_cats, prev_place, data, is_new=True):
-    # Try to open the photo for the user to see
     if os.path.exists(path):
         subprocess.run(["open", path])
     else:
@@ -68,11 +86,12 @@ def process_photo(path, filename, prev_cats, prev_place, data, is_new=True):
     if action == "Repeat Last":
         current_cats, current_place = prev_cats, prev_place
     else:
+        # Selection window: Command+Click to multi-select or deselect
         current_cats = choose_from_mac_list("Select Categories", f"Categorizing: {filename}", FLAT_CATEGORIES)
-        if not current_cats: current_cats = ["Uncategorized"]
+        if current_cats is None: return "NEXT", prev_cats, prev_place # Handle Cancel
+        
         current_place = ask_mac_input("Location", "Enter Place Name:", prev_place)
 
-    # Save with 'filename' key to prevent future crashes
     data[get_file_hash(path)] = {
         "path": os.path.relpath(path, ROOT_DIR),
         "categories": current_cats,
@@ -96,7 +115,6 @@ def run_curator():
         search_query = ask_mac_input("Search", "Enter keyword (e.g., Megamalai):").lower()
         results = []
         for h, v in data.items():
-            # Create a combined search string from all available data
             search_text = f"{v.get('filename', '')} {v.get('place', '')} {' '.join(v.get('categories', []))}".lower()
             if search_query in search_text:
                 results.append(v)
@@ -105,7 +123,6 @@ def run_curator():
             ask_mac_question("Search", "No results found.", ["Back"])
             return run_curator()
 
-        # Sort by filename or path basename if filename is missing
         for info in sorted(results, key=lambda x: x.get('filename', os.path.basename(x.get('path', '')))):
             full_path = os.path.join(ROOT_DIR, info['path'])
             fname = info.get('filename', os.path.basename(info['path']))
