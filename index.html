@@ -3,66 +3,378 @@
     <html lang="en">
     <head>
         <meta charset="UTF-8">
-        <title>Mohangraphy | Portfolio</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Mohangraphy</title>
         <style>
-            body { font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; background: #050505; color: #fff; margin: 0; }
+            :root { --accent: #fff; --bg: #000; --text-dim: #555; }
+            body, html { height: 100%; margin: 0; background: var(--bg); color: #fff; font-family: 'Inter', -apple-system, sans-serif; overflow: hidden; }
             
-            /* Horizontal Top Nav */
-            nav { 
-                background: #000; 
-                display: flex; 
-                justify-content: center; 
-                position: sticky; 
-                top: 0; 
-                z-index: 999; 
-                border-bottom: 1px solid #222; 
+            /* STATIC TOP SECTION */
+            header {
+                position: fixed; top: 0; width: 100%; height: 150px;
+                background: var(--bg); border-bottom: 1px solid #111;
+                display: flex; flex-direction: column; align-items: center; justify-content: center;
+                z-index: 1000;
             }
-            .nav-menu { display: flex; list-style: none; margin: 0; padding: 0; }
-            .nav-item { position: relative; padding: 25px 20px; }
-            .nav-item a { color: #888; text-decoration: none; font-weight: bold; text-transform: uppercase; letter-spacing: 2px; font-size: 13px; }
-            .nav-item:hover > a { color: #fff; }
-
-            /* Pull-down Dropdowns */
-            .dropdown { 
-                display: none; 
-                position: absolute; 
-                top: 100%; 
-                left: 0; 
-                background: #111; 
-                min-width: 200px; 
-                border: 1px solid #222; 
-                box-shadow: 0 10px 20px rgba(0,0,0,0.5);
-            }
+            .logo { font-size: 30px; font-weight: 200; letter-spacing: 12px; text-transform: uppercase; margin-bottom: 20px; color: var(--accent); }
+            
+            nav { display: flex; list-style: none; padding: 0; margin: 0; gap: 20px; }
+            .nav-item { position: relative; }
+            .nav-item a { color: var(--text-dim); text-decoration: none; font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 2px; transition: 0.3s; }
+            .nav-item:hover > a { color: var(--accent); }
+            
+            .dropdown { display: none; position: absolute; top: 100%; left: 0; background: #080808; border: 1px solid #111; min-width: 160px; padding: 10px 0; box-shadow: 0 10px 20px rgba(0,0,0,0.5); }
             .nav-item:hover .dropdown { display: block; }
-            .dropdown a { 
-                padding: 15px 20px; 
-                display: block; 
-                font-size: 12px; 
-                border-bottom: 1px solid #1a1a1a; 
-                text-transform: capitalize; 
-            }
-            .dropdown a:hover { background: #222; color: #fff; }
+            .dropdown a { padding: 8px 20px; display: block; text-transform: capitalize; color: #777; letter-spacing: 1px; }
+            .dropdown a:hover { color: var(--accent); background: #111; }
 
-            /* Gallery Layout */
-            .container { padding: 50px 5%; max-width: 1400px; margin: auto; }
-            .grid { 
-                display: grid; 
-                grid-template-columns: repeat(auto-fill, minmax(400px, 1fr)); 
-                gap: 25px; 
-                margin-bottom: 70px; 
-            }
-            .grid img { 
-                width: 100%; 
-                height: 450px; 
-                object-fit: cover; 
-                border-radius: 3px; 
-                transition: 0.4s; 
-                filter: grayscale(30%); 
-            }
-            .grid img:hover { filter: grayscale(0%); transform: scale(1.01); }
+            /* SCROLLABLE MIDDLE GALLERY */
+            main { position: absolute; top: 150px; bottom: 60px; width: 100%; overflow-y: auto; scroll-behavior: smooth; }
+            .container { max-width: 1600px; margin: 0 auto; padding: 40px 20px; }
             
-            h1 { font-weight: 200; font-size: 35px; letter-spacing: 5px; text-transform: uppercase; margin-bottom: 30px; border-left: 5px solid #fff; padding-left: 20px; }
-            h3 { color: #555; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 20px; }
+            .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(400px, 1fr)); gap: 15px; margin-bottom: 100px; }
+            
+            /* IMAGE STYLING & HOVER */
+            .img-wrapper { position: relative; overflow: hidden; background: #050505; height: 500px; cursor: zoom-in; }
+            .grid img { width: 100%; height: 100%; object-fit: cover; opacity: 0; transition: opacity 0.8s, transform 0.8s ease; filter: brightness(0.8); }
+            .grid img.loaded { opacity: 1; }
+            .img-wrapper:hover img { transform: scale(1.03); filter: brightness(1); }
+            
+            /* HOVER CAPTION */
+            .caption { position: absolute; bottom: 0; left: 0; width: 100%; padding: 20px; background: linear-gradient(transparent, rgba(0,0,0,0.8)); font-size: 10px; letter-spacing: 1px; color: #fff; opacity: 0; transition: 0.3s; pointer-events: none; }
+            .img-wrapper:hover .caption { opacity: 1; }
+
+            h1 { font-size: 22px; font-weight: 300; letter-spacing: 5px; border-left: 3px solid var(--accent); padding-left: 15px; margin-top: 60px; text-transform: uppercase; display: flex; align-items: baseline; }
+            .count { font-size: 10px; color: #333; margin-left: 15px; font-weight: 700; }
+
+            /* STATIC BOTTOM SECTION */
+            footer {
+                position: fixed; bottom: 0; width: 100%; height: 60px;
+                background: var(--bg); border-top: 1px solid #111;
+                display: flex; align-items: center; justify-content: center; gap: 40px;
+                z-index: 1000;
+            }
+            footer a { color: var(--text-dim); text-decoration: none; font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 2px; transition: 0.3s; }
+            footer a:hover { color: var(--accent); }
+
+            /* LIGHTBOX (MODAL) */
+            #lightbox { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); display: none; align-items: center; justify-content: center; z-index: 2000; }
+            #lightbox img { max-width: 90%; max-height: 90%; object-fit: contain; box-shadow: 0 0 50px rgba(0,0,0,1); }
+            #lightbox:target { display: flex; }
+
+            /* MOBILE FIXES */
+            @media (max-width: 768px) {
+                header { height: 120px; }
+                main { top: 120px; }
+                .grid { grid-template-columns: 1fr; }
+                .logo { font-size: 22px; letter-spacing: 6px; }
+                nav { gap: 10px; }
+                .nav-item a { font-size: 8px; }
+            }
         </style>
     </head>
-    <body><nav><ul class="nav-menu"><li class="nav-item"><a href="#Architecture">Architecture</a></li><li class="nav-item"><a href="#Birds">Birds</a></li><li class="nav-item"><a href="#Flowers">Flowers</a></li><li class="nav-item"><a href="#Nature">Nature</a><div class="dropdown"><a href="#Nature-Landscape">Landscape</a><a href="#Nature-SunsetsSunrises">Sunsets & Sunrises</a><a href="#Nature-Wildlife">Wildlife</a></div></li><li class="nav-item"><a href="#People">People</a><div class="dropdown"><a href="#People-Portraits">Portraits</a></div></li><li class="nav-item"><a href="#Places">Places</a><div class="dropdown"><a href="#Places-International">International</a><a href="#Places-National">National</a></div></li></ul></nav><div class='container'><h1 id="Architecture">Architecture</h1><div class="grid"></div><h1 id="Birds">Birds</h1><div class="grid"></div><h1 id="Flowers">Flowers</h1><div class="grid"></div><h1 id="Nature">Nature</h1><div id="Nature-Landscape"><h3>Landscape</h3><div class="grid"><img src="Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4712-14.jpg" loading="lazy"><img src="Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4715-17.jpg" loading="lazy"><img src="Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4724-26.jpg" loading="lazy"><img src="Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4727-29.jpg" loading="lazy"><img src="Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4730-32.jpg" loading="lazy"><img src="Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4733-35.jpg" loading="lazy"><img src="Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4736-38.jpg" loading="lazy"><img src="Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4739-41.jpg" loading="lazy"><img src="Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4742-44.jpg" loading="lazy"><img src="Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4745-47.jpg" loading="lazy"><img src="Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4751-53.jpg" loading="lazy"><img src="Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4756-58.jpg" loading="lazy"><img src="Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4759.jpg" loading="lazy"><img src="Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4760-64.jpg" loading="lazy"><img src="Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4855.jpg" loading="lazy"><img src="Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4865-69.jpg" loading="lazy"><img src="Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4897.jpg" loading="lazy"><img src="Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4907.jpg" loading="lazy"><img src="Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4909-11.jpg" loading="lazy"><img src="Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4912-14.jpg" loading="lazy"><img src="Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4915-17.jpg" loading="lazy"><img src="Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4921-23.jpg" loading="lazy"><img src="Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4950.jpg" loading="lazy"><img src="Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4955.jpg" loading="lazy"><img src="Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4984-86.jpg" loading="lazy"><img src="Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4987-89.jpg" loading="lazy"><img src="Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4987-89a.jpg" loading="lazy"><img src="Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4990-92.jpg" loading="lazy"><img src="Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4997.jpg" loading="lazy"><img src="Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4998.jpg" loading="lazy"><img src="Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-5004-06.jpg" loading="lazy"><img src="Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-5010-12.jpg" loading="lazy"><img src="Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-5022-23.jpg" loading="lazy"></div></div><div id="Nature-SunsetsSunrises"><h3>Sunsets & Sunrises</h3><div class="grid"></div></div><div id="Nature-Wildlife"><h3>Wildlife</h3><div class="grid"></div></div><h1 id="People">People</h1><div id="People-Portraits"><h3>Portraits</h3><div class="grid"></div></div><h1 id="Places">Places</h1><div id="Places-International"><h3>International</h3><div class="grid"></div></div><div id="Places-National"><h3>National</h3><div class="grid"><img src="Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4712-14.jpg" loading="lazy"><img src="Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4715-17.jpg" loading="lazy"><img src="Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4724-26.jpg" loading="lazy"><img src="Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4727-29.jpg" loading="lazy"><img src="Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4730-32.jpg" loading="lazy"><img src="Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4733-35.jpg" loading="lazy"><img src="Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4736-38.jpg" loading="lazy"><img src="Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4739-41.jpg" loading="lazy"><img src="Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4742-44.jpg" loading="lazy"><img src="Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4745-47.jpg" loading="lazy"><img src="Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4751-53.jpg" loading="lazy"><img src="Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4756-58.jpg" loading="lazy"><img src="Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4759.jpg" loading="lazy"><img src="Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4760-64.jpg" loading="lazy"><img src="Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4855.jpg" loading="lazy"><img src="Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4865-69.jpg" loading="lazy"><img src="Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4897.jpg" loading="lazy"><img src="Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4907.jpg" loading="lazy"><img src="Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4909-11.jpg" loading="lazy"><img src="Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4912-14.jpg" loading="lazy"><img src="Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4915-17.jpg" loading="lazy"><img src="Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4921-23.jpg" loading="lazy"><img src="Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4950.jpg" loading="lazy"><img src="Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4955.jpg" loading="lazy"><img src="Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4984-86.jpg" loading="lazy"><img src="Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4987-89.jpg" loading="lazy"><img src="Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4987-89a.jpg" loading="lazy"><img src="Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4990-92.jpg" loading="lazy"><img src="Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4997.jpg" loading="lazy"><img src="Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4998.jpg" loading="lazy"><img src="Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-5004-06.jpg" loading="lazy"><img src="Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-5010-12.jpg" loading="lazy"><img src="Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-5022-23.jpg" loading="lazy"></div></div></div></body></html>
+    <body>
+
+    <header>
+        <div class="logo">Mohangraphy</div>
+        <ul class="nav">
+    <li class="nav-item"><a href="#Architecture">Architecture</a></li><li class="nav-item"><a href="#Birds">Birds</a></li><li class="nav-item"><a href="#Flowers">Flowers</a></li><li class="nav-item"><a href="#Nature">Nature</a><div class="dropdown"><a href="#Nature-Landscape">Landscape</a><a href="#Nature-SunsetsSunrises">Sunsets & Sunrises</a><a href="#Nature-Wildlife">Wildlife</a></div></li><li class="nav-item"><a href="#People">People</a><div class="dropdown"><a href="#People-Portraits">Portraits</a></div></li><li class="nav-item"><a href="#Places">Places</a><div class="dropdown"><a href="#Places-International">International</a><a href="#Places-National">National</a></div></li></ul></header><main><div class='container' id='top'><h1 id="Architecture">Architecture <span class="count">0 WORKS</span></h1><div class="grid"></div><h1 id="Birds">Birds <span class="count">0 WORKS</span></h1><div class="grid"></div><h1 id="Flowers">Flowers <span class="count">0 WORKS</span></h1><div class="grid"></div><h1 id="Nature">Nature <span class="count">33 WORKS</span></h1><div id="Nature-Landscape"><h3>Landscape</h3><div class="grid">
+                            <div class="img-wrapper" onclick="openLightbox('Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4712-14.jpg')">
+                                <img data-src="Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4712-14.jpg" class="lazy" alt="2026-0127-Megamalai-NCM-4712-14">
+                                <div class="caption">2026-0127-Megamalai-NCM-4712-14</div>
+                            </div>
+                            <div class="img-wrapper" onclick="openLightbox('Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4715-17.jpg')">
+                                <img data-src="Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4715-17.jpg" class="lazy" alt="2026-0127-Megamalai-NCM-4715-17">
+                                <div class="caption">2026-0127-Megamalai-NCM-4715-17</div>
+                            </div>
+                            <div class="img-wrapper" onclick="openLightbox('Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4724-26.jpg')">
+                                <img data-src="Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4724-26.jpg" class="lazy" alt="2026-0127-Megamalai-NCM-4724-26">
+                                <div class="caption">2026-0127-Megamalai-NCM-4724-26</div>
+                            </div>
+                            <div class="img-wrapper" onclick="openLightbox('Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4727-29.jpg')">
+                                <img data-src="Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4727-29.jpg" class="lazy" alt="2026-0127-Megamalai-NCM-4727-29">
+                                <div class="caption">2026-0127-Megamalai-NCM-4727-29</div>
+                            </div>
+                            <div class="img-wrapper" onclick="openLightbox('Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4730-32.jpg')">
+                                <img data-src="Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4730-32.jpg" class="lazy" alt="2026-0127-Megamalai-NCM-4730-32">
+                                <div class="caption">2026-0127-Megamalai-NCM-4730-32</div>
+                            </div>
+                            <div class="img-wrapper" onclick="openLightbox('Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4733-35.jpg')">
+                                <img data-src="Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4733-35.jpg" class="lazy" alt="2026-0127-Megamalai-NCM-4733-35">
+                                <div class="caption">2026-0127-Megamalai-NCM-4733-35</div>
+                            </div>
+                            <div class="img-wrapper" onclick="openLightbox('Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4736-38.jpg')">
+                                <img data-src="Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4736-38.jpg" class="lazy" alt="2026-0127-Megamalai-NCM-4736-38">
+                                <div class="caption">2026-0127-Megamalai-NCM-4736-38</div>
+                            </div>
+                            <div class="img-wrapper" onclick="openLightbox('Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4739-41.jpg')">
+                                <img data-src="Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4739-41.jpg" class="lazy" alt="2026-0127-Megamalai-NCM-4739-41">
+                                <div class="caption">2026-0127-Megamalai-NCM-4739-41</div>
+                            </div>
+                            <div class="img-wrapper" onclick="openLightbox('Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4742-44.jpg')">
+                                <img data-src="Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4742-44.jpg" class="lazy" alt="2026-0127-Megamalai-NCM-4742-44">
+                                <div class="caption">2026-0127-Megamalai-NCM-4742-44</div>
+                            </div>
+                            <div class="img-wrapper" onclick="openLightbox('Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4745-47.jpg')">
+                                <img data-src="Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4745-47.jpg" class="lazy" alt="2026-0127-Megamalai-NCM-4745-47">
+                                <div class="caption">2026-0127-Megamalai-NCM-4745-47</div>
+                            </div>
+                            <div class="img-wrapper" onclick="openLightbox('Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4751-53.jpg')">
+                                <img data-src="Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4751-53.jpg" class="lazy" alt="2026-0127-Megamalai-NCM-4751-53">
+                                <div class="caption">2026-0127-Megamalai-NCM-4751-53</div>
+                            </div>
+                            <div class="img-wrapper" onclick="openLightbox('Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4756-58.jpg')">
+                                <img data-src="Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4756-58.jpg" class="lazy" alt="2026-0127-Megamalai-NCM-4756-58">
+                                <div class="caption">2026-0127-Megamalai-NCM-4756-58</div>
+                            </div>
+                            <div class="img-wrapper" onclick="openLightbox('Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4759.jpg')">
+                                <img data-src="Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4759.jpg" class="lazy" alt="2026-0127-Megamalai-NCM-4759">
+                                <div class="caption">2026-0127-Megamalai-NCM-4759</div>
+                            </div>
+                            <div class="img-wrapper" onclick="openLightbox('Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4760-64.jpg')">
+                                <img data-src="Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4760-64.jpg" class="lazy" alt="2026-0127-Megamalai-NCM-4760-64">
+                                <div class="caption">2026-0127-Megamalai-NCM-4760-64</div>
+                            </div>
+                            <div class="img-wrapper" onclick="openLightbox('Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4855.jpg')">
+                                <img data-src="Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4855.jpg" class="lazy" alt="2026-0127-Megamalai-NCM-4855">
+                                <div class="caption">2026-0127-Megamalai-NCM-4855</div>
+                            </div>
+                            <div class="img-wrapper" onclick="openLightbox('Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4865-69.jpg')">
+                                <img data-src="Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4865-69.jpg" class="lazy" alt="2026-0127-Megamalai-NCM-4865-69">
+                                <div class="caption">2026-0127-Megamalai-NCM-4865-69</div>
+                            </div>
+                            <div class="img-wrapper" onclick="openLightbox('Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4897.jpg')">
+                                <img data-src="Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4897.jpg" class="lazy" alt="2026-0127-Megamalai-NCM-4897">
+                                <div class="caption">2026-0127-Megamalai-NCM-4897</div>
+                            </div>
+                            <div class="img-wrapper" onclick="openLightbox('Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4907.jpg')">
+                                <img data-src="Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4907.jpg" class="lazy" alt="2026-0127-Megamalai-NCM-4907">
+                                <div class="caption">2026-0127-Megamalai-NCM-4907</div>
+                            </div>
+                            <div class="img-wrapper" onclick="openLightbox('Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4909-11.jpg')">
+                                <img data-src="Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4909-11.jpg" class="lazy" alt="2026-0127-Megamalai-NCM-4909-11">
+                                <div class="caption">2026-0127-Megamalai-NCM-4909-11</div>
+                            </div>
+                            <div class="img-wrapper" onclick="openLightbox('Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4912-14.jpg')">
+                                <img data-src="Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4912-14.jpg" class="lazy" alt="2026-0127-Megamalai-NCM-4912-14">
+                                <div class="caption">2026-0127-Megamalai-NCM-4912-14</div>
+                            </div>
+                            <div class="img-wrapper" onclick="openLightbox('Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4915-17.jpg')">
+                                <img data-src="Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4915-17.jpg" class="lazy" alt="2026-0127-Megamalai-NCM-4915-17">
+                                <div class="caption">2026-0127-Megamalai-NCM-4915-17</div>
+                            </div>
+                            <div class="img-wrapper" onclick="openLightbox('Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4921-23.jpg')">
+                                <img data-src="Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4921-23.jpg" class="lazy" alt="2026-0127-Megamalai-NCM-4921-23">
+                                <div class="caption">2026-0127-Megamalai-NCM-4921-23</div>
+                            </div>
+                            <div class="img-wrapper" onclick="openLightbox('Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4950.jpg')">
+                                <img data-src="Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4950.jpg" class="lazy" alt="2026-0127-Megamalai-NCM-4950">
+                                <div class="caption">2026-0127-Megamalai-NCM-4950</div>
+                            </div>
+                            <div class="img-wrapper" onclick="openLightbox('Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4955.jpg')">
+                                <img data-src="Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4955.jpg" class="lazy" alt="2026-0127-Megamalai-NCM-4955">
+                                <div class="caption">2026-0127-Megamalai-NCM-4955</div>
+                            </div>
+                            <div class="img-wrapper" onclick="openLightbox('Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4984-86.jpg')">
+                                <img data-src="Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4984-86.jpg" class="lazy" alt="2026-0127-Megamalai-NCM-4984-86">
+                                <div class="caption">2026-0127-Megamalai-NCM-4984-86</div>
+                            </div>
+                            <div class="img-wrapper" onclick="openLightbox('Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4987-89.jpg')">
+                                <img data-src="Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4987-89.jpg" class="lazy" alt="2026-0127-Megamalai-NCM-4987-89">
+                                <div class="caption">2026-0127-Megamalai-NCM-4987-89</div>
+                            </div>
+                            <div class="img-wrapper" onclick="openLightbox('Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4987-89a.jpg')">
+                                <img data-src="Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4987-89a.jpg" class="lazy" alt="2026-0127-Megamalai-NCM-4987-89a">
+                                <div class="caption">2026-0127-Megamalai-NCM-4987-89a</div>
+                            </div>
+                            <div class="img-wrapper" onclick="openLightbox('Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4990-92.jpg')">
+                                <img data-src="Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4990-92.jpg" class="lazy" alt="2026-0127-Megamalai-NCM-4990-92">
+                                <div class="caption">2026-0127-Megamalai-NCM-4990-92</div>
+                            </div>
+                            <div class="img-wrapper" onclick="openLightbox('Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4997.jpg')">
+                                <img data-src="Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4997.jpg" class="lazy" alt="2026-0127-Megamalai-NCM-4997">
+                                <div class="caption">2026-0127-Megamalai-NCM-4997</div>
+                            </div>
+                            <div class="img-wrapper" onclick="openLightbox('Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4998.jpg')">
+                                <img data-src="Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4998.jpg" class="lazy" alt="2026-0127-Megamalai-NCM-4998">
+                                <div class="caption">2026-0127-Megamalai-NCM-4998</div>
+                            </div>
+                            <div class="img-wrapper" onclick="openLightbox('Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-5004-06.jpg')">
+                                <img data-src="Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-5004-06.jpg" class="lazy" alt="2026-0127-Megamalai-NCM-5004-06">
+                                <div class="caption">2026-0127-Megamalai-NCM-5004-06</div>
+                            </div>
+                            <div class="img-wrapper" onclick="openLightbox('Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-5010-12.jpg')">
+                                <img data-src="Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-5010-12.jpg" class="lazy" alt="2026-0127-Megamalai-NCM-5010-12">
+                                <div class="caption">2026-0127-Megamalai-NCM-5010-12</div>
+                            </div>
+                            <div class="img-wrapper" onclick="openLightbox('Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-5022-23.jpg')">
+                                <img data-src="Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-5022-23.jpg" class="lazy" alt="2026-0127-Megamalai-NCM-5022-23">
+                                <div class="caption">2026-0127-Megamalai-NCM-5022-23</div>
+                            </div></div></div><div id="Nature-SunsetsSunrises"><h3>Sunsets & Sunrises</h3><div class="grid"></div></div><div id="Nature-Wildlife"><h3>Wildlife</h3><div class="grid"></div></div><h1 id="People">People <span class="count">0 WORKS</span></h1><div id="People-Portraits"><h3>Portraits</h3><div class="grid"></div></div><h1 id="Places">Places <span class="count">33 WORKS</span></h1><div id="Places-International"><h3>International</h3><div class="grid"></div></div><div id="Places-National"><h3>National</h3><div class="grid">
+                            <div class="img-wrapper" onclick="openLightbox('Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4712-14.jpg')">
+                                <img data-src="Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4712-14.jpg" class="lazy" alt="2026-0127-Megamalai-NCM-4712-14">
+                                <div class="caption">2026-0127-Megamalai-NCM-4712-14</div>
+                            </div>
+                            <div class="img-wrapper" onclick="openLightbox('Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4715-17.jpg')">
+                                <img data-src="Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4715-17.jpg" class="lazy" alt="2026-0127-Megamalai-NCM-4715-17">
+                                <div class="caption">2026-0127-Megamalai-NCM-4715-17</div>
+                            </div>
+                            <div class="img-wrapper" onclick="openLightbox('Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4724-26.jpg')">
+                                <img data-src="Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4724-26.jpg" class="lazy" alt="2026-0127-Megamalai-NCM-4724-26">
+                                <div class="caption">2026-0127-Megamalai-NCM-4724-26</div>
+                            </div>
+                            <div class="img-wrapper" onclick="openLightbox('Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4727-29.jpg')">
+                                <img data-src="Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4727-29.jpg" class="lazy" alt="2026-0127-Megamalai-NCM-4727-29">
+                                <div class="caption">2026-0127-Megamalai-NCM-4727-29</div>
+                            </div>
+                            <div class="img-wrapper" onclick="openLightbox('Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4730-32.jpg')">
+                                <img data-src="Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4730-32.jpg" class="lazy" alt="2026-0127-Megamalai-NCM-4730-32">
+                                <div class="caption">2026-0127-Megamalai-NCM-4730-32</div>
+                            </div>
+                            <div class="img-wrapper" onclick="openLightbox('Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4733-35.jpg')">
+                                <img data-src="Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4733-35.jpg" class="lazy" alt="2026-0127-Megamalai-NCM-4733-35">
+                                <div class="caption">2026-0127-Megamalai-NCM-4733-35</div>
+                            </div>
+                            <div class="img-wrapper" onclick="openLightbox('Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4736-38.jpg')">
+                                <img data-src="Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4736-38.jpg" class="lazy" alt="2026-0127-Megamalai-NCM-4736-38">
+                                <div class="caption">2026-0127-Megamalai-NCM-4736-38</div>
+                            </div>
+                            <div class="img-wrapper" onclick="openLightbox('Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4739-41.jpg')">
+                                <img data-src="Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4739-41.jpg" class="lazy" alt="2026-0127-Megamalai-NCM-4739-41">
+                                <div class="caption">2026-0127-Megamalai-NCM-4739-41</div>
+                            </div>
+                            <div class="img-wrapper" onclick="openLightbox('Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4742-44.jpg')">
+                                <img data-src="Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4742-44.jpg" class="lazy" alt="2026-0127-Megamalai-NCM-4742-44">
+                                <div class="caption">2026-0127-Megamalai-NCM-4742-44</div>
+                            </div>
+                            <div class="img-wrapper" onclick="openLightbox('Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4745-47.jpg')">
+                                <img data-src="Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4745-47.jpg" class="lazy" alt="2026-0127-Megamalai-NCM-4745-47">
+                                <div class="caption">2026-0127-Megamalai-NCM-4745-47</div>
+                            </div>
+                            <div class="img-wrapper" onclick="openLightbox('Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4751-53.jpg')">
+                                <img data-src="Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4751-53.jpg" class="lazy" alt="2026-0127-Megamalai-NCM-4751-53">
+                                <div class="caption">2026-0127-Megamalai-NCM-4751-53</div>
+                            </div>
+                            <div class="img-wrapper" onclick="openLightbox('Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4756-58.jpg')">
+                                <img data-src="Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4756-58.jpg" class="lazy" alt="2026-0127-Megamalai-NCM-4756-58">
+                                <div class="caption">2026-0127-Megamalai-NCM-4756-58</div>
+                            </div>
+                            <div class="img-wrapper" onclick="openLightbox('Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4759.jpg')">
+                                <img data-src="Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4759.jpg" class="lazy" alt="2026-0127-Megamalai-NCM-4759">
+                                <div class="caption">2026-0127-Megamalai-NCM-4759</div>
+                            </div>
+                            <div class="img-wrapper" onclick="openLightbox('Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4760-64.jpg')">
+                                <img data-src="Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4760-64.jpg" class="lazy" alt="2026-0127-Megamalai-NCM-4760-64">
+                                <div class="caption">2026-0127-Megamalai-NCM-4760-64</div>
+                            </div>
+                            <div class="img-wrapper" onclick="openLightbox('Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4855.jpg')">
+                                <img data-src="Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4855.jpg" class="lazy" alt="2026-0127-Megamalai-NCM-4855">
+                                <div class="caption">2026-0127-Megamalai-NCM-4855</div>
+                            </div>
+                            <div class="img-wrapper" onclick="openLightbox('Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4865-69.jpg')">
+                                <img data-src="Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4865-69.jpg" class="lazy" alt="2026-0127-Megamalai-NCM-4865-69">
+                                <div class="caption">2026-0127-Megamalai-NCM-4865-69</div>
+                            </div>
+                            <div class="img-wrapper" onclick="openLightbox('Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4897.jpg')">
+                                <img data-src="Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4897.jpg" class="lazy" alt="2026-0127-Megamalai-NCM-4897">
+                                <div class="caption">2026-0127-Megamalai-NCM-4897</div>
+                            </div>
+                            <div class="img-wrapper" onclick="openLightbox('Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4907.jpg')">
+                                <img data-src="Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4907.jpg" class="lazy" alt="2026-0127-Megamalai-NCM-4907">
+                                <div class="caption">2026-0127-Megamalai-NCM-4907</div>
+                            </div>
+                            <div class="img-wrapper" onclick="openLightbox('Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4909-11.jpg')">
+                                <img data-src="Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4909-11.jpg" class="lazy" alt="2026-0127-Megamalai-NCM-4909-11">
+                                <div class="caption">2026-0127-Megamalai-NCM-4909-11</div>
+                            </div>
+                            <div class="img-wrapper" onclick="openLightbox('Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4912-14.jpg')">
+                                <img data-src="Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4912-14.jpg" class="lazy" alt="2026-0127-Megamalai-NCM-4912-14">
+                                <div class="caption">2026-0127-Megamalai-NCM-4912-14</div>
+                            </div>
+                            <div class="img-wrapper" onclick="openLightbox('Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4915-17.jpg')">
+                                <img data-src="Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4915-17.jpg" class="lazy" alt="2026-0127-Megamalai-NCM-4915-17">
+                                <div class="caption">2026-0127-Megamalai-NCM-4915-17</div>
+                            </div>
+                            <div class="img-wrapper" onclick="openLightbox('Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4921-23.jpg')">
+                                <img data-src="Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4921-23.jpg" class="lazy" alt="2026-0127-Megamalai-NCM-4921-23">
+                                <div class="caption">2026-0127-Megamalai-NCM-4921-23</div>
+                            </div>
+                            <div class="img-wrapper" onclick="openLightbox('Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4950.jpg')">
+                                <img data-src="Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4950.jpg" class="lazy" alt="2026-0127-Megamalai-NCM-4950">
+                                <div class="caption">2026-0127-Megamalai-NCM-4950</div>
+                            </div>
+                            <div class="img-wrapper" onclick="openLightbox('Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4955.jpg')">
+                                <img data-src="Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4955.jpg" class="lazy" alt="2026-0127-Megamalai-NCM-4955">
+                                <div class="caption">2026-0127-Megamalai-NCM-4955</div>
+                            </div>
+                            <div class="img-wrapper" onclick="openLightbox('Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4984-86.jpg')">
+                                <img data-src="Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4984-86.jpg" class="lazy" alt="2026-0127-Megamalai-NCM-4984-86">
+                                <div class="caption">2026-0127-Megamalai-NCM-4984-86</div>
+                            </div>
+                            <div class="img-wrapper" onclick="openLightbox('Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4987-89.jpg')">
+                                <img data-src="Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4987-89.jpg" class="lazy" alt="2026-0127-Megamalai-NCM-4987-89">
+                                <div class="caption">2026-0127-Megamalai-NCM-4987-89</div>
+                            </div>
+                            <div class="img-wrapper" onclick="openLightbox('Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4987-89a.jpg')">
+                                <img data-src="Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4987-89a.jpg" class="lazy" alt="2026-0127-Megamalai-NCM-4987-89a">
+                                <div class="caption">2026-0127-Megamalai-NCM-4987-89a</div>
+                            </div>
+                            <div class="img-wrapper" onclick="openLightbox('Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4990-92.jpg')">
+                                <img data-src="Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4990-92.jpg" class="lazy" alt="2026-0127-Megamalai-NCM-4990-92">
+                                <div class="caption">2026-0127-Megamalai-NCM-4990-92</div>
+                            </div>
+                            <div class="img-wrapper" onclick="openLightbox('Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4997.jpg')">
+                                <img data-src="Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4997.jpg" class="lazy" alt="2026-0127-Megamalai-NCM-4997">
+                                <div class="caption">2026-0127-Megamalai-NCM-4997</div>
+                            </div>
+                            <div class="img-wrapper" onclick="openLightbox('Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4998.jpg')">
+                                <img data-src="Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4998.jpg" class="lazy" alt="2026-0127-Megamalai-NCM-4998">
+                                <div class="caption">2026-0127-Megamalai-NCM-4998</div>
+                            </div>
+                            <div class="img-wrapper" onclick="openLightbox('Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-5004-06.jpg')">
+                                <img data-src="Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-5004-06.jpg" class="lazy" alt="2026-0127-Megamalai-NCM-5004-06">
+                                <div class="caption">2026-0127-Megamalai-NCM-5004-06</div>
+                            </div>
+                            <div class="img-wrapper" onclick="openLightbox('Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-5010-12.jpg')">
+                                <img data-src="Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-5010-12.jpg" class="lazy" alt="2026-0127-Megamalai-NCM-5010-12">
+                                <div class="caption">2026-0127-Megamalai-NCM-5010-12</div>
+                            </div>
+                            <div class="img-wrapper" onclick="openLightbox('Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-5022-23.jpg')">
+                                <img data-src="Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-5022-23.jpg" class="lazy" alt="2026-0127-Megamalai-NCM-5022-23">
+                                <div class="caption">2026-0127-Megamalai-NCM-5022-23</div>
+                            </div></div></div>
+    </div></main>
+    <footer>
+        <a href="#top">Home</a>
+        <a href="#top">Back to Top</a>
+        <a href="https://instagram.com/mohangraphy" target="_blank">@mohangraphy</a>
+    </footer>
+
+    <div id="lightbox" onclick="this.style.display='none'"><img id="lightbox-img"></div>
+
+    <script>
+        // Lightbox Logic
+        function openLightbox(src) {
+            document.getElementById('lightbox-img').src = src;
+            document.getElementById('lightbox').style.display = 'flex';
+        }
+
+        // Lazy Loading Logic
+        document.addEventListener("DOMContentLoaded", function() {
+            var lazyImages = [].slice.call(document.querySelectorAll("img.lazy"));
+            if ("IntersectionObserver" in window) {
+                let imgObserver = new IntersectionObserver(function(entries, observer) {
+                    entries.forEach(function(entry) {
+                        if (entry.isIntersecting) {
+                            let img = entry.target;
+                            img.src = img.dataset.src;
+                            img.classList.add("loaded");
+                            imgObserver.unobserve(img);
+                        }
+                    });
+                });
+                lazyImages.forEach(function(img) { imgObserver.observe(img); });
+            }
+        });
+    </script>
+    </body></html>
