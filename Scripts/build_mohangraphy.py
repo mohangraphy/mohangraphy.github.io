@@ -16,6 +16,7 @@ def generate_html():
     index_data = load_index()
     main_cats = ["Architecture", "Birds", "Flowers", "Nature", "People", "Places"]
     
+    # Deep structure for menu, but flattened for display
     gallery = {c: {} for c in main_cats}
 
     for info in index_data.values():
@@ -65,27 +66,21 @@ def generate_html():
                 display: none; flex-direction: column; padding: 5px 0; z-index: 5100;
             }}
             .nav-item:hover .submenu {{ display: flex; }}
-            
-            .submenu a, .nested-header {{ 
-                color: #666; padding: 10px 20px; text-decoration: none; 
-                font-size: 11px; letter-spacing: 2px; text-transform: uppercase; 
-                transition: 0.2s; text-align: center; display: block;
-            }}
+            .submenu a, .nested-header {{ color: #666; padding: 10px 20px; text-decoration: none; font-size: 11px; letter-spacing: 2px; text-transform: uppercase; text-align: center; display: block; }}
             .submenu a:hover {{ color: #fff; background: #111; }}
 
-            /* NESTED ITEMS APPEAR BELOW PARENT WITH INDENT */
-            .nested-group {{ border-top: 1px solid #111; border-bottom: 1px solid #111; background: #050505; }}
-            .nested-header {{ color: #888; font-weight: 900; pointer-events: none; padding-bottom: 5px; }}
-            .nested-item {{ padding-left: 30px !important; font-size: 10px !important; color: #555 !important; }}
+            .nested-group {{ border-top: 1px solid #111; background: #050505; }}
+            .nested-header {{ color: #888; font-weight: 900; pointer-events: none; }}
+            .nested-item {{ padding-left: 20px !important; font-size: 10px !important; color: #444 !important; }}
 
             #hero {{ height: 100vh; width: 100%; position: relative; display: flex; align-items: center; justify-content: center; background: #000; z-index: 1; }}
             .slide {{ position: absolute; width: 100%; height: 100%; object-fit: cover; opacity: 0; transition: 3s; filter: brightness(0.4); }}
             .slide.active {{ opacity: 1; }}
 
-            main {{ padding-top: 180px; display: none; width: 100%; }}
+            main {{ padding-top: 180px; display: none; width: 100%; min-height: 100vh; }}
             .section-block {{ max-width: 1600px; margin: 0 auto 100px; padding: 0 40px; display: none; }}
             
-            /* THE CLEAN GRID: NO TEXT, NO LABELS */
+            /* CLEAN GRID ONLY - NO DIVIDERS */
             .grid {{ display: grid; grid-template-columns: repeat(auto-fill, minmax(600px, 1fr)); gap: 30px; }}
             .grid img {{ width: 100%; height: auto; aspect-ratio: 3/2; object-fit: cover; filter: grayscale(1); transition: 0.8s; cursor: pointer; }}
             .grid img:hover {{ filter: grayscale(0); }}
@@ -104,7 +99,9 @@ def generate_html():
     content = ""
     for m_cat in main_cats:
         has_content = any(gallery[m_cat].values())
-        nav_html += f'<div class="nav-item" id="nav-{m_cat}"><a href="#" onclick="showSection(\'{m_cat}\')">{m_cat}</a>'
+        # If no content, onclick triggers goHome()
+        nav_action = f"showSection('{m_cat}')" if has_content else "goHome()"
+        nav_html += f'<div class="nav-item" id="nav-{m_cat}"><a href="#" onclick="{nav_action}">{m_cat}</a>'
         
         if has_content:
             nav_html += '<div class="submenu">'
@@ -116,15 +113,15 @@ def generate_html():
                         nav_html += f'<a href="#" onclick="showSection(\'{m_cat}\')">{place}</a>'
                         for p in photos: content += f'<img src="{p}">'
                 else:
-                    # Vertical Grouping for National/International/Landscape
                     nav_html += f'<div class="nested-group"><div class="nested-header">{s_cat}</div>'
                     for place, photos in p_dict.items():
                         nav_html += f'<a href="#" class="nested-item" onclick="showSection(\'{m_cat}\')">{place}</a>'
+                        # CRITICAL: Just photos here. No labels.
                         for p in photos: content += f'<img src="{p}">'
                     nav_html += '</div>'
             
-            nav_html += '</div>'
-            content += '</div></div>'
+            nav_html += '</div>' # End Grid
+            content += '</div>' # End Section
         nav_html += '</div>'
 
     html_end = """
@@ -140,15 +137,17 @@ def generate_html():
         function goHome() { 
             document.getElementById('gallery-container').style.display = 'none'; 
             document.getElementById('hero').style.display = 'flex'; 
+            document.querySelectorAll('.section-block').forEach(sec => sec.style.display = 'none');
             window.scrollTo(0,0); 
         }
 
         function showSection(id) { 
+            let target = document.getElementById('sec-'+id);
+            if(!target) { goHome(); return; }
             document.getElementById('hero').style.display = 'none'; 
             document.getElementById('gallery-container').style.display = 'block'; 
             document.querySelectorAll('.section-block').forEach(sec => sec.style.display = 'none');
-            let target = document.getElementById('sec-'+id);
-            if(target) target.style.display = 'block';
+            target.style.display = 'block';
             window.scrollTo(0,0);
         }
     </script>
@@ -158,7 +157,7 @@ def generate_html():
         f.write(html_start + nav_html + "</nav></header>" + 
                 '<div id="hero">' + "".join([f'<img src="{p}" class="slide">' for p in slides]) + '</div>' + 
                 '<main id="gallery-container">' + content + html_end)
-    print("✅ FIXED: Vertical submenus restored. All on-page text removed.")
+    print("✅ RESET COMPLETE: No on-page labels. Broken links auto-return Home.")
 
 if __name__ == "__main__":
     generate_html()
