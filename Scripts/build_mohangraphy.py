@@ -41,96 +41,114 @@ def generate_html():
     all_pics = [i.get('path') for i in index_data.values()]
     slides = random.sample(all_pics, min(len(all_pics), 10)) if all_pics else []
 
+    # SVG Logo: Mathematical precision for branding
+    logo_svg = """
+    <svg viewBox="0 0 1000 80" xmlns="http://www.w3.org/2000/svg" class="logo-vector" onclick="goHome()">
+        <text x="50%" y="50%" text-anchor="middle" dominant-baseline="middle" 
+              font-family="'Inter', sans-serif" font-weight="900" font-size="42" 
+              letter-spacing="22" fill="white">MOHANGRAPHY</text>
+    </svg>
+    """
+
     html_start = f"""
     <!DOCTYPE html>
     <html lang="en">
     <head>
         <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
         <title>M O H A N G R A P H Y</title>
         <style>
             @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;900&display=swap');
+            
+            /* RESET & BASE */
+            * {{ box-sizing: border-box; }}
             body, html {{ background: #000; color: #fff; font-family: 'Inter', sans-serif; margin: 0; padding: 0; scroll-behavior: smooth; overflow-x: hidden; }}
             
-            /* HEADER RESPONSIVENESS */
+            /* HEADER STABILITY */
             header {{ 
-                position: fixed; top: 0; width: 100%; background: #000; z-index: 5000; 
+                position: fixed; top: 0; width: 100%; background: #000; z-index: 9000; 
                 display: flex; flex-direction: column; align-items: center; 
-                padding: 30px 0 20px 0; border-bottom: 1px solid #111;
+                padding: 15px 0; border-bottom: 1px solid #111;
             }}
-            .logo {{ 
-                font-size: 8vw; max-size: 55px; letter-spacing: 12px; font-weight: 900; 
-                text-transform: uppercase; margin-bottom: 20px; cursor: pointer; color: #fff; 
-                text-align: center;
-            }}
-            @media (min-width: 768px) {{ .logo {{ font-size: 55px; }} }}
 
-            nav {{ display: flex; gap: 15px; flex-wrap: wrap; justify-content: center; padding: 0 10px; }}
-            @media (min-width: 768px) {{ nav {{ gap: 40px; }} }}
+            .logo-vector {{
+                width: 85%; max-width: 600px; height: auto; cursor: pointer; margin-bottom: 15px;
+            }}
+
+            /* NAV MENU - ADAPTIVE */
+            nav {{ 
+                display: flex; gap: 12px; flex-wrap: wrap; justify-content: center; 
+                width: 100%; padding: 0 10px;
+            }}
+            @media (min-width: 768px) {{ nav {{ gap: 35px; }} }}
 
             .nav-item {{ position: relative; padding-bottom: 10px; }}
-            .nav-link, .footer-link {{ 
-                color: #555; text-decoration: none; font-size: 11px; font-weight: 900; 
-                text-transform: uppercase; letter-spacing: 1px; transition: 0.3s; 
+            .nav-link {{ 
+                color: #555; text-decoration: none; font-size: 10px; font-weight: 900; 
+                text-transform: uppercase; letter-spacing: 1px; transition: 0.3s;
+                white-space: nowrap;
             }}
-            @media (min-width: 768px) {{ .nav-link, .footer-link {{ font-size: 13px; letter-spacing: 2px; }} }}
-            .nav-item:hover > .nav-link, .footer-link:hover {{ color: #fff; }}
+            @media (min-width: 768px) {{ .nav-link {{ font-size: 13px; letter-spacing: 2px; }} }}
+            .nav-item:hover > .nav-link {{ color: #fff; }}
             
-            /* MOBILE SUBMENU BEHAVIOR */
+            /* SUBMENU DROPDOWN */
             .submenu {{ 
-                position: absolute; top: 30px; left: 50%; transform: translateX(-50%); 
-                background: #000; border: 1px solid #222; min-width: 180px; 
-                display: none; flex-direction: column; padding: 10px 0; z-index: 5100;
-                max-height: 60vh; overflow-y: auto;
+                position: absolute; top: 100%; left: 50%; transform: translateX(-50%); 
+                background: #000; border: 1px solid #222; min-width: 200px; 
+                display: none; flex-direction: column; padding: 10px 0; z-index: 9001;
+                max-height: 50vh; overflow-y: auto; box-shadow: 0 10px 30px rgba(0,0,0,0.8);
             }}
             .nav-item:hover .submenu {{ display: flex; }}
             .submenu a, .nested-header {{ color: #666; padding: 12px 15px; text-decoration: none; font-size: 10px; letter-spacing: 1px; text-transform: uppercase; text-align: center; display: block; }}
             .submenu a:hover {{ color: #fff; background: #111; }}
             
             .nested-group {{ border-top: 1px solid #111; background: #050505; padding: 5px 0; }}
-            .nested-header {{ color: #888; font-weight: 900; pointer-events: none; }}
+            .nested-header {{ color: #888; font-weight: 900; pointer-events: none; padding: 8px 0; }}
             
-            /* HERO */
-            #hero {{ height: 100vh; width: 100%; position: relative; display: flex; align-items: center; justify-content: center; background: #000; z-index: 1; }}
-            .slide {{ position: absolute; width: 100%; height: 100%; object-fit: cover; opacity: 0; transition: 3s; filter: brightness(0.4); }}
+            /* HERO SLIDESHOW */
+            #hero {{ height: 100vh; width: 100%; position: relative; z-index: 1; display: flex; align-items: center; justify-content: center; overflow: hidden; }}
+            .slide {{ position: absolute; width: 100%; height: 100%; object-fit: cover; opacity: 0; transition: opacity 3s ease-in-out; filter: brightness(0.4); }}
             .slide.active {{ opacity: 1; }}
             
-            /* GRID RESPONSIVENESS */
-            main {{ padding-top: 180px; display: none; width: 100%; min-height: 100vh; }}
-            @media (min-width: 768px) {{ main {{ padding-top: 220px; }} }}
+            /* MAIN CONTENT AREA */
+            main {{ 
+                padding-top: 160px; /* Adjusted for Mobile header height */
+                display: none; width: 100%; min-height: 100vh; 
+            }}
+            @media (min-width: 768px) {{ main {{ padding-top: 200px; }} }}
             
             .section-block {{ max-width: 1600px; margin: 0 auto 100px; padding: 0 15px; display: none; }}
             @media (min-width: 768px) {{ .section-block {{ padding: 0 40px; }} }}
 
-            .grid {{ 
-                display: grid; 
-                grid-template-columns: 1fr; 
-                gap: 15px; 
-            }}
-            @media (min-width: 768px) {{ .grid {{ grid-template-columns: 1fr 1fr; gap: 30px; }} }}
+            /* RESPONSIVE GRID */
+            .grid {{ display: grid; grid-template-columns: 1fr; gap: 15px; }}
+            @media (min-width: 768px) {{ .grid {{ grid-template-columns: repeat(2, 1fr); gap: 30px; }} }}
             @media (min-width: 1200px) {{ .grid {{ grid-template-columns: repeat(auto-fill, minmax(600px, 1fr)); }} }}
 
             .grid img {{ width: 100%; height: auto; aspect-ratio: 3/2; object-fit: cover; filter: grayscale(1); transition: 0.8s; cursor: pointer; }}
-            @media (max-width: 768px) {{ .grid img {{ filter: grayscale(0); }} }} /* Color on mobile automatically */
+            @media (max-width: 1024px) {{ .grid img {{ filter: grayscale(0); }} }} 
             .grid img:hover {{ filter: grayscale(0); }}
             
-            .wip-message {{ text-align: center; font-size: 12px; letter-spacing: 2px; color: #444; text-transform: uppercase; margin-top: 100px; padding: 0 20px; }}
+            .wip-message {{ text-align: center; font-size: 12px; letter-spacing: 2px; color: #444; text-transform: uppercase; margin-top: 120px; }}
             
+            /* FOOTER UNIFORMITY */
             footer {{ 
-                position: fixed; bottom: 0; width: 100%; height: 50px; 
-                background: rgba(0,0,0,0.95); border-top: 1px solid #111; 
-                z-index: 5000; display: flex; align-items: center; justify-content: center; gap: 30px; 
+                position: fixed; bottom: 0; width: 100%; height: 55px; 
+                background: rgba(0,0,0,0.9); border-top: 1px solid #111; 
+                z-index: 9000; display: flex; align-items: center; justify-content: center; gap: 40px; 
             }}
+            .footer-link {{ color: #555; text-decoration: none; font-size: 11px; font-weight: 900; text-transform: uppercase; letter-spacing: 2px; }}
+            .footer-link:hover {{ color: #fff; }}
         </style>
     </head>
     <body>
-    <header><div class="logo" onclick="goHome()">M O H A N G R A P H Y</div><nav id="main-nav">
+    <header>{logo_svg}<nav id="main-nav">
     """
 
     nav_html = ""
     content_html = ""
 
-    # PLACES
+    # PLACES LOGIC
     nav_html += '<div class="nav-item"><a href="#" class="nav-link" onclick="showSection(\'sec-Places\')">Places</a><div class="submenu">'
     all_place_photos = []
     for group in ["National", "International"]:
@@ -147,7 +165,7 @@ def generate_html():
     nav_html += '</div></div>'
     content_html += '<div class="section-block" id="sec-Places"><div class="grid">' + "".join([f'<img src="{img}">' for img in list(set(all_place_photos))]) + '</div></div>'
 
-    # MANUAL MENUS
+    # MANUAL STRUCTURE LOGIC
     for m_cat, subs in MANUAL_STRUCTURE.items():
         nav_html += f'<div class="nav-item"><a href="#" class="nav-link" onclick="showSection(\'sec-{m_cat}\')">{m_cat}</a>'
         m_photos = []
@@ -166,8 +184,10 @@ def generate_html():
         nav_html += '</div>'
 
     html_end = """
-    </main>
-    <footer><a href="#" class="footer-link" onclick="goHome()">Home</a><a href="#main-nav" class="footer-link">Top</a></footer>
+    </nav></header>
+    <div id="hero">""" + "".join([f'<img src="{p}" class="slide">' for p in slides]) + """</div>
+    <main id="gallery-container">""" + content_html + """</main>
+    <footer><a href="#" class="footer-link" onclick="goHome()">Home</a><a href="#main-nav" class="footer-link">Back to Top</a></footer>
     <script>
         let slides = document.querySelectorAll('.slide'); let cur = 0;
         if(slides.length) { slides[0].classList.add('active'); setInterval(() => { slides[cur].classList.remove('active'); cur=(cur+1)%slides.length; slides[cur].classList.add('active'); }, 5000); }
@@ -183,8 +203,8 @@ def generate_html():
     </body></html>
     """
     with open("index.html", "w") as f:
-        f.write(html_start + nav_html + "</nav></header>" + '<div id="hero">' + "".join([f'<img src="{p}" class="slide">' for p in slides]) + '</div>' + '<main id="gallery-container">' + content_html + html_end)
-    print("✅ Build Complete: Fully responsive for Mobile, Tablet, and Desktop.")
+        f.write(html_start + html_end)
+    print("✅ Build Complete: Multi-device Vector Logo & Adaptive Navigation Fixed.")
 
 if __name__ == "__main__":
     generate_html()
