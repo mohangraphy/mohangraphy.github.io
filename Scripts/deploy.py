@@ -2,44 +2,44 @@ import os
 import subprocess
 
 # --- CONFIGURATION ---
-# Use your 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 token here
 TOKEN = "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" 
 USER = "mohangraphy"
 REPO = "mohangraphy.github.io"
 # ---------------------
 
 def final_push():
-    root = os.path.dirname(os.path.abspath(__file__))
-    # Ensure we are in the main Mohangraphy folder
-    os.chdir(os.path.dirname(root))
+    # Set the path correctly
+    script_path = os.path.abspath(__file__)
+    root_dir = os.path.dirname(os.path.dirname(script_path))
+    os.chdir(root_dir)
     
-    print("🧹 Cleaning old connection settings...")
-    # This removes the old 'origin' that is asking for a password
+    print("🧹 Resetting Git configuration...")
     subprocess.run(["git", "remote", "remove", "origin"], capture_output=True)
 
-    # Re-build the index.html
-    print("🔨 Building your gallery...")
+    # Re-build the gallery
+    print("🔨 Building gallery...")
     subprocess.run(["python3", "Scripts/build_mohangraphy.py"])
 
-    # Set the NEW remote URL using the token
-    # We use the token twice to satisfy Git's 'username:password' requirement
-    remote_url = f"https://{TOKEN}@github.com/{USER}/{REPO}.git"
+    # THE FIX: We use 'x-access-token' as the username. 
+    # This is the official way to tell Git NOT to ask for a password.
+    remote_url = f"https://x-access-token:{TOKEN}@github.com/{USER}/{REPO}.git"
     subprocess.run(["git", "remote", "add", "origin", remote_url])
 
     try:
         subprocess.run(["git", "add", "."], check=True)
-        subprocess.run(["git", "commit", "-m", "Categorized Update"], capture_output=True)
+        subprocess.run(["git", "commit", "-m", "Structure Update"], capture_output=True)
         
-        print(f"📤 Pushing to {REPO} (No password should be required)...")
-        # We tell Git to ignore the Mac keychain for this one push
+        print(f"📤 Uploading to {REPO}...")
+        # We temporarily disable the Mac Credential Manager to prevent the popup
         result = subprocess.run([
             "git", "-c", "credential.helper=", "push", "-u", "origin", "main", "--force"
         ], capture_output=True, text=True)
         
         if result.returncode == 0:
-            print(f"\n✅ SUCCESS! Site is live at https://{REPO}")
+            print(f"\n✅ SUCCESS! Site is live: https://{REPO}")
         else:
-            print(f"\n❌ ERROR: {result.stderr}")
+            print(f"\n❌ PUSH FAILED")
+            print(f"Details: {result.stderr}")
             
     except Exception as e:
         print(f"❌ Script Error: {e}")
