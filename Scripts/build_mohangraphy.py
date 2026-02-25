@@ -16,7 +16,6 @@ def generate_html():
     index_data = load_index()
     main_cats = ["Architecture", "Birds", "Flowers", "Nature", "People", "Places"]
     
-    # gallery[Main][Sub][Place] = [paths]
     gallery = {c: {} for c in main_cats}
 
     for info in index_data.values():
@@ -42,44 +41,44 @@ def generate_html():
     <head>
         <meta charset="UTF-8"><title>M O H A N G R A P H Y</title>
         <style>
-            @import url('https://fonts.googleapis.com/css2?family=Inter:wght@100;400;900&display=swap');
+            @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;900&display=swap');
             body, html {{ background: #000; color: #fff; font-family: 'Inter', sans-serif; margin: 0; scroll-behavior: smooth; overflow-x: hidden; }}
             
             /* ULTRA BOLD LOGO */
-            header {{ position: fixed; top: 0; width: 100%; background: #000; z-index: 1000; display: flex; flex-direction: column; align-items: center; padding: 50px 0 30px 0; border-bottom: 1px solid #111; }}
-            .logo {{ font-size: 70px; letter-spacing: 20px; font-weight: 900; text-transform: uppercase; margin-bottom: 30px; cursor: pointer; color: #fff; }}
+            header {{ position: fixed; top: 0; width: 100%; background: #000; z-index: 1000; display: flex; flex-direction: column; align-items: center; padding: 60px 0 40px 0; border-bottom: 1px solid #111; }}
+            .logo {{ font-size: 80px; letter-spacing: 25px; font-weight: 900; text-transform: uppercase; margin-bottom: 40px; cursor: pointer; color: #fff; }}
             
-            nav {{ display: flex; gap: 40px; position: relative; }}
+            /* DOUBLED MAIN MENU SIZE */
+            nav {{ display: flex; gap: 60px; position: relative; }}
             .nav-item {{ position: relative; padding-bottom: 10px; }}
-            .nav-item > a {{ color: #444; text-decoration: none; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 3px; transition: 0.3s; }}
+            .nav-item > a {{ color: #444; text-decoration: none; font-size: 22px; font-weight: 900; text-transform: uppercase; letter-spacing: 5px; transition: 0.3s; }}
             .nav-item:hover > a, .nav-item.active > a {{ color: #fff; }}
             
-            .submenu {{ position: absolute; top: 25px; left: 0; background: #000; border: 1px solid #222; min-width: 180px; display: none; flex-direction: column; padding: 10px 0; z-index: 1100; }}
+            .submenu {{ position: absolute; top: 35px; left: 0; background: #000; border: 1px solid #222; min-width: 250px; display: none; flex-direction: column; padding: 15px 0; z-index: 1100; }}
             .nav-item:hover .submenu {{ display: flex; }}
-            .submenu a {{ color: #666; padding: 8px 20px; text-decoration: none; font-size: 9px; letter-spacing: 2px; text-transform: uppercase; transition: 0.2s; }}
+            .submenu a {{ color: #666; padding: 12px 25px; text-decoration: none; font-size: 14px; letter-spacing: 3px; text-transform: uppercase; transition: 0.2s; }}
             .submenu a:hover {{ color: #fff; background: #111; }}
             
             .has-nested {{ position: relative; }}
-            .nested-menu {{ position: absolute; top: 0; left: 100%; background: #000; border: 1px solid #222; display: none; flex-direction: column; min-width: 180px; }}
+            .nested-menu {{ position: absolute; top: 0; left: 100%; background: #000; border: 1px solid #222; display: none; flex-direction: column; min-width: 200px; }}
             .has-nested:hover .nested-menu {{ display: flex; }}
 
             #hero {{ height: 100vh; width: 100%; position: relative; display: flex; align-items: center; justify-content: center; background: #000; }}
             .slide {{ position: absolute; width: 100%; height: 100%; object-fit: cover; opacity: 0; transition: 3s; filter: brightness(0.4); }}
             .slide.active {{ opacity: 1; }}
 
-            main {{ padding-top: 250px; display: none; }}
-            .section-block {{ max-width: 1800px; margin: 0 auto 150px; padding: 0 40px; display: none; }}
+            main {{ padding-top: 350px; display: none; }}
+            .section-block {{ max-width: 1800px; margin: 0 auto 100px; padding: 0 40px; display: none; }}
             
-            /* REMOVED MAIN TITLES FOR GENRES */
-            .sub-title {{ font-size: 18px; font-weight: 300; letter-spacing: 8px; color: #fff; text-transform: uppercase; margin: 40px 0 30px; border-left: 2px solid #fff; padding-left: 15px; }}
-            .place-subheading {{ font-size: 11px; letter-spacing: 4px; color: #666; text-transform: uppercase; margin: 5px 0 25px; font-weight: 700; }}
+            /* MINIMALIST SUB-LABELS (ONLY FOR PLACES) */
+            .place-label {{ font-size: 12px; letter-spacing: 5px; color: #666; text-transform: uppercase; margin: 40px 0 20px; font-weight: 400; border-left: 2px solid #333; padding-left: 15px; }}
 
-            .grid {{ display: grid; grid-template-columns: repeat(auto-fill, minmax(550px, 1fr)); gap: 40px; margin-bottom: 80px; }}
-            .grid img {{ width: 100%; height: 750px; object-fit: cover; filter: grayscale(1); transition: 0.8s; cursor: pointer; }}
-            .grid img:hover {{ filter: grayscale(0); transform: scale(1.01); }}
+            .grid {{ display: grid; grid-template-columns: repeat(auto-fill, minmax(600px, 1fr)); gap: 50px; margin-bottom: 100px; }}
+            .grid img {{ width: 100%; height: 800px; object-fit: cover; filter: grayscale(1); transition: 0.8s; cursor: pointer; }}
+            .grid img:hover {{ filter: grayscale(0); }}
 
             footer {{ position: fixed; bottom: 0; width: 100%; height: 60px; background: rgba(0,0,0,0.95); border-top: 1px solid #111; z-index: 1000; display: flex; align-items: center; justify-content: center; gap: 40px; }}
-            footer a {{ color: #444; text-decoration: none; font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 2px; }}
+            footer a {{ color: #444; text-decoration: none; font-size: 11px; font-weight: 900; text-transform: uppercase; letter-spacing: 2px; }}
         </style>
     </head>
     <body>
@@ -113,19 +112,16 @@ def generate_html():
         if any(s_dict.values()):
             content += f'<div class="section-block" id="sec-{m_cat}">'
             for s_cat, p_dict in s_dict.items():
-                # Display genre heading for everything
-                content += f'<div class="sub-title">{s_cat}</div>'
-                
                 if m_cat == "Places":
-                    # For Places: Show the specific location headers
+                    # Places still shows hierarchy as requested
                     for place, photos in p_dict.items():
                         div_id = f"{m_cat}-{s_cat}-{place}"
-                        content += f'<div class="place-subheading" id="{div_id}">— {place}</div>'
+                        content += f'<div class="place-label" id="{div_id}">{s_cat} &mdash; {place}</div>'
                         content += '<div class="grid">'
                         for p in photos: content += f'<img src="{p}">'
                         content += '</div>'
                 else:
-                    # For Nature/Other: Hide place names completely
+                    # ALL OTHER CATS: No text, no place names, just the grid
                     content += '<div class="grid">'
                     for place, photos in p_dict.items():
                         for p in photos: content += f'<img src="{p}">'
@@ -134,7 +130,7 @@ def generate_html():
 
     html_end = """
     </main>
-    <footer><a href="#" onclick="goHome()">Home</a><a href="#main-nav">Back to Top</a></footer>
+    <footer><a href="#" onclick="goHome()">Home</a><a href="#main-nav">Top</a></footer>
     <script>
         let s = document.querySelectorAll('.slide'); let cur = 0;
         if(s.length) { s[0].classList.add('active'); setInterval(() => { s[cur].classList.remove('active'); cur=(cur+1)%s.length; s[cur].classList.add('active'); }, 5000); }
@@ -160,7 +156,7 @@ def generate_html():
         f.write(html_start + nav_html + "</nav></header>" + 
                 '<div id="hero">' + "".join([f'<img src="{p}" class="slide">' for p in slides]) + '</div>' + 
                 '<main id="gallery-container">' + content + html_end)
-    print("✅ Build Complete: Places only show in PLACES. Clean Genre view.")
+    print("✅ Build Complete: Bold Menu + Clean Grids.")
 
 if __name__ == "__main__":
     generate_html()
