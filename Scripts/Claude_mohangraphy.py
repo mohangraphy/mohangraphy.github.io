@@ -1,9 +1,14 @@
 import os
 import json
 import random
+import subprocess
 
-ROOT_DIR  = "/Users/ncm/Pictures/Mohangraphy"
-DATA_FILE = os.path.join(ROOT_DIR, "Scripts/photo_metadata.json")
+# ── CONFIGURATION ─────────────────────────────────────────────────────────────
+ROOT_DIR         = "/Users/ncm/Pictures/Mohangraphy"
+DATA_FILE        = os.path.join(ROOT_DIR, "Scripts/photo_metadata.json")
+THUMBS_DIR       = os.path.join(ROOT_DIR, "Thumbs")   # generated thumbnail cache
+MEGAMALAI_FOLDER = os.path.join(ROOT_DIR, "Photos/Nature/Landscape/Megamalai")
+THUMB_WIDTH      = 800   # px — enough for retina phones, tiny vs full-res
 
 MANUAL_STRUCTURE = {
     "Places":       ["National", "International"],
@@ -14,7 +19,19 @@ MANUAL_STRUCTURE = {
     "Flowers":      []
 }
 
-MEGAMALAI_FOLDER = os.path.join(ROOT_DIR, "Photos/Nature/Landscape/Megamalai")
+# ── TAG MAP: what metadata tag resolves to each MANUAL_STRUCTURE sub-key ──────
+# The curator stores "Nature/Landscape/Mountains" — map that to the "Mountains"
+# sub-category under Nature.
+TAG_OVERRIDES = {
+    "Nature/Mountains":              "Nature/Landscape/Mountains",   # alias
+    "Nature/Sunsets and Sunrises":   "Nature/Sunsets",               # alias
+}
+
+# All tag strings that count as "Mountains" content
+MOUNTAINS_TAGS = {"Nature/Landscape/Mountains", "Nature/Mountains"}
+SUNSETS_TAGS   = {"Nature/Sunsets and Sunrises", "Nature/Sunsets"}
+
+# ── HELPERS ───────────────────────────────────────────────────────────────────
 
 def load_index():
     if not os.path.exists(DATA_FILE):
@@ -26,6 +43,7 @@ def load_index():
             return {}
 
 def deduplicate_by_path(raw_data):
+    """One entry per unique relative path — kills the hash+filename duplicates."""
     seen = {}
     for info in raw_data.values():
         path = info.get('path', '').strip()
@@ -50,160 +68,640 @@ def count_folder(folder_path):
 def pick_cover(paths):
     return random.choice(paths) if paths else ""
 
+# ── THUMBNAIL GENERATION ──────────────────────────────────────────────────────
+def make_thumb(rel_path):
+    """
+    Generate a web-optimised JPEG thumbnail using sips (built into macOS).
+    Returns the relative path to the thumbnail (relative to ROOT_DIR).
+    Falls back to the original if sips is unavailable.
+    """
+    src_full   = os.path.join(ROOT_DIR, rel_path)
+    thumb_rel  = os.path.join("Thumbs", rel_path)
+    thumb_full = os.path.join(ROOT_DIR, thumb_rel)
+
+    if not os.path.exists(thumb_full):
+        os.makedirs(os.path.dirname(thumb_full), exist_ok=True)
+        try:
+            subprocess.run(
+                ["sips", "-Z", str(THUMB_WIDTH), src_full,
+                 "--out", thumb_full],
+                capture_output=True, check=True
+            )
+        except Exception:
+            # sips not available (e.g. running on non-macOS) — use original
+            return rel_path
+    return thumb_rel
+
+def thumb_img(rel_path, full_rel_path, alt=""):
+    """
+    <img> that:
+      • shows the small thumbnail (fast on mobile)
+      • data-full stores original path for the lightbox (full-res)
+      • lazy-loads + async-decodes
+    """
+    return (
+        '<img src="' + rel_path + '" '
+        'data-full="' + full_rel_path + '" '
+        'loading="lazy" decoding="async" '
+        'alt="' + alt + '" '
+        'style="width:100%;height:100%;object-fit:cover;display:block;">'
+    )
+
+# ── BUILD TAG MAP ─────────────────────────────────────────────────────────────
 def build_maps(unique_entries):
+    """
+    Returns:
+      tag_map   : normalised-tag → [unique paths]
+      place_map : {National:{place:[paths]}, International:{place:[paths]}}
+      all_paths : [all unique paths]
+
+    KEY FIX: "Nature/Landscape/Mountains" is normalised → stored under
+    both "Nature/Landscape" AND "Nature/Mountains" so the Mountains sub-menu
+    can find them.
+    """
     tag_map   = {}
     place_map = {"National": {}, "International": {}}
     all_paths = []
+
     for info in unique_entries:
         path  = info.get('path', '')
         tags  = info.get('categories', [])
         place = info.get('place', 'General')
+
+        if not path:
+            continue
         all_paths.append(path)
-        for tag in tags:
-            tag_map.setdefault(tag, [])
-            if path not in tag_map[tag]:
-                tag_map[tag].append(path)
-            if "Places/National" in tag:
+
+        for raw_tag in tags:
+            # ── Normalise Mountains tag ──────────────────────────────────────
+            if raw_tag in MOUNTAINS_TAGS or raw_tag == "Nature/Landscape/Mountains":
+                for t in ["Nature/Mountains", "Nature/Landscape"]:
+                    tag_map.setdefault(t, [])
+                    if path not in tag_map[t]:
+                        tag_map[t].append(path)
+
+            # ── Normalise Sunsets tag ────────────────────────────────────────
+            elif raw_tag in SUNSETS_TAGS:
+                norm = "Nature/Sunsets and Sunrises"
+                tag_map.setdefault(norm, [])
+                if path not in tag_map[norm]:
+                    tag_map[norm].append(path)
+
+            # ── Everything else ──────────────────────────────────────────────
+            else:
+                tag_map.setdefault(raw_tag, [])
+                if path not in tag_map[raw_tag]:
+                    tag_map[raw_tag].append(path)
+
+            # ── Place map ────────────────────────────────────────────────────
+            if "Places/National" in raw_tag:
                 place_map["National"].setdefault(place, [])
                 if path not in place_map["National"][place]:
                     place_map["National"][place].append(path)
-            elif "Places/International" in tag:
+            elif "Places/International" in raw_tag:
                 place_map["International"].setdefault(place, [])
                 if path not in place_map["International"][place]:
                     place_map["International"][place].append(path)
+
     return tag_map, place_map, list(dict.fromkeys(all_paths))
 
-def thumb_img(path, alt=""):
-    return (
-        '<img src="' + path + '" '
-        'loading="lazy" decoding="async" '
-        'sizes="(max-width:600px) 100vw, 50vw" '
-        'style="width:100%;height:100%;object-fit:cover;" '
-        'alt="' + alt + '">'
-    )
+def get_display_paths(m_cat, s_cat, tag_map):
+    """
+    Resolve which photos belong to a sub-category.
+    Checks disk first, falls back to tag_map.
+    Special handling for Mountains (tagged as Nature/Landscape/Mountains).
+    """
+    # Try disk folder first
+    if s_cat:
+        disk_folder = os.path.join(ROOT_DIR, "Photos", m_cat, s_cat)
+        disk_paths  = scan_folder_for_photos(disk_folder)
+        if disk_paths:
+            return disk_paths
 
+    # Build tag key and gather from tag_map
+    tag_key = m_cat + "/" + s_cat if s_cat else m_cat
+
+    # Special case: Mountains
+    if s_cat == "Mountains":
+        paths = []
+        for t in ["Nature/Mountains", "Nature/Landscape/Mountains"]:
+            for p in tag_map.get(t, []):
+                if p not in paths:
+                    paths.append(p)
+        return paths
+
+    return list(dict.fromkeys(tag_map.get(tag_key, [])))
+
+
+# ── THUMBNAIL BATCH ───────────────────────────────────────────────────────────
+def ensure_thumbs(all_paths):
+    """Pre-generate thumbnails for all photos. Returns orig→thumb dict."""
+    print("  Generating thumbnails (first run may take a minute)...")
+    mapping = {}
+    for i, p in enumerate(all_paths):
+        mapping[p] = make_thumb(p)
+        if (i + 1) % 20 == 0:
+            print(f"    {i+1}/{len(all_paths)} done")
+    print(f"  Thumbnails ready: {len(mapping)}")
+    return mapping
+
+
+# ── MAIN BUILD ────────────────────────────────────────────────────────────────
 def generate_html():
 
     raw_data = load_index()
     unique   = deduplicate_by_path(raw_data)
     tag_map, place_map, all_paths = build_maps(unique)
 
+    print(f"Unique photos: {len(unique)}")
+    print(f"Mountains photos found: {len(tag_map.get('Nature/Mountains', []))}")
+
+    # Generate / verify thumbnails
+    thumb_map = ensure_thumbs(all_paths)
+
+    # Hero slides — Megamalai landscape only, 3-second rotation
     megamalai_paths = scan_folder_for_photos(MEGAMALAI_FOLDER)
     if not megamalai_paths:
-        megamalai_paths = tag_map.get("Nature/Landscape", all_paths)
+        megamalai_paths = tag_map.get("Nature/Landscape", all_paths[:20])
     hero_slides = random.sample(megamalai_paths, min(len(megamalai_paths), 15))
+    # Use thumbs for hero too (faster initial load)
+    hero_thumb_paths = [thumb_map.get(p, p) for p in hero_slides]
 
+    # Cover photo per main category (use thumb)
     cat_covers = {}
     for m_cat, subs in MANUAL_STRUCTURE.items():
         pool = []
         if m_cat == "Places":
             for grp in place_map.values():
-                for p in grp.values():
-                    pool.extend(p)
+                for plist in grp.values():
+                    pool.extend(plist)
         else:
             for s in subs:
-                pool.extend(tag_map.get(m_cat + "/" + s, []))
+                pool.extend(get_display_paths(m_cat, s, tag_map))
             pool.extend(tag_map.get(m_cat, []))
-        cat_covers[m_cat] = pick_cover(pool)
+        raw = pick_cover(pool)
+        cat_covers[m_cat] = thumb_map.get(raw, raw)
 
+    # ── CSS ───────────────────────────────────────────────────────────────────
     css = """
 @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;0,700;1,400&family=Montserrat:wght@300;400;600;700;900&display=swap');
-*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-:root{--gold:#c9a96e;--gold2:#e8c98a;--dark:#060606;--mid:#141414;--hdr:76px}
-html{scroll-behavior:smooth}
-body{background:var(--dark);color:#fff;font-family:'Montserrat',sans-serif;overflow-x:hidden;-webkit-tap-highlight-color:transparent}
 
-header{position:fixed;top:0;left:0;right:0;height:var(--hdr);background:rgba(6,6,6,0.96);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);border-bottom:1px solid rgba(201,169,110,0.14);z-index:9999;display:flex;align-items:center;justify-content:center;padding:0 16px}
-.site-title{font-family:'Cormorant Garamond',serif;font-weight:700;font-size:clamp(26px,5.5vw,52px);letter-spacing:clamp(8px,3vw,26px);color:#fff;text-transform:uppercase;cursor:pointer;transition:color 0.35s;white-space:nowrap;user-select:none}
-.site-title:hover{color:var(--gold)}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-#hero{position:relative;height:100svh;width:100%;overflow:hidden;background:#000;display:flex;align-items:center;justify-content:center}
-.slide{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center;opacity:0;transition:opacity 1.0s ease-in-out;filter:brightness(0.30) saturate(0.7);will-change:opacity}
-.slide.active{opacity:1}
-.hero-caption{position:relative;z-index:2;text-align:center;pointer-events:none;padding:0 24px}
-.hero-tagline{font-family:'Cormorant Garamond',serif;font-weight:300;font-size:clamp(22px,5.5vw,58px);letter-spacing:clamp(6px,2.5vw,18px);color:rgba(255,255,255,0.82);text-transform:uppercase;line-height:1.15}
-.hero-tagline .dot{color:var(--gold);margin:0 clamp(4px,1vw,10px)}
-.hero-byline{margin-top:clamp(14px,2.5vw,26px);font-family:'Montserrat',sans-serif;font-weight:300;font-size:clamp(10px,1.6vw,15px);letter-spacing:clamp(5px,2vw,14px);color:var(--gold);text-transform:uppercase;opacity:0.75}
-.hero-byline strong{font-weight:700;letter-spacing:clamp(6px,2.5vw,18px);color:var(--gold2)}
-.scroll-cue{position:absolute;bottom:26px;left:50%;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;gap:5px;animation:cue 2.3s ease-in-out infinite;z-index:2}
-.scroll-cue span{font-size:7px;letter-spacing:5px;color:rgba(255,255,255,0.22);text-transform:uppercase}
-@keyframes cue{0%,100%{transform:translateX(-50%) translateY(0);opacity:.35}50%{transform:translateX(-50%) translateY(8px);opacity:.85}}
+:root {
+  --gold:  #c9a96e;
+  --gold2: #e8d4a0;
+  --dark:  #080808;
+  --mid:   #161616;
+  --hdr:   64px;
+}
 
-#tile-nav{display:none;padding-top:var(--hdr);background:var(--dark);min-height:100svh;padding-bottom:50px}
-#tile-nav.visible{display:block}
-.tile-nav-label{font-family:'Montserrat',sans-serif;font-size:9px;letter-spacing:7px;color:var(--gold);text-transform:uppercase;opacity:.55;text-align:center;padding:24px 0 16px}
-.cat-tile{position:relative;width:100%;height:clamp(180px,38svh,400px);overflow:hidden;cursor:pointer;border-bottom:1px solid rgba(201,169,110,0.07);display:block}
-.cat-tile-bg{position:absolute;inset:0;background-size:cover;background-position:center;filter:brightness(0.28) saturate(0.55);transition:filter .65s ease,transform .75s ease;will-change:transform,filter}
-.cat-tile:hover .cat-tile-bg,.cat-tile:focus .cat-tile-bg{filter:brightness(0.50) saturate(0.88);transform:scale(1.05)}
-.cat-tile-vignette{position:absolute;inset:0;background:linear-gradient(to right,rgba(0,0,0,0.6) 0%,transparent 45%),linear-gradient(to top,rgba(0,0,0,0.75) 0%,transparent 55%)}
-.cat-tile-content{position:absolute;bottom:0;left:0;right:0;padding:clamp(14px,2.5vw,32px) clamp(18px,4.5vw,56px);display:flex;align-items:flex-end;justify-content:space-between}
-.cat-tile-name{font-family:'Cormorant Garamond',serif;font-size:clamp(22px,4.5vw,46px);font-weight:600;letter-spacing:clamp(2px,.8vw,5px);text-transform:uppercase;color:#fff;line-height:1;transition:color .3s}
-.cat-tile:hover .cat-tile-name{color:var(--gold)}
-.cat-tile-meta{text-align:right;flex-shrink:0;padding-left:14px}
-.cat-tile-count{display:block;font-size:9px;letter-spacing:3px;color:rgba(255,255,255,0.32);text-transform:uppercase;margin-bottom:5px}
-.cat-tile-arrow{font-size:clamp(16px,2.5vw,24px);color:var(--gold);opacity:0;transform:translateX(-6px);transition:opacity .3s,transform .3s;display:block}
-.cat-tile:hover .cat-tile-arrow{opacity:1;transform:translateX(0)}
+/* ── BASE ── */
+html { scroll-behavior: smooth; font-size: 16px; }
+body {
+  background: var(--dark); color: #fff;
+  font-family: 'Montserrat', sans-serif;
+  overflow-x: hidden;
+  -webkit-tap-highlight-color: transparent;
+  -webkit-text-size-adjust: 100%;
+}
 
-#sub-nav{display:none;padding-top:var(--hdr);background:var(--dark);min-height:100svh;padding-bottom:50px}
-#sub-nav.visible{display:block}
-.breadcrumb-bar{display:flex;align-items:center;gap:10px;padding:16px clamp(16px,4vw,48px);border-bottom:1px solid rgba(201,169,110,0.1)}
-.bc-back{font-size:9px;letter-spacing:4px;color:rgba(255,255,255,0.28);text-transform:uppercase;cursor:pointer;background:none;border:none;font-family:'Montserrat',sans-serif;display:flex;align-items:center;gap:6px;transition:color .3s}
-.bc-back:hover{color:var(--gold)}
-.bc-sep{color:rgba(255,255,255,0.1)}
-.bc-current{font-family:'Cormorant Garamond',serif;font-size:13px;letter-spacing:5px;color:var(--gold);text-transform:uppercase}
-.sub-panel{display:none}
-.sub-panel.active{display:block}
-.sub-tile{position:relative;width:100%;height:clamp(120px,26svh,260px);overflow:hidden;cursor:pointer;border-bottom:1px solid rgba(201,169,110,0.07)}
-.sub-tile-bg{position:absolute;inset:0;background-size:cover;background-position:center;filter:brightness(0.24) saturate(0.5);transition:filter .6s ease,transform .7s ease}
-.sub-tile:hover .sub-tile-bg{filter:brightness(0.50) saturate(0.85);transform:scale(1.05)}
-.sub-tile-vignette{position:absolute;inset:0;background:linear-gradient(to top,rgba(0,0,0,0.85) 0%,transparent 60%)}
-.sub-tile-content{position:absolute;bottom:0;left:0;right:0;padding:clamp(10px,2vw,24px) clamp(16px,4vw,48px);display:flex;align-items:flex-end;justify-content:space-between}
-.sub-tile-name{font-family:'Cormorant Garamond',serif;font-size:clamp(18px,3.8vw,38px);letter-spacing:clamp(1px,.7vw,4px);text-transform:uppercase;color:#fff;transition:color .3s}
-.sub-tile:hover .sub-tile-name{color:var(--gold)}
-.sub-tile-count{font-size:9px;letter-spacing:3px;color:rgba(255,255,255,0.28);text-transform:uppercase;flex-shrink:0;padding-left:10px;text-align:right}
+/* ── HEADER ── */
+header {
+  position: fixed; top: 0; left: 0; right: 0;
+  height: var(--hdr);
+  background: rgba(8,8,8,0.97);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border-bottom: 1px solid rgba(201,169,110,0.15);
+  z-index: 1000;
+  display: flex; align-items: center; justify-content: center;
+  padding: 0 16px;
+}
+/* MOHANGRAPHY — largest text on the page */
+.site-title {
+  font-family: 'Cormorant Garamond', serif;
+  font-weight: 700;
+  font-size: clamp(20px, 4.5vw, 46px);
+  letter-spacing: clamp(6px, 2.5vw, 22px);
+  color: #fff; text-transform: uppercase;
+  cursor: pointer; user-select: none;
+  transition: color 0.3s; white-space: nowrap;
+  padding-right: clamp(6px, 2.5vw, 22px); /* compensate letter-spacing on last char */
+}
+.site-title:hover { color: var(--gold); }
 
-#gallery-container{display:none;padding-top:var(--hdr);min-height:100svh;background:var(--dark);padding-bottom:80px}
-#gallery-container.visible{display:block}
-.gal-header{padding:clamp(22px,3.5vw,46px) clamp(16px,4vw,48px) clamp(10px,2vw,22px);border-bottom:1px solid rgba(201,169,110,0.1)}
-.gal-breadcrumb{font-size:9px;letter-spacing:4px;color:rgba(255,255,255,0.22);text-transform:uppercase;margin-bottom:10px;cursor:pointer;display:inline-flex;align-items:center;gap:6px;transition:color .3s;background:none;border:none;font-family:'Montserrat',sans-serif}
-.gal-breadcrumb:hover{color:var(--gold)}
-.gal-title{font-family:'Cormorant Garamond',serif;font-size:clamp(22px,5vw,56px);font-weight:600;letter-spacing:clamp(3px,1vw,8px);text-transform:uppercase}
-.gal-sub{font-size:9px;letter-spacing:5px;color:var(--gold);text-transform:uppercase;margin-top:6px;opacity:.65}
-.section-block{display:none}
-.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,340px),1fr));gap:3px;padding:3px}
-@media(max-width:440px){.grid{grid-template-columns:1fr;gap:2px;padding:2px}}
-.grid-item{position:relative;overflow:hidden;aspect-ratio:3/2;background:var(--mid);cursor:pointer}
-.grid-item img{width:100%;height:100%;object-fit:cover;display:block;filter:grayscale(0.55) brightness(0.9);transition:filter .7s ease,transform .7s ease}
-.grid-item:hover img{filter:grayscale(0) brightness(1.02);transform:scale(1.04)}
-.grid-item-overlay{position:absolute;inset:0;background:transparent;transition:background .3s;pointer-events:none}
-.grid-item:hover .grid-item-overlay{background:linear-gradient(to top,rgba(0,0,0,0.22) 0%,transparent 50%)}
-.grid-item::after{content:'\00A9 N C MOHAN';position:absolute;bottom:6px;right:8px;font-size:7px;letter-spacing:2px;color:rgba(255,255,255,0.2);font-family:'Montserrat',sans-serif;text-transform:uppercase;pointer-events:none;user-select:none}
-.wip-message{text-align:center;padding:100px 20px;font-family:'Cormorant Garamond',serif;font-size:clamp(15px,2.8vw,22px);color:rgba(255,255,255,0.1);text-transform:uppercase;letter-spacing:8px}
+/* ── HERO ── */
+#hero {
+  position: relative;
+  width: 100%;
+  /* Full viewport height minus header */
+  height: 100svh;
+  overflow: hidden;
+  background: #000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.slide {
+  position: absolute; inset: 0;
+  width: 100%; height: 100%;
+  object-fit: cover; object-position: center 40%;
+  opacity: 0;
+  transition: opacity 1.2s ease-in-out;
+  filter: brightness(0.32) saturate(0.65);
+  will-change: opacity;
+}
+.slide.active { opacity: 1; }
 
-#lightbox{display:none;position:fixed;inset:0;z-index:99999;background:rgba(0,0,0,0.97);align-items:center;justify-content:center;flex-direction:column;touch-action:none}
-#lightbox.open{display:flex}
-#lb-image{max-width:94vw;max-height:80svh;object-fit:contain;display:block;border:1px solid rgba(201,169,110,0.07);user-select:none}
-.lb-btn{position:absolute;background:none;border:none;cursor:pointer;color:rgba(255,255,255,0.32);transition:color .2s;font-family:inherit;z-index:100}
-.lb-btn:hover{color:var(--gold)}
-#lb-close{top:14px;right:18px;font-size:24px}
-#lb-prev{left:8px;top:50%;transform:translateY(-50%);font-size:38px;padding:14px}
-#lb-next{right:8px;top:50%;transform:translateY(-50%);font-size:38px;padding:14px}
-.lb-meta{position:absolute;bottom:0;left:0;right:0;background:linear-gradient(to top,rgba(0,0,0,0.88) 0%,transparent 100%);padding:20px 20px 14px;display:flex;align-items:flex-end;justify-content:space-between;flex-wrap:wrap;gap:6px}
-.lb-counter{font-size:9px;letter-spacing:3px;color:rgba(255,255,255,0.28);text-transform:uppercase}
-.lb-copyright{font-size:9px;letter-spacing:2px;color:rgba(201,169,110,0.55);text-transform:uppercase;font-family:'Montserrat',sans-serif}
-.lb-download-hint{width:100%;font-size:7px;letter-spacing:2px;color:rgba(255,255,255,0.15);text-transform:uppercase;text-align:center;margin-top:2px}
+/* Tagline sits over the photo */
+.hero-caption {
+  position: relative; z-index: 2;
+  text-align: center;
+  padding: 0 clamp(16px, 6vw, 80px);
+  pointer-events: none;
+  width: 100%;
+}
+.hero-tagline {
+  font-family: 'Cormorant Garamond', serif;
+  font-weight: 300;
+  font-size: clamp(18px, 5vw, 52px);
+  letter-spacing: clamp(4px, 2vw, 16px);
+  color: rgba(255,255,255,0.88);
+  text-transform: uppercase;
+  line-height: 1.2;
+}
+.hero-tagline .dot { color: var(--gold); margin: 0 0.3em; }
 
-#copyright-banner{display:none;position:fixed;bottom:44px;left:0;right:0;background:rgba(6,6,6,0.94);border-top:1px solid rgba(201,169,110,0.1);padding:7px 16px;text-align:center;z-index:9997;font-size:8px;letter-spacing:3px;color:rgba(201,169,110,0.5);text-transform:uppercase;line-height:1.6}
+.hero-byline {
+  margin-top: clamp(10px, 2vw, 22px);
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 300;
+  font-size: clamp(8px, 1.4vw, 13px);
+  letter-spacing: clamp(4px, 1.8vw, 12px);
+  color: var(--gold2);
+  text-transform: uppercase;
+  line-height: 1.8;
+}
+.hero-byline .name {
+  font-weight: 600;
+  font-size: clamp(10px, 1.8vw, 16px);
+  letter-spacing: clamp(5px, 2.2vw, 16px);
+  color: var(--gold);
+  display: block;
+  margin-top: 4px;
+}
 
-footer{position:fixed;bottom:0;left:0;right:0;height:44px;background:rgba(6,6,6,0.96);border-top:1px solid rgba(201,169,110,0.07);z-index:9998;display:flex;align-items:center;justify-content:space-between;padding:0 clamp(12px,4vw,40px)}
-.footer-copy{font-size:8px;letter-spacing:3px;color:rgba(255,255,255,0.12)}
-.footer-links{display:flex;gap:22px}
-.footer-link{font-size:8px;font-weight:700;letter-spacing:3px;color:rgba(255,255,255,0.22);text-transform:uppercase;text-decoration:none;cursor:pointer;transition:color .3s;background:none;border:none;font-family:'Montserrat',sans-serif}
-.footer-link:hover{color:var(--gold)}
-.page-enter{animation:pEnter .38s ease forwards}
-@keyframes pEnter{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
+.scroll-cue {
+  position: absolute; bottom: 20px; left: 50%;
+  transform: translateX(-50%);
+  display: flex; flex-direction: column; align-items: center; gap: 4px;
+  animation: cue 2.4s ease-in-out infinite; z-index: 2;
+}
+.scroll-cue span {
+  font-size: 7px; letter-spacing: 4px;
+  color: rgba(255,255,255,0.2); text-transform: uppercase;
+}
+@keyframes cue {
+  0%,100% { transform: translateX(-50%) translateY(0); opacity:.3; }
+  50%      { transform: translateX(-50%) translateY(7px); opacity:.8; }
+}
+
+/* ── VERTICAL TILE NAV ── */
+#tile-nav {
+  display: none;
+  padding-top: var(--hdr);
+  background: var(--dark);
+  min-height: 100svh;
+  padding-bottom: 56px; /* footer clearance */
+}
+#tile-nav.visible { display: block; }
+
+.tile-nav-label {
+  font-size: 8px; letter-spacing: 6px;
+  color: var(--gold); text-transform: uppercase;
+  opacity: .5; text-align: center;
+  padding: 20px 0 12px;
+}
+
+/* Each main-category tile is full-width, ~38% viewport tall */
+.cat-tile {
+  position: relative; width: 100%;
+  height: clamp(160px, 36svh, 380px);
+  overflow: hidden; cursor: pointer;
+  border-bottom: 1px solid rgba(201,169,110,0.06);
+  display: block;
+  -webkit-tap-highlight-color: transparent;
+}
+.cat-tile-bg {
+  position: absolute; inset: 0;
+  background-size: cover; background-position: center;
+  filter: brightness(0.27) saturate(0.5);
+  transition: filter .6s, transform .7s;
+  will-change: transform, filter;
+}
+.cat-tile:hover .cat-tile-bg { filter: brightness(0.48) saturate(0.85); transform: scale(1.04); }
+/* Touch devices: show brightened state when tapped */
+.cat-tile:active .cat-tile-bg { filter: brightness(0.55) saturate(0.9); }
+
+.cat-tile-vignette {
+  position: absolute; inset: 0;
+  background:
+    linear-gradient(to right, rgba(0,0,0,0.65) 0%, transparent 50%),
+    linear-gradient(to top, rgba(0,0,0,0.8) 0%, transparent 50%);
+}
+.cat-tile-content {
+  position: absolute; bottom: 0; left: 0; right: 0;
+  padding: clamp(12px,2vw,28px) clamp(16px,4vw,52px);
+  display: flex; align-items: flex-end; justify-content: space-between;
+  gap: 8px;
+}
+/* Category name — SMALLER than MOHANGRAPHY header */
+.cat-tile-name {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: clamp(20px, 4vw, 40px);  /* capped below site-title */
+  font-weight: 600;
+  letter-spacing: clamp(2px, .7vw, 5px);
+  text-transform: uppercase; color: #fff; line-height: 1;
+  transition: color .3s;
+}
+.cat-tile:hover .cat-tile-name,
+.cat-tile:active .cat-tile-name { color: var(--gold); }
+
+.cat-tile-meta { text-align: right; flex-shrink: 0; }
+.cat-tile-count {
+  display: block; font-size: 8px; letter-spacing: 2px;
+  color: rgba(255,255,255,0.3); text-transform: uppercase; margin-bottom: 4px;
+}
+.cat-tile-arrow {
+  display: block; font-size: 18px; color: var(--gold);
+  opacity: 0; transform: translateX(-5px);
+  transition: opacity .3s, transform .3s;
+}
+.cat-tile:hover .cat-tile-arrow { opacity: 1; transform: translateX(0); }
+
+/* ── SUB-CATEGORY PAGE ── */
+#sub-nav {
+  display: none; padding-top: var(--hdr);
+  background: var(--dark); min-height: 100svh;
+  padding-bottom: 56px;
+}
+#sub-nav.visible { display: block; }
+
+.breadcrumb-bar {
+  display: flex; align-items: center; gap: 8px;
+  padding: 14px clamp(14px,4vw,44px);
+  border-bottom: 1px solid rgba(201,169,110,0.1);
+}
+.bc-back {
+  font-size: 8px; letter-spacing: 3px;
+  color: rgba(255,255,255,0.25); text-transform: uppercase;
+  cursor: pointer; background: none; border: none;
+  font-family: 'Montserrat', sans-serif;
+  padding: 6px 0; transition: color .3s;
+  /* Large touch target */
+  min-height: 44px; display: flex; align-items: center; gap: 5px;
+}
+.bc-back:hover, .bc-back:active { color: var(--gold); }
+.bc-sep { color: rgba(255,255,255,0.1); font-size: 11px; }
+.bc-current {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 12px; letter-spacing: 4px;
+  color: var(--gold); text-transform: uppercase;
+}
+.sub-panel { display: none; }
+.sub-panel.active { display: block; }
+
+/* Sub-tiles — shorter than main tiles */
+.sub-tile {
+  position: relative; width: 100%;
+  height: clamp(110px, 24svh, 240px);
+  overflow: hidden; cursor: pointer;
+  border-bottom: 1px solid rgba(201,169,110,0.06);
+  -webkit-tap-highlight-color: transparent;
+}
+.sub-tile-bg {
+  position: absolute; inset: 0;
+  background-size: cover; background-position: center;
+  filter: brightness(0.23) saturate(0.45);
+  transition: filter .55s, transform .65s;
+}
+.sub-tile:hover .sub-tile-bg,
+.sub-tile:active .sub-tile-bg {
+  filter: brightness(0.48) saturate(0.82);
+  transform: scale(1.05);
+}
+.sub-tile-vignette {
+  position: absolute; inset: 0;
+  background: linear-gradient(to top, rgba(0,0,0,0.88) 0%, transparent 60%);
+}
+.sub-tile-content {
+  position: absolute; bottom: 0; left: 0; right: 0;
+  padding: clamp(8px,1.8vw,20px) clamp(14px,4vw,44px);
+  display: flex; align-items: flex-end; justify-content: space-between; gap: 8px;
+}
+.sub-tile-name {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: clamp(16px, 3.5vw, 34px);
+  letter-spacing: clamp(1px,.6vw,3px); text-transform: uppercase;
+  color: #fff; transition: color .3s; line-height: 1.1;
+}
+.sub-tile:hover .sub-tile-name,
+.sub-tile:active .sub-tile-name { color: var(--gold); }
+.sub-tile-count {
+  font-size: 8px; letter-spacing: 2px;
+  color: rgba(255,255,255,0.25); text-transform: uppercase;
+  flex-shrink: 0; padding-left: 8px; text-align: right;
+}
+
+/* ── GALLERY ── */
+#gallery-container {
+  display: none; padding-top: var(--hdr);
+  min-height: 100svh; background: var(--dark);
+  padding-bottom: 80px;
+}
+#gallery-container.visible { display: block; }
+
+.gal-header {
+  padding: clamp(18px,3vw,42px) clamp(14px,4vw,44px) clamp(8px,1.5vw,18px);
+  border-bottom: 1px solid rgba(201,169,110,0.1);
+}
+.gal-breadcrumb {
+  font-size: 8px; letter-spacing: 3px;
+  color: rgba(255,255,255,0.2); text-transform: uppercase;
+  margin-bottom: 8px; cursor: pointer;
+  display: inline-flex; align-items: center; gap: 5px;
+  transition: color .3s; background: none; border: none;
+  font-family: 'Montserrat', sans-serif;
+  min-height: 44px; padding: 0;
+}
+.gal-breadcrumb:hover, .gal-breadcrumb:active { color: var(--gold); }
+.gal-title {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: clamp(20px, 4.5vw, 50px);
+  font-weight: 600; letter-spacing: clamp(2px,.8vw,7px);
+  text-transform: uppercase; line-height: 1.1;
+}
+.gal-sub {
+  font-size: 8px; letter-spacing: 4px;
+  color: var(--gold); text-transform: uppercase;
+  margin-top: 5px; opacity: .65;
+}
+.section-block { display: none; }
+
+/* ── PHOTO GRID ── */
+/*
+  Mobile  (<480px)  : 1 column
+  Tablet  (480–900) : 2 columns
+  Desktop (>900px)  : 3 columns
+  All cells: 3:2 aspect ratio, thumbnail images
+*/
+.grid {
+  display: grid;
+  gap: 2px; padding: 2px;
+  grid-template-columns: 1fr;
+}
+@media (min-width: 480px) {
+  .grid { grid-template-columns: 1fr 1fr; }
+}
+@media (min-width: 900px) {
+  .grid { grid-template-columns: 1fr 1fr 1fr; gap: 3px; padding: 3px; }
+}
+
+.grid-item {
+  position: relative; overflow: hidden;
+  aspect-ratio: 3 / 2; background: var(--mid);
+  cursor: pointer;
+  /* Ensure touch targets are at least 44px tall */
+  min-height: 44px;
+}
+.grid-item img {
+  width: 100%; height: 100%; object-fit: cover; display: block;
+  filter: grayscale(0.45) brightness(0.92);
+  transition: filter .6s, transform .6s;
+}
+.grid-item:hover img,
+.grid-item:active img {
+  filter: grayscale(0) brightness(1.02);
+  transform: scale(1.04);
+}
+.grid-item-overlay {
+  position: absolute; inset: 0;
+  background: transparent; pointer-events: none;
+  transition: background .3s;
+}
+.grid-item:hover .grid-item-overlay {
+  background: linear-gradient(to top, rgba(0,0,0,0.18) 0%, transparent 45%);
+}
+/* Subtle copyright mark */
+.grid-item::after {
+  content: '\00A9 NCM';
+  position: absolute; bottom: 5px; right: 6px;
+  font-size: 7px; letter-spacing: 1px;
+  color: rgba(255,255,255,0.18);
+  font-family: 'Montserrat', sans-serif;
+  pointer-events: none; user-select: none;
+}
+
+.wip-message {
+  text-align: center; padding: 80px 20px;
+  font-family: 'Cormorant Garamond', serif;
+  font-size: clamp(14px, 2.5vw, 20px);
+  color: rgba(255,255,255,0.1); text-transform: uppercase; letter-spacing: 6px;
+}
+
+/* ── LIGHTBOX ── */
+#lightbox {
+  display: none; position: fixed; inset: 0; z-index: 9000;
+  background: rgba(0,0,0,0.97);
+  align-items: center; justify-content: center;
+  touch-action: none;
+}
+#lightbox.open { display: flex; }
+#lb-image {
+  max-width: 96vw; max-height: 82svh;
+  object-fit: contain; display: block;
+  border: 1px solid rgba(201,169,110,0.06);
+  user-select: none; -webkit-user-drag: none;
+}
+.lb-btn {
+  position: absolute; background: rgba(0,0,0,0.4);
+  border: none; cursor: pointer;
+  color: rgba(255,255,255,0.45); transition: color .2s, background .2s;
+  z-index: 9001; border-radius: 50%;
+  /* Large touch targets */
+  width: 48px; height: 48px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 22px;
+}
+.lb-btn:hover, .lb-btn:active { color: var(--gold); background: rgba(0,0,0,0.7); }
+#lb-close { top: 12px; right: 12px; font-size: 18px; }
+#lb-prev  { left: 8px;  top: 50%; transform: translateY(-50%); }
+#lb-next  { right: 8px; top: 50%; transform: translateY(-50%); }
+
+.lb-meta {
+  position: absolute; bottom: 0; left: 0; right: 0;
+  background: linear-gradient(to top, rgba(0,0,0,0.85) 0%, transparent 100%);
+  padding: 20px 16px 14px;
+  display: flex; align-items: flex-end; justify-content: space-between;
+  flex-wrap: wrap; gap: 4px;
+}
+.lb-counter {
+  font-size: 8px; letter-spacing: 3px;
+  color: rgba(255,255,255,0.25); text-transform: uppercase;
+}
+.lb-copyright {
+  font-size: 8px; letter-spacing: 2px;
+  color: rgba(201,169,110,0.5); text-transform: uppercase;
+}
+.lb-hint {
+  width: 100%; font-size: 7px; letter-spacing: 2px;
+  color: rgba(255,255,255,0.12); text-transform: uppercase; text-align: center;
+}
+
+/* ── COPYRIGHT BANNER ── */
+#copyright-banner {
+  display: none; position: fixed;
+  bottom: 44px; left: 0; right: 0;
+  background: rgba(8,8,8,0.95);
+  border-top: 1px solid rgba(201,169,110,0.09);
+  padding: 6px 12px; text-align: center; z-index: 8990;
+  font-size: 7px; letter-spacing: 2px;
+  color: rgba(201,169,110,0.45); text-transform: uppercase; line-height: 1.8;
+}
+
+/* ── FOOTER ── */
+footer {
+  position: fixed; bottom: 0; left: 0; right: 0;
+  height: 44px; background: rgba(8,8,8,0.97);
+  border-top: 1px solid rgba(201,169,110,0.07);
+  z-index: 9000;
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0 clamp(10px,4vw,36px);
+}
+.footer-copy {
+  font-size: 7px; letter-spacing: 2px; color: rgba(255,255,255,0.1);
+}
+.footer-links { display: flex; gap: 18px; }
+.footer-link {
+  font-size: 7px; font-weight: 700; letter-spacing: 3px;
+  color: rgba(255,255,255,0.2); text-transform: uppercase;
+  cursor: pointer; background: none; border: none;
+  font-family: 'Montserrat', sans-serif;
+  min-height: 44px; display: flex; align-items: center;
+  transition: color .3s;
+}
+.footer-link:hover, .footer-link:active { color: var(--gold); }
+
+/* ── PAGE TRANSITIONS ── */
+.page-enter { animation: pEnter .35s ease forwards; }
+@keyframes pEnter {
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: none; }
+}
 """
 
+    # ── BUILD GALLERY BLOCKS + SUB-PANELS ────────────────────────────────────
     gallery_blocks = ""
     sub_panels     = ""
 
@@ -214,74 +712,138 @@ footer{position:fixed;bottom:0;left:0;right:0;height:44px;background:rgba(6,6,6,
             for group in ["National", "International"]:
                 places = place_map[group]
                 if places:
-                    for p_name, p_paths in places.items():
-                        disk_folder   = os.path.join(ROOT_DIR, "Photos", m_cat, group, p_name)
-                        disk_paths    = scan_folder_for_photos(disk_folder)
-                        display_paths = disk_paths if disk_paths else list(dict.fromkeys(p_paths))
-                        s_id    = "place-" + group + "-" + p_name.replace(' ', '-')
-                        s_cover = pick_cover(display_paths)
-                        sub_items.append({"id": s_id, "name": p_name, "cover": s_cover, "count": len(display_paths), "subtitle": group})
-                        imgs = "".join(['<div class="grid-item" onclick="openLightbox(this)">' + thumb_img(p, p_name) + '<div class="grid-item-overlay"></div></div>' for p in display_paths])
-                        gallery_blocks += '\n<div class="section-block" id="' + s_id + '">\n  <div class="gal-header"><button class="gal-breadcrumb" onclick="openSubNav(currentCat)">\u2190 Back to ' + m_cat + '</button><div class="gal-title">' + p_name + '</div><div class="gal-sub">' + group + ' \u00a0\u00b7\u00a0 ' + str(len(display_paths)) + ' Photos</div></div>\n  ' + ('<div class="grid">' + imgs + '</div>' if display_paths else '<div class="wip-message">Work in progress</div>') + '\n</div>'
+                    for p_name, p_paths_raw in places.items():
+                        disk_folder = os.path.join(ROOT_DIR, "Photos", m_cat, group, p_name)
+                        disk_paths  = scan_folder_for_photos(disk_folder)
+                        orig_paths  = disk_paths if disk_paths else list(dict.fromkeys(p_paths_raw))
+                        s_id     = "place-" + group + "-" + p_name.replace(' ', '-')
+                        s_cover  = thumb_map.get(pick_cover(orig_paths), "")
+                        sub_items.append({"id": s_id, "name": p_name, "cover": s_cover,
+                                          "count": len(orig_paths), "subtitle": group})
+                        imgs = "".join([
+                            '<div class="grid-item" onclick="openLightbox(this)">'
+                            + thumb_img(thumb_map.get(p, p), p, p_name)
+                            + '<div class="grid-item-overlay"></div></div>'
+                            for p in orig_paths
+                        ])
+                        gallery_blocks += (
+                            '\n<div class="section-block" id="' + s_id + '">'
+                            '\n  <div class="gal-header">'
+                            '<button class="gal-breadcrumb" onclick="openSubNav(currentCat)">&larr; Back to ' + m_cat + '</button>'
+                            '<div class="gal-title">' + p_name + '</div>'
+                            '<div class="gal-sub">' + group + ' &middot; ' + str(len(orig_paths)) + ' Photos</div>'
+                            '</div>'
+                            + ('\n  <div class="grid">' + imgs + '</div>' if orig_paths else '\n  <div class="wip-message">Work in progress</div>')
+                            + '\n</div>'
+                        )
                 else:
-                    sub_items.append({"id": "wip-" + m_cat + "-" + group, "name": group, "cover": "", "count": 0, "subtitle": "Coming soon"})
+                    sub_items.append({"id": "wip-" + m_cat + "-" + group, "name": group,
+                                      "cover": "", "count": 0, "subtitle": "Coming soon"})
 
         elif subs:
             for s_cat in subs:
-                tag         = m_cat + "/" + s_cat
-                meta_paths  = list(dict.fromkeys(tag_map.get(tag, [])))
-                if s_cat == "Mountains":
-                    for p in tag_map.get(tag + "/Mountains", []):
-                        if p not in meta_paths:
-                            meta_paths.append(p)
-                disk_folder   = os.path.join(ROOT_DIR, "Photos", m_cat, s_cat)
-                disk_paths    = scan_folder_for_photos(disk_folder)
-                display_paths = disk_paths if disk_paths else meta_paths
+                orig_paths = get_display_paths(m_cat, s_cat, tag_map)
                 s_id    = "sub-" + m_cat + "-" + s_cat.replace(' ', '-')
-                s_cover = pick_cover(display_paths)
-                sub_items.append({"id": s_id, "name": s_cat, "cover": s_cover, "count": len(display_paths), "subtitle": m_cat})
-                imgs = "".join(['<div class="grid-item" onclick="openLightbox(this)">' + thumb_img(p, s_cat) + '<div class="grid-item-overlay"></div></div>' for p in display_paths])
-                gallery_blocks += '\n<div class="section-block" id="' + s_id + '">\n  <div class="gal-header"><button class="gal-breadcrumb" onclick="openSubNav(currentCat)">\u2190 Back to ' + m_cat + '</button><div class="gal-title">' + s_cat + '</div><div class="gal-sub">' + m_cat + ' \u00a0\u00b7\u00a0 ' + str(len(display_paths)) + ' Photos</div></div>\n  ' + ('<div class="grid">' + imgs + '</div>' if display_paths else '<div class="wip-message">Work in progress</div>') + '\n</div>'
+                s_cover = thumb_map.get(pick_cover(orig_paths), "")
+                sub_items.append({"id": s_id, "name": s_cat, "cover": s_cover,
+                                  "count": len(orig_paths), "subtitle": m_cat})
+                imgs = "".join([
+                    '<div class="grid-item" onclick="openLightbox(this)">'
+                    + thumb_img(thumb_map.get(p, p), p, s_cat)
+                    + '<div class="grid-item-overlay"></div></div>'
+                    for p in orig_paths
+                ])
+                gallery_blocks += (
+                    '\n<div class="section-block" id="' + s_id + '">'
+                    '\n  <div class="gal-header">'
+                    '<button class="gal-breadcrumb" onclick="openSubNav(currentCat)">&larr; Back to ' + m_cat + '</button>'
+                    '<div class="gal-title">' + s_cat + '</div>'
+                    '<div class="gal-sub">' + m_cat + ' &middot; ' + str(len(orig_paths)) + ' Photos</div>'
+                    '</div>'
+                    + ('\n  <div class="grid">' + imgs + '</div>' if orig_paths else '\n  <div class="wip-message">Work in progress</div>')
+                    + '\n</div>'
+                )
 
         else:
-            disk_folder   = os.path.join(ROOT_DIR, "Photos", m_cat)
-            disk_paths    = scan_folder_for_photos(disk_folder)
-            meta_paths    = list(dict.fromkeys(tag_map.get(m_cat, [])))
-            display_paths = disk_paths if disk_paths else meta_paths
+            orig_paths = get_display_paths(m_cat, "", tag_map)
             s_id    = "direct-" + m_cat
-            s_cover = pick_cover(display_paths)
-            sub_items.append({"id": s_id, "name": m_cat, "cover": s_cover, "count": len(display_paths), "subtitle": ""})
-            imgs = "".join(['<div class="grid-item" onclick="openLightbox(this)">' + thumb_img(p, m_cat) + '<div class="grid-item-overlay"></div></div>' for p in display_paths])
-            gallery_blocks += '\n<div class="section-block" id="' + s_id + '">\n  <div class="gal-header"><button class="gal-breadcrumb" onclick="goHome()">\u2190 Home</button><div class="gal-title">' + m_cat + '</div><div class="gal-sub">' + str(len(display_paths)) + ' Photos</div></div>\n  ' + ('<div class="grid">' + imgs + '</div>' if display_paths else '<div class="wip-message">Work in progress</div>') + '\n</div>'
+            s_cover = thumb_map.get(pick_cover(orig_paths), "")
+            sub_items.append({"id": s_id, "name": m_cat, "cover": s_cover,
+                              "count": len(orig_paths), "subtitle": ""})
+            imgs = "".join([
+                '<div class="grid-item" onclick="openLightbox(this)">'
+                + thumb_img(thumb_map.get(p, p), p, m_cat)
+                + '<div class="grid-item-overlay"></div></div>'
+                for p in orig_paths
+            ])
+            gallery_blocks += (
+                '\n<div class="section-block" id="' + s_id + '">'
+                '\n  <div class="gal-header">'
+                '<button class="gal-breadcrumb" onclick="goHome()">&larr; Home</button>'
+                '<div class="gal-title">' + m_cat + '</div>'
+                '<div class="gal-sub">' + str(len(orig_paths)) + ' Photos</div>'
+                '</div>'
+                + ('\n  <div class="grid">' + imgs + '</div>' if orig_paths else '\n  <div class="wip-message">Work in progress</div>')
+                + '\n</div>'
+            )
 
+        # Sub-panel tiles
         sub_tiles_html = ""
         for item in sub_items:
-            bg  = 'background-image:url("' + item["cover"] + '");' if item.get("cover") else "background:var(--mid);"
+            bg  = ('background-image:url("' + item["cover"] + '");'
+                   if item.get("cover") else "background:var(--mid);")
             cnt = str(item["count"]) + " Photos" if item["count"] else "Coming Soon"
-            sub_tiles_html += '\n<div class="sub-tile" onclick="showGallery(\'' + item['id'] + '\')">\n  <div class="sub-tile-bg" style="' + bg + '"></div>\n  <div class="sub-tile-vignette"></div>\n  <div class="sub-tile-content"><div class="sub-tile-name">' + item['name'] + '</div><div class="sub-tile-count">' + cnt + '</div></div>\n</div>'
+            sub_tiles_html += (
+                '\n<div class="sub-tile" onclick="showGallery(\'' + item['id'] + '\')">'
+                '\n  <div class="sub-tile-bg" style="' + bg + '"></div>'
+                '\n  <div class="sub-tile-vignette"></div>'
+                '\n  <div class="sub-tile-content">'
+                '<div class="sub-tile-name">' + item['name'] + '</div>'
+                '<div class="sub-tile-count">' + cnt + '</div>'
+                '</div>\n</div>'
+            )
+        sub_panels += (
+            '\n<div class="sub-panel" id="subpanel-' + m_cat + '">'
+            + sub_tiles_html
+            + '\n</div>'
+        )
 
-        sub_panels += '\n<div class="sub-panel" id="subpanel-' + m_cat + '">' + sub_tiles_html + '\n</div>'
-
+    # ── MAIN CATEGORY TILES ───────────────────────────────────────────────────
     cat_tiles_html = ""
     for m_cat, subs in MANUAL_STRUCTURE.items():
         cover = cat_covers.get(m_cat, "")
-        bg    = 'background-image:url("' + cover + '");' if cover else "background:var(--mid);"
-        disk_folder = os.path.join(ROOT_DIR, "Photos", m_cat)
-        disk_cnt    = count_folder(disk_folder)
-        count_lbl   = str(disk_cnt) + " Photos" if disk_cnt else "Coming Soon"
-        click = "openCategory('" + m_cat + "')" if subs else "showGallery('direct-" + m_cat + "')"
-        cat_tiles_html += '\n<div class="cat-tile" onclick="' + click + '" role="button" tabindex="0" onkeypress="if(event.key===\'Enter\') this.click()">\n  <div class="cat-tile-bg" style="' + bg + '"></div>\n  <div class="cat-tile-vignette"></div>\n  <div class="cat-tile-content"><div class="cat-tile-name">' + m_cat + '</div><div class="cat-tile-meta"><span class="cat-tile-count">' + count_lbl + '</span><span class="cat-tile-arrow">\u2192</span></div></div>\n</div>'
+        bg    = ('background-image:url("' + cover + '");' if cover
+                 else "background:var(--mid);")
+        disk_cnt  = count_folder(os.path.join(ROOT_DIR, "Photos", m_cat))
+        count_lbl = str(disk_cnt) + " Photos" if disk_cnt else "Coming Soon"
+        click = ("openCategory('" + m_cat + "')" if subs
+                 else "showGallery('direct-" + m_cat + "')")
+        cat_tiles_html += (
+            '\n<div class="cat-tile" onclick="' + click + '" role="button" tabindex="0"'
+            ' onkeypress="if(event.key===\'Enter\') this.click()">'
+            '\n  <div class="cat-tile-bg" style="' + bg + '"></div>'
+            '\n  <div class="cat-tile-vignette"></div>'
+            '\n  <div class="cat-tile-content">'
+            '<div class="cat-tile-name">' + m_cat + '</div>'
+            '<div class="cat-tile-meta">'
+            '<span class="cat-tile-count">' + count_lbl + '</span>'
+            '<span class="cat-tile-arrow">&rarr;</span>'
+            '</div></div>\n</div>'
+        )
 
-    slides_json = json.dumps(hero_slides)
+    # ── JAVASCRIPT ────────────────────────────────────────────────────────────
+    slides_json = json.dumps(hero_thumb_paths)
+    orig_json   = json.dumps(hero_slides)   # full-res for lightbox if ever used
 
     js = """
-let currentCat = null;
+var currentCat = null;
 
+/* ── Hero slideshow: Megamalai thumbs, 3-second rotation ── */
 (function(){
-  var paths = """ + slides_json + """;
-  var hero  = document.getElementById('hero');
-  if (!paths.length) return;
-  var imgs = paths.map(function(src){
+  var thumbs = """ + slides_json + """;
+  var hero   = document.getElementById('hero');
+  if (!thumbs.length) return;
+  var imgs = thumbs.map(function(src){
     var img = document.createElement('img');
     img.src = src; img.className = 'slide';
     img.loading = 'lazy'; img.decoding = 'async'; img.alt = '';
@@ -291,19 +853,20 @@ let currentCat = null;
   imgs[0].classList.add('active');
   setInterval(function(){
     imgs[cur].classList.remove('active');
-    cur = (cur + 1) % imgs.length;
+    cur = (cur+1) % imgs.length;
     imgs[cur].classList.add('active');
-  }, 2000);
+  }, 3000);
 })();
 
+/* ── Navigation helpers ── */
 function hideAll(){
   document.getElementById('hero').style.display = 'none';
   document.getElementById('tile-nav').classList.remove('visible');
   document.getElementById('sub-nav').classList.remove('visible');
   document.getElementById('gallery-container').classList.remove('visible');
   document.getElementById('copyright-banner').style.display = 'none';
-  document.querySelectorAll('.sub-panel').forEach(function(p){p.classList.remove('active');});
-  document.querySelectorAll('.section-block').forEach(function(b){b.style.display='none';});
+  document.querySelectorAll('.sub-panel').forEach(function(p){ p.classList.remove('active'); });
+  document.querySelectorAll('.section-block').forEach(function(b){ b.style.display='none'; });
 }
 function goHome(){
   hideAll();
@@ -318,144 +881,185 @@ function openCategory(cat){
   var sn = document.getElementById('sub-nav');
   sn.classList.add('visible','page-enter');
   document.getElementById('bc-label').textContent = cat;
-  var panel = document.getElementById('subpanel-'+cat);
-  if(panel) panel.classList.add('active');
+  var p = document.getElementById('subpanel-'+cat);
+  if(p) p.classList.add('active');
   window.scrollTo(0,0);
 }
 function openSubNav(cat){ openCategory(cat); }
-function showGallery(sectionId){
+function showGallery(id){
   hideAll();
   var gc = document.getElementById('gallery-container');
   gc.classList.add('visible','page-enter');
-  var block = document.getElementById(sectionId);
-  if(block) block.style.display='block';
+  var b = document.getElementById(id);
+  if(b) b.style.display='block';
   document.getElementById('copyright-banner').style.display='block';
   window.scrollTo(0,0);
 }
 ['tile-nav','sub-nav','gallery-container'].forEach(function(id){
-  document.getElementById(id).addEventListener('animationend',function(){this.classList.remove('page-enter');});
+  document.getElementById(id).addEventListener('animationend',function(){
+    this.classList.remove('page-enter');
+  });
 });
 
-var lbImages=[],lbIdx=0;
-var lb=document.getElementById('lightbox');
-var lbImg=document.getElementById('lb-image');
-var lbCtr=document.getElementById('lb-counter');
+/* ── Lightbox: uses data-full attribute for full-res image ── */
+var lbImages=[], lbFullImages=[], lbIdx=0;
+var lb    = document.getElementById('lightbox');
+var lbImg = document.getElementById('lb-image');
+var lbCtr = document.getElementById('lb-counter');
+
 function openLightbox(el){
-  var grid=el.closest('.grid');
-  lbImages=Array.from(grid.querySelectorAll('.grid-item img')).map(function(i){return i.src;});
-  lbIdx=Array.from(grid.querySelectorAll('.grid-item')).indexOf(el);
-  lbImg.src=lbImages[lbIdx];
-  lbCtr.textContent=(lbIdx+1)+' / '+lbImages.length;
+  var grid = el.closest('.grid');
+  var items = Array.from(grid.querySelectorAll('.grid-item'));
+  var imgEls = Array.from(grid.querySelectorAll('.grid-item img'));
+  lbFullImages = imgEls.map(function(i){ return i.getAttribute('data-full') || i.src; });
+  lbImages     = imgEls.map(function(i){ return i.src; });
+  lbIdx = items.indexOf(el);
+  /* Show full-res in lightbox */
+  lbImg.src = lbFullImages[lbIdx];
+  lbCtr.textContent = (lbIdx+1) + ' / ' + lbImages.length;
   lb.classList.add('open');
-  document.body.style.overflow='hidden';
+  document.body.style.overflow = 'hidden';
 }
-function closeLightbox(){lb.classList.remove('open');document.body.style.overflow='';}
+function closeLightbox(){
+  lb.classList.remove('open');
+  document.body.style.overflow = '';
+}
 function lbStep(dir){
-  lbIdx=(lbIdx+dir+lbImages.length)%lbImages.length;
-  lbImg.src=lbImages[lbIdx];
-  lbCtr.textContent=(lbIdx+1)+' / '+lbImages.length;
+  lbIdx = (lbIdx + dir + lbFullImages.length) % lbFullImages.length;
+  lbImg.src = lbFullImages[lbIdx];
+  lbCtr.textContent = (lbIdx+1) + ' / ' + lbFullImages.length;
 }
-lb.addEventListener('click',function(e){if(e.target===lb)closeLightbox();});
-document.addEventListener('keydown',function(e){
-  if(!lb.classList.contains('open'))return;
-  if(e.key==='Escape')closeLightbox();
-  if(e.key==='ArrowRight')lbStep(1);
-  if(e.key==='ArrowLeft')lbStep(-1);
+lb.addEventListener('click', function(e){ if(e.target===lb) closeLightbox(); });
+document.addEventListener('keydown', function(e){
+  if(!lb.classList.contains('open')) return;
+  if(e.key==='Escape')     closeLightbox();
+  if(e.key==='ArrowRight') lbStep(1);
+  if(e.key==='ArrowLeft')  lbStep(-1);
 });
-var tsX=null;
-lb.addEventListener('touchstart',function(e){tsX=e.touches[0].clientX;},{passive:true});
-lb.addEventListener('touchend',function(e){
-  if(tsX===null)return;
+/* Touch swipe */
+var tsX=null, tsY=null;
+lb.addEventListener('touchstart', function(e){
+  tsX=e.touches[0].clientX; tsY=e.touches[0].clientY;
+},{passive:true});
+lb.addEventListener('touchend', function(e){
+  if(tsX===null) return;
   var dx=e.changedTouches[0].clientX-tsX;
-  if(Math.abs(dx)>48)lbStep(dx<0?1:-1);
-  tsX=null;
+  var dy=e.changedTouches[0].clientY-tsY;
+  /* Only swipe if horizontal movement dominates */
+  if(Math.abs(dx)>Math.abs(dy) && Math.abs(dx)>44) lbStep(dx<0?1:-1);
+  tsX=null; tsY=null;
 });
+
 goHome();
 """
 
-    html = """<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-  <meta name="theme-color" content="#060606">
-  <meta name="description" content="Mohangraphy - Photography by N C Mohan. All photographs copyright N C Mohan. All rights reserved.">
-  <title>MOHANGRAPHY - Photography by N C Mohan</title>
-  <style>""" + css + """</style>
-</head>
-<body>
+    # ── ASSEMBLE HTML ─────────────────────────────────────────────────────────
+    html = (
+        '<!DOCTYPE html>\n'
+        '<html lang="en">\n'
+        '<head>\n'
+        '  <meta charset="UTF-8">\n'
+        '  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">\n'
+        '  <meta name="theme-color" content="#080808">\n'
+        '  <meta name="description" content="Mohangraphy - Photography by N C Mohan. All photographs copyright N C Mohan.">\n'
+        '  <title>MOHANGRAPHY</title>\n'
+        '  <style>' + css + '</style>\n'
+        '</head>\n'
+        '<body>\n\n'
 
-<header>
-  <div class="site-title" onclick="goHome()" role="button" tabindex="0"
-       onkeypress="if(event.key==='Enter') goHome()">M O H A N G R A P H Y</div>
-</header>
+        '<!-- HEADER -->\n'
+        '<header>\n'
+        '  <div class="site-title" onclick="goHome()" role="button" tabindex="0"\n'
+        '       onkeypress="if(event.key===\'Enter\') goHome()">M O H A N G R A P H Y</div>\n'
+        '</header>\n\n'
 
-<div id="hero">
-  <div class="hero-caption">
-    <div class="hero-tagline">Light <span class="dot">&middot;</span> Moment <span class="dot">&middot;</span> Story</div>
-    <div class="hero-byline">Photos by &nbsp;<strong>N C &nbsp; M O H A N</strong></div>
-  </div>
-  <div class="scroll-cue">
-    <svg width="14" height="20" viewBox="0 0 14 20" fill="none">
-      <path d="M7 2v12M2 11l5 5 5-5" stroke="rgba(255,255,255,0.35)" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
-    </svg>
-    <span>Explore</span>
-  </div>
-</div>
+        '<!-- HERO (slides injected by JS) -->\n'
+        '<div id="hero">\n'
+        '  <div class="hero-caption">\n'
+        '    <div class="hero-tagline">\n'
+        '      Light <span class="dot">&middot;</span>\n'
+        '      Moment <span class="dot">&middot;</span>\n'
+        '      Story\n'
+        '    </div>\n'
+        '    <div class="hero-byline">\n'
+        '      Photos by\n'
+        '      <span class="name">N C &nbsp; M O H A N</span>\n'
+        '    </div>\n'
+        '  </div>\n'
+        '  <div class="scroll-cue">\n'
+        '    <svg width="12" height="18" viewBox="0 0 12 18" fill="none">\n'
+        '      <path d="M6 2v10M2 9l4 5 4-5" stroke="rgba(255,255,255,0.3)"\n'
+        '            stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/>\n'
+        '    </svg>\n'
+        '    <span>Explore</span>\n'
+        '  </div>\n'
+        '</div>\n\n'
 
-<div id="tile-nav">
-  <div class="tile-nav-label">Collections</div>
-  """ + cat_tiles_html + """
-</div>
+        '<!-- MAIN TILE MENU -->\n'
+        '<div id="tile-nav">\n'
+        '  <div class="tile-nav-label">Collections</div>\n'
+        + cat_tiles_html +
+        '\n</div>\n\n'
 
-<div id="sub-nav">
-  <div class="breadcrumb-bar">
-    <button class="bc-back" onclick="goHome()">&larr; Home</button>
-    <span class="bc-sep">|</span>
-    <span class="bc-current" id="bc-label"></span>
-  </div>
-  """ + sub_panels + """
-</div>
+        '<!-- SUB-CATEGORY PAGE -->\n'
+        '<div id="sub-nav">\n'
+        '  <div class="breadcrumb-bar">\n'
+        '    <button class="bc-back" onclick="goHome()">&larr; Home</button>\n'
+        '    <span class="bc-sep">|</span>\n'
+        '    <span class="bc-current" id="bc-label"></span>\n'
+        '  </div>\n'
+        + sub_panels +
+        '\n</div>\n\n'
 
-<main id="gallery-container">
-  """ + gallery_blocks + """
-</main>
+        '<!-- GALLERY -->\n'
+        '<main id="gallery-container">\n'
+        + gallery_blocks +
+        '\n</main>\n\n'
 
-<div id="lightbox" role="dialog" aria-modal="true">
-  <button class="lb-btn" id="lb-close" onclick="closeLightbox()" aria-label="Close">&#x2715;</button>
-  <button class="lb-btn" id="lb-prev"  onclick="lbStep(-1)" aria-label="Previous">&#8249;</button>
-  <img id="lb-image" src="" alt="Photograph by N C Mohan">
-  <button class="lb-btn" id="lb-next"  onclick="lbStep(1)"  aria-label="Next">&#8250;</button>
-  <div class="lb-meta">
-    <div class="lb-counter" id="lb-counter"></div>
-    <div class="lb-copyright">&copy; N C Mohan &mdash; All rights reserved</div>
-    <div class="lb-download-hint">Long-press (mobile) or right-click (desktop) to save full-resolution image</div>
-  </div>
-</div>
+        '<!-- LIGHTBOX -->\n'
+        '<div id="lightbox" role="dialog" aria-modal="true">\n'
+        '  <button class="lb-btn" id="lb-close" onclick="closeLightbox()" aria-label="Close">&#x2715;</button>\n'
+        '  <button class="lb-btn" id="lb-prev"  onclick="lbStep(-1)" aria-label="Previous">&#8249;</button>\n'
+        '  <img id="lb-image" src="" alt="Photograph by N C Mohan">\n'
+        '  <button class="lb-btn" id="lb-next"  onclick="lbStep(1)"  aria-label="Next">&#8250;</button>\n'
+        '  <div class="lb-meta">\n'
+        '    <div class="lb-counter" id="lb-counter"></div>\n'
+        '    <div class="lb-copyright">&copy; N C Mohan &mdash; All rights reserved</div>\n'
+        '    <div class="lb-hint">Long-press (mobile) or right-click (desktop) to save full-resolution image</div>\n'
+        '  </div>\n'
+        '</div>\n\n'
 
-<div id="copyright-banner">
-  &copy; All photographs are the exclusive property of N C Mohan and are protected under copyright law.
-  &nbsp;&middot;&nbsp; Reproduction, distribution or use without prior written permission is strictly prohibited.
-</div>
+        '<!-- COPYRIGHT BANNER -->\n'
+        '<div id="copyright-banner">\n'
+        '  &copy; All photographs are the exclusive property of N C Mohan and are protected under copyright law.'
+        ' &middot; Reproduction or use without prior written permission is strictly prohibited.\n'
+        '</div>\n\n'
 
-<footer>
-  <span class="footer-copy">&copy; N C Mohan &middot; All rights reserved</span>
-  <div class="footer-links">
-    <button class="footer-link" onclick="goHome()">Home</button>
-    <button class="footer-link" onclick="goHome()">Collections</button>
-  </div>
-</footer>
+        '<!-- FOOTER -->\n'
+        '<footer>\n'
+        '  <span class="footer-copy">&copy; N C Mohan &middot; All rights reserved</span>\n'
+        '  <div class="footer-links">\n'
+        '    <button class="footer-link" onclick="goHome()">Home</button>\n'
+        '    <button class="footer-link" onclick="goHome()">Collections</button>\n'
+        '  </div>\n'
+        '</footer>\n\n'
 
-<script>""" + js + """</script>
-</body>
-</html>"""
+        '<script>' + js + '</script>\n'
+        '</body>\n'
+        '</html>'
+    )
 
     out_path = os.path.join(ROOT_DIR, "index.html")
     with open(out_path, "w", encoding="utf-8") as f:
         f.write(html)
-    print("Build complete: " + out_path)
-    print("Unique photos (deduplicated): " + str(len(unique)))
-    print("Hero slides (Megamalai): " + str(len(hero_slides)))
+
+    print("=" * 55)
+    print("BUILD COMPLETE")
+    print("  Output       : " + out_path)
+    print("  Unique photos: " + str(len(unique)))
+    print("  Mountains    : " + str(len(tag_map.get('Nature/Mountains', []))) + " photos")
+    print("  Hero slides  : " + str(len(hero_slides)) + " (Megamalai, 3s rotation)")
+    print("=" * 55)
 
 if __name__ == "__main__":
     generate_html()
