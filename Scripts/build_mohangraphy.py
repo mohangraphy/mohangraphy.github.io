@@ -16,7 +16,6 @@ def generate_html():
     index_data = load_index()
     main_cats = ["Architecture", "Birds", "Flowers", "Nature", "People", "Places"]
     
-    # Re-establishing the deep hierarchy
     gallery = {c: {} for c in main_cats}
 
     for info in index_data.values():
@@ -45,7 +44,7 @@ def generate_html():
         <title>M O H A N G R A P H Y</title>
         <style>
             @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;900&display=swap');
-            body, html {{ background: #000; color: #fff; font-family: 'Inter', sans-serif; margin: 0; padding: 0; scroll-behavior: smooth; }}
+            body, html {{ background: #000; color: #fff; font-family: 'Inter', sans-serif; margin: 0; padding: 0; scroll-behavior: smooth; overflow-x: hidden; }}
             
             header {{ 
                 position: fixed; top: 0; width: 100%; background: #000; z-index: 5000; 
@@ -59,35 +58,34 @@ def generate_html():
             .nav-item > a {{ color: #555; text-decoration: none; font-size: 13px; font-weight: 900; text-transform: uppercase; letter-spacing: 2px; transition: 0.3s; }}
             .nav-item:hover > a, .nav-item.active > a {{ color: #fff; }}
             
-            /* SUBMENU */
+            /* VERTICAL TOP-DOWN SUBMENU */
             .submenu {{ 
-                position: absolute; top: 35px; left: 0; background: #000; border: 1px solid #222; 
-                min-width: 180px; display: none; flex-direction: column; padding: 10px 0; z-index: 5100;
+                position: absolute; top: 35px; left: 50%; transform: translateX(-50%); 
+                background: #000; border: 1px solid #222; min-width: 200px; 
+                display: none; flex-direction: column; padding: 5px 0; z-index: 5100;
             }}
             .nav-item:hover .submenu {{ display: flex; }}
-            .submenu a {{ color: #666; padding: 10px 20px; text-decoration: none; font-size: 11px; letter-spacing: 2px; text-transform: uppercase; transition: 0.2s; }}
-            .submenu a:hover {{ color: #fff; background: #111; }}
             
-            /* THIRD LEVEL (National -> City) */
-            .has-nested {{ position: relative; }}
-            .nested-menu {{ 
-                position: absolute; top: 0; left: 100%; background: #000; border: 1px solid #222; 
-                display: none; flex-direction: column; min-width: 180px; 
+            .submenu a, .nested-header {{ 
+                color: #666; padding: 10px 20px; text-decoration: none; 
+                font-size: 11px; letter-spacing: 2px; text-transform: uppercase; 
+                transition: 0.2s; text-align: center; display: block;
             }}
-            .has-nested:hover .nested-menu {{ display: flex; }}
-            
-            /* Prevent right-side clipping */
-            .nav-item:nth-last-child(-n+2) .submenu {{ left: auto; right: 0; }}
-            .nav-item:nth-last-child(-n+2) .nested-menu {{ left: auto; right: 100%; }}
+            .submenu a:hover {{ color: #fff; background: #111; }}
+
+            /* NESTED ITEMS APPEAR BELOW PARENT WITH INDENT */
+            .nested-group {{ border-top: 1px solid #111; border-bottom: 1px solid #111; background: #050505; }}
+            .nested-header {{ color: #888; font-weight: 900; pointer-events: none; padding-bottom: 5px; }}
+            .nested-item {{ padding-left: 30px !important; font-size: 10px !important; color: #555 !important; }}
 
             #hero {{ height: 100vh; width: 100%; position: relative; display: flex; align-items: center; justify-content: center; background: #000; z-index: 1; }}
             .slide {{ position: absolute; width: 100%; height: 100%; object-fit: cover; opacity: 0; transition: 3s; filter: brightness(0.4); }}
             .slide.active {{ opacity: 1; }}
 
-            main {{ padding-top: 200px; display: none; width: 100%; }}
+            main {{ padding-top: 180px; display: none; width: 100%; }}
             .section-block {{ max-width: 1600px; margin: 0 auto 100px; padding: 0 40px; display: none; }}
             
-            /* THE SILENT GRID - NO TEXT */
+            /* THE CLEAN GRID: NO TEXT, NO LABELS */
             .grid {{ display: grid; grid-template-columns: repeat(auto-fill, minmax(600px, 1fr)); gap: 30px; }}
             .grid img {{ width: 100%; height: auto; aspect-ratio: 3/2; object-fit: cover; filter: grayscale(1); transition: 0.8s; cursor: pointer; }}
             .grid img:hover {{ filter: grayscale(0); }}
@@ -118,13 +116,12 @@ def generate_html():
                         nav_html += f'<a href="#" onclick="showSection(\'{m_cat}\')">{place}</a>'
                         for p in photos: content += f'<img src="{p}">'
                 else:
-                    # Creating the "National/International" level
-                    nav_html += f'<div class="has-nested"><a href="#">{s_cat} &raquo;</a>'
-                    nav_html += '<div class="nested-menu">'
+                    # Vertical Grouping for National/International/Landscape
+                    nav_html += f'<div class="nested-group"><div class="nested-header">{s_cat}</div>'
                     for place, photos in p_dict.items():
-                        nav_html += f'<a href="#" onclick="showSection(\'{m_cat}\')">{place}</a>'
+                        nav_html += f'<a href="#" class="nested-item" onclick="showSection(\'{m_cat}\')">{place}</a>'
                         for p in photos: content += f'<img src="{p}">'
-                    nav_html += '</div></div>'
+                    nav_html += '</div>'
             
             nav_html += '</div>'
             content += '</div></div>'
@@ -161,7 +158,7 @@ def generate_html():
         f.write(html_start + nav_html + "</nav></header>" + 
                 '<div id="hero">' + "".join([f'<img src="{p}" class="slide">' for p in slides]) + '</div>' + 
                 '<main id="gallery-container">' + content + html_end)
-    print("✅ Build Restored: Full hierarchy enabled. All text headers removed from gallery.")
+    print("✅ FIXED: Vertical submenus restored. All on-page text removed.")
 
 if __name__ == "__main__":
     generate_html()
