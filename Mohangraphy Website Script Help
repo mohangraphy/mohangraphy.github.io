@@ -1,0 +1,132 @@
+How to Run it from the new location
+Since the script is now deeper in your folder structure, use these prompts:
+
+Navigate to your new scripts folder:
+
+Bash
+cd /Users/ncm/Pictures/Mohangraphy/scripts
+
+2) Activate your environment:
+
+Bash
+source ~/Desktop/snaowa_env/bin/activate
+
+3) Run the script:
+
+Bash
+python3 build_mohangraphy.py
+
+4) Via Terminal: Since you are already in the scripts folder, type this:
+
+Bash
+open ../index.html
+
+5) How to Share it with the World (Hosting)
+To make Mohangraphy accessible to everyone (like a real .com), you need to "push" these files to your GitHub repository.
+
+6) Follow these prompts in your terminal:
+
+Go to the main folder:
+
+Bash
+cd /Users/ncm/Pictures/Mohangraphy
+Initialize the repository (if you haven't yet):
+
+Bash
+git init
+Add your files:
+
+Bash
+git add .
+Commit your changes:
+
+Bash
+git commit -m "Launch Mohangraphy Megamalai collection"
+Link and Push: (Replace YOUR_USERNAME with your actual GitHub name)
+
+Bash
+git remote add origin https://github.com/YOUR_USERNAME/mohangraphy.git
+git branch -M main
+git push -u origin main
+
+3. Utility Script: The "Auto-Update" Tool
+Since you plan to "grow steadily," you’ll be running this process often. I’ve written a small "utility script" for you to save in your scripts folder. This script combines the site building and the GitHub uploading into one single command.
+
+Save this as deploy.py in your Mohangraphy/scripts folder:
+
+Moving to a custom domain like www.mohangraphy.com is a great move for your branding as a photographer. Since your site is hosted on GitHub Pages, the "hosting" remains free, but you will need to purchase the domain name itself (usually around ₹800–₹1200 per year).
+
+Here is the process to link your GitHub site to your new domain.
+
+Step 1: Buy the Domain
+You can purchase mohangraphy.com from a registrar like GoDaddy, Namecheap, or Google Domains (Squarespace).
+
+Step 2: Configure GitHub Pages
+Go to your repository on GitHub.
+
+Click Settings > Pages.
+
+Under Custom Domain, type www.mohangraphy.com and click Save.
+
+This will automatically create a file named CNAME in your repository.
+
+Step 3: Update your DNS Records
+Log in to your domain registrar (e.g., GoDaddy) and find the DNS Management section. You need to add these records so the domain points to GitHub's servers:
+
+1. The "A" Records (Point the naked domain mohangraphy.com to GitHub):
+Add four A records with the host @ pointing to these IP addresses:
+
+185.199.108.153
+
+185.199.109.153
+
+185.199.110.153
+
+185.199.111.153
+
+2. The "CNAME" Record (Point www to your GitHub URL):
+
+Type: CNAME
+
+Name (Host): www
+
+Value (Target): YOUR_USERNAME.github.io
+
+Step 4: Update your Python Script
+Since GitHub adds a file named CNAME to your folder when you set a custom domain, we need to make sure your Python script doesn't accidentally delete it or ignore it when regenerating the site.
+
+Update your build_mohangraphy.py by adding "CNAME" to the exclusion list.
+
+Python
+import os
+
+# This looks for the parent folder of the 'scripts' folder
+BASE_PATH = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+OUTPUT_FILE = os.path.join(BASE_PATH, "index.html")
+
+def generate_mohangraphy():
+    # ... (Keep the same CSS from the previous version) ...
+
+    # UPDATED: We added 'CNAME' to the exclusion list so your domain settings stay safe
+    categories = sorted([d for d in os.listdir(BASE_PATH) 
+                        if os.path.isdir(os.path.join(BASE_PATH, d)) 
+                        and d not in ["scripts", "CNAME"] 
+                        and not d.startswith('.')])
+    
+    # ... (Rest of the script remains the same) ...
+
+    with open(OUTPUT_FILE, "w") as f:
+        f.write(full_html)
+    print(f"Success! Website generated at: {OUTPUT_FILE}")
+
+if __name__ == "__main__":
+    generate_mohangraphy()
+Final Checklist
+Wait for DNS Propagation: It can take anywhere from 1 to 24 hours for the new domain to start working globally.
+
+Enforce HTTPS: Once the domain is linked, go back to GitHub Settings > Pages and check the box for Enforce HTTPS. This gives your site the "Lock" icon in the browser, making it secure for visitors.
+
+Would you like me to help you draft a professional "About Me" or "Contact" section to add to the bottom of the page once the domain is live?
+
+
+
