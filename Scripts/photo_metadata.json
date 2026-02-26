@@ -452,7 +452,8 @@
     "b8c0079ff16917268ce6403440fe8709": {
         "path": "Photos/Birds/Munnar Birds/2026-0127-MunnarBirds-NCM-6621.JPG",
         "categories": [
-            "Birds"
+            "Birds",
+            "Places/National"
         ],
         "place": "Munnar",
         "filename": "2026-0127-MunnarBirds-NCM-6621.JPG"
@@ -469,7 +470,8 @@
     "d5cb0d3afaf9755637c5242891957d0d": {
         "path": "Photos/Birds/Munnar Birds/2026-0127-MunnarBirds-NCM-6135.JPG",
         "categories": [
-            "Birds"
+            "Birds",
+            "Places/National"
         ],
         "place": "Munnar",
         "filename": "2026-0127-MunnarBirds-NCM-6135.JPG"
