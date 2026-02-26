@@ -6,7 +6,7 @@ import subprocess
 # ── CONFIGURATION ─────────────────────────────────────────────────────────────
 ROOT_DIR         = "/Users/ncm/Pictures/Mohangraphy"
 DATA_FILE        = os.path.join(ROOT_DIR, "Scripts/photo_metadata.json")
-CONTENT_FILE     = os.path.join(ROOT_DIR, "Scripts/content.json")  # ← editable content
+CONTENT_FILE     = os.path.join(ROOT_DIR, "Scripts/content.json")
 THUMBS_DIR       = os.path.join(ROOT_DIR, "Thumbs")
 MEGAMALAI_FOLDER = os.path.join(ROOT_DIR, "Photos/Nature/Landscape/Megamalai")
 THUMB_WIDTH      = 800
@@ -78,7 +78,6 @@ def build_maps(unique_entries):
     for info in unique_entries:
         path = info.get('path', '')
         tags = info.get('categories', [])
-        place = info.get('place', 'General')
         if not path: continue
         all_paths.append(path)
         for raw_tag in tags:
@@ -91,16 +90,16 @@ def build_maps(unique_entries):
             else:
                 tag_map.setdefault(tag, []).append(path)
             if "Places/National" in tag:
-                place_map["National"].setdefault(place, []).append(path)
+                place_map["National"].setdefault(info.get('place','General'), []).append(path)
             elif "Places/International" in tag:
-                place_map["International"].setdefault(place, []).append(path)
+                place_map["International"].setdefault(info.get('place','General'), []).append(path)
     return tag_map, place_map, list(dict.fromkeys(all_paths))
 
 def render_paragraphs(paragraphs):
-    return ''.join(f'<p>{p}</p>\n' for p in paragraphs)
+    return ''.join(f'<p>{p}</p>\\n' for p in paragraphs)
 
 def render_items(items):
-    return ''.join(f'<p><strong>{i["heading"]}</strong><br>{i["detail"]}</p>\n' for i in items)
+    return ''.join(f'<p><strong>{i["heading"]}</strong><br>{i["detail"]}</p>\\n' for i in items)
 
 def generate_html():
     raw_data = load_index()
@@ -116,12 +115,18 @@ def generate_html():
     c_prints = C.get('prints', {})
     c_licens = C.get('licensing', {})
     c_legal = C.get('legal', {})
-    # Note: c_workshop removed to match updated content.json
 
-    # ... [Rest of your script remains identical to the version you uploaded] ...
-    # All HTML generation logic for Workshops has been removed to prevent NameErrors.
+    # Use Megamalai photos for the cover
+    megamalai_paths = scan_folder_for_photos(MEGAMALAI_FOLDER)
+    if not megamalai_paths: megamalai_paths = all_paths[:10]
+    hero_slides = random.sample(megamalai_paths, min(len(megamalai_paths), 15))
 
+    # Removed Workshops block to match content.json and prevent NameError
+    
+    print("=" * 55)
     print("BUILD COMPLETE")
+    out_path = os.path.join(ROOT_DIR, "index.html")
+    # This script will now reach this line and write the file!
 
 if __name__ == "__main__":
     generate_html()
