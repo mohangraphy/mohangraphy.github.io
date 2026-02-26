@@ -1,6 +1,5 @@
 {
   "_instructions": "Edit this file to update your website content. After saving, run deploy.py to publish changes. Do NOT change the key names (words on the left of the colon). Only change the values (text on the right).",
-
   "site": {
     "title": "MOHANGRAPHY",
     "tagline": "Light · Moment · Story",
@@ -9,7 +8,6 @@
     "contact_email": "ncmohan.photos@gmail.com",
     "description": "Fine art photography by N C Mohan. Landscapes, architecture, wildlife, and more."
   },
-
   "about": {
     "title": "About Me",
     "subtitle": "Photographer · N C Mohan",
@@ -19,7 +17,6 @@
       "My journeys have taken me across India's diverse terrains — from the mist-laden hills of <strong>Megamalai</strong> of the South to the <strong>Snow-clad Himalayas</strong> of the North, the coastlines of West and East, the deserts of <strong>Rajasthan</strong> and the high-altitude desert of <strong>Ladakh</strong>, and the many forests that define this extraordinary country."
     ]
   },
-
   "philosophy": {
     "title": "Philosophy",
     "subtitle": "How I see the world",
@@ -28,7 +25,6 @@
       "I am drawn to available light — dawn, dusk, storm light, the last rays cutting through forest canopy. I rarely intervene in a scene. My instinct is to <strong>wait, watch, and respond</strong>."
     ]
   },
-
   "gear": {
     "title": "Gear & Kit",
     "subtitle": "The tools of the trade",
@@ -43,7 +39,6 @@
       }
     ]
   },
-
   "contact": {
     "title": "Get in Touch",
     "subtitle": "Inquiries & Collaborations",
@@ -56,40 +51,38 @@
       "Other"
     ]
   },
-
   "prints": {
     "title": "Prints",
     "subtitle": "Bring the world home",
     "intro": "Limited edition prints are available for most images in the collection. Each print is produced on <strong>quality paper</strong>.",
-    "note": "Every print is signed and ships with a certificate of authenticity.",
+    "note": "",
     "sizes": [
       {
         "size": "A4",
-        "dimensions": "210 × 297 mm",
+        "dimensions": "210 × 297 mm | 21.0 × 29.7 cm | 8.3 × 11.7 in",
         "edition": "Open edition",
         "price": "On request"
       },
       {
         "size": "A3",
-        "dimensions": "297 × 420 mm",
+        "dimensions": "297 × 420 mm | 29.7 × 42.0 cm | 11.7 × 16.5 in",
         "edition": "Open edition",
         "price": "On request"
       },
       {
         "size": "A2",
-        "dimensions": "420 × 594 mm",
+        "dimensions": "420 × 594 mm | 42.0 × 59.4 cm | 16.5 × 23.4 in",
         "edition": "Limited — 50 copies",
         "price": "On request"
       },
       {
         "size": "A1",
-        "dimensions": "594 × 841 mm",
+        "dimensions": "594 × 841 mm | 59.4 × 84.1 cm | 23.4 × 33.1 in",
         "edition": "Limited — 25 copies",
         "price": "On request"
       }
     ]
   },
-
   "licensing": {
     "title": "Image Licensing",
     "subtitle": "Professional Usage",
@@ -100,7 +93,6 @@
       "To discuss licensing terms, please send an email with the image title and your intended usage details."
     ]
   },
-
   "workshops": {
     "title": "Workshops & Tours",
     "subtitle": "Learn to see, learn to shoot",
@@ -109,7 +101,6 @@
       "To register interest or ask about upcoming dates, please use the Contact page."
     ]
   },
-
   "legal": {
     "title": "Copyright & Legal",
     "subtitle": "Your rights and ours",
