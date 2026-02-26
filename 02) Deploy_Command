@@ -1,10 +1,2 @@
-GEMINI
 
-python3 /Users/ncm/Pictures/Mohangraphy/Scripts/deploy.py
-
-
-CLAUDE
-
-
-cd /Users/ncm/Pictures/Mohangraphy
-python3 Scripts/Claude_Deploy.py
+python3 /Users/ncm/Pictures/Mohangraphy/Scripts/Claude_deploy.py
