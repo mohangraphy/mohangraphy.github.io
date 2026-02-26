@@ -6,9 +6,10 @@ import subprocess
 # ── CONFIGURATION ─────────────────────────────────────────────────────────────
 ROOT_DIR         = "/Users/ncm/Pictures/Mohangraphy"
 DATA_FILE        = os.path.join(ROOT_DIR, "Scripts/photo_metadata.json")
-THUMBS_DIR       = os.path.join(ROOT_DIR, "Thumbs")   # generated thumbnail cache
+CONTENT_FILE     = os.path.join(ROOT_DIR, "Scripts/content.json")  # ← editable content
+THUMBS_DIR       = os.path.join(ROOT_DIR, "Thumbs")
 MEGAMALAI_FOLDER = os.path.join(ROOT_DIR, "Photos/Nature/Landscape/Megamalai")
-THUMB_WIDTH      = 800   # px — enough for retina phones, tiny vs full-res
+THUMB_WIDTH      = 800
 
 MANUAL_STRUCTURE = {
     "Places":       ["National", "International"],
@@ -40,6 +41,20 @@ def load_index():
         try:
             return json.load(f)
         except Exception:
+            return {}
+
+def load_content():
+    """Load content.json — the plain-text editable content file."""
+    if not os.path.exists(CONTENT_FILE):
+        print("  WARNING: content.json not found at " + CONTENT_FILE)
+        print("  Run the script once to create it, or copy content.json to Scripts/")
+        return {}
+    with open(CONTENT_FILE, 'r', encoding='utf-8') as f:
+        try:
+            return json.load(f)
+        except Exception as e:
+            print("  ERROR reading content.json: " + str(e))
+            print("  Check for missing commas or unclosed quotes in content.json")
             return {}
 
 def deduplicate_by_path(raw_data):
@@ -207,14 +222,43 @@ def ensure_thumbs(all_paths):
 
 
 # ── MAIN BUILD ────────────────────────────────────────────────────────────────
+def render_paragraphs(paragraphs):
+    """Convert a list of paragraph strings from content.json to HTML <p> tags."""
+    return ''.join('<p>' + p + '</p>\n' for p in paragraphs)
+
+def render_items(items):
+    """Convert a list of {heading, detail} dicts to HTML <p> blocks."""
+    return ''.join(
+        '<p><strong>' + item['heading'] + '</strong><br>' + item['detail'] + '</p>\n'
+        for item in items
+    )
+
 def generate_html():
 
+    # Load photo data
     raw_data = load_index()
     unique   = deduplicate_by_path(raw_data)
     tag_map, place_map, all_paths = build_maps(unique)
 
     print(f"Unique photos: {len(unique)}")
     print(f"Mountains photos found: {len(tag_map.get('Nature/Mountains', []))}")
+
+    # Load editable content
+    C = load_content()
+    site       = C.get('site',       {})
+    c_about    = C.get('about',      {})
+    c_phil     = C.get('philosophy', {})
+    c_gear     = C.get('gear',       {})
+    c_contact  = C.get('contact',    {})
+    c_prints   = C.get('prints',     {})
+    c_licens   = C.get('licensing',  {})
+    c_workshop = C.get('workshops',  {})
+    c_legal    = C.get('legal',      {})
+
+    # Site-wide values with safe fallbacks
+    contact_email    = site.get('contact_email',    'your@email.com')
+    photographer     = site.get('photographer_name','N C Mohan')
+    site_description = site.get('description',      'Photography by N C Mohan')
 
     # Generate / verify thumbnails
     thumb_map = ensure_thumbs(all_paths)
@@ -1458,7 +1502,7 @@ lb.addEventListener('touchend',function(e){
   tsX=null; tsY=null;
 });
 
-/* ── Contact form (no server — opens mail client) ── */
+/* ── Contact form ── */
 function submitContact(){
   var name    = document.getElementById('cf-name').value.trim();
   var email   = document.getElementById('cf-email').value.trim();
@@ -1466,7 +1510,7 @@ function submitContact(){
   var msg     = document.getElementById('cf-msg').value.trim();
   if(!name||!email||!msg){ alert('Please fill in all required fields.'); return; }
   var body = encodeURIComponent('Name: '+name+'\\nEmail: '+email+'\\n\\n'+msg);
-  window.location.href='mailto:ncmohan@example.com?subject='+encodeURIComponent(subject)+'&body='+body;
+  window.location.href='mailto:""" + contact_email + """?subject='+encodeURIComponent(subject)+'&body='+body;
 }
 
 goHome();
@@ -1645,120 +1689,76 @@ goHome();
         '<div id="page-about" class="info-page">\n'
         '  <div class="info-page-inner">\n'
         '    <button class="info-page-back" onclick="goHome()">&larr; Back to Home</button>\n'
-        '    <div class="info-page-title">About Me</div>\n'
-        '    <div class="info-page-subtitle">Photographer &middot; N C Mohan</div>\n'
+        '    <div class="info-page-title">' + c_about.get('title','About Me') + '</div>\n'
+        '    <div class="info-page-subtitle">' + c_about.get('subtitle','Photographer · ' + photographer) + '</div>\n'
         '    <div class="info-page-divider"></div>\n'
         '    <div class="info-page-body">\n'
-        '      <p>I am <strong>N C Mohan</strong>, a photographer based in India with a deep passion for '
-        'capturing the world in its most honest and luminous moments. My work spans landscapes, wildlife, '
-        'architecture, and the quiet beauty of everyday life.</p>\n'
-        '      <p>Photography for me is the intersection of <strong>light, moment, and story</strong> — '
-        'three elements that are fleeting, unrepeatable, and endlessly compelling. I chase the quality of '
-        'light as obsessively as I chase the subject within it.</p>\n'
-        '      <p>My journeys have taken me across India\'s diverse terrains — from the mist-laden hills '
-        'of <strong>Megamalai</strong> to the coastlines, deserts, and forests that define this '
-        'extraordinary country.</p>\n'
-        '      <p><em>[ Edit this section with your own story. ]</em></p>\n'
-        '    </div>\n'
-        '  </div>\n'
-        '</div>\n\n'
+        + render_paragraphs(c_about.get('paragraphs', ['[ Add your story in content.json ]'])) +
+        '    </div>\n  </div>\n</div>\n\n'
 
         # PHILOSOPHY
         '<div id="page-philosophy" class="info-page">\n'
         '  <div class="info-page-inner">\n'
         '    <button class="info-page-back" onclick="goHome()">&larr; Back to Home</button>\n'
-        '    <div class="info-page-title">Philosophy</div>\n'
-        '    <div class="info-page-subtitle">How I see the world</div>\n'
+        '    <div class="info-page-title">' + c_phil.get('title','Philosophy') + '</div>\n'
+        '    <div class="info-page-subtitle">' + c_phil.get('subtitle','How I see the world') + '</div>\n'
         '    <div class="info-page-divider"></div>\n'
         '    <div class="info-page-body">\n'
-        '      <p>Every photograph begins with <strong>seeing</strong> — not just looking. I believe the '
-        'camera is a tool for attention, a device that forces you to slow down and notice what is already '
-        'there.</p>\n'
-        '      <p>I am drawn to available light — dawn, dusk, storm light, the last rays cutting through '
-        'forest canopy. I rarely intervene in a scene. My instinct is to <strong>wait, watch, '
-        'and respond</strong>.</p>\n'
-        '      <p>Post-processing is kept minimal. I believe in preserving the authenticity of a moment '
-        'rather than manufacturing one after the fact.</p>\n'
-        '      <p><em>[ Edit this section with your own philosophy. ]</em></p>\n'
-        '    </div>\n'
-        '  </div>\n'
-        '</div>\n\n'
+        + render_paragraphs(c_phil.get('paragraphs', ['[ Add your philosophy in content.json ]'])) +
+        '    </div>\n  </div>\n</div>\n\n'
 
         # GEAR
         '<div id="page-gear" class="info-page">\n'
         '  <div class="info-page-inner">\n'
         '    <button class="info-page-back" onclick="goHome()">&larr; Back to Home</button>\n'
-        '    <div class="info-page-title">Gear &amp; Kit</div>\n'
-        '    <div class="info-page-subtitle">The tools of the trade</div>\n'
+        '    <div class="info-page-title">' + c_gear.get('title','Gear &amp; Kit') + '</div>\n'
+        '    <div class="info-page-subtitle">' + c_gear.get('subtitle','The tools of the trade') + '</div>\n'
         '    <div class="info-page-divider"></div>\n'
         '    <div class="info-page-body">\n'
-        '      <p><strong>Camera Body</strong><br>[ Add your camera body here ]</p>\n'
-        '      <p><strong>Primary Lenses</strong><br>[ Add your lenses here ]</p>\n'
-        '      <p><strong>Support</strong><br>[ Tripod, filters, bags etc. ]</p>\n'
-        '      <p><strong>Post-Processing</strong><br>[ Software you use ]</p>\n'
-        '      <p><em>[ Edit this section with your actual kit. ]</em></p>\n'
-        '    </div>\n'
-        '  </div>\n'
-        '</div>\n\n'
+        + render_items(c_gear.get('items', [])) +
+        '    </div>\n  </div>\n</div>\n\n'
 
         # CONTACT
         '<div id="page-contact" class="info-page">\n'
         '  <div class="info-page-inner">\n'
         '    <button class="info-page-back" onclick="goHome()">&larr; Back to Home</button>\n'
-        '    <div class="info-page-title">Contact</div>\n'
-        '    <div class="info-page-subtitle">Get in touch</div>\n'
+        '    <div class="info-page-title">' + c_contact.get('title','Contact') + '</div>\n'
+        '    <div class="info-page-subtitle">' + c_contact.get('subtitle','Get in touch') + '</div>\n'
         '    <div class="info-page-divider"></div>\n'
-        '    <div class="info-page-body">\n'
-        '      <p>Whether you are interested in a <strong>print purchase</strong>, '
-        '<strong>licensing</strong>, a <strong>collaboration</strong>, or simply want to '
-        'share your thoughts — I would love to hear from you.</p>\n'
-        '    </div>\n'
+        '    <div class="info-page-body"><p>' + c_contact.get('intro','') + '</p></div>\n'
         '    <div class="contact-field"><label>Your Name *</label>'
         '<input type="text" id="cf-name" placeholder="Full name"></div>\n'
         '    <div class="contact-field"><label>Email Address *</label>'
         '<input type="email" id="cf-email" placeholder="you@example.com"></div>\n'
         '    <div class="contact-field"><label>Subject</label>'
         '<select id="cf-subject">'
-        '<option>General Enquiry</option>'
-        '<option>Print Purchase</option>'
-        '<option>Licensing &amp; Usage Rights</option>'
-        '<option>Workshop / Tour</option>'
-        '<option>Collaboration</option>'
-        '<option>Other</option>'
-        '</select></div>\n'
+        + ''.join('<option>' + s + '</option>' for s in c_contact.get('subjects', ['General Enquiry']))
+        + '</select></div>\n'
         '    <div class="contact-field"><label>Message *</label>'
         '<textarea id="cf-msg" placeholder="Your message..."></textarea></div>\n'
         '    <button class="btn-gold" onclick="submitContact()">Send Message</button>\n'
-        '  </div>\n'
-        '</div>\n\n'
+        '  </div>\n</div>\n\n'
 
         # PRINT SALES
         '<div id="page-prints" class="info-page">\n'
         '  <div class="info-page-inner">\n'
         '    <button class="info-page-back" onclick="goHome()">&larr; Back to Home</button>\n'
-        '    <div class="info-page-title">Print Sales</div>\n'
-        '    <div class="info-page-subtitle">Own a piece of the light</div>\n'
+        '    <div class="info-page-title">' + c_prints.get('title','Print Sales') + '</div>\n'
+        '    <div class="info-page-subtitle">' + c_prints.get('subtitle','Own a piece of the light') + '</div>\n'
         '    <div class="info-page-divider"></div>\n'
-        '    <div class="info-page-body">\n'
-        '      <p>All prints are produced on <strong>archival fine-art paper</strong> using '
-        'pigment-based inks, guaranteeing colour accuracy and longevity of over 100 years '
-        'under normal display conditions.</p>\n'
-        '      <p>Every print is <strong>signed and numbered</strong> and ships with a '
-        'certificate of authenticity. Limited edition runs ensure exclusivity.</p>\n'
-        '    </div>\n'
+        '    <div class="info-page-body">'
+        '<p>' + c_prints.get('intro','') + '</p>'
+        '<p>' + c_prints.get('note','') + '</p>'
+        '</div>\n'
         '    <div class="prints-grid">\n'
-        '      <div class="print-card"><div class="print-card-size">A4</div>'
-        '<div class="print-card-desc">210 &times; 297 mm<br>Open edition</div>'
-        '<div class="print-card-price">On request</div></div>\n'
-        '      <div class="print-card"><div class="print-card-size">A3</div>'
-        '<div class="print-card-desc">297 &times; 420 mm<br>Open edition</div>'
-        '<div class="print-card-price">On request</div></div>\n'
-        '      <div class="print-card"><div class="print-card-size">A2</div>'
-        '<div class="print-card-desc">420 &times; 594 mm<br>Limited &mdash; 50 copies</div>'
-        '<div class="print-card-price">On request</div></div>\n'
-        '      <div class="print-card"><div class="print-card-size">A1</div>'
-        '<div class="print-card-desc">594 &times; 841 mm<br>Limited &mdash; 25 copies</div>'
-        '<div class="print-card-price">On request</div></div>\n'
+        + ''.join(
+            '      <div class="print-card">'
+            '<div class="print-card-size">' + s.get('size','') + '</div>'
+            '<div class="print-card-desc">' + s.get('dimensions','') + '<br>' + s.get('edition','') + '</div>'
+            '<div class="print-card-price">' + s.get('price','On request') + '</div>'
+            '</div>\n'
+            for s in c_prints.get('sizes', [])
+        ) +
         '    </div>\n'
         '    <div class="info-page-divider"></div>\n'
         '    <p style="font-size:13px;color:rgba(255,255,255,0.4);letter-spacing:1px;">'
@@ -1766,84 +1766,40 @@ goHome();
         '<button style="background:none;border:none;color:var(--gold);cursor:pointer;'
         'font-size:13px;letter-spacing:1px;padding:0;" '
         'onclick="showInfoPage(\'page-contact\')">Contact</button> page.</p>\n'
-        '  </div>\n'
-        '</div>\n\n'
+        '  </div>\n</div>\n\n'
 
         # LICENSING
         '<div id="page-licensing" class="info-page">\n'
         '  <div class="info-page-inner">\n'
         '    <button class="info-page-back" onclick="goHome()">&larr; Back to Home</button>\n'
-        '    <div class="info-page-title">Licensing</div>\n'
-        '    <div class="info-page-subtitle">Usage rights &amp; commercial use</div>\n'
+        '    <div class="info-page-title">' + c_licens.get('title','Licensing') + '</div>\n'
+        '    <div class="info-page-subtitle">' + c_licens.get('subtitle','Usage rights &amp; commercial use') + '</div>\n'
         '    <div class="info-page-divider"></div>\n'
         '    <div class="info-page-body">\n'
-        '      <p>All photographs on this website are the <strong>exclusive intellectual property '
-        'of N C Mohan</strong> and are protected under Indian and international copyright law.</p>\n'
-        '      <p><strong>Editorial Licensing</strong> — images may be licensed for '
-        'editorial use in publications, documentaries, and educational material.</p>\n'
-        '      <p><strong>Commercial Licensing</strong> — advertising, product packaging, '
-        'corporate communications and similar uses require a separate commercial licence.</p>\n'
-        '      <p><strong>Digital Licensing</strong> — website, social media, and digital '
-        'publication rights are available on a per-image basis.</p>\n'
-        '      <p>Unauthorised reproduction, copying, downloading, or distribution of any '
-        'image on this site is strictly prohibited and may result in legal action. '
-        'To discuss licensing, please <button style="background:none;border:none;'
-        'color:var(--gold);cursor:pointer;font-size:inherit;font-family:inherit;padding:0;" '
-        'onclick="showInfoPage(\'page-contact\')">get in touch</button>.</p>\n'
-        '    </div>\n'
-        '  </div>\n'
-        '</div>\n\n'
+        + render_paragraphs(c_licens.get('paragraphs', [])) +
+        '    </div>\n  </div>\n</div>\n\n'
 
         # WORKSHOPS
         '<div id="page-workshops" class="info-page">\n'
         '  <div class="info-page-inner">\n'
         '    <button class="info-page-back" onclick="goHome()">&larr; Back to Home</button>\n'
-        '    <div class="info-page-title">Workshops &amp; Tours</div>\n'
-        '    <div class="info-page-subtitle">Learn to see, learn to shoot</div>\n'
+        '    <div class="info-page-title">' + c_workshop.get('title','Workshops &amp; Tours') + '</div>\n'
+        '    <div class="info-page-subtitle">' + c_workshop.get('subtitle','Learn to see, learn to shoot') + '</div>\n'
         '    <div class="info-page-divider"></div>\n'
         '    <div class="info-page-body">\n'
-        '      <p>I occasionally lead small-group <strong>photography workshops and '
-        'field tours</strong> in locations I know intimately — including the Western Ghats, '
-        'Megamalai, and other destinations across India.</p>\n'
-        '      <p>Workshops cover composition, light reading, wildlife photography ethics, '
-        'and post-processing workflow. Groups are kept small — typically '
-        '<strong>4 to 6 participants</strong> — to ensure personal attention.</p>\n'
-        '      <p><em>[ Update with actual dates, pricing and itineraries as available. ]</em></p>\n'
-        '      <p>To register interest or ask about upcoming dates, please use the '
-        '<button style="background:none;border:none;color:var(--gold);cursor:pointer;'
-        'font-size:inherit;font-family:inherit;padding:0;" '
-        'onclick="showInfoPage(\'page-contact\')">Contact</button> page.</p>\n'
-        '    </div>\n'
-        '  </div>\n'
-        '</div>\n\n'
+        + render_paragraphs(c_workshop.get('paragraphs', [])) +
+        '    </div>\n  </div>\n</div>\n\n'
 
-        # LEGAL / COPYRIGHT
+        # LEGAL
         '<div id="page-legal" class="info-page">\n'
         '  <div class="info-page-inner">\n'
         '    <button class="info-page-back" onclick="goHome()">&larr; Back to Home</button>\n'
-        '    <div class="info-page-title">Copyright &amp; Legal</div>\n'
-        '    <div class="info-page-subtitle">Your rights and ours</div>\n'
+        '    <div class="info-page-title">' + c_legal.get('title','Copyright &amp; Legal') + '</div>\n'
+        '    <div class="info-page-subtitle">' + c_legal.get('subtitle','Your rights and ours') + '</div>\n'
         '    <div class="info-page-divider"></div>\n'
         '    <div class="info-page-body">\n'
-        '      <p><strong>Copyright Notice</strong><br>'
-        'All photographs, text, and visual content on this website are &copy; N C Mohan. '
-        'All rights reserved. No image may be reproduced, distributed, publicly displayed, '
-        'or used in any form without the prior written consent of N C Mohan.</p>\n'
-        '      <p><strong>Watermarks &amp; Metadata</strong><br>'
-        'All images carry embedded copyright metadata. Removal of this metadata is a '
-        'violation of the Copyright Act.</p>\n'
-        '      <p><strong>Downloads</strong><br>'
-        'Images visible on this site are display-resolution only. Full-resolution files '
-        'are available exclusively through the Print Sales or Licensing channels.</p>\n'
-        '      <p><strong>Privacy</strong><br>'
-        'This website does not collect personal data, set cookies, or use analytics '
-        'tracking beyond standard server logs.</p>\n'
-        '      <p><strong>Governing Law</strong><br>'
-        'Any dispute arising from the use of this website or its content shall be '
-        'governed by the laws of India.</p>\n'
-        '    </div>\n'
-        '  </div>\n'
-        '</div>\n\n'
+        + render_items(c_legal.get('items', [])) +
+        '    </div>\n  </div>\n</div>\n\n'
 
         # ── LIGHTBOX ─────────────────────────────────────────────────────────
         '<div id="lightbox" role="dialog" aria-modal="true">\n'
