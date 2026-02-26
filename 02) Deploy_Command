@@ -4,6 +4,8 @@ python3 /Users/ncm/Pictures/Mohangraphy/Scripts/Claude_deploy.py
  "intro": "All prints are produced on <strong>archival fine-art paper</strong> using pigment-based inks, guaranteeing colour accuracy and longevity of over 100 years under normal display conditions.",
 
 Improvements needed on the following:
+All the changes made in content.json file are not getting updated. IT is inconsistent.Check this first.
+Sometimes, the index file is not getting updated. Check that also.
 
 The icon next to HOME at the footer is not aligned properly when viewed on mobile phone. It is moving to next line. Remove the icon so that there is no problem on any gadget. 
 Remove the menu "Workshop & Tours" on the left side. Where is it hard coded. There must be an easy way to remove this. 

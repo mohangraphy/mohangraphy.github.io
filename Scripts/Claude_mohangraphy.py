@@ -126,49 +126,43 @@ def thumb_img(rel_path, full_rel_path, alt=""):
 def build_maps(unique_entries):
     """
     Returns:
-      tag_map   : normalised-tag → [unique paths]
-      place_map : {National:{place:[paths]}, International:{place:[paths]}}
-      all_paths : [all unique paths]
-
-    KEY FIX: "Nature/Landscape/Mountains" is normalised → stored under
-    both "Nature/Landscape" AND "Nature/Mountains" so the Mountains sub-menu
-    can find them.
+      tag_map      : normalised-tag → [unique paths]
+      place_map    : {National:{place:[paths]}, International:{place:[paths]}}
+      all_paths    : [all unique paths]
+      path_info    : {path: {place, remarks}} for overlay display
     """
-    tag_map   = {}
-    place_map = {"National": {}, "International": {}}
-    all_paths = []
+    tag_map       = {}
+    place_map     = {"National": {}, "International": {}}
+    all_paths     = []
+    path_info_map = {}   # path → {place, remarks}
 
     for info in unique_entries:
-        path  = info.get('path', '')
-        tags  = info.get('categories', [])
-        place = info.get('place', 'General')
+        path    = info.get('path', '')
+        tags    = info.get('categories', [])
+        place   = info.get('place', '')
+        remarks = info.get('remarks', '')
 
         if not path:
             continue
         all_paths.append(path)
+        path_info_map[path] = {'place': place, 'remarks': remarks}
 
         for raw_tag in tags:
-            # ── Normalise Mountains tag ──────────────────────────────────────
             if raw_tag in MOUNTAINS_TAGS or raw_tag == "Nature/Landscape/Mountains":
                 for t in ["Nature/Mountains", "Nature/Landscape"]:
                     tag_map.setdefault(t, [])
                     if path not in tag_map[t]:
                         tag_map[t].append(path)
-
-            # ── Normalise Sunsets tag ────────────────────────────────────────
             elif raw_tag in SUNSETS_TAGS:
                 norm = "Nature/Sunsets and Sunrises"
                 tag_map.setdefault(norm, [])
                 if path not in tag_map[norm]:
                     tag_map[norm].append(path)
-
-            # ── Everything else ──────────────────────────────────────────────
             else:
                 tag_map.setdefault(raw_tag, [])
                 if path not in tag_map[raw_tag]:
                     tag_map[raw_tag].append(path)
 
-            # ── Place map ────────────────────────────────────────────────────
             if "Places/National" in raw_tag:
                 place_map["National"].setdefault(place, [])
                 if path not in place_map["National"][place]:
@@ -178,7 +172,7 @@ def build_maps(unique_entries):
                 if path not in place_map["International"][place]:
                     place_map["International"][place].append(path)
 
-    return tag_map, place_map, list(dict.fromkeys(all_paths))
+    return tag_map, place_map, list(dict.fromkeys(all_paths)), path_info_map
 
 def get_display_paths(m_cat, s_cat, tag_map):
     """
@@ -233,12 +227,54 @@ def render_items(items):
         for item in items
     )
 
+def grid_item_html(thumb_path, orig_path, alt, path_info):
+    """
+    Build a single grid cell with:
+    - thumbnail image (lazy loaded)
+    - data-full for lightbox full-res
+    - hover overlay showing Remarks · Place and pixel dimensions
+    Overlay is CSS-only and @media print { display:none } so it never prints.
+    """
+    info    = path_info.get(orig_path, {})
+    remarks = info.get('remarks', '').strip()
+    place   = info.get('place',   '').strip()
+
+    # Build label: "Remarks · Place" — omit empty parts
+    parts = [p for p in [remarks, place] if p]
+    label = ' · '.join(parts)
+
+    # Dimensions from sips exif is not easily available at build time,
+    # so we show them live via JS using naturalWidth/naturalHeight
+    overlay = ''
+    if label:
+        overlay = (
+            '<div class="grid-item-info">'
+            '<span class="grid-item-info-text">' + label + '</span>'
+            '<span class="grid-item-info-dims"></span>'
+            '</div>'
+        )
+    else:
+        overlay = (
+            '<div class="grid-item-info">'
+            '<span class="grid-item-info-text"></span>'
+            '<span class="grid-item-info-dims"></span>'
+            '</div>'
+        )
+
+    return (
+        '<div class="grid-item" onclick="openLightbox(this)">'
+        + thumb_img(thumb_path, orig_path, alt)
+        + '<div class="grid-item-overlay"></div>'
+        + overlay
+        + '</div>'
+    )
+
 def generate_html():
 
     # Load photo data
     raw_data = load_index()
     unique   = deduplicate_by_path(raw_data)
-    tag_map, place_map, all_paths = build_maps(unique)
+    tag_map, place_map, all_paths, path_info = build_maps(unique)
 
     print(f"Unique photos: {len(unique)}")
     print(f"Mountains photos found: {len(tag_map.get('Nature/Mountains', []))}")
@@ -721,7 +757,7 @@ header {
 .tile-nav-label {
   font-size: 8px; letter-spacing: 6px;
   color: var(--gold); text-transform: uppercase;
-  opacity: .5; text-align: center;
+  opacity: .8; text-align: center;
   padding: 18px 0 10px;
 }
 
@@ -761,8 +797,8 @@ header {
 .cat-tile:active .cat-tile-name { color: var(--gold); }
 .cat-tile-count {
   margin-top: 5px;
-  font-size: 8px; letter-spacing: 2px;
-  color: rgba(255,255,255,0.28); text-transform: uppercase;
+  font-size: 9px; letter-spacing: 2px;
+  color: rgba(255,255,255,0.6); text-transform: uppercase;
 }
 .cat-tile-arrow {
   display: inline-block; margin-left: 8px;
@@ -799,8 +835,8 @@ header {
   border-left: 1px solid rgba(201,169,110,0.07);
 }
 .cat-tile-thumb-placeholder span {
-  font-size: 7px; letter-spacing: 3px;
-  color: rgba(201,169,110,0.35); text-transform: uppercase;
+  font-size: 9px; letter-spacing: 3px;
+  color: rgba(201,169,110,0.7); text-transform: uppercase;
   text-align: center; padding: 0 8px; line-height: 1.6;
 }
 
@@ -832,7 +868,7 @@ header {
   color: var(--gold);
   background: rgba(201,169,110,0.12);
 }
-.bc-sep { color: rgba(255,255,255,0.1); font-size: 11px; }
+.bc-sep { color: rgba(255,255,255,0.4); font-size: 11px; }
 .bc-current {
   font-family: 'Cormorant Garamond', serif;
   font-size: 12px; letter-spacing: 4px;
@@ -876,8 +912,8 @@ header {
 .sub-tile:active .sub-tile-name { color: var(--gold); }
 .sub-tile-count {
   margin-top: 4px;
-  font-size: 7px; letter-spacing: 2px;
-  color: rgba(255,255,255,0.25); text-transform: uppercase;
+  font-size: 8px; letter-spacing: 2px;
+  color: rgba(255,255,255,0.6); text-transform: uppercase;
 }
 .sub-tile-arrow {
   display: inline-block; margin-left: 7px;
@@ -912,8 +948,8 @@ header {
   border-left: 1px solid rgba(201,169,110,0.07);
 }
 .sub-tile-thumb-placeholder span {
-  font-size: 7px; letter-spacing: 3px;
-  color: rgba(201,169,110,0.3); text-transform: uppercase;
+  font-size: 9px; letter-spacing: 3px;
+  color: rgba(201,169,110,0.7); text-transform: uppercase;
   text-align: center; padding: 0 6px; line-height: 1.6;
 }
 
@@ -953,7 +989,7 @@ header {
 .gal-sub {
   font-size: 8px; letter-spacing: 4px;
   color: var(--gold); text-transform: uppercase;
-  margin-top: 5px; opacity: .65;
+  margin-top: 5px; opacity: .85;
 }
 .section-block { display: none; }
 
@@ -1002,15 +1038,34 @@ header {
 .grid-item:hover .grid-item-overlay {
   background: linear-gradient(to top, rgba(0,0,0,0.18) 0%, transparent 45%);
 }
-/* Subtle copyright mark */
-.grid-item::after {
-  content: '\00A9 NCM';
-  position: absolute; bottom: 5px; right: 6px;
-  font-size: 7px; letter-spacing: 1px;
-  color: rgba(255,255,255,0.18);
-  font-family: 'Montserrat', sans-serif;
-  pointer-events: none; user-select: none;
+
+/* Photo info bar — shows remarks/place/dimensions on hover, never prints */
+.grid-item-info {
+  position: absolute; bottom: 0; left: 0; right: 0;
+  padding: 18px 8px 5px;
+  background: linear-gradient(to top, rgba(0,0,0,0.72) 0%, transparent 100%);
+  opacity: 0;
+  transition: opacity .35s;
+  pointer-events: none;
 }
+.grid-item:hover .grid-item-info { opacity: 1; }
+.grid-item-info-text {
+  font-size: 9px; letter-spacing: 1.5px;
+  color: rgba(255,255,255,0.82);
+  font-family: 'Montserrat', sans-serif;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  display: block;
+}
+.grid-item-info-dims {
+  font-size: 7px; letter-spacing: 1px;
+  color: rgba(255,255,255,0.4);
+  font-family: 'Montserrat', sans-serif;
+  display: block; margin-top: 2px;
+}
+@media print {
+  .grid-item-info { display: none !important; }
+}
+/* NO watermark pseudo-element — removed as it showed as garbled text on some devices */
 
 .wip-message {
   text-align: center; padding: 80px 20px;
@@ -1073,10 +1128,10 @@ header {
   display: none; position: fixed;
   bottom: 44px; left: 0; right: 0;
   background: rgba(8,8,8,0.95);
-  border-top: 1px solid rgba(201,169,110,0.09);
+  border-top: 1px solid rgba(201,169,110,0.15);
   padding: 6px 12px; text-align: center; z-index: 8990;
-  font-size: 7px; letter-spacing: 2px;
-  color: rgba(201,169,110,0.45); text-transform: uppercase; line-height: 1.8;
+  font-size: 8px; letter-spacing: 2px;
+  color: rgba(201,169,110,0.75); text-transform: uppercase; line-height: 1.8;
 }
 
 /* ── FOOTER ── */
@@ -1090,12 +1145,13 @@ footer {
 }
 .footer-copy {
   font-size: 8px; letter-spacing: 2px;
-  color: rgba(255,255,255,0.28);
+  color: rgba(255,255,255,0.55);   /* visible on dark background */
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
 }
-.footer-links { display: flex; gap: 6px; }
+.footer-links { display: flex; gap: 6px; flex-shrink: 0; }
 .footer-link {
   font-size: 9px; font-weight: 600; letter-spacing: 2px;
-  color: rgba(255,255,255,0.75);   /* clearly visible */
+  color: rgba(255,255,255,0.75);
   text-transform: uppercase;
   cursor: pointer; border: none;
   background: rgba(255,255,255,0.06);
@@ -1104,6 +1160,7 @@ footer {
   font-family: 'Montserrat', sans-serif;
   height: 32px; display: flex; align-items: center;
   transition: color .2s, background .2s;
+  white-space: nowrap;
 }
 .footer-link:hover, .footer-link:active {
   color: var(--gold);
@@ -1142,9 +1199,7 @@ footer {
                         sub_items.append({"id": s_id, "name": p_name, "cover": s_cover,
                                           "count": len(orig_paths), "subtitle": group})
                         imgs = "".join([
-                            '<div class="grid-item" onclick="openLightbox(this)">'
-                            + thumb_img(thumb_map.get(p, p), p, p_name)
-                            + '<div class="grid-item-overlay"></div></div>'
+                            grid_item_html(thumb_map.get(p, p), p, p_name, path_info)
                             for p in orig_paths
                         ])
                         gallery_blocks += (
@@ -1169,9 +1224,7 @@ footer {
                 sub_items.append({"id": s_id, "name": s_cat, "cover": s_cover,
                                   "count": len(orig_paths), "subtitle": m_cat})
                 imgs = "".join([
-                    '<div class="grid-item" onclick="openLightbox(this)">'
-                    + thumb_img(thumb_map.get(p, p), p, s_cat)
-                    + '<div class="grid-item-overlay"></div></div>'
+                    grid_item_html(thumb_map.get(p, p), p, s_cat, path_info)
                     for p in orig_paths
                 ])
                 gallery_blocks += (
@@ -1192,9 +1245,7 @@ footer {
             sub_items.append({"id": s_id, "name": m_cat, "cover": s_cover,
                               "count": len(orig_paths), "subtitle": ""})
             imgs = "".join([
-                '<div class="grid-item" onclick="openLightbox(this)">'
-                + thumb_img(thumb_map.get(p, p), p, m_cat)
-                + '<div class="grid-item-overlay"></div></div>'
+                grid_item_html(thumb_map.get(p, p), p, m_cat, path_info)
                 for p in orig_paths
             ])
             gallery_blocks += (
@@ -1513,6 +1564,25 @@ function submitContact(){
   window.location.href='mailto:""" + contact_email + """?subject='+encodeURIComponent(subject)+'&body='+body;
 }
 
+/* ── Photo dimensions overlay — reads from loaded thumbnail ── */
+function attachDimsToGrid(){
+  document.querySelectorAll('.grid-item img').forEach(function(img){
+    function fill(){
+      var el = img.closest('.grid-item');
+      if(!el) return;
+      var d = el.querySelector('.grid-item-info-dims');
+      if(d && img.naturalWidth > 0){
+        d.textContent = img.naturalWidth + ' \u00d7 ' + img.naturalHeight + ' px';
+      }
+    }
+    if(img.complete && img.naturalWidth) fill();
+    else img.addEventListener('load', fill);
+  });
+}
+/* Run once at start and again whenever a gallery becomes visible */
+document.addEventListener('DOMContentLoaded', attachDimsToGrid);
+document.getElementById('gallery-container').addEventListener('animationend', attachDimsToGrid);
+
 goHome();
 """
 
@@ -1630,12 +1700,6 @@ goHome();
         '    <div class="adrawer-item" onclick="showInfoPage(\'page-licensing\'); closeAboutDrawer()">\n'
         '      <div class="adrawer-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14,2 14,8 20,8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10,9 9,9 8,9"/></svg></div>\n'
         '      <span class="adrawer-label">Licensing</span>\n'
-        '    </div>\n'
-
-        '    <div class="adrawer-item" onclick="showInfoPage(\'page-workshops\'); closeAboutDrawer()">\n'
-        '      <div class="adrawer-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></div>\n'
-        '      <span class="adrawer-label">Workshops &amp; Tours</span>\n'
-        '      <span class="adrawer-badge">New</span>\n'
         '    </div>\n'
 
         '    <div class="adrawer-section-hdr">Legal</div>\n'
@@ -1824,7 +1888,7 @@ goHome();
         '<footer>\n'
         '  <span class="footer-copy">&copy; N C Mohan &middot; All rights reserved</span>\n'
         '  <div class="footer-links">\n'
-        '    <button class="footer-link" onclick="goHome()">&#8962; Home</button>\n'
+        '    <button class="footer-link" onclick="goHome()">Home</button>\n'
         '    <button class="footer-link" onclick="goCollections()">Collections</button>\n'
         '    <button class="footer-link" onclick="showInfoPage(\'page-contact\')">Contact</button>\n'
         '  </div>\n'
