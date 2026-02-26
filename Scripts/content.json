@@ -25,7 +25,7 @@
     "subtitle": "How I see the world",
     "paragraphs": [
       "Every photograph begins with <strong>seeing</strong> — not just looking. I believe the camera is a tool for attention, a device that forces you to slow down and notice what is already there.",
-      "I am drawn to available light — dawn, dusk, storm light, the last rays cutting through forest canopy. I rarely intervene in a scene. My instinct is to <strong>wait, watch, and respond</strong>.",
+      "I am drawn to available light — dawn, dusk, storm light, the last rays cutting through forest canopy. I rarely intervene in a scene. My instinct is to <strong>wait, watch, and respond</strong>."
     ]
   },
 
@@ -39,69 +39,39 @@
       },
       {
         "heading": "Primary Lenses",
-        "detail": "[ NIKKOR 35mm, 50mm f/1.8, 11-20mm, 55-300mm, 200-500mm f/4.5-5.6, Tamron 24-70mm f/2.8, Sigma 50mm Macro ]"
+        "detail": "[ NIKKOR 35mm, 50mm f/1.8, 11-20mm, 55-300mm, 200-500mm ]"
       },
       {
-        "heading": "Post-Processing",
-        "detail": "[ Software — Nikon NX Studio, AffinityPro2, DarkTable]"
+        "heading": "Support & Accessories",
+        "detail": "[ Benro Tripod, Remote shutter triggers, and various filters. ]"
       }
     ]
   },
 
   "contact": {
-    "title": "Contact",
-    "subtitle": "Get in touch",
-    "intro": "Whether you are interested in a <strong>print purchase</strong>, <strong>licensing</strong>, a <strong>collaboration</strong>, or simply want to share your thoughts — I would love to hear from you.",
-    "subjects": [
-      "General Enquiry",
-      "Print Purchase",
-      "Licensing & Usage Rights",
-      "Collaboration",
-      "Other"
+    "title": "Get in Touch",
+    "subtitle": "Inquiries & Collaborations",
+    "paragraphs": [
+      "Whether you are interested in a print, a licensing inquiry, or simply want to talk photography, I would love to hear from you.",
+      "The best way to reach me is via email at <strong>ncmohan.photos@gmail.com</strong>. I typically respond within 48 hours."
     ]
   },
 
   "prints": {
-    "title": "Print Sales",
-    "subtitle": "Own a piece of the light",
-    "intro": "All prints are produced on <strong>high quality paper</strong>.",
-    "sizes": [
-      {
-        "size": "A4",
-        "dimensions": "210 × 297 mm",
-        "edition": "Open edition",
-        "price": "On request"
-      },
-      {
-        "size": "A3",
-        "dimensions": "297 × 420 mm",
-        "edition": "Open edition",
-        "price": "On request"
-      },
-      {
-        "size": "A2",
-        "dimensions": "420 × 594 mm",
-        "edition": "Limited — 50 copies",
-        "price": "On request"
-      },
-      {
-        "size": "A1",
-        "dimensions": "594 × 841 mm",
-        "edition": "Limited — 25 copies",
-        "price": "On request"
-      }
+    "title": "Fine Art Prints",
+    "subtitle": "Bring the world home",
+    "paragraphs": [
+      "Limited edition, museum-quality prints are available for most images in the collection. Each print is produced on archival paper to ensure longevity and tonal depth.",
+      "Custom sizing and framing options can be discussed based on your space requirements."
     ]
   },
 
   "licensing": {
-    "title": "Licensing",
-    "subtitle": "Usage rights & commercial use",
+    "title": "Image Licensing",
+    "subtitle": "Professional Usage",
     "paragraphs": [
-      "All photographs on this website are the <strong>exclusive intellectual property of N C Mohan</strong> and are protected under Indian and international copyright law.",
-      "<strong>Editorial Licensing</strong> — images may be licensed for editorial use in publications, documentaries, and educational material.",
-      "<strong>Commercial Licensing</strong> — advertising, product packaging, corporate communications and similar uses require a separate commercial licence.",
-      "<strong>Digital Licensing</strong> — website, social media, and digital publication rights are available on a per-image basis.",
-      "Unauthorised reproduction, copying, downloading, or distribution of any image on this site is strictly prohibited and may result in legal action. To discuss licensing, please use the Contact page."
+      "Rights-managed licensing for editorial, commercial, or digital use is available. My work has appeared in various publications and exhibitions.",
+      "To discuss licensing terms, please send an email with the image title and your intended usage details."
     ]
   },
 
