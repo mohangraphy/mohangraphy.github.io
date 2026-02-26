@@ -1,0 +1,134 @@
+{
+  "_instructions": "Edit this file to update your website content. After saving, run Claude_Deploy.py to publish changes. Do NOT change the key names (the words on the left of the colon). Only change the values (the text on the right). Use \\n for a new line within a paragraph if needed.",
+
+  "site": {
+    "title": "MOHANGRAPHY",
+    "tagline": "Light · Moment · Story",
+    "byline": "Photos by",
+    "photographer_name": "N C Mohan",
+    "contact_email": "ncmohan.photos@gmail.com",
+    "description": "Fine art photography by N C Mohan. Landscapes, architecture, wildlife, and more."
+  },
+
+  "about": {
+    "title": "About Me",
+    "subtitle": "Photographer · N C Mohan",
+    "paragraphs": [
+      "I am <strong>N C Mohan</strong>, a photographer based in India with a deep passion for capturing the world in its most honest and luminous moments. My work spans landscapes, wildlife, architecture, and the quiet beauty of everyday life.",
+      "Photography for me is the intersection of <strong>light, moment, and story</strong> — three elements that are fleeting, unrepeatable, and endlessly compelling. I chase the quality of light as obsessively as I chase the subject within it.",
+      "My journeys have taken me across India's diverse terrains — from the mist-laden hills of <strong>Megamalai</strong> of South to the <strong>Snow-cladden Himalayas</strong> of the North, the coastlines of West and East, the deserts of Rajasthan plains and high-altitude Ladakh, and the many forests that define this extraordinary country."
+    ]
+  },
+
+  "philosophy": {
+    "title": "Philosophy",
+    "subtitle": "How I see the world",
+    "paragraphs": [
+      "Every photograph begins with <strong>seeing</strong> — not just looking. I believe the camera is a tool for attention, a device that forces you to slow down and notice what is already there.",
+      "I am drawn to available light — dawn, dusk, storm light, the last rays cutting through forest canopy. I rarely intervene in a scene. My instinct is to <strong>wait, watch, and respond</strong>.",
+    ]
+  },
+
+  "gear": {
+    "title": "Gear & Kit",
+    "subtitle": "The tools of the trade",
+    "items": [
+      {
+        "heading": "Camera Body",
+        "detail": "[ NIKON D-750 AND D-90 ]"
+      },
+      {
+        "heading": "Primary Lenses",
+        "detail": "[ NIKKOR 35mm, 50mm f/1.8, 11-20mm, 55-300mm, 200-500mm f/4.5-5.6, Tamron 24-70mm f/2.8, Sigma 50mm Macro ]"
+      },
+      {
+        "heading": "Post-Processing",
+        "detail": "[ Software — Nikon NX Studio, AffinityPro2, DarkTable]"
+      }
+    ]
+  },
+
+  "contact": {
+    "title": "Contact",
+    "subtitle": "Get in touch",
+    "intro": "Whether you are interested in a <strong>print purchase</strong>, <strong>licensing</strong>, a <strong>collaboration</strong>, or simply want to share your thoughts — I would love to hear from you.",
+    "subjects": [
+      "General Enquiry",
+      "Print Purchase",
+      "Licensing & Usage Rights",
+      "Collaboration",
+      "Other"
+    ]
+  },
+
+  "prints": {
+    "title": "Print Sales",
+    "subtitle": "Own a piece of the light",
+    "intro": "All prints are produced on <strong>high quality paper</strong>.",
+    "sizes": [
+      {
+        "size": "A4",
+        "dimensions": "210 × 297 mm",
+        "edition": "Open edition",
+        "price": "On request"
+      },
+      {
+        "size": "A3",
+        "dimensions": "297 × 420 mm",
+        "edition": "Open edition",
+        "price": "On request"
+      },
+      {
+        "size": "A2",
+        "dimensions": "420 × 594 mm",
+        "edition": "Limited — 50 copies",
+        "price": "On request"
+      },
+      {
+        "size": "A1",
+        "dimensions": "594 × 841 mm",
+        "edition": "Limited — 25 copies",
+        "price": "On request"
+      }
+    ]
+  },
+
+  "licensing": {
+    "title": "Licensing",
+    "subtitle": "Usage rights & commercial use",
+    "paragraphs": [
+      "All photographs on this website are the <strong>exclusive intellectual property of N C Mohan</strong> and are protected under Indian and international copyright law.",
+      "<strong>Editorial Licensing</strong> — images may be licensed for editorial use in publications, documentaries, and educational material.",
+      "<strong>Commercial Licensing</strong> — advertising, product packaging, corporate communications and similar uses require a separate commercial licence.",
+      "<strong>Digital Licensing</strong> — website, social media, and digital publication rights are available on a per-image basis.",
+      "Unauthorised reproduction, copying, downloading, or distribution of any image on this site is strictly prohibited and may result in legal action. To discuss licensing, please use the Contact page."
+    ]
+  },
+
+  "legal": {
+    "title": "Copyright & Legal",
+    "subtitle": "Your rights and ours",
+    "items": [
+      {
+        "heading": "Copyright Notice",
+        "detail": "All photographs, text, and visual content on this website are © N C Mohan. All rights reserved. No image may be reproduced, distributed, publicly displayed, or used in any form without the prior written consent of N C Mohan."
+      },
+      {
+        "heading": "Watermarks & Metadata",
+        "detail": "All images carry embedded copyright metadata. Removal of this metadata is a violation of the Copyright Act."
+      },
+      {
+        "heading": "Downloads",
+        "detail": "Images visible on this site are display-resolution only. Full-resolution files are available exclusively through the Print Sales or Licensing channels."
+      },
+      {
+        "heading": "Privacy",
+        "detail": "This website does not collect personal data, set cookies, or use analytics tracking beyond standard server logs."
+      },
+      {
+        "heading": "Governing Law",
+        "detail": "Any dispute arising from the use of this website or its content shall be governed by the laws of India."
+      }
+    ]
+  }
+}
