@@ -16,7 +16,7 @@
     "paragraphs": [
       "I am <strong>N C Mohan</strong>, a photographer based in India with a deep passion for capturing the world in its most honest and luminous moments. My work spans landscapes, wildlife, architecture, and the quiet beauty of everyday life.",
       "Photography for me is the intersection of <strong>light, moment, and story</strong> — three elements that are fleeting, unrepeatable, and endlessly compelling. I chase the quality of light as obsessively as I chase the subject within it.",
-      "My journeys have taken me across India's diverse terrains — from the mist-laden hills of <strong>Megamalai</strong> of South to the <strong>Snow-cladden Himalayas</strong> of the North, the coastlines of West and East, the deserts of Rajasthan plains and high-altitude Ladakh, and the many forests that define this extraordinary country."
+      "My journeys have taken me across India's diverse terrains — from the mist-laden hills of <strong>Megamalai</strong> of South to the <strong>Snow-cladden Himalayas</strong> of the North, the coastlines of West and East, the deserts of <strong>Rajasthan plains</strong> and the high-altitude desert in <strong?Ladakh</strong>, and the many forests that define this extraordinary country."
     ]
   },
 
@@ -41,10 +41,6 @@
         "heading": "Primary Lenses",
         "detail": "[ NIKKOR 35mm, 50mm f/1.8, 11-20mm, 55-300mm, 200-500mm ]"
       },
-      {
-        "heading": "Support & Accessories",
-        "detail": "[ Benro Tripod, Remote shutter triggers, and various filters. ]"
-      }
     ]
   },
 
@@ -58,10 +54,10 @@
   },
 
   "prints": {
-    "title": "Fine Art Prints",
+    "title": "Prints",
     "subtitle": "Bring the world home",
     "paragraphs": [
-      "Limited edition, museum-quality prints are available for most images in the collection. Each print is produced on archival paper to ensure longevity and tonal depth.",
+      "Limited edition prints are available for most images in the collection. Each print is produced on <strong> quality</strong> paper.",
       "Custom sizing and framing options can be discussed based on your space requirements."
     ]
   },
