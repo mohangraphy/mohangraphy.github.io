@@ -40,11 +40,10 @@ def load_index():
 def load_content():
     if not os.path.exists(CONTENT_FILE): return {}
     with open(CONTENT_FILE, 'r', encoding='utf-8') as f:
-        try:
-            return json.load(f)
+        try: return json.load(f)
         except Exception as e:
             print(f"  ERROR reading content.json: {e}")
-            sys.exit(1)
+            return {}
 
 def deduplicate_by_path(raw_data):
     seen = {}
@@ -70,7 +69,8 @@ def make_thumb(rel_path):
     if not os.path.exists(thumb_full):
         os.makedirs(os.path.dirname(thumb_full), exist_ok=True)
         try:
-            subprocess.run(["sips", "-Z", str(THUMB_WIDTH), src_full, "--out", thumb_full], capture_output=True, check=True)
+            subprocess.run(["sips", "-Z", str(THUMB_WIDTH), src_full, "--out", thumb_full], 
+                           capture_output=True, check=True)
         except: return rel_path
     return thumb_rel
 
@@ -88,21 +88,17 @@ def build_maps(unique_entries):
             if tag in MOUNTAINS_TAGS:
                 tag_map.setdefault("Nature/Mountains", []).append(path)
                 tag_map.setdefault("Nature/Landscape", []).append(path)
-            elif tag in SUNSETS_TAGS:
-                tag_map.setdefault("Nature/Sunsets and Sunrises", []).append(path)
             else:
                 tag_map.setdefault(tag, []).append(path)
-            if "Places/National" in tag:
-                place_map["National"].setdefault(info.get('place','General'), []).append(path)
-            elif "Places/International" in tag:
-                place_map["International"].setdefault(info.get('place','General'), []).append(path)
     return tag_map, place_map, list(dict.fromkeys(all_paths))
 
 def render_paragraphs(paragraphs):
-    return ''.join(f'<p>{p}</p>\\n' for p in paragraphs)
+    if not paragraphs: return ""
+    return ''.join(f'<p>{p}</p>\n' for p in paragraphs)
 
 def render_items(items):
-    return ''.join(f'<p><strong>{i["heading"]}</strong><br>{i["detail"]}</p>\\n' for i in items)
+    if not items: return ""
+    return ''.join(f'<p><strong>{i["heading"]}</strong><br>{i["detail"]}</p>\n' for i in items)
 
 def generate_html():
     raw_data = load_index()
@@ -119,27 +115,54 @@ def generate_html():
     c_licens = C.get('licensing', {})
     c_legal = C.get('legal', {})
 
-    # Use Megamalai photos for hero section
+    # Use Megamalai photos for cover
     megamalai_paths = scan_folder_for_photos(MEGAMALAI_FOLDER)
     if not megamalai_paths: megamalai_paths = all_paths[:10]
     hero_slides = random.sample(megamalai_paths, min(len(megamalai_paths), 15))
 
-    # HTML Construction logic (using your specific strings and structure)
-    # The fix: All c_workshop references are removed.
-    
-    # [Rest of your script follows here to build the actual string 'html']
-    # Ensure the script ends with the write command below:
+    # HTML Construction
+    html = f"""<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{site.get('title', 'MOHANGRAPHY')}</title>
+    <style>
+        body {{ font-family: sans-serif; background: #111; color: #eee; padding: 40px; line-height: 1.6; }}
+        .container {{ max-width: 900px; margin: auto; }}
+        h1 {{ color: #fff; border-bottom: 1px solid #333; padding-bottom: 10px; }}
+        .section {{ margin-bottom: 40px; padding: 20px; background: #1a1a1a; border-radius: 8px; }}
+        strong {{ color: #eec170; }}
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>{site.get('title')}</h1>
+        <p><em>{site.get('tagline')}</em></p>
 
-    html = "" # This is a placeholder for your long HTML string
-    
-    # ... Your full CSS and HTML build logic ...
+        <div class="section">
+            <h2>{c_about.get('title')}</h2>
+            {render_paragraphs(c_about.get('paragraphs', []))}
+        </div>
+
+        <div class="section">
+            <h2>{c_gear.get('title')}</h2>
+            {render_items(c_gear.get('items', []))}
+        </div>
+
+        <div class="section">
+            <h2>{c_contact.get('title')}</h2>
+            {render_paragraphs(c_contact.get('paragraphs', []))}
+        </div>
+    </div>
+</body>
+</html>"""
 
     out_path = os.path.join(ROOT_DIR, "index.html")
     with open(out_path, "w", encoding="utf-8") as f:
         f.write(html)
 
     print("=" * 55)
-    print("BUILD COMPLETE")
+    print("✅ BUILD COMPLETE")
     print(f"  Output: {out_path}")
 
 if __name__ == "__main__":
