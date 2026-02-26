@@ -1,5 +1,5 @@
 {
-  "_instructions": "Edit this file to update your website content. After saving, run Claude_Deploy.py to publish changes. Do NOT change the key names (the words on the left of the colon). Only change the values (the text on the right). Use \\n for a new line within a paragraph if needed.",
+  "_instructions": "Edit this file to update your website content. After saving, run deploy.py to publish changes. Do NOT change the key names (words on the left of the colon). Only change the values (text on the right).",
 
   "site": {
     "title": "MOHANGRAPHY",
@@ -16,7 +16,7 @@
     "paragraphs": [
       "I am <strong>N C Mohan</strong>, a photographer based in India with a deep passion for capturing the world in its most honest and luminous moments. My work spans landscapes, wildlife, architecture, and the quiet beauty of everyday life.",
       "Photography for me is the intersection of <strong>light, moment, and story</strong> — three elements that are fleeting, unrepeatable, and endlessly compelling. I chase the quality of light as obsessively as I chase the subject within it.",
-      "My journeys have taken me across India's diverse terrains — from the mist-laden hills of <strong>Megamalai</strong> of South to the <strong>Snow-cladden Himalayas</strong> of the North, the coastlines of West and East, the deserts of <strong>Rajasthan plains</strong> and the high-altitude desert in <strong?Ladakh</strong>, and the many forests that define this extraordinary country."
+      "My journeys have taken me across India's diverse terrains — from the mist-laden hills of <strong>Megamalai</strong> of the South to the <strong>Snow-clad Himalayas</strong> of the North, the coastlines of West and East, the deserts of <strong>Rajasthan</strong> and the high-altitude desert of <strong>Ladakh</strong>, and the many forests that define this extraordinary country."
     ]
   },
 
@@ -25,7 +25,7 @@
     "subtitle": "How I see the world",
     "paragraphs": [
       "Every photograph begins with <strong>seeing</strong> — not just looking. I believe the camera is a tool for attention, a device that forces you to slow down and notice what is already there.",
-      "I am drawn to available light — dawn, dusk, storm light, the last rays cutting through forest canopy. I rarely intervene in a scene. My instinct is to <strong>wait, watch, and respond</strong>"
+      "I am drawn to available light — dawn, dusk, storm light, the last rays cutting through forest canopy. I rarely intervene in a scene. My instinct is to <strong>wait, watch, and respond</strong>."
     ]
   },
 
@@ -35,11 +35,11 @@
     "items": [
       {
         "heading": "Camera Body",
-        "detail": "[ NIKON D-750 AND D-90 ]"
+        "detail": "Nikon D-750 and D-90"
       },
       {
         "heading": "Primary Lenses",
-        "detail": "[ NIKKOR 35mm, 50mm f/1.8, 11-20mm, 55-300mm, 200-500mm ]"
+        "detail": "Nikkor 35mm, 50mm f/1.8, 11-20mm, 55-300mm, 200-500mm"
       }
     ]
   },
@@ -47,18 +47,46 @@
   "contact": {
     "title": "Get in Touch",
     "subtitle": "Inquiries & Collaborations",
-    "paragraphs": [
-      "Whether you are interested in a print, a licensing inquiry, or simply want to talk photography, I would love to hear from you.",
-      "The best way to reach me is via email at <strong>ncmohan.photos@gmail.com</strong>. I typically respond within 48 hours."
+    "intro": "Whether you are interested in a print, a licensing inquiry, or simply want to talk photography — I would love to hear from you. I typically respond within 48 hours.",
+    "subjects": [
+      "General Enquiry",
+      "Print Purchase",
+      "Licensing & Usage Rights",
+      "Collaboration",
+      "Other"
     ]
   },
 
   "prints": {
     "title": "Prints",
     "subtitle": "Bring the world home",
-    "paragraphs": [
-      "Limited edition prints are available for most images in the collection. Each print is produced on <strong> quality</strong> paper.",
-      "Custom sizing and framing options can be discussed based on your space requirements."
+    "intro": "Limited edition prints are available for most images in the collection. Each print is produced on <strong>quality paper</strong>.",
+    "note": "Every print is signed and ships with a certificate of authenticity.",
+    "sizes": [
+      {
+        "size": "A4",
+        "dimensions": "210 × 297 mm",
+        "edition": "Open edition",
+        "price": "On request"
+      },
+      {
+        "size": "A3",
+        "dimensions": "297 × 420 mm",
+        "edition": "Open edition",
+        "price": "On request"
+      },
+      {
+        "size": "A2",
+        "dimensions": "420 × 594 mm",
+        "edition": "Limited — 50 copies",
+        "price": "On request"
+      },
+      {
+        "size": "A1",
+        "dimensions": "594 × 841 mm",
+        "edition": "Limited — 25 copies",
+        "price": "On request"
+      }
     ]
   },
 
@@ -67,7 +95,18 @@
     "subtitle": "Professional Usage",
     "paragraphs": [
       "Rights-managed licensing for editorial, commercial, or digital use is available. My work has appeared in various publications and exhibitions.",
+      "<strong>Editorial Licensing</strong> — images may be licensed for editorial use in publications, documentaries, and educational material.",
+      "<strong>Commercial Licensing</strong> — advertising, product packaging, and corporate communications require a separate commercial licence.",
       "To discuss licensing terms, please send an email with the image title and your intended usage details."
+    ]
+  },
+
+  "workshops": {
+    "title": "Workshops & Tours",
+    "subtitle": "Learn to see, learn to shoot",
+    "paragraphs": [
+      "I occasionally lead small-group <strong>photography workshops and field tours</strong> in locations I know intimately — including the Western Ghats, Megamalai, and other destinations across India.",
+      "To register interest or ask about upcoming dates, please use the Contact page."
     ]
   },
 
