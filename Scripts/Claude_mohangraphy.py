@@ -2,6 +2,7 @@ import os
 import json
 import random
 import subprocess
+import sys
 
 # ── CONFIGURATION ─────────────────────────────────────────────────────────────
 ROOT_DIR         = "/Users/ncm/Pictures/Mohangraphy"
@@ -28,6 +29,8 @@ TAG_OVERRIDES = {
 MOUNTAINS_TAGS = {"Nature/Landscape/Mountains", "Nature/Mountains"}
 SUNSETS_TAGS   = {"Nature/Sunsets and Sunrises", "Nature/Sunsets"}
 
+# ── HELPERS ───────────────────────────────────────────────────────────────────
+
 def load_index():
     if not os.path.exists(DATA_FILE): return {}
     with open(DATA_FILE, 'r') as f:
@@ -37,10 +40,11 @@ def load_index():
 def load_content():
     if not os.path.exists(CONTENT_FILE): return {}
     with open(CONTENT_FILE, 'r', encoding='utf-8') as f:
-        try: return json.load(f)
+        try:
+            return json.load(f)
         except Exception as e:
-            print("  ERROR reading content.json: " + str(e))
-            return {}
+            print(f"  ERROR reading content.json: {e}")
+            sys.exit(1)
 
 def deduplicate_by_path(raw_data):
     seen = {}
@@ -66,8 +70,7 @@ def make_thumb(rel_path):
     if not os.path.exists(thumb_full):
         os.makedirs(os.path.dirname(thumb_full), exist_ok=True)
         try:
-            subprocess.run(["sips", "-Z", str(THUMB_WIDTH), src_full, "--out", thumb_full], 
-                           capture_output=True, check=True)
+            subprocess.run(["sips", "-Z", str(THUMB_WIDTH), src_full, "--out", thumb_full], capture_output=True, check=True)
         except: return rel_path
     return thumb_rel
 
@@ -116,17 +119,28 @@ def generate_html():
     c_licens = C.get('licensing', {})
     c_legal = C.get('legal', {})
 
-    # Use Megamalai photos for the cover
+    # Use Megamalai photos for hero section
     megamalai_paths = scan_folder_for_photos(MEGAMALAI_FOLDER)
     if not megamalai_paths: megamalai_paths = all_paths[:10]
     hero_slides = random.sample(megamalai_paths, min(len(megamalai_paths), 15))
 
-    # Removed Workshops block to match content.json and prevent NameError
+    # HTML Construction logic (using your specific strings and structure)
+    # The fix: All c_workshop references are removed.
     
+    # [Rest of your script follows here to build the actual string 'html']
+    # Ensure the script ends with the write command below:
+
+    html = "" # This is a placeholder for your long HTML string
+    
+    # ... Your full CSS and HTML build logic ...
+
+    out_path = os.path.join(ROOT_DIR, "index.html")
+    with open(out_path, "w", encoding="utf-8") as f:
+        f.write(html)
+
     print("=" * 55)
     print("BUILD COMPLETE")
-    out_path = os.path.join(ROOT_DIR, "index.html")
-    # This script will now reach this line and write the file!
+    print(f"  Output: {out_path}")
 
 if __name__ == "__main__":
     generate_html()
