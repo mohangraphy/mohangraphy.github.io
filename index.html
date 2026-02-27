@@ -905,13 +905,13 @@ header {
 /* Toast notification */
 #toast {
   position: fixed; bottom: 80px; left: 50%; transform: translateX(-50%);
-  background: rgba(201,169,110,0.92); color: #000;
+  background: rgba(201,169,110,0.95); color: #000;
   font-family: 'Montserrat', sans-serif; font-size: 10px; letter-spacing: 2px;
   padding: 10px 20px; border-radius: 4px;
   opacity: 0; transition: opacity .3s; pointer-events: none; z-index: 99990;
   white-space: nowrap;
 }
-.toast-show { opacity: 1 !important; }
+#toast.show { opacity: 1; }
 
 /* ── LIGHTBOX ── */
 #lightbox {
@@ -1016,6 +1016,7 @@ footer {
 </style>
 </head>
 <body>
+<div id="toast"></div>
 
 <!-- HEADER -->
 <header>
@@ -1100,16 +1101,16 @@ footer {
   <div class="tile-nav-label">Collections</div>
 
 <div class="cat-tile" onclick="showGallery('direct-Architecture')" role="button" tabindex="0" onkeypress="if(event.key==='Enter') this.click()">
-  <div class="cat-tile-left"><div class="cat-tile-name">Architecture<span class="cat-tile-arrow">&rarr;</span></div><div class="cat-tile-count">24 Photos</div></div><div class="cat-tile-thumb"><img src="Thumbs/Photos/Architecture/2024-01-Badami-JPG/2024-01-Badami-Day2-NCM_6882.jpg" loading="lazy" decoding="async" alt=""></div>
+  <div class="cat-tile-left"><div class="cat-tile-name">Architecture<span class="cat-tile-arrow">&rarr;</span></div><div class="cat-tile-count">24 Photos</div></div><div class="cat-tile-thumb"><img src="Thumbs/Photos/Architecture/2024-01-Badami-JPG/2024-01-Badami-Day2-NCM_7096.jpg" loading="lazy" decoding="async" alt=""></div>
 </div>
 <div class="cat-tile" onclick="openCategory('Nature')" role="button" tabindex="0" onkeypress="if(event.key==='Enter') this.click()">
-  <div class="cat-tile-left"><div class="cat-tile-name">Nature<span class="cat-tile-arrow">&rarr;</span></div><div class="cat-tile-count">27 Photos</div></div><div class="cat-tile-thumb"><img src="Thumbs/Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4677.jpg" loading="lazy" decoding="async" alt=""></div>
+  <div class="cat-tile-left"><div class="cat-tile-name">Nature<span class="cat-tile-arrow">&rarr;</span></div><div class="cat-tile-count">27 Photos</div></div><div class="cat-tile-thumb"><img src="Thumbs/Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4915-17.jpg" loading="lazy" decoding="async" alt=""></div>
 </div>
 <div class="cat-tile" onclick="openCategory('People')" role="button" tabindex="0" onkeypress="if(event.key==='Enter') this.click()">
   <div class="cat-tile-left"><div class="cat-tile-name">People<span class="cat-tile-arrow">&rarr;</span></div><div class="cat-tile-count">Coming Soon</div></div><div class="cat-tile-thumb"><div class="cat-tile-thumb-placeholder"><span>Coming<br>Soon</span></div></div>
 </div>
 <div class="cat-tile" onclick="openCategory('Places')" role="button" tabindex="0" onkeypress="if(event.key==='Enter') this.click()">
-  <div class="cat-tile-left"><div class="cat-tile-name">Places<span class="cat-tile-arrow">&rarr;</span></div><div class="cat-tile-count">82 Photos</div></div><div class="cat-tile-thumb"><img src="Thumbs/Photos/Birds/Munnar Birds/2026-0127-MunnarBirds-NCM-6245.JPG" loading="lazy" decoding="async" alt=""></div>
+  <div class="cat-tile-left"><div class="cat-tile-name">Places<span class="cat-tile-arrow">&rarr;</span></div><div class="cat-tile-count">82 Photos</div></div><div class="cat-tile-thumb"><img src="Thumbs/Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4865-69.jpg" loading="lazy" decoding="async" alt=""></div>
 </div>
 </div>
 
@@ -1122,21 +1123,21 @@ footer {
 
 <div class="sub-panel" id="subpanel-Architecture">
 <div class="sub-tile" onclick="showGallery('direct-Architecture')">
-  <div class="sub-tile-left"><div class="sub-tile-name">Architecture<span class="sub-tile-arrow">&rarr;</span></div><div class="sub-tile-count">24 Photos</div></div><div class="sub-tile-thumb"><img src="Thumbs/Photos/Architecture/2024-01-Badami-JPG/2024-01-Badami-Day0-NCM_6176.jpg" loading="lazy" decoding="async" alt=""></div>
+  <div class="sub-tile-left"><div class="sub-tile-name">Architecture<span class="sub-tile-arrow">&rarr;</span></div><div class="sub-tile-count">24 Photos</div></div><div class="sub-tile-thumb"><img src="Thumbs/Photos/Architecture/2024-01-Badami-JPG/2024-01-Badami-Day0-NCM_6121.jpg" loading="lazy" decoding="async" alt=""></div>
 </div>
 </div>
 <div class="sub-panel" id="subpanel-Nature">
 <div class="sub-tile" onclick="showGallery('sub-Nature-Birds')">
-  <div class="sub-tile-left"><div class="sub-tile-name">Birds<span class="sub-tile-arrow">&rarr;</span></div><div class="sub-tile-count">31 Photos</div></div><div class="sub-tile-thumb"><img src="Thumbs/Photos/Birds/Munnar Birds/2026-0127-MunnarBirds-NCM-6038.JPG" loading="lazy" decoding="async" alt=""></div>
+  <div class="sub-tile-left"><div class="sub-tile-name">Birds<span class="sub-tile-arrow">&rarr;</span></div><div class="sub-tile-count">31 Photos</div></div><div class="sub-tile-thumb"><img src="Thumbs/Photos/Birds/Munnar Birds/2026-0127-MunnarBirds-NCM-5534.JPG" loading="lazy" decoding="async" alt=""></div>
 </div>
 <div class="sub-tile" onclick="showGallery('sub-Nature-Flowers')">
   <div class="sub-tile-left"><div class="sub-tile-name">Flowers<span class="sub-tile-arrow">&rarr;</span></div><div class="sub-tile-count">Coming Soon</div></div><div class="sub-tile-thumb"><div class="sub-tile-thumb-placeholder"><span>Coming<br>Soon</span></div></div>
 </div>
 <div class="sub-tile" onclick="showGallery('sub-Nature-Landscape')">
-  <div class="sub-tile-left"><div class="sub-tile-name">Landscape<span class="sub-tile-arrow">&rarr;</span></div><div class="sub-tile-count">27 Photos</div></div><div class="sub-tile-thumb"><img src="Thumbs/Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4733-35.jpg" loading="lazy" decoding="async" alt=""></div>
+  <div class="sub-tile-left"><div class="sub-tile-name">Landscape<span class="sub-tile-arrow">&rarr;</span></div><div class="sub-tile-count">27 Photos</div></div><div class="sub-tile-thumb"><img src="Thumbs/Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4715-17.jpg" loading="lazy" decoding="async" alt=""></div>
 </div>
 <div class="sub-tile" onclick="showGallery('sub-Nature-Mountains')">
-  <div class="sub-tile-left"><div class="sub-tile-name">Mountains<span class="sub-tile-arrow">&rarr;</span></div><div class="sub-tile-count">27 Photos</div></div><div class="sub-tile-thumb"><img src="Thumbs/Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4998.jpg" loading="lazy" decoding="async" alt=""></div>
+  <div class="sub-tile-left"><div class="sub-tile-name">Mountains<span class="sub-tile-arrow">&rarr;</span></div><div class="sub-tile-count">27 Photos</div></div><div class="sub-tile-thumb"><img src="Thumbs/Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4921-23.jpg" loading="lazy" decoding="async" alt=""></div>
 </div>
 <div class="sub-tile" onclick="showGallery('sub-Nature-Sunsets-and-Sunrises')">
   <div class="sub-tile-left"><div class="sub-tile-name">Sunsets and Sunrises<span class="sub-tile-arrow">&rarr;</span></div><div class="sub-tile-count">Coming Soon</div></div><div class="sub-tile-thumb"><div class="sub-tile-thumb-placeholder"><span>Coming<br>Soon</span></div></div>
@@ -1152,7 +1153,7 @@ footer {
 </div>
 <div class="sub-panel" id="subpanel-Places">
 <div class="sub-tile" onclick="showGallery('places-group-National')">
-  <div class="sub-tile-left"><div class="sub-tile-name">National<span class="sub-tile-arrow">&rarr;</span></div><div class="sub-tile-count">82 Photos</div></div><div class="sub-tile-thumb"><img src="Thumbs/Photos/Architecture/2024-01-Badami-JPG/2024-01-Badami-Day2-NCM_6871.jpg" loading="lazy" decoding="async" alt=""></div>
+  <div class="sub-tile-left"><div class="sub-tile-name">National<span class="sub-tile-arrow">&rarr;</span></div><div class="sub-tile-count">82 Photos</div></div><div class="sub-tile-thumb"><img src="Thumbs/Photos/Birds/Munnar Birds/2026-0127-MunnarBirds-NCM-5352.JPG" loading="lazy" decoding="async" alt=""></div>
 </div>
 <div class="sub-tile" onclick="showGallery('wip-Places-International')">
   <div class="sub-tile-left"><div class="sub-tile-name">International<span class="sub-tile-arrow">&rarr;</span></div><div class="sub-tile-count">Coming Soon</div></div><div class="sub-tile-thumb"><div class="sub-tile-thumb-placeholder"><span>Coming<br>Soon</span></div></div>
@@ -1208,7 +1209,7 @@ footer {
 </div>
 <div class="section-block" id="places-state-National-Karnataka">
   <div class="gal-header"><button class="gal-breadcrumb" onclick="showSection('places-group-National','sub-Places')">&larr; Back to National</button><div class="gal-title">Karnataka</div><div class="gal-sub">National &middot; 24 Photos</div></div>
-  <div class="sub-nav"><div class="sub-tile" onclick="showSection('places-city-National-Karnataka-Badami','places-state-National-Karnataka')"><div class="sub-tile-info"><div class="sub-tile-name">Badami<span class="sub-tile-arrow">&rarr;</span></div><div class="sub-tile-count">3 Photos</div></div><div class="sub-tile-thumb"><img src="Thumbs/Photos/Architecture/2024-01-Badami-JPG/2024-01-Badami-Day0-NCM_6002.jpg" loading="lazy" decoding="async" alt=""></div></div><div class="sub-tile" onclick="showSection('places-city-National-Karnataka-Karnataka','places-state-National-Karnataka')"><div class="sub-tile-info"><div class="sub-tile-name">Karnataka<span class="sub-tile-arrow">&rarr;</span></div><div class="sub-tile-count">20 Photos</div></div><div class="sub-tile-thumb"><img src="Thumbs/Photos/Architecture/2024-01-Badami-JPG/2024-01-Badami-Day1-NCM_6334.jpg" loading="lazy" decoding="async" alt=""></div></div><div class="sub-tile" onclick="showSection('places-city-National-Karnataka-Pattadhakal','places-state-National-Karnataka')"><div class="sub-tile-info"><div class="sub-tile-name">Pattadhakal<span class="sub-tile-arrow">&rarr;</span></div><div class="sub-tile-count">1 Photos</div></div><div class="sub-tile-thumb"><img src="Thumbs/Photos/Architecture/2024-01-Badami-JPG/2024-01-Badami-Day1-NCM_6218.jpg" loading="lazy" decoding="async" alt=""></div></div></div>
+  <div class="sub-nav"><div class="sub-tile" onclick="showSection('places-city-National-Karnataka-Badami','places-state-National-Karnataka')"><div class="sub-tile-info"><div class="sub-tile-name">Badami<span class="sub-tile-arrow">&rarr;</span></div><div class="sub-tile-count">3 Photos</div></div><div class="sub-tile-thumb"><img src="Thumbs/Photos/Architecture/2024-01-Badami-JPG/2024-01-Badami-Day2-NCM_6825.jpg" loading="lazy" decoding="async" alt=""></div></div><div class="sub-tile" onclick="showSection('places-city-National-Karnataka-Karnataka','places-state-National-Karnataka')"><div class="sub-tile-info"><div class="sub-tile-name">Karnataka<span class="sub-tile-arrow">&rarr;</span></div><div class="sub-tile-count">20 Photos</div></div><div class="sub-tile-thumb"><img src="Thumbs/Photos/Architecture/2024-01-Badami-JPG/2024-01-Badami-Day2-NCM_7096.jpg" loading="lazy" decoding="async" alt=""></div></div><div class="sub-tile" onclick="showSection('places-city-National-Karnataka-Pattadhakal','places-state-National-Karnataka')"><div class="sub-tile-info"><div class="sub-tile-name">Pattadhakal<span class="sub-tile-arrow">&rarr;</span></div><div class="sub-tile-count">1 Photos</div></div><div class="sub-tile-thumb"><img src="Thumbs/Photos/Architecture/2024-01-Badami-JPG/2024-01-Badami-Day1-NCM_6218.jpg" loading="lazy" decoding="async" alt=""></div></div></div>
 </div>
 <div class="section-block" id="places-city-National-Kerala-Kerala">
   <div class="gal-header"><button class="gal-breadcrumb" onclick="showSection('places-state-National-Kerala','places-group-National')">&larr; Back to Kerala</button><div class="gal-title">Kerala</div><div class="gal-sub">Kerala &middot; National &middot; 29 Photos</div></div>
@@ -1220,7 +1221,7 @@ footer {
 </div>
 <div class="section-block" id="places-state-National-Kerala">
   <div class="gal-header"><button class="gal-breadcrumb" onclick="showSection('places-group-National','sub-Places')">&larr; Back to National</button><div class="gal-title">Kerala</div><div class="gal-sub">National &middot; 31 Photos</div></div>
-  <div class="sub-nav"><div class="sub-tile" onclick="showSection('places-city-National-Kerala-Kerala','places-state-National-Kerala')"><div class="sub-tile-info"><div class="sub-tile-name">Kerala<span class="sub-tile-arrow">&rarr;</span></div><div class="sub-tile-count">29 Photos</div></div><div class="sub-tile-thumb"><img src="Thumbs/Photos/Birds/Munnar Birds/2026-0127-MunnarBirds-NCM-6639.JPG" loading="lazy" decoding="async" alt=""></div></div><div class="sub-tile" onclick="showSection('places-city-National-Kerala-Munnar','places-state-National-Kerala')"><div class="sub-tile-info"><div class="sub-tile-name">Munnar<span class="sub-tile-arrow">&rarr;</span></div><div class="sub-tile-count">2 Photos</div></div><div class="sub-tile-thumb"><img src="Thumbs/Photos/Birds/Munnar Birds/2026-0127-MunnarBirds-NCM-5352.JPG" loading="lazy" decoding="async" alt=""></div></div></div>
+  <div class="sub-nav"><div class="sub-tile" onclick="showSection('places-city-National-Kerala-Kerala','places-state-National-Kerala')"><div class="sub-tile-info"><div class="sub-tile-name">Kerala<span class="sub-tile-arrow">&rarr;</span></div><div class="sub-tile-count">29 Photos</div></div><div class="sub-tile-thumb"><img src="Thumbs/Photos/Birds/Munnar Birds/2026-0127-MunnarBirds-NCM-5799.JPG" loading="lazy" decoding="async" alt=""></div></div><div class="sub-tile" onclick="showSection('places-city-National-Kerala-Munnar','places-state-National-Kerala')"><div class="sub-tile-info"><div class="sub-tile-name">Munnar<span class="sub-tile-arrow">&rarr;</span></div><div class="sub-tile-count">2 Photos</div></div><div class="sub-tile-thumb"><img src="Thumbs/Photos/Birds/Munnar Birds/2026-0127-MunnarBirds-NCM-5397.JPG" loading="lazy" decoding="async" alt=""></div></div></div>
 </div>
 <div class="section-block" id="places-city-National-Tamil_Nadu-Megamalai">
   <div class="gal-header"><button class="gal-breadcrumb" onclick="showSection('places-state-National-Tamil-Nadu','places-group-National')">&larr; Back to Tamil Nadu</button><div class="gal-title">Megamalai</div><div class="gal-sub">Tamil Nadu &middot; National &middot; 27 Photos</div></div>
@@ -1228,11 +1229,11 @@ footer {
 </div>
 <div class="section-block" id="places-state-National-Tamil-Nadu">
   <div class="gal-header"><button class="gal-breadcrumb" onclick="showSection('places-group-National','sub-Places')">&larr; Back to National</button><div class="gal-title">Tamil Nadu</div><div class="gal-sub">National &middot; 27 Photos</div></div>
-  <div class="sub-nav"><div class="sub-tile" onclick="showSection('places-city-National-Tamil_Nadu-Megamalai','places-state-National-Tamil-Nadu')"><div class="sub-tile-info"><div class="sub-tile-name">Megamalai<span class="sub-tile-arrow">&rarr;</span></div><div class="sub-tile-count">27 Photos</div></div><div class="sub-tile-thumb"><img src="Thumbs/Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4727-29.jpg" loading="lazy" decoding="async" alt=""></div></div></div>
+  <div class="sub-nav"><div class="sub-tile" onclick="showSection('places-city-National-Tamil_Nadu-Megamalai','places-state-National-Tamil-Nadu')"><div class="sub-tile-info"><div class="sub-tile-name">Megamalai<span class="sub-tile-arrow">&rarr;</span></div><div class="sub-tile-count">27 Photos</div></div><div class="sub-tile-thumb"><img src="Thumbs/Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4724-26.jpg" loading="lazy" decoding="async" alt=""></div></div></div>
 </div>
 <div class="section-block" id="places-group-National">
   <div class="gal-header"><button class="gal-breadcrumb" onclick="openSubNav('Places')">&larr; Back to Places</button><div class="gal-title">National</div><div class="gal-sub">82 Photos</div></div>
-  <div class="sub-nav"><div class="sub-tile" onclick="showSection('places-state-National-Karnataka','places-group-National')"><div class="sub-tile-info"><div class="sub-tile-name">Karnataka<span class="sub-tile-arrow">&rarr;</span></div><div class="sub-tile-count">24 Photos</div></div><div class="sub-tile-thumb"><img src="Thumbs/Photos/Architecture/2024-01-Badami-JPG/2024-01-Badami-Day2-NCM_7096.jpg" loading="lazy" decoding="async" alt=""></div></div><div class="sub-tile" onclick="showSection('places-state-National-Kerala','places-group-National')"><div class="sub-tile-info"><div class="sub-tile-name">Kerala<span class="sub-tile-arrow">&rarr;</span></div><div class="sub-tile-count">31 Photos</div></div><div class="sub-tile-thumb"><img src="Thumbs/Photos/Birds/Munnar Birds/2026-0127-MunnarBirds-NCM-6571.JPG" loading="lazy" decoding="async" alt=""></div></div><div class="sub-tile" onclick="showSection('places-state-National-Tamil-Nadu','places-group-National')"><div class="sub-tile-info"><div class="sub-tile-name">Tamil Nadu<span class="sub-tile-arrow">&rarr;</span></div><div class="sub-tile-count">27 Photos</div></div><div class="sub-tile-thumb"><img src="Thumbs/Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4724-26.jpg" loading="lazy" decoding="async" alt=""></div></div></div>
+  <div class="sub-nav"><div class="sub-tile" onclick="showSection('places-state-National-Karnataka','places-group-National')"><div class="sub-tile-info"><div class="sub-tile-name">Karnataka<span class="sub-tile-arrow">&rarr;</span></div><div class="sub-tile-count">24 Photos</div></div><div class="sub-tile-thumb"><img src="Thumbs/Photos/Architecture/2024-01-Badami-JPG/2024-01-Badami-Day1-NCM_6545.jpg" loading="lazy" decoding="async" alt=""></div></div><div class="sub-tile" onclick="showSection('places-state-National-Kerala','places-group-National')"><div class="sub-tile-info"><div class="sub-tile-name">Kerala<span class="sub-tile-arrow">&rarr;</span></div><div class="sub-tile-count">31 Photos</div></div><div class="sub-tile-thumb"><img src="Thumbs/Photos/Birds/Munnar Birds/2026-0127-MunnarBirds-NCM-6103.JPG" loading="lazy" decoding="async" alt=""></div></div><div class="sub-tile" onclick="showSection('places-state-National-Tamil-Nadu','places-group-National')"><div class="sub-tile-info"><div class="sub-tile-name">Tamil Nadu<span class="sub-tile-arrow">&rarr;</span></div><div class="sub-tile-count">27 Photos</div></div><div class="sub-tile-thumb"><img src="Thumbs/Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4649.jpg" loading="lazy" decoding="async" alt=""></div></div></div>
 </div>
 </main>
 
@@ -1494,7 +1495,7 @@ NAV_PANELS.forEach(function(id){
   if(el) el.addEventListener('animationend', function(){ this.classList.remove('page-enter'); });
 });
 (function(){
-  var thumbs = ["Thumbs/Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4987-89.jpg", "Thumbs/Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4865-69.jpg", "Thumbs/Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4724-26.jpg", "Thumbs/Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4649.jpg", "Thumbs/Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4915-17.jpg", "Thumbs/Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4675.jpg", "Thumbs/Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4855.jpg", "Thumbs/Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4733-35.jpg", "Thumbs/Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4677.jpg", "Thumbs/Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-5022-23.jpg", "Thumbs/Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4700-02.jpg", "Thumbs/Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4897.jpg", "Thumbs/Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4709-11.jpg", "Thumbs/Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4692-94.jpg", "Thumbs/Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4751-53.jpg"];
+  var thumbs = ["Thumbs/Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-5022-23.jpg", "Thumbs/Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4715-17.jpg", "Thumbs/Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4897.jpg", "Thumbs/Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4998.jpg", "Thumbs/Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4915-17.jpg", "Thumbs/Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4686-88.jpg", "Thumbs/Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4675.jpg", "Thumbs/Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4700-02.jpg", "Thumbs/Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4655.jpg", "Thumbs/Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4751-53.jpg", "Thumbs/Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4683-85.jpg", "Thumbs/Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4987-89.jpg", "Thumbs/Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4921-23.jpg", "Thumbs/Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4855.jpg", "Thumbs/Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4709-11.jpg"];
   var hero   = document.getElementById('hero');
   if (!thumbs.length) return;
   var imgs = thumbs.map(function(src){
@@ -1512,53 +1513,64 @@ NAV_PANELS.forEach(function(id){
 })();
 
 /* ── RIGHT DRAWER — Collections ── */
-var navDrawer   = document.getElementById('nav-drawer');
-var overlay     = document.getElementById('drawer-overlay');
+var navDrawer = document.getElementById('nav-drawer');
+var overlay   = document.getElementById('drawer-overlay');
 
-function openNavDrawer(){
-  navDrawer.classList.add('open');
-  overlay.classList.add('open');
-  document.body.style.overflow='hidden';
-}
-function closeNavDrawer(){
-  navDrawer.classList.remove('open');
-  overlay.classList.remove('open');
-  document.body.style.overflow='';
-}
+function openNavDrawer(){ navDrawer.classList.add('open'); overlay.classList.add('open'); document.body.style.overflow='hidden'; }
+function closeNavDrawer(){ navDrawer.classList.remove('open'); overlay.classList.remove('open'); document.body.style.overflow=''; }
 function toggleDnavCat(id){
-  var row  = document.getElementById(id);
-  var subs = document.getElementById('subs-'+id);
+  var row=document.getElementById(id), subs=document.getElementById('subs-'+id);
   if(!subs) return;
-  var open = subs.classList.contains('open');
-  /* Close all others */
+  var open=subs.classList.contains('open');
   document.querySelectorAll('.dnav-subs.open').forEach(function(el){ el.classList.remove('open'); });
   document.querySelectorAll('.dnav-cat.expanded').forEach(function(el){ el.classList.remove('expanded'); });
-  if(!open){
-    subs.classList.add('open');
-    row.classList.add('expanded');
-  }
+  if(!open){ subs.classList.add('open'); row.classList.add('expanded'); }
 }
 
-/* ── LEFT DRAWER — About / Contact ── */
+/* ── LEFT DRAWER — About ── */
 var aboutDrawer = document.getElementById('about-drawer');
+function openAboutDrawer(){ aboutDrawer.classList.add('open'); overlay.classList.add('open'); document.body.style.overflow='hidden'; }
+function closeAboutDrawer(){ aboutDrawer.classList.remove('open'); overlay.classList.remove('open'); document.body.style.overflow=''; }
 
-function openAboutDrawer(){
-  aboutDrawer.classList.add('open');
-  overlay.classList.add('open');
+overlay.addEventListener('click', function(){ closeNavDrawer(); closeAboutDrawer(); });
+
+/* ── Lightbox ── */
+var lbImages=[], lbFullImages=[], lbIdx=0;
+var lb    = document.getElementById('lightbox');
+var lbImg = document.getElementById('lb-image');
+var lbCtr = document.getElementById('lb-counter');
+
+function openLightbox(el){
+  var grid = el.closest('.grid');
+  if(!grid) return;
+  var items  = Array.from(grid.querySelectorAll('.grid-item'));
+  var imgEls = Array.from(grid.querySelectorAll('.grid-item-photo img'));
+  lbFullImages = imgEls.map(function(i){ return i.getAttribute('data-full')||i.src; });
+  lbImages     = imgEls.map(function(i){ return i.src; });
+  lbIdx = items.indexOf(el);
+  if(lbIdx<0) lbIdx=0;
+  lbImg.src = lbFullImages[lbIdx]||'';
+  lbCtr.textContent = (lbIdx+1)+' / '+lbImages.length;
+  lb.classList.add('open');
   document.body.style.overflow='hidden';
 }
-function closeAboutDrawer(){
-  aboutDrawer.classList.remove('open');
-  overlay.classList.remove('open');
-  document.body.style.overflow='';
+function closeLightbox(){ lb.classList.remove('open'); document.body.style.overflow=''; }
+function lbStep(dir){
+  lbIdx=(lbIdx+dir+lbFullImages.length)%lbFullImages.length;
+  lbImg.src=lbFullImages[lbIdx];
+  lbCtr.textContent=(lbIdx+1)+' / '+lbFullImages.length;
 }
-
-/* Overlay click closes whichever drawer is open */
-overlay.addEventListener('click',function(){
-  closeNavDrawer(); closeAboutDrawer();
+lb.addEventListener('click', function(e){ if(e.target===lb) closeLightbox(); });
+var tsX=null, tsY=null;
+lb.addEventListener('touchstart', function(e){ tsX=e.touches[0].clientX; tsY=e.touches[0].clientY; },{passive:true});
+lb.addEventListener('touchend', function(e){
+  if(tsX===null) return;
+  var dx=e.changedTouches[0].clientX-tsX, dy=e.changedTouches[0].clientY-tsY;
+  if(Math.abs(dx)>Math.abs(dy)&&Math.abs(dx)>44) lbStep(dx<0?1:-1);
+  tsX=null; tsY=null;
 });
-/* ESC key closes drawers or lightbox */
-document.addEventListener('keydown',function(e){
+
+document.addEventListener('keydown', function(e){
   if(e.key==='Escape'){
     if(lb.classList.contains('open')) closeLightbox();
     else { closeNavDrawer(); closeAboutDrawer(); }
@@ -1568,274 +1580,247 @@ document.addEventListener('keydown',function(e){
   if(e.key==='ArrowLeft')  lbStep(-1);
 });
 
-/* ── Lightbox ── */
-var lbImages=[], lbFullImages=[], lbIdx=0;
-var lb    = document.getElementById('lightbox');
-var lbImg = document.getElementById('lb-image');
-var lbCtr = document.getElementById('lb-counter');
+/* ══════════════════════════════════════════════════════
+   LIKES — shared across all visitors via Supabase
+   Free tier: https://supabase.com
+   Set your project URL and anon key in content.json:
+     "supabase_url": "https://xxxx.supabase.co",
+     "supabase_anon_key": "eyJ..."
+   Table setup (run once in Supabase SQL editor):
+     CREATE TABLE likes (
+       photo TEXT PRIMARY KEY,
+       count INTEGER DEFAULT 0
+     );
+     ALTER TABLE likes ENABLE ROW LEVEL SECURITY;
+     CREATE POLICY "read" ON likes FOR SELECT USING (true);
+     CREATE POLICY "upsert" ON likes FOR INSERT WITH CHECK (true);
+     CREATE POLICY "update" ON likes FOR UPDATE USING (true);
+   ══════════════════════════════════════════════════════ */
+var SUPA_URL  = 'NONE';
+var SUPA_KEY  = 'NONE';
+var localLikes = JSON.parse(localStorage.getItem('mohan_likes2') || '{}');
 
-function openLightbox(el){
-  var grid  = el.closest('.grid');
-  if(!grid) return;
-  var items = Array.from(grid.querySelectorAll('.grid-item'));
-  var imgEls= Array.from(grid.querySelectorAll('.grid-item-photo img'));
-  lbFullImages = imgEls.map(function(i){ return i.getAttribute('data-full')||i.src; });
-  lbImages     = imgEls.map(function(i){ return i.src; });
-  lbIdx        = items.indexOf(el);
-  if(lbIdx < 0) lbIdx = 0;
-  lbImg.src    = lbFullImages[lbIdx] || '';
-  lbCtr.textContent = (lbIdx+1)+' / '+lbImages.length;
-  lb.classList.add('open');
-  document.body.style.overflow='hidden';
-}
-function closeLightbox(){
-  lb.classList.remove('open');
-  document.body.style.overflow='';
-}
-function lbStep(dir){
-  lbIdx=(lbIdx+dir+lbFullImages.length)%lbFullImages.length;
-  lbImg.src=lbFullImages[lbIdx];
-  lbCtr.textContent=(lbIdx+1)+' / '+lbFullImages.length;
-}
-lb.addEventListener('click',function(e){ if(e.target===lb) closeLightbox(); });
-var tsX=null,tsY=null;
-lb.addEventListener('touchstart',function(e){ tsX=e.touches[0].clientX; tsY=e.touches[0].clientY; },{passive:true});
-lb.addEventListener('touchend',function(e){
-  if(tsX===null) return;
-  var dx=e.changedTouches[0].clientX-tsX;
-  var dy=e.changedTouches[0].clientY-tsY;
-  if(Math.abs(dx)>Math.abs(dy)&&Math.abs(dx)>44) lbStep(dx<0?1:-1);
-  tsX=null; tsY=null;
-});
+function getPhotoKey(item){ return item.getAttribute('data-photo')||''; }
 
-/* ── Likes — toggle, persisted per photo key ── */
-var likes = JSON.parse(localStorage.getItem('mohan_likes') || '{}');
-function getPhotoKey(item){
-  return item.getAttribute('data-photo') || '';
+function supaRequest(method, path, body){
+  if(!SUPA_URL || SUPA_URL==='NONE') return Promise.reject('no-supabase');
+  return fetch(SUPA_URL+'/rest/v1/'+path, {
+    method: method,
+    headers: {
+      'apikey': SUPA_KEY,
+      'Authorization': 'Bearer '+SUPA_KEY,
+      'Content-Type': 'application/json',
+      'Prefer': 'resolution=merge-duplicates,return=representation'
+    },
+    body: body ? JSON.stringify(body) : undefined
+  }).then(function(r){ return r.json(); });
 }
-function saveLikes(){ localStorage.setItem('mohan_likes', JSON.stringify(likes)); }
+
+function getLikeCount(photo, cb){
+  supaRequest('GET', 'likes?photo=eq.'+encodeURIComponent(photo)+'&select=count')
+    .then(function(rows){ cb(rows&&rows[0] ? rows[0].count : 0); })
+    .catch(function(){ cb(localLikes[photo]||0); });
+}
 
 function barLike(btn){
   var item = btn.closest('.grid-item');
   var key  = getPhotoKey(item);
   if(!key) return;
-  var liked = !!likes[key];
+  var liked = !!localLikes[key];
   if(liked){
-    delete likes[key];           // toggle OFF
+    localLikes[key] = false;
+    localStorage.setItem('mohan_likes2', JSON.stringify(localLikes));
+    btn.classList.remove('liked');
+    /* Decrement in Supabase */
+    supaRequest('GET', 'likes?photo=eq.'+encodeURIComponent(key)+'&select=count')
+      .then(function(rows){
+        var cur = rows&&rows[0] ? rows[0].count : 1;
+        return supaRequest('POST', 'likes', {photo:key, count:Math.max(0,cur-1)});
+      })
+      .then(function(rows){
+        var n = rows&&rows[0] ? rows[0].count : 0;
+        refreshLikeCount(btn, n);
+      })
+      .catch(function(){
+        refreshLikeCount(btn, 0);
+      });
   } else {
-    likes[key] = 1;              // toggle ON (single like per user)
+    localLikes[key] = true;
+    localStorage.setItem('mohan_likes2', JSON.stringify(localLikes));
+    btn.classList.add('liked');
+    /* Increment in Supabase */
+    supaRequest('GET', 'likes?photo=eq.'+encodeURIComponent(key)+'&select=count')
+      .then(function(rows){
+        var cur = rows&&rows[0] ? rows[0].count : 0;
+        return supaRequest('POST', 'likes', {photo:key, count:cur+1});
+      })
+      .then(function(rows){
+        var n = rows&&rows[0] ? rows[0].count : 1;
+        refreshLikeCount(btn, n);
+      })
+      .catch(function(){
+        refreshLikeCount(btn, 1);
+      });
   }
-  saveLikes();
-  refreshLikeBtn(btn, !liked);
 }
 
-function refreshLikeBtn(btn, liked){
-  if(liked){
-    btn.classList.add('liked');
-    btn.querySelector('.like-count').textContent = '1';
-  } else {
-    btn.classList.remove('liked');
-    btn.querySelector('.like-count').textContent = '';
-  }
+function refreshLikeCount(btn, n){
+  var span = btn.querySelector('.like-count');
+  if(span) span.textContent = n>0 ? n : '';
 }
 
 function initLikes(){
   document.querySelectorAll('.grid-item').forEach(function(item){
     var key = getPhotoKey(item);
     var btn = item.querySelector('.like-btn');
-    if(key && likes[key] && btn) refreshLikeBtn(btn, true);
+    if(!key||!btn) return;
+    if(localLikes[key]) btn.classList.add('liked');
+    getLikeCount(key, function(n){ refreshLikeCount(btn, n); });
   });
 }
 document.addEventListener('DOMContentLoaded', initLikes);
 
-/* ── Buy — pre-fills contact form, clears after navigation ── */
-var pendingBuyPhoto = '';
-var pendingBuySize  = '';
-
+/* ── Buy ── */
+var pendingBuyPhoto='', pendingBuySize='';
 function barBuy(btn){
-  var item = btn.closest('.grid-item');
-  var img  = item.querySelector('img');
-  pendingBuyPhoto = img ? (img.getAttribute('data-full') || img.src).split('/').pop().replace(/\.[^.]+$/,'') : '';
+  var item=btn.closest('.grid-item'), img=item.querySelector('img');
+  pendingBuyPhoto=img?(img.getAttribute('data-full')||img.src).split('/').pop().replace(/[.][^.]+$/,''):'';
   showInfoPage('page-prints');
 }
-
 function orderSize(size){
-  pendingBuySize = size;
-  showInfoPage('page-contact');
-  // Pre-fill subject
-  var subj = document.getElementById('cf-subject');
-  if(subj){ for(var i=0;i<subj.options.length;i++){
-    if(subj.options[i].text.indexOf('Print')>-1){ subj.selectedIndex=i; break; }
-  }}
-  // Pre-fill message
-  var msg = document.getElementById('cf-msg');
-  if(msg && pendingBuyPhoto){
-    msg.value = 'I would like to order a print:\nPhoto: ' + pendingBuyPhoto + '\nSize: ' + pendingBuySize + '\n\nPlease let me know pricing and shipping details.';
-  }
-  // Clear after filling so next visit is blank
-  pendingBuyPhoto = '';
-  pendingBuySize  = '';
+  pendingBuySize=size; showInfoPage('page-contact');
+  var subj=document.getElementById('cf-subject');
+  if(subj) for(var i=0;i<subj.options.length;i++){ if(subj.options[i].text.indexOf('Print')>-1){subj.selectedIndex=i;break;} }
+  var msg=document.getElementById('cf-msg');
+  if(msg&&pendingBuyPhoto) msg.value='I would like to order a print:\nPhoto: '+pendingBuyPhoto+'\nSize: '+pendingBuySize+'\n\nPlease let me know pricing and shipping details.';
+  pendingBuyPhoto=''; pendingBuySize='';
 }
-
-/* Clear contact form when leaving it via any nav */
 function clearContactForm(){
-  var fields = ['cf-name','cf-email','cf-msg'];
-  fields.forEach(function(id){
-    var el = document.getElementById(id);
-    if(el) el.value = '';
-  });
-  var subj = document.getElementById('cf-subject');
-  if(subj) subj.selectedIndex = 0;
+  ['cf-name','cf-email','cf-msg'].forEach(function(id){ var el=document.getElementById(id); if(el) el.value=''; });
+  var subj=document.getElementById('cf-subject'); if(subj) subj.selectedIndex=0;
 }
 
-/* ── Context menu (right-click / long-press) ── */
-var ctxMenu   = document.getElementById('ctx-menu');
-var ctxTarget = null;
-var ADMIN_UNLOCKED = false;
-var ADMIN_PASS = 'mohan2024';
-
-function toggleAdminMode(){ /* no longer needed */ }
-
-var adminItems = [];
-
-function ctxAdminEdit(){
-  hideCtxMenu();
-  if(!ctxTarget) return;
-  if(!ADMIN_UNLOCKED){
-    var pw = prompt('Admin password:');
-    if(pw !== ADMIN_PASS){ alert('Incorrect password.'); return; }
-    ADMIN_UNLOCKED = true;
-    showToast('Admin unlocked');
-  }
-  adminItems = [ctxTarget];
-  openAdminModal(adminItems);
-}
-
-var CATEGORIES = ["Architecture", "Nature/Birds", "Nature/Flowers", "Nature/Landscape", "Nature/Landscape/Mountains", "Nature/Sunsets", "Nature/Wildlife", "People/Portraits", "Places/International", "Places/National"];
-
-/* ── Context menu ── */
+/* ══════════════════════════════════════════════════════
+   CONTEXT MENU — right-click / long-press
+   ══════════════════════════════════════════════════════ */
 var ctxMenu   = document.getElementById('ctx-menu');
 var ctxTarget = null;
 
 function showCtxMenu(el, x, y){
   ctxTarget = el;
-  ctxMenu.style.left = Math.min(x, window.innerWidth  - 180) + 'px';
-  ctxMenu.style.top  = Math.min(y, window.innerHeight - 160) + 'px';
+  ctxMenu.style.left = Math.min(x, window.innerWidth-190)+'px';
+  ctxMenu.style.top  = Math.min(y, window.innerHeight-170)+'px';
   ctxMenu.style.display = 'block';
 }
 function hideCtxMenu(){ ctxMenu.style.display='none'; ctxTarget=null; }
 
-document.addEventListener('click', function(e){
-  if(!e.target.closest('#ctx-menu')) hideCtxMenu();
-});
+document.addEventListener('click',       function(e){ if(!e.target.closest('#ctx-menu')) hideCtxMenu(); });
 document.addEventListener('contextmenu', function(e){
-  var item = e.target.closest('.grid-item');
+  var item=e.target.closest('.grid-item');
   if(item){ e.preventDefault(); showCtxMenu(item, e.clientX, e.clientY); }
   else hideCtxMenu();
 });
 
-/* Long-press for mobile */
-var lpTimer = null, lpEl = null;
+/* Long-press mobile */
+var lpTimer=null, lpEl=null;
 document.addEventListener('touchstart', function(e){
-  var item = e.target.closest('.grid-item');
-  if(!item) return;
-  lpEl = item;
-  lpTimer = setTimeout(function(){
-    showCtxMenu(lpEl, e.touches[0].clientX, e.touches[0].clientY);
-  }, 600);
-}, {passive:true});
-document.addEventListener('touchend',   function(){ clearTimeout(lpTimer); }, {passive:true});
-document.addEventListener('touchmove',  function(){ clearTimeout(lpTimer); }, {passive:true});
+  var item=e.target.closest('.grid-item'); if(!item) return;
+  lpEl=item; lpTimer=setTimeout(function(){ showCtxMenu(lpEl, e.touches[0].clientX, e.touches[0].clientY); },600);
+},{passive:true});
+document.addEventListener('touchend',  function(){ clearTimeout(lpTimer); },{passive:true});
+document.addEventListener('touchmove', function(){ clearTimeout(lpTimer); },{passive:true});
 
-function ctxLike(){
-  if(ctxTarget){ var btn = ctxTarget.querySelector('.like-btn'); if(btn) barLike(btn); }
+function ctxLike(){ if(ctxTarget){ var b=ctxTarget.querySelector('.like-btn'); if(b) barLike(b); } hideCtxMenu(); }
+function ctxBuy(){  if(ctxTarget) barBuy(ctxTarget.querySelector('.buy-btn')); hideCtxMenu(); }
+
+/* ══════════════════════════════════════════════════════
+   ADMIN TAG EDITOR
+   Password protected. Right-click any photo → Edit tags.
+   Sends patch to patch_tags.py server (localhost:9393).
+   ══════════════════════════════════════════════════════ */
+var ADMIN_UNLOCKED = false;
+var ADMIN_PASS     = 'mohan2024';
+var adminItems     = [];
+var CATEGORIES     = ["Architecture", "Nature/Birds", "Nature/Flowers", "Nature/Landscape", "Nature/Landscape/Mountains", "Nature/Sunsets", "Nature/Wildlife", "People/Portraits", "Places/International", "Places/National"];
+
+function ctxAdminEdit(){
   hideCtxMenu();
-}
-function ctxBuy(){
-  if(ctxTarget) barBuy(ctxTarget.querySelector('.buy-btn'));
-  hideCtxMenu();
+  if(!ctxTarget) return;
+  if(!ADMIN_UNLOCKED){
+    var pw=prompt('Enter admin password:');
+    if(pw===null) return;
+    if(pw!==ADMIN_PASS){ showToast('Wrong password'); return; }
+    ADMIN_UNLOCKED=true;
+  }
+  adminItems=[ctxTarget];
+  openAdminModal();
 }
 
-function openAdminModal(items){
-  var modal = document.getElementById('admin-modal');
-  var first = items[0];
-  var info  = first ? (first.getAttribute('data-photo')||'') : '';
-  /* Populate categories from first item's current displayed info */
-  var cats = CATEGORIES;
-  var catDiv = document.getElementById('admin-cats');
-  catDiv.innerHTML = '';
-  cats.forEach(function(c){
-    var btn = document.createElement('button');
-    btn.className = 'admin-cat';
-    btn.textContent = c.split('/').pop();
-    btn.title = c;
-    btn.setAttribute('data-cat', c);
-    btn.onclick = function(){ btn.classList.toggle('selected'); };
+function openAdminModal(){
+  var first=adminItems[0];
+  var photo=first?first.getAttribute('data-photo'):'';
+  var catDiv=document.getElementById('admin-cats');
+  catDiv.innerHTML='';
+  CATEGORIES.forEach(function(c){
+    var btn=document.createElement('button');
+    btn.className='admin-cat'; btn.textContent=c.split('/').pop();
+    btn.title=c; btn.setAttribute('data-cat',c);
+    btn.onclick=function(){ btn.classList.toggle('selected'); };
     catDiv.appendChild(btn);
   });
-  document.getElementById('admin-photo-ref').textContent = info;
-  document.getElementById('admin-state').value   = '';
-  document.getElementById('admin-city').value    = '';
-  document.getElementById('admin-remarks').value = '';
-  document.getElementById('admin-count').textContent = items.length + ' photo(s) selected';
-  modal.classList.add('open');
+  document.getElementById('admin-photo-ref').textContent=photo;
+  document.getElementById('admin-count').textContent=adminItems.length+' photo(s)';
+  document.getElementById('admin-state').value='';
+  document.getElementById('admin-city').value='';
+  document.getElementById('admin-remarks').value='';
+  document.getElementById('admin-modal').classList.add('open');
 }
 
 function closeAdminModal(){
   document.getElementById('admin-modal').classList.remove('open');
-  adminItems = [];
+  adminItems=[];
 }
 
 function saveAdminTags(){
-  var selCats = Array.from(document.querySelectorAll('.admin-cat.selected')).map(function(b){ return b.getAttribute('data-cat'); });
-  var state   = document.getElementById('admin-state').value.trim();
-  var city    = document.getElementById('admin-city').value.trim();
-  var remarks = document.getElementById('admin-remarks').value.trim();
-  var payload = { categories: selCats, state: state, city: city, remarks: remarks, photos: [] };
-  adminItems.forEach(function(item){ payload.photos.push(item.getAttribute('data-photo')); });
+  var cats=Array.from(document.querySelectorAll('.admin-cat.selected')).map(function(b){ return b.getAttribute('data-cat'); });
+  var state=document.getElementById('admin-state').value.trim();
+  var city=document.getElementById('admin-city').value.trim();
+  var remarks=document.getElementById('admin-remarks').value.trim();
+  var photos=adminItems.map(function(item){ return item.getAttribute('data-photo'); });
+  var payload={categories:cats, state:state, city:city, remarks:remarks, photos:photos};
 
-  /* Try local patch server first (run Scripts/patch_tags.py on your Mac) */
-  fetch('http://localhost:9393/patch', {
-    method: 'POST',
-    headers: {'Content-Type':'application/json'},
-    body: JSON.stringify(payload)
-  }).then(function(r){
-    return r.json();
-  }).then(function(data){
-    showToast('✓ ' + data.updated + ' photo(s) updated in metadata. Run deploy to publish.');
-  }).catch(function(){
-    /* Server not running — copy JSON to clipboard as fallback */
-    var txt = JSON.stringify(payload, null, 2);
-    navigator.clipboard.writeText(txt).then(function(){
-      showToast('Patch server not running. Data copied to clipboard.');
-    }).catch(function(){
-      showToast('Start patch_tags.py on your Mac, then try again.');
-      console.log('PATCH DATA:\n' + txt);
+  fetch('http://localhost:9393/patch',{
+    method:'POST',
+    headers:{'Content-Type':'application/json'},
+    body:JSON.stringify(payload)
+  }).then(function(r){ return r.json(); })
+    .then(function(d){ showToast('Saved '+d.updated+' photo(s). Run deploy to publish.'); })
+    .catch(function(){
+      /* patch_tags.py not running — copy to clipboard */
+      navigator.clipboard.writeText(JSON.stringify(payload,null,2))
+        .then(function(){ showToast('Server offline. JSON copied to clipboard.'); })
+        .catch(function(){ showToast('Start patch_tags.py, then try again.'); });
     });
-  });
   closeAdminModal();
 }
 
-/* ── Toast notification ── */
+/* ── Toast ── */
 function showToast(msg){
-  var t = document.getElementById('toast');
-  if(!t){ t = document.createElement('div'); t.id='toast'; document.body.appendChild(t); }
-  t.textContent = msg;
-  t.className = 'toast-show';
-  setTimeout(function(){ t.className=''; }, 3000);
+  var t=document.getElementById('toast');
+  t.textContent=msg; t.classList.add('show');
+  setTimeout(function(){ t.classList.remove('show'); },3000);
 }
 
 /* ── Contact form ── */
 function submitContact(){
-  var name    = document.getElementById('cf-name').value.trim();
-  var email   = document.getElementById('cf-email').value.trim();
-  var subject = document.getElementById('cf-subject').value;
-  var msg     = document.getElementById('cf-msg').value.trim();
-  if(!name||!email||!msg){ alert('Please fill in all required fields.'); return; }
-  var body = encodeURIComponent('Name: '+name+'\nEmail: '+email+'\n\n'+msg);
+  var name=document.getElementById('cf-name').value.trim();
+  var email=document.getElementById('cf-email').value.trim();
+  var subject=document.getElementById('cf-subject').value;
+  var msg=document.getElementById('cf-msg').value.trim();
+  if(!name||!email||!msg){ alert('Please fill all fields.'); return; }
+  var body=encodeURIComponent('Name: '+name+'\nEmail: '+email+'\n\n'+msg);
   window.location.href='mailto:ncmohan.photos@gmail.com?subject='+encodeURIComponent(subject)+'&body='+body;
-  /* Clear form after sending */
-  setTimeout(clearContactForm, 500);
+  setTimeout(clearContactForm,500);
 }
 
 goHome();
