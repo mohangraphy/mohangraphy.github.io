@@ -7,6 +7,11 @@
     "photographer_name": "N C Mohan",
     "contact_email": "ncmohan.photos@gmail.com",
     "description": "Fine art photography by N C Mohan. Landscapes, architecture, wildlife, and more."
+    "contact_email": "ncmohan.photos@gmail.com",
+    "supabase_url": "https://xjcpryfgodgqqtbblklg.supabase.co",
+    "supabase_anon_key": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhqY3ByeWZnb2RncXF0YmJsa2xnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzIxODEzMjcsImV4cCI6MjA4Nzc1NzMyN30.M9KoprG4uaH3wcZ7nI0Hip4IAdqiy8m5UoiB9DzjreI",
+    "admin_password": "mohan2024",
+    "plausible_domain": "ncmohan.github.io"
   },
   "about": {
     "title": "About Me",
