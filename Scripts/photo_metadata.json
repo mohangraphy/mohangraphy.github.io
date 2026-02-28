@@ -322,29 +322,27 @@
             "Architecture"
         ],
         "state": "Karnataka",
-        "city": "Badami",
+        "city": "Pattadhakal",
         "remarks": ""
     },
     "59a41a3c6c8d85696fb421b88fbe61d3": {
         "path": "Photos/Architecture/2024-01-Badami-JPG/2024-01-Badami-Day1-NCM_6264.jpg",
         "filename": "2024-01-Badami-Day1-NCM_6264.jpg",
         "categories": [
-            "Architecture",
-            "Places/National"
+            "Architecture"
         ],
         "state": "Karnataka",
-        "city": "",
+        "city": "Pattadhakal",
         "remarks": ""
     },
     "e0b09b37aedef3e1fe5299bc9154a521": {
         "path": "Photos/Architecture/2024-01-Badami-JPG/2024-01-Badami-Day1-NCM_6334.jpg",
         "filename": "2024-01-Badami-Day1-NCM_6334.jpg",
         "categories": [
-            "Architecture",
-            "Places/National"
+            "Architecture"
         ],
         "state": "Karnataka",
-        "city": "",
+        "city": "Pattadhakal",
         "remarks": ""
     },
     "f405afebdcf6bb788edc492e9f365ed6": {
@@ -505,12 +503,11 @@
         "path": "Photos/Birds/Munnar Birds/2026-0127-MunnarBirds-NCM-5380.JPG",
         "filename": "2026-0127-MunnarBirds-NCM-5380.JPG",
         "categories": [
-            "Nature/Birds",
-            "Places/National"
+            "Nature/Birds"
         ],
         "state": "Kerala",
-        "city": "",
-        "remarks": ""
+        "city": "Munnar",
+        "remarks": "Little Spider Hunter"
     },
     "d07548449449486c0590dc67af544d35": {
         "path": "Photos/Birds/Munnar Birds/2026-0127-MunnarBirds-NCM-5397.JPG",
@@ -527,23 +524,21 @@
         "path": "Photos/Birds/Munnar Birds/2026-0127-MunnarBirds-NCM-5437.JPG",
         "filename": "2026-0127-MunnarBirds-NCM-5437.JPG",
         "categories": [
-            "Nature/Birds",
-            "Places/National"
+            "Nature/Birds"
         ],
         "state": "Kerala",
-        "city": "",
-        "remarks": ""
+        "city": "Munnar",
+        "remarks": "Little Spider Hunter"
     },
     "e3ab6dec954400bcc2e6f21d916c859d": {
         "path": "Photos/Birds/Munnar Birds/2026-0127-MunnarBirds-NCM-5534.JPG",
         "filename": "2026-0127-MunnarBirds-NCM-5534.JPG",
         "categories": [
-            "Nature/Birds",
-            "Places/National"
+            "Nature/Birds"
         ],
         "state": "Kerala",
-        "city": "",
-        "remarks": ""
+        "city": "Munnar",
+        "remarks": "Grey-headed Canary-flycatcher"
     },
     "a3c8905960c8b6756e01721ba4299154": {
         "path": "Photos/Birds/Munnar Birds/2026-0127-MunnarBirds-NCM-5733.JPG",
@@ -637,12 +632,11 @@
         "path": "Photos/Birds/Munnar Birds/2026-0127-MunnarBirds-NCM-5972.JPG",
         "filename": "2026-0127-MunnarBirds-NCM-5972.JPG",
         "categories": [
-            "Nature/Birds",
-            "Places/National"
+            "Nature/Birds"
         ],
         "state": "Kerala",
-        "city": "",
-        "remarks": ""
+        "city": "Munnar",
+        "remarks": "Golden-fronted Leafbird"
     },
     "46c7eb49891ce3fd89af16501de560da": {
         "path": "Photos/Birds/Munnar Birds/2026-0127-MunnarBirds-NCM-6011.JPG",
