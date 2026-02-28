@@ -750,8 +750,8 @@
         "path": "Photos/Birds/Munnar Birds/2026-0127-MunnarBirds-NCM-6103.JPG",
         "filename": "2026-0127-MunnarBirds-NCM-6103.JPG",
         "categories": [
-            "Places/National",
-            "Nature/Wildlife"
+            "Nature/Wildlife",
+            "Places/National"
         ],
         "state": "Kerala",
         "city": "Munnar",
