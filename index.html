@@ -44,10 +44,13 @@ header {
   border-bottom: 1px solid rgba(201,169,110,0.15);
   z-index: 2000;
   display: grid;
-  grid-template-columns: var(--hdr) 1fr var(--hdr);
+  grid-template-columns: 48px 1fr 48px;
   align-items: center;
   padding: 0;
   overflow: hidden;
+}
+@media (min-width: 480px) {
+  header { grid-template-columns: var(--hdr) 1fr var(--hdr); }
 }
 
 /* Left icon button — About / Contact / more */
@@ -480,9 +483,9 @@ header {
 /* ── LEVEL 1: Main category tiles (Architecture, Nature, Places…) ── */
 .cat-tile-name {
   font-family: 'Cormorant Garamond', serif;
-  font-size: clamp(22px, 4.5vw, 42px);   /* largest */
+  font-size: clamp(20px, 3.5vw, 38px);
   font-weight: 600;
-  letter-spacing: clamp(2px, .7vw, 6px);
+  letter-spacing: clamp(2px, .5vw, 5px);
   text-transform: uppercase; color: #fff; line-height: 1;
   transition: color .25s;
   white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
@@ -596,9 +599,9 @@ header {
 /* ── LEVEL 2: Sub-category tiles (Landscape, Birds, Tamil Nadu…) ── */
 .sub-tile-name {
   font-family: 'Cormorant Garamond', serif;
-  font-size: clamp(16px, 3.2vw, 30px);   /* ~70% of Level 1 */
+  font-size: clamp(15px, 2.4vw, 24px);
   font-weight: 600;
-  letter-spacing: clamp(1px, .5vw, 4px);
+  letter-spacing: clamp(1px, .4vw, 3px);
   text-transform: uppercase; color: #fff; line-height: 1;
   transition: color .25s;
   white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
@@ -678,8 +681,8 @@ header {
 /* ── LEVEL 3: Gallery title (Megamalai, Badami, Birds…) ── */
 .gal-title {
   font-family: 'Cormorant Garamond', serif;
-  font-size: clamp(14px, 2.4vw, 22px);   /* ~55% of Level 1 */
-  font-weight: 600; letter-spacing: clamp(2px, .6vw, 5px);
+  font-size: clamp(13px, 1.8vw, 18px);
+  font-weight: 600; letter-spacing: clamp(1px, .4vw, 3px);
   text-transform: uppercase; line-height: 1.2;
   color: #fff;
 }
@@ -1102,16 +1105,16 @@ footer {
   <div class="tile-nav-label">Collections</div>
 
 <div class="cat-tile" onclick="showGallery('direct-Architecture')" role="button" tabindex="0" onkeypress="if(event.key==='Enter') this.click()">
-  <div class="cat-tile-left"><div class="cat-tile-name">Architecture<span class="cat-tile-arrow">&rarr;</span></div><div class="cat-tile-count">24 Photos</div></div><div class="cat-tile-thumb"><img src="Thumbs/Photos/Architecture/2024-01-Badami-JPG/2024-01-Badami-Day1-NCM_6218.jpg" loading="lazy" decoding="async" alt=""></div>
+  <div class="cat-tile-left"><div class="cat-tile-name">Architecture<span class="cat-tile-arrow">&rarr;</span></div><div class="cat-tile-count">24 Photos</div></div><div class="cat-tile-thumb"><img src="Thumbs/Photos/Architecture/2024-01-Badami-JPG/2024-01-Badami-Day0-NCM_6002.jpg" loading="lazy" decoding="async" alt=""></div>
 </div>
 <div class="cat-tile" onclick="openCategory('Nature')" role="button" tabindex="0" onkeypress="if(event.key==='Enter') this.click()">
-  <div class="cat-tile-left"><div class="cat-tile-name">Nature<span class="cat-tile-arrow">&rarr;</span></div><div class="cat-tile-count">27 Photos</div></div><div class="cat-tile-thumb"><img src="Thumbs/Photos/Birds/Munnar Birds/2026-0127-MunnarBirds-NCM-6621.JPG" loading="lazy" decoding="async" alt=""></div>
+  <div class="cat-tile-left"><div class="cat-tile-name">Nature<span class="cat-tile-arrow">&rarr;</span></div><div class="cat-tile-count">27 Photos</div></div><div class="cat-tile-thumb"><img src="Thumbs/Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4675.jpg" loading="lazy" decoding="async" alt=""></div>
 </div>
 <div class="cat-tile" onclick="openCategory('People')" role="button" tabindex="0" onkeypress="if(event.key==='Enter') this.click()">
   <div class="cat-tile-left"><div class="cat-tile-name">People<span class="cat-tile-arrow">&rarr;</span></div><div class="cat-tile-count">Coming Soon</div></div><div class="cat-tile-thumb"><div class="cat-tile-thumb-placeholder"><span>Coming<br>Soon</span></div></div>
 </div>
 <div class="cat-tile" onclick="openCategory('Places')" role="button" tabindex="0" onkeypress="if(event.key==='Enter') this.click()">
-  <div class="cat-tile-left"><div class="cat-tile-name">Places<span class="cat-tile-arrow">&rarr;</span></div><div class="cat-tile-count">82 Photos</div></div><div class="cat-tile-thumb"><img src="Thumbs/Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-5022-23.jpg" loading="lazy" decoding="async" alt=""></div>
+  <div class="cat-tile-left"><div class="cat-tile-name">Places<span class="cat-tile-arrow">&rarr;</span></div><div class="cat-tile-count">82 Photos</div></div><div class="cat-tile-thumb"><img src="Thumbs/Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4987-89.jpg" loading="lazy" decoding="async" alt=""></div>
 </div>
 </div>
 
@@ -1124,21 +1127,21 @@ footer {
 
 <div class="sub-panel" id="subpanel-Architecture">
 <div class="sub-tile" onclick="showGallery('direct-Architecture')">
-  <div class="sub-tile-left"><div class="sub-tile-name">Architecture<span class="sub-tile-arrow">&rarr;</span></div><div class="sub-tile-count">24 Photos</div></div><div class="sub-tile-thumb"><img src="Thumbs/Photos/Architecture/2024-01-Badami-JPG/2024-01-Badami-Day1-NCM_6334.jpg" loading="lazy" decoding="async" alt=""></div>
+  <div class="sub-tile-left"><div class="sub-tile-name">Architecture<span class="sub-tile-arrow">&rarr;</span></div><div class="sub-tile-count">24 Photos</div></div><div class="sub-tile-thumb"><img src="Thumbs/Photos/Architecture/2024-01-Badami-JPG/2024-01-Badami-Day2-NCM_6882.jpg" loading="lazy" decoding="async" alt=""></div>
 </div>
 </div>
 <div class="sub-panel" id="subpanel-Nature">
 <div class="sub-tile" onclick="showGallery('sub-Nature-Birds')">
-  <div class="sub-tile-left"><div class="sub-tile-name">Birds<span class="sub-tile-arrow">&rarr;</span></div><div class="sub-tile-count">31 Photos</div></div><div class="sub-tile-thumb"><img src="Thumbs/Photos/Birds/Munnar Birds/2026-0127-MunnarBirds-NCM-6621.JPG" loading="lazy" decoding="async" alt=""></div>
+  <div class="sub-tile-left"><div class="sub-tile-name">Birds<span class="sub-tile-arrow">&rarr;</span></div><div class="sub-tile-count">31 Photos</div></div><div class="sub-tile-thumb"><img src="Thumbs/Photos/Birds/Munnar Birds/2026-0127-MunnarBirds-NCM-5534.JPG" loading="lazy" decoding="async" alt=""></div>
 </div>
 <div class="sub-tile" onclick="showGallery('sub-Nature-Flowers')">
   <div class="sub-tile-left"><div class="sub-tile-name">Flowers<span class="sub-tile-arrow">&rarr;</span></div><div class="sub-tile-count">Coming Soon</div></div><div class="sub-tile-thumb"><div class="sub-tile-thumb-placeholder"><span>Coming<br>Soon</span></div></div>
 </div>
 <div class="sub-tile" onclick="showGallery('sub-Nature-Landscape')">
-  <div class="sub-tile-left"><div class="sub-tile-name">Landscape<span class="sub-tile-arrow">&rarr;</span></div><div class="sub-tile-count">27 Photos</div></div><div class="sub-tile-thumb"><img src="Thumbs/Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4692-94.jpg" loading="lazy" decoding="async" alt=""></div>
+  <div class="sub-tile-left"><div class="sub-tile-name">Landscape<span class="sub-tile-arrow">&rarr;</span></div><div class="sub-tile-count">27 Photos</div></div><div class="sub-tile-thumb"><img src="Thumbs/Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4715-17.jpg" loading="lazy" decoding="async" alt=""></div>
 </div>
 <div class="sub-tile" onclick="showGallery('sub-Nature-Mountains')">
-  <div class="sub-tile-left"><div class="sub-tile-name">Mountains<span class="sub-tile-arrow">&rarr;</span></div><div class="sub-tile-count">27 Photos</div></div><div class="sub-tile-thumb"><img src="Thumbs/Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4997.jpg" loading="lazy" decoding="async" alt=""></div>
+  <div class="sub-tile-left"><div class="sub-tile-name">Mountains<span class="sub-tile-arrow">&rarr;</span></div><div class="sub-tile-count">27 Photos</div></div><div class="sub-tile-thumb"><img src="Thumbs/Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4655.jpg" loading="lazy" decoding="async" alt=""></div>
 </div>
 <div class="sub-tile" onclick="showGallery('sub-Nature-Sunsets-and-Sunrises')">
   <div class="sub-tile-left"><div class="sub-tile-name">Sunsets and Sunrises<span class="sub-tile-arrow">&rarr;</span></div><div class="sub-tile-count">Coming Soon</div></div><div class="sub-tile-thumb"><div class="sub-tile-thumb-placeholder"><span>Coming<br>Soon</span></div></div>
@@ -1154,7 +1157,7 @@ footer {
 </div>
 <div class="sub-panel" id="subpanel-Places">
 <div class="sub-tile" onclick="showGallery('places-group-National')">
-  <div class="sub-tile-left"><div class="sub-tile-name">National<span class="sub-tile-arrow">&rarr;</span></div><div class="sub-tile-count">82 Photos</div></div><div class="sub-tile-thumb"><img src="Thumbs/Photos/Birds/Munnar Birds/2026-0127-MunnarBirds-NCM-6038.JPG" loading="lazy" decoding="async" alt=""></div>
+  <div class="sub-tile-left"><div class="sub-tile-name">National<span class="sub-tile-arrow">&rarr;</span></div><div class="sub-tile-count">82 Photos</div></div><div class="sub-tile-thumb"><img src="Thumbs/Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4736-38.jpg" loading="lazy" decoding="async" alt=""></div>
 </div>
 <div class="sub-tile" onclick="showGallery('wip-Places-International')">
   <div class="sub-tile-left"><div class="sub-tile-name">International<span class="sub-tile-arrow">&rarr;</span></div><div class="sub-tile-count">Coming Soon</div></div><div class="sub-tile-thumb"><div class="sub-tile-thumb-placeholder"><span>Coming<br>Soon</span></div></div>
@@ -1210,7 +1213,7 @@ footer {
 </div>
 <div class="section-block" id="places-state-National-Karnataka">
   <div class="gal-header"><button class="gal-breadcrumb" onclick="showSection('places-group-National','sub-Places')">&larr; Back to National</button><div class="gal-title">Karnataka</div><div class="gal-sub">National &middot; 24 Photos</div></div>
-  <div class="sub-nav"><div class="sub-tile" onclick="showSection('places-city-National-Karnataka-Badami','places-state-National-Karnataka')"><div class="sub-tile-info"><div class="sub-tile-name">Badami<span class="sub-tile-arrow">&rarr;</span></div><div class="sub-tile-count">3 Photos</div></div><div class="sub-tile-thumb"><img src="Thumbs/Photos/Architecture/2024-01-Badami-JPG/2024-01-Badami-Day2-NCM_6825.jpg" loading="lazy" decoding="async" alt=""></div></div><div class="sub-tile" onclick="showSection('places-city-National-Karnataka-Karnataka','places-state-National-Karnataka')"><div class="sub-tile-info"><div class="sub-tile-name">Karnataka<span class="sub-tile-arrow">&rarr;</span></div><div class="sub-tile-count">20 Photos</div></div><div class="sub-tile-thumb"><img src="Thumbs/Photos/Architecture/2024-01-Badami-JPG/2024-01-Badami-Day2-NCM_6838.jpg" loading="lazy" decoding="async" alt=""></div></div><div class="sub-tile" onclick="showSection('places-city-National-Karnataka-Pattadhakal','places-state-National-Karnataka')"><div class="sub-tile-info"><div class="sub-tile-name">Pattadhakal<span class="sub-tile-arrow">&rarr;</span></div><div class="sub-tile-count">1 Photos</div></div><div class="sub-tile-thumb"><img src="Thumbs/Photos/Architecture/2024-01-Badami-JPG/2024-01-Badami-Day1-NCM_6218.jpg" loading="lazy" decoding="async" alt=""></div></div></div>
+  <div class="sub-nav"><div class="sub-tile" onclick="showSection('places-city-National-Karnataka-Badami','places-state-National-Karnataka')"><div class="sub-tile-info"><div class="sub-tile-name">Badami<span class="sub-tile-arrow">&rarr;</span></div><div class="sub-tile-count">3 Photos</div></div><div class="sub-tile-thumb"><img src="Thumbs/Photos/Architecture/2024-01-Badami-JPG/2024-01-Badami-Day0-NCM_5988.jpg" loading="lazy" decoding="async" alt=""></div></div><div class="sub-tile" onclick="showSection('places-city-National-Karnataka-Karnataka','places-state-National-Karnataka')"><div class="sub-tile-info"><div class="sub-tile-name">Karnataka<span class="sub-tile-arrow">&rarr;</span></div><div class="sub-tile-count">20 Photos</div></div><div class="sub-tile-thumb"><img src="Thumbs/Photos/Architecture/2024-01-Badami-JPG/2024-01-Badami-Day2-NCM_6863.jpg" loading="lazy" decoding="async" alt=""></div></div><div class="sub-tile" onclick="showSection('places-city-National-Karnataka-Pattadhakal','places-state-National-Karnataka')"><div class="sub-tile-info"><div class="sub-tile-name">Pattadhakal<span class="sub-tile-arrow">&rarr;</span></div><div class="sub-tile-count">1 Photos</div></div><div class="sub-tile-thumb"><img src="Thumbs/Photos/Architecture/2024-01-Badami-JPG/2024-01-Badami-Day1-NCM_6218.jpg" loading="lazy" decoding="async" alt=""></div></div></div>
 </div>
 <div class="section-block" id="places-city-National-Kerala-Kerala">
   <div class="gal-header"><button class="gal-breadcrumb" onclick="showSection('places-state-National-Kerala','places-group-National')">&larr; Back to Kerala</button><div class="gal-title">Kerala</div><div class="gal-sub">Kerala &middot; National &middot; 29 Photos</div></div>
@@ -1222,7 +1225,7 @@ footer {
 </div>
 <div class="section-block" id="places-state-National-Kerala">
   <div class="gal-header"><button class="gal-breadcrumb" onclick="showSection('places-group-National','sub-Places')">&larr; Back to National</button><div class="gal-title">Kerala</div><div class="gal-sub">National &middot; 31 Photos</div></div>
-  <div class="sub-nav"><div class="sub-tile" onclick="showSection('places-city-National-Kerala-Kerala','places-state-National-Kerala')"><div class="sub-tile-info"><div class="sub-tile-name">Kerala<span class="sub-tile-arrow">&rarr;</span></div><div class="sub-tile-count">29 Photos</div></div><div class="sub-tile-thumb"><img src="Thumbs/Photos/Birds/Munnar Birds/2026-0127-MunnarBirds-NCM-5778.JPG" loading="lazy" decoding="async" alt=""></div></div><div class="sub-tile" onclick="showSection('places-city-National-Kerala-Munnar','places-state-National-Kerala')"><div class="sub-tile-info"><div class="sub-tile-name">Munnar<span class="sub-tile-arrow">&rarr;</span></div><div class="sub-tile-count">2 Photos</div></div><div class="sub-tile-thumb"><img src="Thumbs/Photos/Birds/Munnar Birds/2026-0127-MunnarBirds-NCM-5352.JPG" loading="lazy" decoding="async" alt=""></div></div></div>
+  <div class="sub-nav"><div class="sub-tile" onclick="showSection('places-city-National-Kerala-Kerala','places-state-National-Kerala')"><div class="sub-tile-info"><div class="sub-tile-name">Kerala<span class="sub-tile-arrow">&rarr;</span></div><div class="sub-tile-count">29 Photos</div></div><div class="sub-tile-thumb"><img src="Thumbs/Photos/Birds/Munnar Birds/2026-0127-MunnarBirds-NCM-6507.JPG" loading="lazy" decoding="async" alt=""></div></div><div class="sub-tile" onclick="showSection('places-city-National-Kerala-Munnar','places-state-National-Kerala')"><div class="sub-tile-info"><div class="sub-tile-name">Munnar<span class="sub-tile-arrow">&rarr;</span></div><div class="sub-tile-count">2 Photos</div></div><div class="sub-tile-thumb"><img src="Thumbs/Photos/Birds/Munnar Birds/2026-0127-MunnarBirds-NCM-5397.JPG" loading="lazy" decoding="async" alt=""></div></div></div>
 </div>
 <div class="section-block" id="places-city-National-Tamil_Nadu-Megamalai">
   <div class="gal-header"><button class="gal-breadcrumb" onclick="showSection('places-state-National-Tamil-Nadu','places-group-National')">&larr; Back to Tamil Nadu</button><div class="gal-title">Megamalai</div><div class="gal-sub">Tamil Nadu &middot; National &middot; 27 Photos</div></div>
@@ -1230,11 +1233,11 @@ footer {
 </div>
 <div class="section-block" id="places-state-National-Tamil-Nadu">
   <div class="gal-header"><button class="gal-breadcrumb" onclick="showSection('places-group-National','sub-Places')">&larr; Back to National</button><div class="gal-title">Tamil Nadu</div><div class="gal-sub">National &middot; 27 Photos</div></div>
-  <div class="sub-nav"><div class="sub-tile" onclick="showSection('places-city-National-Tamil_Nadu-Megamalai','places-state-National-Tamil-Nadu')"><div class="sub-tile-info"><div class="sub-tile-name">Megamalai<span class="sub-tile-arrow">&rarr;</span></div><div class="sub-tile-count">27 Photos</div></div><div class="sub-tile-thumb"><img src="Thumbs/Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4865-69.jpg" loading="lazy" decoding="async" alt=""></div></div></div>
+  <div class="sub-nav"><div class="sub-tile" onclick="showSection('places-city-National-Tamil_Nadu-Megamalai','places-state-National-Tamil-Nadu')"><div class="sub-tile-info"><div class="sub-tile-name">Megamalai<span class="sub-tile-arrow">&rarr;</span></div><div class="sub-tile-count">27 Photos</div></div><div class="sub-tile-thumb"><img src="Thumbs/Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4998.jpg" loading="lazy" decoding="async" alt=""></div></div></div>
 </div>
 <div class="section-block" id="places-group-National">
   <div class="gal-header"><button class="gal-breadcrumb" onclick="openSubNav('Places')">&larr; Back to Places</button><div class="gal-title">National</div><div class="gal-sub">82 Photos</div></div>
-  <div class="sub-nav"><div class="sub-tile" onclick="showSection('places-state-National-Karnataka','places-group-National')"><div class="sub-tile-info"><div class="sub-tile-name">Karnataka<span class="sub-tile-arrow">&rarr;</span></div><div class="sub-tile-count">24 Photos</div></div><div class="sub-tile-thumb"><img src="Thumbs/Photos/Architecture/2024-01-Badami-JPG/2024-01-Badami-Day0-NCM_6121.jpg" loading="lazy" decoding="async" alt=""></div></div><div class="sub-tile" onclick="showSection('places-state-National-Kerala','places-group-National')"><div class="sub-tile-info"><div class="sub-tile-name">Kerala<span class="sub-tile-arrow">&rarr;</span></div><div class="sub-tile-count">31 Photos</div></div><div class="sub-tile-thumb"><img src="Thumbs/Photos/Birds/Munnar Birds/2026-0127-MunnarBirds-NCM-6182.JPG" loading="lazy" decoding="async" alt=""></div></div><div class="sub-tile" onclick="showSection('places-state-National-Tamil-Nadu','places-group-National')"><div class="sub-tile-info"><div class="sub-tile-name">Tamil Nadu<span class="sub-tile-arrow">&rarr;</span></div><div class="sub-tile-count">27 Photos</div></div><div class="sub-tile-thumb"><img src="Thumbs/Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4683-85.jpg" loading="lazy" decoding="async" alt=""></div></div></div>
+  <div class="sub-nav"><div class="sub-tile" onclick="showSection('places-state-National-Karnataka','places-group-National')"><div class="sub-tile-info"><div class="sub-tile-name">Karnataka<span class="sub-tile-arrow">&rarr;</span></div><div class="sub-tile-count">24 Photos</div></div><div class="sub-tile-thumb"><img src="Thumbs/Photos/Architecture/2024-01-Badami-JPG/2024-01-Badami-Day0-NCM_5988.jpg" loading="lazy" decoding="async" alt=""></div></div><div class="sub-tile" onclick="showSection('places-state-National-Kerala','places-group-National')"><div class="sub-tile-info"><div class="sub-tile-name">Kerala<span class="sub-tile-arrow">&rarr;</span></div><div class="sub-tile-count">31 Photos</div></div><div class="sub-tile-thumb"><img src="Thumbs/Photos/Birds/Munnar Birds/2026-0127-MunnarBirds-NCM-5799.JPG" loading="lazy" decoding="async" alt=""></div></div><div class="sub-tile" onclick="showSection('places-state-National-Tamil-Nadu','places-group-National')"><div class="sub-tile-info"><div class="sub-tile-name">Tamil Nadu<span class="sub-tile-arrow">&rarr;</span></div><div class="sub-tile-count">27 Photos</div></div><div class="sub-tile-thumb"><img src="Thumbs/Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4736-38.jpg" loading="lazy" decoding="async" alt=""></div></div></div>
 </div>
 </main>
 
@@ -1512,7 +1515,7 @@ NAV_PANELS.forEach(function(id){
   if(el) el.addEventListener('animationend', function(){ this.classList.remove('page-enter'); });
 });
 (function(){
-  var thumbs = ["Thumbs/Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4649.jpg", "Thumbs/Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4915-17.jpg", "Thumbs/Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4733-35.jpg", "Thumbs/Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4760-64.jpg", "Thumbs/Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4675.jpg", "Thumbs/Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4700-02.jpg", "Thumbs/Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4865-69.jpg", "Thumbs/Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4997.jpg", "Thumbs/Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-5022-23.jpg", "Thumbs/Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4692-94.jpg", "Thumbs/Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4955.jpg", "Thumbs/Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4921-23.jpg", "Thumbs/Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4724-26.jpg", "Thumbs/Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-5004-06.jpg", "Thumbs/Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4709-11.jpg"];
+  var thumbs = ["Thumbs/Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4987-89.jpg", "Thumbs/Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4955.jpg", "Thumbs/Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-5022-23.jpg", "Thumbs/Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4760-64.jpg", "Thumbs/Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4677.jpg", "Thumbs/Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4997.jpg", "Thumbs/Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4709-11.jpg", "Thumbs/Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4998.jpg", "Thumbs/Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4921-23.jpg", "Thumbs/Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4751-53.jpg", "Thumbs/Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4727-29.jpg", "Thumbs/Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4649.jpg", "Thumbs/Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4897.jpg", "Thumbs/Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4715-17.jpg", "Thumbs/Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4700-02.jpg"];
   var hero   = document.getElementById('hero');
   if (!thumbs.length) return;
   var imgs = thumbs.map(function(src){
@@ -1747,8 +1750,8 @@ document.addEventListener('touchstart', function(e){
 document.addEventListener('touchend',  function(){ clearTimeout(lpTimer); },{passive:true});
 document.addEventListener('touchmove', function(){ clearTimeout(lpTimer); },{passive:true});
 
-function ctxLike(){ if(ctxTarget){ var b=ctxTarget.querySelector('.like-btn'); if(b) barLike(b); } hideCtxMenu(); }
-function ctxBuy(){  if(ctxTarget) barBuy(ctxTarget.querySelector('.buy-btn')); hideCtxMenu(); }
+function ctxLike(){ var t=ctxTarget; hideCtxMenu(); if(t){ var b=t.querySelector('.like-btn'); if(b) barLike(b); } }
+function ctxBuy(){  var t=ctxTarget; hideCtxMenu(); if(t) barBuy(t.querySelector('.buy-btn')); }
 
 /* ══════════════════════════════════════════════════════
    ADMIN TAG EDITOR
@@ -1761,13 +1764,15 @@ var adminItems     = [];
 var CATEGORIES     = ["Architecture", "Nature/Birds", "Nature/Flowers", "Nature/Landscape", "Nature/Landscape/Mountains", "Nature/Sunsets", "Nature/Wildlife", "People/Portraits", "Places/International", "Places/National"];
 
 function ctxAdminEdit(){
+  var target = ctxTarget;   /* save BEFORE hideCtxMenu nulls ctxTarget */
   hideCtxMenu();
-  if(!ctxTarget) return;
-  adminItems=[ctxTarget];
+  if(!target) return;
+  adminItems=[target];
   if(!ADMIN_UNLOCKED){
     document.getElementById('admin-pw-screen').style.display='block';
     document.getElementById('admin-edit-screen').style.display='none';
     document.getElementById('admin-pw-input').value='';
+    document.getElementById('admin-pw-error').style.display='none';
   } else {
     document.getElementById('admin-pw-screen').style.display='none';
     document.getElementById('admin-edit-screen').style.display='block';
