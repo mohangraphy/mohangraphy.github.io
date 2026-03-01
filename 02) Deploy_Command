@@ -3,16 +3,113 @@ python3 /Users/ncm/Pictures/Mohangraphy/Scripts/Claude_deploy.py
 
  "intro": "All prints are produced on <strong>archival fine-art paper</strong> using pigment-based inks, guaranteeing colour accuracy and longevity of over 100 years under normal display conditions.",
 
-Improvements needed on the following:
-All the changes made in content.json file are not getting updated. IT is inconsistent.Check this first.
-Sometimes, the index file is not getting updated. Check that also.
+Supabase API key: 
 
-The icon next to HOME at the footer is not aligned properly when viewed on mobile phone. It is moving to next line. Remove the icon so that there is no problem on any gadget. 
-Remove the menu "Workshop & Tours" on the left side. Where is it hard coded. There must be an easy way to remove this. 
-All the texts underneath the main menu and the submenu are very light and not easily readable. Same way, footer text and copy right messages; "coming soon" text is also very light. Make them brighter.
-What is the difference between Place and the tag "Places/International" and "Places/National"? I see that when a photo is tagged it is asking me to select "Places/International" or "Places/National" so that the name of the place is included in International or National. In addition to that it is showing a field Place!
-I suppose when I edit a tab, it removes all the previously stored information and I get to choose tags once again. 
-add a field "Remarks" to the tags where I can add a remark about the photo (for example bird name, mountain name, temple name, etc.)
-I want to update the tags in a easy way because when I choose to edit, I have to go photo by photo individually and with the site growth over time, it will be impossible to skip one at a time. Can I click on the photo and update the tags? Find the easiest way.
-Also, in the preview of photos, show "Remarks and Place" on the top each photo in a subtle way (white on grey), but it should not be printed on downloads. That way, one can easily read the tags. For example the woodpecker would show : Woodpecker-Munnar; the mountain photos would say "Munnar", because the Remarks tag will be empty for mountains, unless I want to show a mountain as "Himalayas" in the Remarks in which case it will appear "Himalayas-Place". Also include the dimensions of the photo along with the remarks. 
-Some text like "? A9NCM" is showing on each photo. What is it? Remove this !
+eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhqY3ByeWZnb2RncXF0YmJsa2xnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzIxODEzMjcsImV4cCI6MjA4Nzc1NzMyN30.M9KoprG4uaH3wcZ7nI0Hip4IAdqiy8m5UoiB9DzjreI
+
+Plausible.io
+domain: ncmohan.github.io
+
+cp ~/Downloads/content.json /Users/ncm/Pictures/Mohangraphy/Scripts/content.json
+cp ~/Downloads/Claude_mohangraphy.py /Users/ncm/Pictures/Mohangraphy/Scripts/
+cp ~/Downloads/curator.py /Users/ncm/Pictures/Mohangraphy/Scripts/
+
+cd /Users/ncm/Pictures/Mohangraphy
+python3 Scripts/check_content.py
+python3 Scripts/deploy.py
+
+cd /Users/ncm/Pictures/Mohangraphy
+python3 Scripts/patch_tags.py
+
+PASSWORD: mohan2024
+
+cd /Users/ncm/Pictures/Mohangraphy
+python3 Scripts/deploy.py
+
+
+patch_tags.py — Yes, run it first, before you start editing. It's a small server that listens for your Save clicks. Workflow:
+
+Open Terminal → run python3 Scripts/patch_tags.py → leave it running
+Open your site in Chrome
+Right-click photo → Edit Tags → fill in → Save
+Terminal shows "Updated 1 photo"
+When done, run deploy.py to publish
+
+
+
+====
+
+
+Upgrade based on Vishruth's input:
+
+Feb 28 - 11:00 pm
+
+Level 1 - 2 columns are fine; however, for all other levels, 4 columns needed for laptops.
+Footer need not be persistent and should be part of the website scroll.
+
+For the individual images, remove the bar with the LIKE and SHOP icons. 
+
+When user clicks on a particular image, it should open as a image details modal which displays the image in a bigger size and with the option of LIKE and REQUEST QUOTE. This replaces "BUY PRINT" used earlier.
+
+After user clicks on Request Quote, I want to initiate a Request quote flow which has two steps: a) Select the Print size b) Contact Details (name and email). This is a Single Form
+
+ON the left side menu, Combine About Me and Philosophy and Gear & Kit. Call it 
+
+Combine Licensing and Copyright & Legal to the footer. Footer should not be a persistent UI element. Should be a part of the web page scroll at the bottom. 
+
+Change of Header design.   Move Mohangraphy to left and reduce the size to a height of 20px. Use monospace San Serif font with a thin font weight to retain the premiumness. 
+
+On the right edge of the header, keep a call to Action Button that says Get In Touch, which will redirect the user to the Get in Touch page. 
+
+In the center of the Header, keep three tabs : 1st tab: Home (landing page, on active state when user is present on the landing page), 2nd tab : Collections (Drop Down Tab, which shows the four main categories: Architecture, People, Nature and Places. 3rd tab: About Me (redirects to the About Me page which will have the combined information from the current About Me, Philosophy and Gear & Kit
+
+This means both the left side and right side menus are no longer needed.
+
+First level of the page is the landing page.
+
+Second level will be the individual collection pages - which have subcategories within them.
+
+third level of pages will display the images. 
+
+For example, Places card from the landing page which will take to second level page which will display a title and subtext about Places, below which there will be two filter pills National and International. Below this there will be cards for each category under National and International. Four cards to be fit into one row here. When a user clicks on a card, the card will expand to show the different categories within this State (in National category) or Country (International category). When a user clicks on a STate or Country, it will take them to level 3 pages with all the images displayed here.
+
+For all the pages retain bread-crumb navigation displayed on the top of the page so that the user knows exactly where he is in the site. 
+
+For mobile phones, where ever there are cards, they must be on single column to the width of the page.  
+
+For Mobile phones, move all the four tab options in the Header should move to the Hamburger menu to the right. MOHANGRAPHY shall be centered and spaced according to Mobile phones
+
+
+=== 
+
+Upgrades
+
+This is how the new website is appearing. None of the menus are working. Mohangraphy should be bigger , but the menu text must be the same as HOME and COLLECTIONS. They can also be near and not spread out and use that saved space to increase the size of Mohangraphy to 60px. 
+Connect to the all the photos that were uploaded earlier. No change to the names of the subcategories. 
+Also, the link to the analytics and editing tabs - all of that must be retained. Basically, the functions must remain except for the feature that have been removed.
+
+=====
+
+The main page is not showing the random photos that changes every 3 seconds.
+
+When I land on a page, as shown above, I see the Home Button in three places. That looks very odd. Fix that.
+
+Also, photos are not separated. Add separation.
+
+When user clicks on a particular image, it should open as a image details modal which displays the image in a bigger size and with the option of LIKE and REQUEST QUOTE. This replaces "BUY PRINT" used earlier.
+
+Also, ensure the link to supaspace.com is working and all likes are counted.
+
+Similarly ensure link to Plausible.io is working and also ensure Google Analytics is connected and pulling the data and does not include my growing/revising the scripts.
+
+I updated the content.json page. It is not getting pulled.
+
+The old content.json page has several scripts which are not required. Can't we simply delete them if they are not applicable. Similarly delete what ever is not applicable from every script. For example - reference to Workshops in one of the scripts can be deleted so that the script is clean.
+
+
+
+
+cp ~/Downloads/content.json /Users/ncm/Pictures/Mohangraphy/Scripts/content.json
+cd /Users/ncm/Pictures/Mohangraphy
+python3 Scripts/deploy.py
+

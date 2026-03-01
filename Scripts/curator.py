@@ -9,16 +9,10 @@ PHOTOS_DIR = os.path.join(ROOT_DIR, "Photos")
 DATA_FILE  = os.path.join(ROOT_DIR, "Scripts/photo_metadata.json")
 
 # ── TAG CATEGORIES ────────────────────────────────────────────────────────────
-# HOW PLACES WORK:
-#   Step 1 — Select the CATEGORY: Places/National or Places/International
-#   Step 2 — Enter the PLACE NAME (e.g. "Megamalai", "Paris")
-#   The category puts the photo in the right section of the site.
-#   The place name creates its own named sub-gallery within that section.
-#   There is NO separate standalone "Place" category — it works as a pair.
 FLAT_CATEGORIES = [
     "Architecture",
-    "Birds",
-    "Flowers",
+    "Nature/Birds",
+    "Nature/Flowers",
     "Nature/Landscape",
     "Nature/Landscape/Mountains",
     "Nature/Sunsets",
@@ -45,16 +39,26 @@ def osascript(script):
     return out.decode('utf-8').strip()
 
 def ask_input(title, prompt, default=""):
+    # Escape any double-quotes in default
+    default_safe = str(default).replace('"', '\\"')
     script = (
         f'display dialog "{prompt}" with title "{title}" '
-        f'default answer "{default}" buttons {{"OK"}} default button "OK"'
+        f'default answer "{default_safe}" buttons {{"OK", "Skip"}} default button "OK"'
     )
     result = osascript(script)
+    if "button returned:Skip" in result:
+        return None   # signal to skip this field
     if "text returned:" in result:
         return result.split("text returned:")[-1].strip()
     return default
 
-def choose_list(title, prompt, items, multiple=True):
+def choose_list(title, prompt, items, pre_selected=None, multiple=True):
+    """
+    Show a list picker. pre_selected is ignored by osascript's choose from list,
+    but we show it prominently in the prompt so the user knows what was last used.
+    """
+    if pre_selected:
+        prompt = prompt + "\n\nPrevious: " + ", ".join(pre_selected)
     script = (
         f'choose from list {json.dumps(items)} '
         f'with title "{title}" with prompt "{prompt}" '
@@ -63,7 +67,7 @@ def choose_list(title, prompt, items, multiple=True):
     )
     result = osascript(script)
     if result == "false" or not result:
-        return []
+        return None   # user cancelled
     return [x.strip() for x in result.split(',')]
 
 def ask_button(title, prompt, buttons):
@@ -85,7 +89,6 @@ def load_data():
         return {}
     with open(DATA_FILE, 'r') as f:
         raw = json.load(f)
-    # Deduplicate: one entry per unique file path, re-keyed by hash
     by_path = {}
     for _, info in raw.items():
         p = info.get('path', '')
@@ -113,111 +116,181 @@ def scan_photos():
     return results
 
 # ── TAGGING ───────────────────────────────────────────────────────────────────
-def tag_one(path, h, data, idx, total, is_new):
+def tag_one(path, h, data, idx, total, prev_tags, prev_state, prev_city, prev_remarks, is_new):
+    """
+    Tag a single photo. Returns (action, tags, state, city, remarks) so the
+    next photo can inherit everything from this one.
+    """
     filename = os.path.basename(path)
     rel_path = os.path.relpath(path, ROOT_DIR)
 
-    existing_tags  = data[h].get('categories', []) if h in data else []
-    existing_place = data[h].get('place',      '')  if h in data else ''
-    existing_rem   = data[h].get('remarks',    '')  if h in data else ''
+    # Existing values: from saved data if re-editing, else from previous photo
+    existing_tags    = data[h].get('categories', []) if h in data else (prev_tags or [])
+    existing_state   = data[h].get('state',    '') if h in data else (prev_state or '')
+    existing_city    = data[h].get('city',     '') if h in data else (prev_city  or '')
+    existing_remarks = data[h].get('remarks',  '') if h in data else (prev_remarks or '')
 
-    subprocess.Popen(["open", path])   # open photo preview
+    # Backward-compat: old-style "State - City" place field
+    if not existing_state:
+        old_place = data[h].get('place', '') if h in data else ''
+        if ' - ' in old_place:
+            parts = old_place.split(' - ', 1)
+            existing_state, existing_city = parts[0].strip(), parts[1].strip()
+        elif old_place:
+            existing_state = old_place
 
-    label  = "NEW" if is_new else "EDITING"
-    prompt = (
+    subprocess.Popen(["open", path])
+
+    label    = "NEW" if is_new else "EDITING"
+    cats_str = ', '.join(existing_tags) if existing_tags else '—'
+    prompt   = (
         f"[{idx}/{total}] {label}: {filename}\n\n"
-        f"Current tags:    {', '.join(existing_tags) or 'None'}\n"
-        f"Current place:   {existing_place or '—'}\n"
-        f"Current remarks: {existing_rem or '—'}"
+        f"Categories : {cats_str}\n"
+        f"State      : {existing_state or '—'}\n"
+        f"City       : {existing_city  or '—'}\n"
+        f"Remarks    : {existing_remarks or '—'}\n\n"
+        f"'Copy & Next' saves everything as-is and moves on.\n"
+        f"'Edit' lets you change any field."
     )
-    action = ask_button("Curator", prompt, ["Tag / Edit", "Skip", "Stop"])
+    action = ask_button("Curator", prompt, ["Edit", "Copy & Next", "Stop"])
 
-    if action == "Stop":  return "stop"
-    if action == "Skip":  return "skip"
+    if action == "Stop":
+        return "stop", prev_tags, prev_state, prev_city, prev_remarks
 
-    # Step 1 — Categories
+    if action == "Copy & Next":
+        # Save with ALL current values (categories + state + city + remarks)
+        data[h] = {
+            "path": rel_path, "filename": filename,
+            "categories": existing_tags,
+            "state": existing_state, "city": existing_city,
+            "remarks": existing_remarks
+        }
+        save_data(data)
+        return "saved", existing_tags, existing_state, existing_city, existing_remarks
+
+    # ── Step 1: Categories ────────────────────────────────────────────────────
     cats = choose_list(
         "Select Categories",
         f"[{idx}/{total}] {filename}\n\n"
-        "Tick all categories that apply.\n"
-        "For place photos: choose Places/National or Places/International,\n"
-        "then you will be asked for the place name on the next screen.",
-        FLAT_CATEGORIES
+        "Tick all that apply. Previous selection shown below.\n"
+        "For place photos: also choose Places/National or Places/International.",
+        FLAT_CATEGORIES,
+        pre_selected=existing_tags
     )
+    if cats is None:
+        cats = existing_tags
 
-    # Step 2 — Place name (only if a Places/* category was chosen)
-    place = existing_place
-    if any('Places/' in c for c in cats):
-        place = ask_input(
-            "Place Name",
-            f"Enter the PLACE NAME for:\n{filename}\n\n"
-            "Examples: Megamalai, Hampi, Munnar, Paris, New York\n\n"
-            "This name will appear as its own gallery on the website.",
-            existing_place
+    # ── Step 2: State / Country + City (only for Places) ─────────────────────
+    new_state, new_city = existing_state, existing_city
+    needs_place = any('Places/' in c for c in (cats or []))
+    if needs_place:
+        is_national = any('National' in c for c in (cats or []))
+        state_label = "State" if is_national else "Country"
+
+        s = ask_input(
+            state_label,
+            f"Enter {state_label} for:\n{filename}\n\n"
+            f"(Press OK to keep: {existing_state or 'empty'})",
+            existing_state
         )
+        if s is not None:
+            new_state = s
 
-    # Step 3 — Remarks
-    remarks = ask_input(
+        c = ask_input(
+            "City",
+            f"Enter City for:\n{filename}\n\n"
+            f"(Press OK to keep: {existing_city or 'empty'})",
+            existing_city
+        )
+        if c is not None:
+            new_city = c
+
+    # ── Step 3: Remarks ───────────────────────────────────────────────────────
+    r = ask_input(
         "Remarks",
-        f"Add a REMARK for:\n{filename}\n\n"
-        "Use this for the subject name — bird species, temple name,\n"
-        "mountain range, festival name, etc.\n\n"
-        "Examples: Great Hornbill, Brihadeeswarar Temple, Western Ghats\n\n"
-        "This will be shown as a subtle label on the photo in the gallery.\n"
-        "It does NOT appear on downloads or prints.",
-        existing_rem
+        f"Add a remark for:\n{filename}\n\n"
+        "Examples: Great Hornbill, Brihadeeswarar Temple, Western Ghats\n"
+        "(Shown as overlay on photo — not printed)\n\n"
+        f"(Press OK to keep: {existing_remarks or 'empty'})",
+        existing_remarks
     )
+    remarks = r if r is not None else existing_remarks
 
     data[h] = {
         "path":       rel_path,
         "filename":   filename,
-        "categories": cats,
-        "place":      place,
+        "categories": cats or [],
+        "state":      new_state,
+        "city":       new_city,
         "remarks":    remarks
     }
     save_data(data)
-    return "saved"
+    return "saved", cats or [], new_state, new_city, remarks
 
 def process_list(photo_list, data, is_new=True):
-    total, saved = len(photo_list), 0
+    total       = len(photo_list)
+    saved       = 0
+    prev_tags    = []
+    prev_state   = ''
+    prev_city    = ''
+    prev_remarks = ''
+
     for idx, (path, h) in enumerate(photo_list, 1):
-        result = tag_one(path, h, data, idx, total, is_new)
-        if result == "stop": break
-        if result == "saved": saved += 1
+        result, prev_tags, prev_state, prev_city, prev_remarks = tag_one(
+            path, h, data, idx, total,
+            prev_tags, prev_state, prev_city, prev_remarks, is_new
+        )
+        if result == "stop":
+            break
+        if result == "saved":
+            saved += 1
+
     notify(f"Done. {saved} photos updated. Total in database: {len(data)}")
     print(f"  Done. {saved} saved. Total: {len(data)}")
 
-# ── EDIT MODE — searchable list ───────────────────────────────────────────────
+# ── EDIT MODE ─────────────────────────────────────────────────────────────────
 def edit_mode(tagged, data):
     """
-    Instead of scrolling photo by photo, the user picks from a searchable list.
-    Each item shows:  filename  (Place · Remarks · tags)
-    Type any part of the name, place, or remark to filter the list.
+    Show ALL tagged photos in a searchable list.
+    User picks one or more, then edits them.
+    FIX: was incorrectly detecting 'no tagged photos' when there were many.
     """
+    if not tagged:
+        osascript('display dialog "No tagged photos found." buttons {"OK"} default button "OK"')
+        return
+
     display = []
     lookup  = {}
+
     for path, h in tagged:
         info    = data.get(h, {})
         fname   = os.path.basename(path)
-        place   = info.get('place',   '')
+        state   = info.get('state',   info.get('place', ''))
+        city    = info.get('city',    '')
         remarks = info.get('remarks', '')
         tags    = info.get('categories', [])
-        # Shorten tag names for display
         short_tags = [t.split('/')[-1] for t in tags]
-        parts = [p for p in [place, remarks] + short_tags if p]
-        label = fname + ('  (' + ' · '.join(parts) + ')' if parts else '')
+        parts  = [p for p in [state, city, remarks] + short_tags if p]
+        label  = fname + ('  (' + ' · '.join(parts) + ')' if parts else '')
+        # Ensure unique labels
+        base_label, n = label, 1
+        while label in lookup:
+            n += 1
+            label = base_label + f' [{n}]'
         display.append(label)
         lookup[label] = (path, h)
 
     chosen = choose_list(
         "Edit Tags — Choose Photos",
-        "Select one or more photos to edit.\n"
-        "Scroll or start typing to search by filename, place, or remark.",
+        f"Select one or more photos to edit ({len(display)} total).\n"
+        "Type to search by filename, place, or remark.",
         display,
         multiple=True
     )
     if not chosen:
+        print("  Edit cancelled — no photos selected.")
         return
+
     to_edit = [lookup[c] for c in chosen if c in lookup]
     process_list(to_edit, data, is_new=False)
 
@@ -226,12 +299,12 @@ def run_curator():
     data       = load_data()
     all_photos = scan_photos()
 
-    new_photos    = [(p, get_file_hash(p)) for p in all_photos
-                     if get_file_hash(p) not in data]
-    tagged_photos = [(p, get_file_hash(p)) for p in all_photos
-                     if get_file_hash(p) in data]
+    # Hash all files once (avoid double-hashing)
+    hashed = [(p, get_file_hash(p)) for p in all_photos]
+    new_photos    = [(p, h) for p, h in hashed if h not in data]
+    tagged_photos = [(p, h) for p, h in hashed if h in data]
 
-    print(f"  {len(new_photos)} new | {len(tagged_photos)} tagged")
+    print(f"  {len(new_photos)} new | {len(tagged_photos)} already tagged")
 
     prompt = (
         f"Mohangraphy Curator\n\n"
@@ -243,16 +316,16 @@ def run_curator():
                       ["Tag New Photos", "Edit Existing Tags", "Cancel"])
 
     if mode in ("Cancel", ""):
+        print("  Curator cancelled.")
         return
+
     if mode == "Tag New Photos":
         if not new_photos:
-            osascript('display dialog "No new photos found." buttons {"OK"} default button "OK"')
+            osascript('display dialog "No new photos to tag." buttons {"OK"} default button "OK"')
             return
         process_list(new_photos, data, is_new=True)
+
     elif mode == "Edit Existing Tags":
-        if not tagged_photos:
-            osascript('display dialog "No tagged photos yet." buttons {"OK"} default button "OK"')
-            return
         edit_mode(tagged_photos, data)
 
 if __name__ == "__main__":

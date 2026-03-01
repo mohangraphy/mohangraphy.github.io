@@ -53,20 +53,19 @@ def load_content():
     with open(CONTENT_FILE, 'r', encoding='utf-8') as f:
         try:
             data = json.load(f)
-            # Diagnostic
+            # Diagnostic — confirm what was loaded
+            about_title = data.get('about', {}).get('title', '(missing)')
             email       = data.get('site',  {}).get('contact_email', '(missing)')
-            ga          = data.get('site',  {}).get('ga_measurement_id', '(not set)')
-            supa        = data.get('site',  {}).get('supabase_url', '(not set)')
-            plaus       = data.get('site',  {}).get('plausible_domain', '(not set)')
+            n_paras     = len(data.get('about', {}).get('paragraphs', []))
             print(f"  ✅ content.json loaded OK")
-            print(f"     Contact email    : {email}")
-            print(f"     GA measurement ID: {ga}")
-            print(f"     Supabase URL     : {supa[:40] if supa != '(not set)' else supa}")
-            print(f"     Plausible domain : {plaus}")
+            print(f"     About title : {about_title}")
+            print(f"     Contact email: {email}")
+            print(f"     About paragraphs: {n_paras}")
             return data
         except Exception as e:
             print("  ❌ ERROR reading content.json: " + str(e))
-            print("     Validate at: https://jsonlint.com")
+            print("     Common causes: missing comma, unclosed quote, or extra bracket.")
+            print("     Validate your file at: https://jsonlint.com")
             return {}
 
 def deduplicate_by_path(raw_data):
@@ -367,12 +366,21 @@ def grid_item_html(thumb_path, orig_path, alt, path_info, meta_by_path=None, web
         ' data-city="'    + qa(city)      + '"'
         ' data-remarks="' + qa(remarks)   + '"'
         ' data-cats="'    + qa(','.join(cats)) + '"'
-        ' onclick="openImgModal(this)">'
+        ' onclick="openLightbox(this)">'
         '<div class="grid-item-photo">'
         + thumb_img(thumb_path, web_path, alt)
         + '<div class="grid-item-overlay"></div>'
         + overlay
         + '</div>'
+        '<div class="grid-item-bar" onclick="event.stopPropagation()">'
+        '<button class="bar-btn like-btn" title="Like" onclick="event.stopPropagation();barLike(this)">'
+        '&#10084;<span class="bar-btn-count like-count"></span>'
+        '</button>'
+        '<div class="bar-sep"></div>'
+        '<button class="bar-btn buy-btn" title="Order a print" onclick="event.stopPropagation();barBuy(this)">'
+        '&#128722;'
+        '</button>'
+        '</div>'
         '</div>'
     )
 
@@ -398,17 +406,17 @@ def generate_html():
     c_contact  = C.get('contact',    {})
     c_prints   = C.get('prints',     {})
     c_licens   = C.get('licensing',  {})
+    c_workshop = C.get('workshops',  {})
     c_legal    = C.get('legal',      {})
 
     # Site-wide values with safe fallbacks
-    contact_email    = site.get('contact_email',    'ncmohan.photos@gmail.com')
+    contact_email    = site.get('contact_email',    'your@email.com')
     photographer     = site.get('photographer_name','N C Mohan')
-    site_description = site.get('description',      'Fine art photography by N C Mohan. Landscapes, architecture, wildlife, and more.')
-    supabase_url     = site.get('supabase_url',     'https://xjcpryfgodgqqtbblklg.supabase.co')
-    supabase_key     = site.get('supabase_anon_key','eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhqY3ByeWZnb2RncXF0YmJsa2xnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzIxODEzMjcsImV4cCI6MjA4Nzc1NzMyN30.M9KoprG4uaH3wcZ7nI0Hip4IAdqiy8m5UoiB9DzjreI')
+    site_description = site.get('description',      'Photography by N C Mohan')
+    supabase_url     = site.get('supabase_url',     'NONE')
+    supabase_key     = site.get('supabase_anon_key','NONE')
     admin_password   = site.get('admin_password',   'mohan2024')
-    plausible_domain = site.get('plausible_domain', 'ncmohan.github.io')
-    ga_id            = site.get('ga_measurement_id','')   # add G-XXXXXXXXXX to content.json
+    plausible_domain = site.get('plausible_domain', '')
 
     # Generate / verify thumbnails + 2048px web copies
     thumb_map, web_map = ensure_thumbs(all_paths)
@@ -448,7 +456,7 @@ def generate_html():
   --gold2: #e8d4a0;
   --dark:  #080808;
   --mid:   #161616;
-  --hdr:   80px;
+  --hdr:   64px;
 }
 
 /* ── BASE ── */
@@ -462,8 +470,7 @@ body {
 }
 
 /* ══════════════════════════════════════════════════════════════
-   HEADER — Logo left | Tabs center | CTA right
-   Mobile: Logo center | Hamburger right
+   HEADER  — three zones: [☰ left icon] [title] [≡ right icon]
    ══════════════════════════════════════════════════════════════ */
 header {
   position: fixed; top: 0; left: 0; right: 0;
@@ -473,200 +480,205 @@ header {
   border-bottom: 1px solid rgba(201,169,110,0.15);
   z-index: 2000;
   display: grid;
-  grid-template-columns: auto 1fr auto auto;
+  grid-template-columns: 48px 1fr 48px;
   align-items: center;
-  padding: 0 clamp(16px,3vw,40px);
-  gap: 0;
+  padding: 0;
+  overflow: hidden;
+}
+@media (min-width: 480px) {
+  header { grid-template-columns: var(--hdr) 1fr var(--hdr); }
 }
 
-/* Logo */
-.site-logo {
-  font-family: 'Cormorant Garamond', serif;
-  font-weight: 300;
-  font-size: 40px;
-  letter-spacing: 6px;
-  color: rgba(255,255,255,0.9);
-  text-transform: uppercase;
-  cursor: pointer; user-select: none;
-  white-space: nowrap;
-  transition: color .25s;
-  line-height: 1;
-}
-.site-logo:hover { color: var(--gold); }
-
-/* Center nav tabs */
-.hdr-tabs {
+/* Left icon button — About / Contact / more */
+.hdr-icon-left,
+.hdr-icon-right {
+  width: var(--hdr); height: var(--hdr);
   display: flex; align-items: center; justify-content: center;
-  gap: 0;
-}
-.hdr-tab {
-  position: relative;
-  font-family: 'Montserrat', sans-serif;
-  font-size: 10px; font-weight: 600; letter-spacing: 3px;
-  text-transform: uppercase;
-  color: rgba(255,255,255,0.55);
   cursor: pointer; background: none; border: none;
-  padding: 0 14px; height: var(--hdr);
-  display: flex; align-items: center; gap: 5px;
-  transition: color .2s;
-  white-space: nowrap;
+  color: rgba(255,255,255,0.45);
+  transition: color .25s, background .25s;
+  flex-shrink: 0;
 }
-.hdr-tab:hover { color: rgba(255,255,255,0.9); }
-.hdr-tab.active { color: #fff; }
-.hdr-tab.active::after {
-  content: '';
-  position: absolute; bottom: 0; left: 14px; right: 14px;
-  height: 2px; background: var(--gold);
+.hdr-icon-left:hover,  .hdr-icon-right:hover,
+.hdr-icon-left:active, .hdr-icon-right:active {
+  color: var(--gold); background: rgba(201,169,110,0.06);
 }
-/* Collections dropdown chevron */
-.hdr-tab-chevron {
-  font-size: 8px; color: rgba(201,169,110,0.6);
-  transition: transform .2s;
-}
-.hdr-tab:hover .hdr-tab-chevron,
-.hdr-tab.dd-open .hdr-tab-chevron { transform: rotate(180deg); }
+.hdr-icon-left  svg, .hdr-icon-right svg { pointer-events: none; }
 
-/* Collections dropdown — triggered by JS, not CSS hover, to avoid invalid nesting */
-.hdr-dropdown {
-  position: absolute; top: var(--hdr); left: 50%;
-  transform: translateX(-50%);
-  background: rgba(10,10,10,0.98);
-  border: 1px solid rgba(201,169,110,0.18);
-  border-top: 2px solid var(--gold);
-  min-width: 180px;
-  opacity: 0; visibility: hidden; pointer-events: none;
-  transition: opacity .2s, visibility .2s;
-  z-index: 2001;
+/* MOHANGRAPHY — largest text on the page, always fits one line */
+.site-title {
+  font-family: 'Cormorant Garamond', serif;
+  font-weight: 700;
+  font-size: clamp(14px, 3.5vw, 46px);
+  letter-spacing: clamp(3px, 1.6vw, 18px);
+  color: #fff; text-transform: uppercase;
+  cursor: pointer; user-select: none;
+  transition: color 0.3s;
+  white-space: nowrap; overflow: hidden;
+  text-align: center;
+  padding-right: clamp(3px, 1.6vw, 18px); /* compensate last-char spacing */
 }
-.hdr-tab.dd-open .hdr-dropdown {
-  opacity: 1; visibility: visible; pointer-events: all;
+.site-title:hover { color: var(--gold); }
+
+/* ══════════════════════════════════════════════════════════════
+   OVERLAY BACKDROP — shared by both drawers
+   ══════════════════════════════════════════════════════════════ */
+.drawer-overlay {
+  display: none; position: fixed; inset: 0;
+  background: rgba(0,0,0,0.6);
+  z-index: 2998;
+  backdrop-filter: blur(2px); -webkit-backdrop-filter: blur(2px);
 }
-.hdr-dd-item {
-  display: block; padding: 13px 20px;
-  font-family: 'Montserrat', sans-serif;
-  font-size: 9px; font-weight: 600; letter-spacing: 3px; text-transform: uppercase;
-  color: rgba(255,255,255,0.6);
-  cursor: pointer; border: none; background: none;
-  width: 100%; text-align: left;
-  transition: color .15s, background .15s;
+.drawer-overlay.open { display: block; }
+
+/* ══════════════════════════════════════════════════════════════
+   RIGHT DRAWER — Collections nav (hamburger ≡)
+   Full tree: main cats → expand to sub-cats inline
+   ══════════════════════════════════════════════════════════════ */
+#nav-drawer {
+  position: fixed; top: 0; right: 0;
+  width: min(320px, 88vw); height: 100svh;
+  background: #0e0e0e;
+  border-left: 1px solid rgba(201,169,110,0.12);
+  z-index: 2999;
+  display: flex; flex-direction: column;
+  transform: translateX(100%);
+  transition: transform .35s cubic-bezier(.4,0,.2,1);
+  overflow: hidden;
+}
+#nav-drawer.open { transform: translateX(0); }
+
+.drawer-header {
+  height: var(--hdr);
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0 20px;
+  border-bottom: 1px solid rgba(201,169,110,0.1);
+  flex-shrink: 0;
+}
+.drawer-header-title {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 11px; letter-spacing: 6px;
+  color: var(--gold); text-transform: uppercase; opacity: .7;
+}
+.drawer-close {
+  background: none; border: none; cursor: pointer;
+  color: rgba(255,255,255,0.3); font-size: 20px;
+  width: 36px; height: 36px;
+  display: flex; align-items: center; justify-content: center;
+  transition: color .2s; border-radius: 50%;
+}
+.drawer-close:hover { color: var(--gold); }
+
+.drawer-scroll { overflow-y: auto; flex: 1; padding: 8px 0 80px; }
+.drawer-scroll::-webkit-scrollbar { width: 2px; }
+.drawer-scroll::-webkit-scrollbar-thumb { background: rgba(201,169,110,0.2); }
+
+/* Main category row in drawer */
+.dnav-cat {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0 20px; height: 52px; cursor: pointer;
+  border-bottom: 1px solid rgba(255,255,255,0.04);
+  transition: background .2s;
+  -webkit-tap-highlight-color: transparent;
+}
+.dnav-cat:hover, .dnav-cat:active { background: rgba(201,169,110,0.05); }
+.dnav-cat-name {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: clamp(15px, 3.5vw, 18px);
+  letter-spacing: 3px; text-transform: uppercase;
+  color: #fff; transition: color .2s;
+}
+.dnav-cat:hover .dnav-cat-name { color: var(--gold); }
+.dnav-chevron {
+  color: rgba(255,255,255,0.25); font-size: 11px;
+  transition: transform .25s, color .2s; flex-shrink: 0;
+}
+.dnav-cat.expanded .dnav-chevron { transform: rotate(90deg); color: var(--gold); }
+
+/* Sub-items inside the drawer */
+.dnav-subs {
+  display: none; background: rgba(0,0,0,0.3);
   border-bottom: 1px solid rgba(255,255,255,0.04);
 }
-.hdr-dd-item:hover { color: var(--gold); background: rgba(201,169,110,0.06); }
-
-/* CTA button */
-.hdr-cta {
-  font-family: 'Montserrat', sans-serif;
-  font-size: 9px; font-weight: 600; letter-spacing: 3px;
-  text-transform: uppercase;
-  color: var(--gold); border: 1px solid rgba(201,169,110,0.5);
-  background: none; cursor: pointer;
-  padding: 0 18px; height: 36px;
-  display: flex; align-items: center;
-  transition: background .2s, color .2s, border-color .2s;
-  white-space: nowrap;
-}
-.hdr-cta:hover { background: var(--gold); color: #000; border-color: var(--gold); }
-
-/* Hamburger — mobile only */
-.hdr-hamburger {
-  display: none;
-  width: 40px; height: 40px;
-  background: none; border: none; cursor: pointer;
-  color: rgba(255,255,255,0.6);
-  align-items: center; justify-content: center;
-  flex-direction: column; gap: 5px;
-  transition: color .2s;
-}
-.hdr-hamburger:hover { color: var(--gold); }
-.hdr-hamburger span {
-  display: block; width: 22px; height: 1px;
-  background: currentColor; transition: transform .25s, opacity .25s;
-}
-
-/* Tablet + mobile — hamburger at ≤1024px (portrait iPad and below) */
-@media (max-width: 1024px) {
-  header {
-    grid-template-columns: 1fr auto;
-    padding: 0 16px;
-  }
-  .hdr-tabs { display: none !important; }
-  .hdr-cta  { display: none !important; }
-  .hdr-hamburger { display: flex; grid-column: 2; }
-}
-@media (max-width: 767px) {
-  .site-logo {
-    font-size: 22px;
-    letter-spacing: 4px;
-    text-align: left;
-    grid-column: 1;
-  }
-}
-
-/* ══════════════════════════════════════════════════════════════
-   MOBILE MENU DRAWER
-   ══════════════════════════════════════════════════════════════ */
-#mobile-menu {
-  display: none; position: fixed; inset: 0; z-index: 9500;
-  background: rgba(0,0,0,0.95);
-  flex-direction: column;
-  padding: var(--hdr) 0 0;
-}
-#mobile-menu.open { display: flex; }
-.mob-menu-close {
-  position: absolute; top: 12px; right: 14px;
-  background: none; border: none; cursor: pointer;
-  color: rgba(255,255,255,0.4); font-size: 22px;
-  width: 40px; height: 40px;
-  display: flex; align-items: center; justify-content: center;
-  transition: color .2s;
-}
-.mob-menu-close:hover { color: var(--gold); }
-.mob-menu-item {
-  padding: 18px 32px;
-  font-family: 'Montserrat', sans-serif;
-  font-size: 11px; letter-spacing: 4px; text-transform: uppercase;
-  color: rgba(255,255,255,0.7); cursor: pointer;
-  border-bottom: 1px solid rgba(255,255,255,0.05);
-  transition: color .15s;
-  background: none; border-left: none; border-right: none; border-top: none;
-  text-align: left; width: 100%;
-}
-.mob-menu-item:hover { color: var(--gold); }
-.mob-menu-item.mob-menu-active { color: #fff; }
-.mob-menu-sub {
-  display: none; background: rgba(0,0,0,0.4);
-}
-.mob-menu-sub.open { display: block; }
-.mob-menu-subitem {
-  padding: 14px 32px 14px 48px;
-  font-family: 'Montserrat', sans-serif;
-  font-size: 10px; letter-spacing: 3px; text-transform: uppercase;
-  color: rgba(255,255,255,0.45); cursor: pointer;
+.dnav-subs.open { display: block; }
+.dnav-sub {
+  display: flex; align-items: center; gap: 10px;
+  padding: 0 20px 0 36px; height: 44px; cursor: pointer;
   border-bottom: 1px solid rgba(255,255,255,0.03);
-  transition: color .15s;
-  background: none; border-left: none; border-right: none; border-top: none;
-  text-align: left; width: 100%;
+  transition: background .2s;
+  -webkit-tap-highlight-color: transparent;
 }
-.mob-menu-subitem:hover { color: var(--gold); }
-.mob-menu-cta {
-  margin: 24px 32px 0;
-  padding: 14px 24px; text-align: center;
-  font-family: 'Montserrat', sans-serif;
-  font-size: 9px; letter-spacing: 4px; text-transform: uppercase;
-  color: var(--gold); border: 1px solid rgba(201,169,110,0.5);
-  background: none; cursor: pointer;
-  transition: background .2s, color .2s;
+.dnav-sub:hover, .dnav-sub:active { background: rgba(201,169,110,0.06); }
+.dnav-sub-dot {
+  width: 4px; height: 4px; border-radius: 50%;
+  background: rgba(201,169,110,0.35); flex-shrink: 0;
 }
-.mob-menu-cta:hover { background: var(--gold); color: #000; }
+.dnav-sub-name {
+  font-size: 11px; letter-spacing: 3px; text-transform: uppercase;
+  color: rgba(255,255,255,0.5); transition: color .2s;
+}
+.dnav-sub:hover .dnav-sub-name { color: var(--gold); }
+
+/* Divider in drawer */
+.dnav-divider {
+  height: 1px; background: rgba(201,169,110,0.1);
+  margin: 8px 20px;
+}
 
 /* ══════════════════════════════════════════════════════════════
-   PAGE LAYOUT — everything scrolls, no fixed footer
+   LEFT DRAWER — About / Contact / etc  (person icon)
    ══════════════════════════════════════════════════════════════ */
-/* Overlay — only needed for old drawer, now just for modal backdrops */
-.drawer-overlay { display: none !important; }
+#about-drawer {
+  position: fixed; top: 0; left: 0;
+  width: min(320px, 88vw); height: 100svh;
+  background: #0e0e0e;
+  border-right: 1px solid rgba(201,169,110,0.12);
+  z-index: 2999;
+  display: flex; flex-direction: column;
+  transform: translateX(-100%);
+  transition: transform .35s cubic-bezier(.4,0,.2,1);
+  overflow: hidden;
+}
+#about-drawer.open { transform: translateX(0); }
 
-/* Hide old drawer elements if any remain */
-#nav-drawer, #about-drawer { display: none !important; }
+.about-scroll { overflow-y: auto; flex: 1; padding: 0 0 80px; }
+.about-scroll::-webkit-scrollbar { width: 2px; }
+.about-scroll::-webkit-scrollbar-thumb { background: rgba(201,169,110,0.2); }
+
+/* Section header inside about drawer */
+.adrawer-section-hdr {
+  padding: 20px 20px 8px;
+  font-size: 8px; letter-spacing: 5px;
+  color: var(--gold); text-transform: uppercase; opacity: .55;
+}
+
+/* Each item row */
+.adrawer-item {
+  display: flex; align-items: center; gap: 14px;
+  padding: 0 20px; height: 52px; cursor: pointer;
+  border-bottom: 1px solid rgba(255,255,255,0.04);
+  transition: background .2s;
+  -webkit-tap-highlight-color: transparent;
+}
+.adrawer-item:hover, .adrawer-item:active { background: rgba(201,169,110,0.05); }
+.adrawer-icon {
+  width: 32px; height: 32px; border-radius: 50%;
+  background: rgba(201,169,110,0.08);
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+}
+.adrawer-icon svg { color: var(--gold); }
+.adrawer-label {
+  font-size: 11px; letter-spacing: 3px; text-transform: uppercase;
+  color: rgba(255,255,255,0.55); transition: color .2s;
+}
+.adrawer-item:hover .adrawer-label { color: var(--gold); }
+.adrawer-badge {
+  margin-left: auto; font-size: 7px; letter-spacing: 2px;
+  color: rgba(201,169,110,0.4); text-transform: uppercase;
+  background: rgba(201,169,110,0.08);
+  padding: 2px 6px; border-radius: 2px;
+}
 
 /* ── Sub-page panels (About, Contact, etc.) ── */
 .info-page {
@@ -737,12 +749,11 @@ header {
 
 .btn-gold {
   background: none; border: 1px solid var(--gold);
-  color: var(--gold); padding: 0 32px; height: 44px;
+  color: var(--gold); padding: 12px 32px;
   font-family: 'Montserrat', sans-serif;
   font-size: 9px; letter-spacing: 4px; text-transform: uppercase;
   cursor: pointer; transition: background .25s, color .25s;
-  display: inline-flex; align-items: center; justify-content: center;
-  margin-top: 0;
+  margin-top: 8px;
 }
 .btn-gold:hover { background: var(--gold); color: #000; }
 
@@ -776,11 +787,10 @@ header {
   width: 100%;
   height: 100svh;
   overflow: hidden;
-  background: linear-gradient(160deg, #0a0a0a 0%, #111820 50%, #0a0a0a 100%);
+  background: #000;
   display: none;
   align-items: center;
   justify-content: center;
-  padding-top: var(--hdr);
 }
 #hero.visible { display: flex; }
 .slide {
@@ -846,93 +856,52 @@ header {
 }
 
 .scroll-cue {
-  position: absolute; bottom: 15vh; left: 50%;
+  position: absolute; bottom: 20px; left: 50%;
   transform: translateX(-50%);
-  display: flex; flex-direction: column; align-items: center; gap: 6px;
-  animation: cue 2.2s ease-in-out infinite; z-index: 2;
-  background: none; border: none; cursor: pointer;
-  padding: 8px 12px;
+  display: flex; flex-direction: column; align-items: center; gap: 4px;
+  animation: cue 2.4s ease-in-out infinite; z-index: 2;
 }
 .scroll-cue span {
-  font-family: 'Montserrat', sans-serif;
-  font-size: 9px; letter-spacing: 5px; font-weight: 600;
-  color: rgba(255,255,255,0.65); text-transform: uppercase;
+  font-size: 7px; letter-spacing: 4px;
+  color: rgba(255,255,255,0.2); text-transform: uppercase;
 }
-.scroll-cue svg path { stroke: rgba(255,255,255,0.65) !important; }
 @keyframes cue {
-  0%,100% { transform: translateX(-50%) translateY(0); opacity:.6; }
-  50%      { transform: translateX(-50%) translateY(9px); opacity:1; }
+  0%,100% { transform: translateX(-50%) translateY(0); opacity:.3; }
+  50%      { transform: translateX(-50%) translateY(7px); opacity:.8; }
 }
 
 /* ── MAIN VERTICAL TILE NAV ── */
+/*
+  Each menu row is a COMPACT HORIZONTAL ROW:
+    [ category name + photo count ]  [ thumbnail OR "Coming Soon" box ]
+  Height is fixed and compact so all 6 items fit on one screen scroll.
+*/
 #tile-nav {
   display: none;
   padding-top: var(--hdr);
   background: var(--dark);
   min-height: 100svh;
+  padding-bottom: 56px;
 }
 #tile-nav.visible { display: block; }
 
 .tile-nav-label {
-  font-size: 9px; letter-spacing: 6px;
+  font-size: 8px; letter-spacing: 6px;
   color: var(--gold); text-transform: uppercase;
-  opacity: .7; text-align: center;
-  padding: 24px 0 4px;
+  opacity: .8; text-align: center;
+  padding: 18px 0 10px;
 }
 
-/* ── 4-column card grid for sub-categories (Level 2+) ── */
-.cat-grid-4 {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: clamp(8px, 1.5vw, 16px);
-  padding: clamp(14px, 2.5vw, 28px) clamp(14px, 4vw, 44px);
-}
-@media (max-width: 900px) {
-  .cat-grid-4 { grid-template-columns: repeat(2, 1fr); }
-}
-@media (max-width: 480px) {
-  .cat-grid-4 { grid-template-columns: 1fr; }
-}
-
-/* ── Places filter pills ── */
-.places-filters {
-  display: flex; gap: 8px;
-  padding: clamp(16px,3vw,32px) clamp(14px,4vw,44px) 0;
-  flex-wrap: wrap;
-}
-.places-pill {
-  padding: 7px 20px;
-  font-family: 'Montserrat', sans-serif;
-  font-size: 10px; font-weight: 600; letter-spacing: 3px;
-  text-transform: uppercase;
-  color: rgba(255,255,255,0.5);
-  border: 1px solid rgba(255,255,255,0.15);
-  background: none; cursor: pointer; border-radius: 20px;
-  transition: all .2s;
-}
-.places-pill.active, .places-pill:hover {
-  color: var(--gold); border-color: rgba(201,169,110,0.6);
-  background: rgba(201,169,110,0.07);
-}
-
-/* Places: state cards expand inline to show cities */
-.places-state-wrap { position: relative; }
-.places-state-cities {
-  display: none;
-  grid-column: 1 / -1;   /* span full row */
-  padding: 16px 0 8px;
-  animation: pEnter .25s ease;
-}
-.places-state-cities.open { display: block; }
-.cat-card.state-expanded::after { border-color: var(--gold) !important; }
-.cat-card.state-expanded .cat-card-bar {
-  background: linear-gradient(to top, rgba(20,14,0,0.92) 0%, transparent 100%);
-}
-
-/* ── Minimum font-size 14px on desktop ── */
-@media (min-width: 1025px) {
-  .cat-card-count, .gal-sub, .bc-sep, .footer-copy { font-size: 14px !important; }
-  .hdr-tab { font-size: 11px; }
+/* Each row */
+/* ── Minimum 14px text on desktop ── */
+@media (min-width: 768px) {
+  body, p, li, span, div, label, input, textarea, select, button {
+    font-size: max(var(--font-size, 1em), 14px);
+  }
+  .footer-copy, .lb-counter, .lb-copyright, .lb-hint,
+  .admin-note, .grid-item-info-text, .bar-btn-count {
+    font-size: max(11px, 14px) !important;
+  }
 }
 
 /* ══════════════════════════════════════════════════════
@@ -943,9 +912,6 @@ header {
   grid-template-columns: 1fr 1fr;
   gap: clamp(10px, 2vw, 20px);
   padding: clamp(14px, 3vw, 32px);
-}
-@media (max-width: 480px) {
-  .cat-grid { grid-template-columns: 1fr; }
 }
 .cat-card {
   position: relative;
@@ -1159,7 +1125,7 @@ header {
 
 .gal-header {
   padding: clamp(18px,3vw,42px) clamp(14px,4vw,44px) clamp(8px,1.5vw,18px);
-  border-bottom: 1px solid rgba(201,169,110,0.08);
+  border-bottom: 1px solid rgba(201,169,110,0.1);
 }
 .gal-breadcrumb {
   font-size: 9px; letter-spacing: 2px;
@@ -1204,12 +1170,12 @@ header {
 .gallery-wrap {
   width: 100%;
   display: flex; justify-content: center;
-  background: #1a1a1a;
+  background: rgba(255,255,255,0.06);  /* white gap color between cells */
 }
 .grid {
   display: grid;
   gap: 3px; padding: 3px;
-  background: #2a2a2a;
+  background: rgba(255,255,255,0.06);
   width: 100%;
   grid-template-columns: 1fr;
 }
@@ -1239,10 +1205,10 @@ header {
 */
 /* ── PHOTO GRID ITEMS ── */
 .grid-item {
-  background: #111;
+  background: var(--mid);
   cursor: pointer;
   max-width: 100vw;
-  overflow: hidden;
+  /* No overflow:hidden here — bar needs to sit outside */
 }
 .grid-item-photo {
   position: relative;
@@ -1290,10 +1256,43 @@ header {
   display: block;
 }
 
-/* ── ACTION BAR — removed, now in image modal ── */
-.grid-item-bar { display: none !important; }
+/* ── ACTION BAR — sits below the photo ── */
+.grid-item-bar {
+  width: 100%;
+  background: rgba(255,255,255,0.04);
+  border-top: 1px solid rgba(255,255,255,0.07);
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  padding: 4px 8px;
+  height: 28px;
+  box-sizing: border-box;
+}
+@media (min-width: 900px) {
+  .grid-item-bar { height: 30px; padding: 4px 10px; }
+}
+.bar-btn {
+  background: none; border: none;
+  color: rgba(255,255,255,0.45);
+  font-size: 13px; line-height: 1;
+  cursor: pointer; padding: 3px 6px; border-radius: 3px;
+  transition: color .2s, background .2s;
+  display: flex; align-items: center; gap: 4px;
+  font-family: 'Montserrat', sans-serif;
+}
+.bar-btn:hover { color: rgba(255,255,255,0.9); background: rgba(255,255,255,0.06); }
+.bar-btn.liked { color: #e04060; }
+.bar-btn-count {
+  font-size: 8px; letter-spacing: 0;
+  opacity: 0.8; min-width: 8px;
+}
+.bar-sep {
+  width: 1px; height: 14px;
+  background: rgba(255,255,255,0.1);
+  margin: 0 2px;
+}
 
-/* Like badge (legacy — hidden) */
+/* Like badge (legacy — hidden now, counts shown in bar) */
 .like-badge { display: none !important; }
 
 /* Right-click context menu */
@@ -1313,8 +1312,9 @@ header {
 }
 .ctx-item:hover { background: rgba(201,169,110,0.1); color: var(--gold); }
 .ctx-item.ctx-admin { color: rgba(201,169,110,0.6); }
-/* Edit Tags — always visible; prompts for password if not unlocked */
-#ctx-admin-item { display: flex; }
+/* Edit Tags hidden until admin unlocked */
+#ctx-admin-item { display: none; }
+.admin-unlocked #ctx-admin-item { display: flex; }
 .ctx-divider { height: 1px; background: rgba(201,169,110,0.12); }
 
 /* Admin tag editor modal */
@@ -1463,391 +1463,49 @@ header {
   #lightbox, #lb-image { visibility: hidden !important; background: #000 !important; }
 }
 
-/* ── COPYRIGHT BANNER — now inline, not fixed ── */
+/* ── COPYRIGHT BANNER ── */
 #copyright-banner {
-  display: none;
+  display: none; position: fixed;
+  bottom: 44px; left: 0; right: 0;
   background: rgba(8,8,8,0.95);
-  border-top: 1px solid rgba(201,169,110,0.1);
-  padding: 10px 12px; text-align: center;
+  border-top: 1px solid rgba(201,169,110,0.15);
+  padding: 6px 12px; text-align: center; z-index: 8990;
   font-size: 8px; letter-spacing: 2px;
-  color: rgba(201,169,110,0.6); text-transform: uppercase; line-height: 1.8;
+  color: rgba(201,169,110,0.75); text-transform: uppercase; line-height: 1.8;
 }
 #copyright-banner.visible { display: block; }
 
-/* ── FOOTER — scrollable, not fixed ── */
-
-/* ── PLACES FILTER PILLS ── */
-.places-filters {
-  display: flex; gap: 8px;
-  padding: clamp(14px,2.5vw,28px) clamp(14px,4vw,44px) 0;
-}
-.places-pill {
-  padding: 7px 20px;
-  font-family: 'Montserrat', sans-serif;
-  font-size: 9px; font-weight: 600; letter-spacing: 3px;
-  text-transform: uppercase;
-  color: rgba(255,255,255,0.5);
-  border: 1px solid rgba(255,255,255,0.15);
-  background: none; cursor: pointer; border-radius: 20px;
-  transition: all .2s;
-}
-.places-pill.active,
-.places-pill:hover {
-  color: var(--gold); border-color: rgba(201,169,110,0.6);
-  background: rgba(201,169,110,0.07);
-}
-
-/* ── 4-column grid for level 2+ (sub-categories, states, cities) ── */
-.cat-grid-4 {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: clamp(8px, 1.5vw, 16px);
-  padding: clamp(14px, 2.5vw, 28px) clamp(14px, 4vw, 44px);
-}
-@media (max-width: 900px) {
-  .cat-grid-4 { grid-template-columns: repeat(2, 1fr); }
-}
-@media (max-width: 480px) {
-  .cat-grid-4 { grid-template-columns: 1fr; }
-}
-
-/* Expand-in-place state section inside Places */
-.places-state-group {
-  margin-bottom: 2px;
-}
-.places-state-header {
-  /* Each state shows as a card, clicking expands cities below */
-}
-.places-state-cities {
-  display: none;
-  padding: 12px clamp(14px,4vw,44px) 20px;
-  background: rgba(0,0,0,0.3);
-  border-bottom: 1px solid rgba(201,169,110,0.07);
-}
-.places-state-cities.open { display: block; }
-.places-state-cities .cat-grid-4 { padding: 0; }
-
-/* State card with "expanded" indicator */
-.cat-card.state-card.expanded {
-  border-bottom: 2px solid var(--gold);
-}
-.cat-card.state-card.expanded .cat-card-bar {
-  background: linear-gradient(to top, rgba(20,14,0,0.92) 0%, transparent 100%);
-}
-
-/* ══════════════════════════════════════════════════════
-   IMAGE DETAIL MODAL — replaces lightbox for photo click
-   ══════════════════════════════════════════════════════ */
-#img-modal {
-  display: none; position: fixed; inset: 0; z-index: 9000;
-  background: rgba(0,0,0,0.96);
-  align-items: stretch; justify-content: center;
-}
-#img-modal.open { display: flex; }
-
-/* Left: image */
-.img-modal-photo {
-  flex: 1 1 0; min-width: 0;
-  display: flex; align-items: center; justify-content: center;
-  padding: clamp(40px,5vh,80px) clamp(12px,3vw,40px);
-  position: relative;
-}
-#img-modal-img {
-  max-width: 100%; max-height: 100%;
-  object-fit: contain; display: block;
-  user-select: none; -webkit-user-drag: none;
-}
-
-/* Prev/next arrows */
-.img-modal-nav {
-  position: absolute; top: 50%; transform: translateY(-50%);
-  background: rgba(0,0,0,0.4); border: none; cursor: pointer;
-  color: rgba(255,255,255,0.5); font-size: 24px;
-  width: 44px; height: 44px; border-radius: 50%;
-  display: flex; align-items: center; justify-content: center;
-  transition: color .2s, background .2s; z-index: 1;
-}
-.img-modal-nav:hover { color: var(--gold); background: rgba(0,0,0,0.7); }
-#img-modal-prev { left: 8px; }
-#img-modal-next { right: 8px; }
-
-/* Right panel: actions */
-.img-modal-panel {
-  width: clamp(220px, 28vw, 320px); flex-shrink: 0;
-  background: #0e0e0e;
-  border-left: 1px solid rgba(201,169,110,0.12);
-  display: flex; flex-direction: column;
-  padding: 0; position: relative;
-  overflow-y: auto;
-}
-.img-modal-close {
-  position: absolute; top: 12px; right: 14px;
-  background: rgba(0,0,0,0.5); border: 1px solid rgba(255,255,255,0.12);
-  cursor: pointer; color: rgba(255,255,255,0.6); font-size: 18px;
-  width: 34px; height: 34px; border-radius: 50%;
-  display: flex; align-items: center; justify-content: center;
-  transition: color .2s, border-color .2s; z-index: 10;
-}
-.img-modal-close:hover { color: var(--gold); border-color: var(--gold); }
-.img-modal-info {
-  padding: 16px 24px 24px;
-  border-bottom: 1px solid rgba(255,255,255,0.06);
-}
-.img-modal-counter {
-  font-size: 9px; letter-spacing: 3px; color: rgba(255,255,255,0.7);
-  text-transform: uppercase; margin-bottom: 8px; font-weight: 600;
-}
-.img-modal-title {
-  font-family: 'Montserrat', sans-serif;
-  font-size: 13px; letter-spacing: 1.5px; color: #fff;
-  text-transform: uppercase; line-height: 1.5; font-weight: 500;
-}
-.img-modal-subtitle {
-  font-size: 9px; letter-spacing: 2px; color: var(--gold);
-  text-transform: uppercase; margin-top: 4px; opacity: .7;
-}
-.img-modal-actions {
-  padding: 24px;
-  display: flex; flex-direction: column; gap: 12px;
-}
-.img-modal-like {
-  display: flex; align-items: center; gap: 10px;
-  background: none; border: 1px solid rgba(255,255,255,0.12);
-  color: rgba(255,255,255,0.55); cursor: pointer;
-  padding: 11px 16px; font-family: 'Montserrat', sans-serif;
-  font-size: 9px; letter-spacing: 3px; text-transform: uppercase;
-  transition: all .2s;
-}
-.img-modal-like:hover { border-color: var(--gold); color: var(--gold); }
-.img-modal-like.liked { border-color: var(--gold); color: var(--gold); background: rgba(201,169,110,0.1); }
-.img-modal-like .like-heart { font-size: 14px; }
-.like-count {
-  font-size: 11px; font-weight: 600; letter-spacing: 0;
-  margin-left: 4px; opacity: 0.85;
-}
-.img-modal-rq {
-  background: none; border: 1px solid rgba(201,169,110,0.5);
-  color: var(--gold); cursor: pointer;
-  padding: 12px 16px; font-family: 'Montserrat', sans-serif;
-  font-size: 9px; letter-spacing: 3px; text-transform: uppercase;
-  transition: background .2s, color .2s;
-}
-.img-modal-rq:hover { background: var(--gold); color: #000; }
-
-.img-modal-copyright {
-  margin-top: auto; padding: 20px 24px;
-  font-size: 7px; letter-spacing: 2px;
-  color: rgba(255,255,255,0.2); text-transform: uppercase; line-height: 1.8;
-}
-
-/* Loading spinner inside modal */
-#img-modal-spinner {
-  display: none; position: absolute;
-  width: 32px; height: 32px;
-  border: 2px solid rgba(201,169,110,0.15);
-  border-top-color: rgba(201,169,110,0.7);
-  border-radius: 50%;
-  animation: lb-spin 0.7s linear infinite;
-  pointer-events: none;
-}
-#img-modal.loading #img-modal-spinner { display: block; }
-
-/* Mobile: stack vertically */
-@media (max-width: 640px) {
-  #img-modal { flex-direction: column; }
-  .img-modal-photo { flex: 1 1 0; padding: 56px 8px 8px; }
-  .img-modal-panel {
-    width: 100%; flex-shrink: 0; max-height: 45vh;
-    border-left: none; border-top: 1px solid rgba(201,169,110,0.12);
-  }
-  .img-modal-actions { flex-direction: row; padding: 16px; }
-  .img-modal-like, .img-modal-rq { flex: 1; justify-content: center; }
-  .img-modal-copyright { display: none; }
-  /* Force gold on mobile — override any OS default button colour */
-  .img-modal-like { color: rgba(255,255,255,0.55) !important; border-color: rgba(255,255,255,0.2) !important; }
-  .img-modal-like:hover, .img-modal-like.liked { color: var(--gold) !important; border-color: var(--gold) !important; }
-  .like-heart { color: inherit !important; }
-}
-
-/* ══════════════════════════════════════════════════════
-   REQUEST QUOTE — full page (not modal overlay)
-   ══════════════════════════════════════════════════════ */
-#rq-modal {
-  display: none; position: fixed; inset: 0; z-index: 9100;
-  background: #080808;
-  overflow-y: auto;
-  padding-top: 0;
-}
-#rq-modal.open { display: block; }
-#rq-box {
-  max-width: 600px; margin: 0 auto;
-  padding: clamp(60px,10vh,100px) clamp(24px,5vw,48px) 80px;
-  min-height: 100vh;
-}
-.rq-back {
-  display: inline-flex; align-items: center; gap: 8px;
-  background: none; border: none; cursor: pointer;
-  font-family: 'Montserrat', sans-serif;
-  font-size: 9px; letter-spacing: 3px; text-transform: uppercase;
-  color: rgba(255,255,255,0.4); margin-bottom: 40px;
-  padding: 0; transition: color .2s;
-}
-.rq-back:hover { color: var(--gold); }
-.rq-title {
-  font-family: 'Cormorant Garamond', serif;
-  font-size: clamp(28px,5vw,44px); letter-spacing: 6px; text-transform: uppercase;
-  color: #fff; margin-bottom: 6px; font-weight: 300; line-height: 1.1;
-}
-.rq-subtitle {
-  font-size: 9px; letter-spacing: 2px; text-transform: uppercase;
-  color: rgba(255,255,255,0.35); margin-bottom: 36px;
-}
-/* Step indicator */
-.rq-steps {
-  display: flex; align-items: center; gap: 12px;
-  margin-bottom: 32px;
-  padding-bottom: 24px;
-  border-bottom: 1px solid rgba(255,255,255,0.07);
-}
-.rq-step {
-  display: flex; align-items: center; gap: 10px;
-  font-family: 'Montserrat', sans-serif;
-  font-size: 9px; letter-spacing: 2px; text-transform: uppercase;
-  color: rgba(255,255,255,0.3); white-space: nowrap;
-}
-.rq-step.active { color: var(--gold); }
-.rq-step.done { color: rgba(201,169,110,0.5); }
-.rq-step-num {
-  width: 22px; height: 22px; border-radius: 50%;
-  border: 1px solid currentColor;
-  display: flex; align-items: center; justify-content: center;
-  font-size: 9px; flex-shrink: 0;
-}
-.rq-step-sep {
-  flex: 1; height: 1px; background: rgba(255,255,255,0.12);
-}
-.rq-step-line { flex: 1; height: 1px; background: rgba(255,255,255,0.1); margin: 0 12px; }
-
-/* Step 1: Size selection */
-.rq-size-grid {
-  display: grid; grid-template-columns: 1fr 1fr;
-  gap: 10px; margin-bottom: 24px;
-}
-.rq-size-card {
-  border: 1px solid rgba(255,255,255,0.12);
-  padding: 14px 16px; cursor: pointer;
-  transition: border-color .2s, background .2s;
-}
-.rq-size-card:hover { border-color: rgba(201,169,110,0.4); }
-.rq-size-card.selected {
-  border-color: var(--gold); background: rgba(201,169,110,0.08);
-}
-.rq-size-name {
-  font-family: 'Cormorant Garamond', serif;
-  font-size: 18px; letter-spacing: 1px; color: #fff;
-}
-.rq-size-dims {
-  font-size: 9px; letter-spacing: 1px;
-  color: rgba(255,255,255,0.75); margin-top: 4px; line-height: 1.7;
-}
-.rq-size-edition {
-  font-size: 7px; letter-spacing: 2px;
-  color: var(--gold); text-transform: uppercase; margin-top: 4px; opacity: .7;
-}
-
-/* Step 2: Contact details */
-.rq-field { margin-bottom: 16px; }
-.rq-field label {
-  display: block; font-size: 8px; letter-spacing: 3px;
-  text-transform: uppercase; color: rgba(255,255,255,0.35); margin-bottom: 6px;
-}
-.rq-field input, .rq-field textarea {
-  width: 100%; background: rgba(255,255,255,0.04);
-  border: 1px solid rgba(201,169,110,0.15);
-  color: #fff; padding: 11px 14px;
-  font-family: 'Montserrat', sans-serif; font-size: 13px;
-  outline: none; transition: border-color .2s;
-  -webkit-appearance: none;
-}
-.rq-field input:focus, .rq-field textarea:focus { border-color: var(--gold); }
-.rq-field textarea { min-height: 80px; resize: vertical; }
-
-.rq-nav {
-  display: flex; justify-content: space-between; gap: 12px;
-  margin-top: 24px; align-items: stretch;
-}
-.btn-ghost {
-  background: none; border: 1px solid rgba(255,255,255,0.15);
-  color: rgba(255,255,255,0.5); padding: 0 24px; height: 44px;
-  font-family: 'Montserrat', sans-serif;
-  font-size: 9px; letter-spacing: 3px; text-transform: uppercase;
-  cursor: pointer; transition: all .2s;
-  display: inline-flex; align-items: center; justify-content: center;
-}
-.btn-ghost:hover { border-color: rgba(255,255,255,0.3); color: rgba(255,255,255,0.8); }
-
-/* ── COPYRIGHT BANNER — inline in gallery flow ── */
-#copyright-banner {
-  display: none;
-  background: rgba(8,8,8,0.95);
-  border-top: 1px solid rgba(201,169,110,0.08);
-  padding: 10px 12px; text-align: center;
-  font-size: 9px; letter-spacing: 2px;
-  color: rgba(201,169,110,0.5); text-transform: uppercase; line-height: 1.8;
-}
-#copyright-banner.visible { display: block; }
-
-/* ── SUBPANEL HEADER — category description at top of Level 2 panels ── */
-.subpanel-header {
-  padding: clamp(24px,4vw,48px) clamp(14px,4vw,44px) 0;
-}
-.subpanel-title {
-  font-family: 'Cormorant Garamond', serif;
-  font-size: clamp(28px, 5vw, 52px);
-  font-weight: 600; letter-spacing: clamp(4px,1vw,8px);
-  text-transform: uppercase; color: #fff; line-height: 1.1;
-  margin-bottom: 8px;
-}
-.subpanel-desc {
-  font-size: clamp(11px,1.4vw,13px); letter-spacing: 2px;
-  color: rgba(255,255,255,0.4); text-transform: uppercase;
-  margin-bottom: 0; font-family: 'Montserrat', sans-serif;
-}
-
-/* ── FOOTER — non-persistent, scrollable at page bottom ── */
+/* ── FOOTER ── */
 footer {
-  position: relative;   /* NOT fixed */
-  background: #0a0a0a;
-  border-top: 1px solid rgba(201,169,110,0.12);
-  padding: 48px clamp(20px,6vw,80px) 40px;
+  position: fixed; bottom: 0; left: 0; right: 0;
+  height: 48px; background: rgba(8,8,8,0.98);
+  border-top: 1px solid rgba(201,169,110,0.18);
+  z-index: 9000;
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0 clamp(10px,4vw,36px);
 }
-.footer-inner {
-  max-width: 860px; margin: 0 auto;
-  display: grid; grid-template-columns: 1fr 1fr;
-  gap: 40px 60px;
-}
-@media (max-width: 600px) {
-  .footer-inner { grid-template-columns: 1fr; gap: 28px; }
-}
-.footer-section-title {
-  font-family: 'Cormorant Garamond', serif;
-  font-size: 16px; letter-spacing: 4px;
-  color: var(--gold); text-transform: uppercase;
-  margin-bottom: 14px;
-}
-.footer-section-body {
-  font-size: 12px; letter-spacing: 0.5px; line-height: 1.9;
-  color: rgba(255,255,255,0.38);
-  font-family: 'Montserrat', sans-serif;
-}
-.footer-section-body p { margin-bottom: 10px; }
-.footer-section-body strong { color: rgba(255,255,255,0.55); font-weight: 600; }
 .footer-copy {
-  grid-column: 1 / -1;
-  border-top: 1px solid rgba(255,255,255,0.05);
-  padding-top: 20px;
-  font-size: 10px; letter-spacing: 2px;
-  color: rgba(255,255,255,0.2); text-align: center;
+  font-size: 8px; letter-spacing: 2px;
+  color: rgba(255,255,255,0.55);   /* visible on dark background */
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.footer-links { display: flex; gap: 6px; flex-shrink: 0; }
+.footer-link {
+  font-size: 9px; font-weight: 600; letter-spacing: 2px;
+  color: rgba(255,255,255,0.75);
+  text-transform: uppercase;
+  cursor: pointer; border: none;
+  background: rgba(255,255,255,0.06);
+  border-radius: 3px;
+  padding: 0 12px;
+  font-family: 'Montserrat', sans-serif;
+  height: 32px; display: flex; align-items: center;
+  transition: color .2s, background .2s;
+  white-space: nowrap;
+}
+.footer-link:hover, .footer-link:active {
+  color: var(--gold);
+  background: rgba(201,169,110,0.12);
 }
 
 /* ── PAGE TRANSITIONS ── */
@@ -1952,6 +1610,7 @@ footer {
                         gallery_blocks += (
                             '\n<div class="section-block" id="' + city_id + '">'
                             '\n  <div class="gal-header">'
+                            '<button class="gal-breadcrumb" onclick="showSection(\'' + state_id + '\',\'' + grp_id + '\')">&larr; Back to ' + state + '</button>'
                             '<div class="gal-title">' + city + '</div>'
                             '<div class="gal-sub">' + state + ' &middot; ' + group + ' &middot; ' + str(len(city_paths)) + ' Photos</div>'
                             '</div>'
@@ -1963,10 +1622,11 @@ footer {
                     gallery_blocks += (
                         '\n<div class="section-block" id="' + state_id + '">'
                         '\n  <div class="gal-header">'
+                        '<button class="gal-breadcrumb" onclick="showSection(\'' + grp_id + '\',\'sub-Places\')">&larr; Back to ' + group + '</button>'
                         '<div class="gal-title">' + state + '</div>'
                         '<div class="gal-sub">' + group + ' &middot; ' + str(len(state_all)) + ' Photos</div>'
                         '</div>'
-                        '\n  <div class="cat-grid-4">' + city_tiles_html + '\n  </div>'
+                        '\n  <div class="cat-grid">' + city_tiles_html + '\n  </div>'
                         '\n</div>'
                     )
 
@@ -1974,10 +1634,11 @@ footer {
                 gallery_blocks += (
                     '\n<div class="section-block" id="' + grp_id + '">'
                     '\n  <div class="gal-header">'
+                    '<button class="gal-breadcrumb" onclick="openSubNav(\'Places\')">&larr; Back to Places</button>'
                     '<div class="gal-title">' + group + '</div>'
                     '<div class="gal-sub">' + str(len(grp_all)) + ' Photos</div>'
                     '</div>'
-                    '\n  <div class="cat-grid-4">' + state_tiles_html + '\n  </div>'
+                    '\n  <div class="cat-grid">' + state_tiles_html + '\n  </div>'
                     '\n</div>'
                 )
 
@@ -1995,6 +1656,7 @@ footer {
                 gallery_blocks += (
                     '\n<div class="section-block" id="' + s_id + '">'
                     '\n  <div class="gal-header">'
+                    '<button class="gal-breadcrumb" onclick="openSubNav(currentCat)">&larr; Back to ' + m_cat + '</button>'
                     '<div class="gal-title">' + s_cat + '</div>'
                     '<div class="gal-sub">' + m_cat + ' &middot; ' + str(len(orig_paths)) + ' Photos</div>'
                     '</div>'
@@ -2015,6 +1677,7 @@ footer {
             gallery_blocks += (
                 '\n<div class="section-block" id="' + s_id + '">'
                 '\n  <div class="gal-header">'
+                '<button class="gal-breadcrumb" onclick="goHome()">&larr; Home</button>'
                 '<div class="gal-title">' + m_cat + '</div>'
                 '<div class="gal-sub">' + str(len(orig_paths)) + ' Photos</div>'
                 '</div>'
@@ -2040,57 +1703,12 @@ footer {
                 '</div>'
                 '\n</div>'
             )
-
-        if m_cat == "Places":
-            # Places gets a description header + filter pills for National/International
-            # Split sub_items into National and International groups
-            nat_cards = ""
-            intl_cards = ""
-            for item in sub_items:
-                cnt = str(item["count"]) + " Photos" if item["count"] else "Coming Soon"
-                cover = item.get("cover", "")
-                card_html = (
-                    '\n<div class="cat-card" onclick="showGallery(\'' + item['id'] + '\')">'
-                    + (
-                        '<img class="cat-card-img" src="' + cover + '" loading="lazy" decoding="async" alt="">'
-                        if cover else
-                        '<div class="cat-card-placeholder"><span>Coming<br>Soon</span></div>'
-                    ) +
-                    '<div class="cat-card-bar">'
-                    '<div class="cat-card-name">' + item['name'] + '</div>'
-                    '<div class="cat-card-count">' + cnt + '</div>'
-                    '</div>'
-                    '\n</div>'
-                )
-                if item['name'] == 'National':
-                    nat_cards = card_html
-                elif item['name'] == 'International':
-                    intl_cards = card_html
-
-            sub_panels += (
-                '\n<div class="sub-panel" id="subpanel-Places">'
-                '\n<div class="subpanel-header">'
-                '<div class="subpanel-title">Places</div>'
-                '<div class="subpanel-desc">Photographs from around India and the world</div>'
-                '</div>'
-                '\n<div class="places-filters">'
-                '<button class="places-pill active" data-group="National" onclick="setPlacesFilter(\'National\')">National</button>'
-                '<button class="places-pill" data-group="International" onclick="setPlacesFilter(\'International\')">International</button>'
-                '</div>'
-                '\n<div class="places-group-section cat-grid-4" data-group="National">' + nat_cards + '\n</div>'
-                '\n<div class="places-group-section cat-grid-4" data-group="International" style="display:none">' + intl_cards + '\n</div>'
-                '\n</div>'
-            )
-        else:
-            sub_panels += (
-                '\n<div class="sub-panel" id="subpanel-' + m_cat + '">'
-                '\n<div class="subpanel-header">'
-                '<div class="subpanel-title">' + m_cat + '</div>'
-                '</div>'
-                '\n<div class="cat-grid-4">'
-                + sub_tiles_html
-                + '\n</div>\n</div>'
-            )
+        sub_panels += (
+            '\n<div class="sub-panel" id="subpanel-' + m_cat + '">'
+            '\n<div class="cat-grid">'
+            + sub_tiles_html
+            + '\n</div>\n</div>'
+        )
 
     # ── MAIN CATEGORY TILES ───────────────────────────────────────────────────
     cat_tiles_html = ""
@@ -2195,12 +1813,14 @@ footer {
     js = """
 /* ══════════════════════════════════════════════════════
    NAVIGATION — single source of truth
+   All visibility is controlled ONLY via classList.
+   Never mix style.display with classList on same element.
    ══════════════════════════════════════════════════════ */
 var currentCat     = null;
 var currentSection = null;
 var currentParent  = null;
-var currentFilter  = 'National'; /* Places filter pill */
 
+/* IDs that use classList 'visible' for show/hide */
 var NAV_PANELS = ['tile-nav', 'sub-nav', 'gallery-container'];
 
 function hideAll(){
@@ -2213,96 +1833,53 @@ function hideAll(){
   document.querySelectorAll('.info-page').forEach(function(p){ p.classList.remove('visible'); });
   document.querySelectorAll('.sub-panel').forEach(function(p){ p.classList.remove('active'); });
   document.querySelectorAll('.section-block').forEach(function(b){ b.classList.remove('visible'); });
-  setActiveTab(null);
-}
-
-function setActiveTab(which){
-  document.querySelectorAll('.hdr-tab').forEach(function(t){ t.classList.remove('active'); });
-  if(which){ var t=document.getElementById('tab-'+which); if(t) t.classList.add('active'); }
 }
 
 function goHome(){
   hideAll();
   document.getElementById('hero').classList.add('visible');
   document.getElementById('tile-nav').classList.add('visible','page-enter');
-  setActiveTab('home');
   window.scrollTo(0,0);
+}
+
+function goCollections(){
+  goHome();
+  setTimeout(function(){
+    var tn = document.getElementById('tile-nav');
+    if(tn) tn.scrollIntoView({behavior:'smooth', block:'start'});
+  }, 60);
 }
 
 function openCategory(cat){
   currentCat = cat; hideAll();
   var sn = document.getElementById('sub-nav');
   if(sn) sn.classList.add('visible','page-enter');
-  /* Update breadcrumb */
-  updateBreadcrumb([{label:'Home',fn:'goHome()'}, {label:cat}]);
+  var lbl = document.getElementById('bc-label');
+  if(lbl) lbl.textContent = cat;
   var p = document.getElementById('subpanel-'+cat);
   if(p) p.classList.add('active');
-  setActiveTab('collections');
   window.scrollTo(0,0);
 }
 
 function openSubNav(cat){ openCategory(cat); }
 
-function showGallery(id, breadcrumbs){
+function showGallery(id){
   hideAll();
   var gc = document.getElementById('gallery-container');
   if(gc) gc.classList.add('visible','page-enter');
   var b = document.getElementById(id);
   if(b) b.classList.add('visible');
   document.getElementById('copyright-banner').classList.add('visible');
-  if(breadcrumbs){ updateBreadcrumb(breadcrumbs); }
-  else {
-    /* Auto-build breadcrumb — direct-X means top-level category */
-    var crumbs = [{label:'Home',fn:'goHome()'}];
-    if(id.indexOf('direct-')===0){
-      /* Top-level direct gallery — no parent category in breadcrumb */
-      var cat = id.replace('direct-','');
-      currentCat = cat;
-      var block = document.getElementById(id);
-      if(block){
-        var titleEl = block.querySelector('.gal-title');
-        if(titleEl) crumbs.push({label: titleEl.textContent});
-      }
-    } else {
-      if(currentCat) crumbs.push({label:currentCat,fn:"openCategory('"+currentCat+"')"});
-      var block = document.getElementById(id);
-      if(block){
-        var titleEl = block.querySelector('.gal-title');
-        if(titleEl) crumbs.push({label: titleEl.textContent});
-      }
-    }
-    updateBreadcrumb(crumbs);
-  }
-  setActiveTab('collections');
   window.scrollTo(0,0);
 }
 
-function showSection(targetId, parentId, breadcrumbs){
+function showSection(targetId, parentId){
+  /* Used for Places hierarchy: National→State→City */
   hideAll();
   var gc = document.getElementById('gallery-container');
   if(gc) gc.classList.add('visible');
   var el = document.getElementById(targetId);
   if(el){ el.classList.add('visible'); currentSection=targetId; currentParent=parentId; }
-  if(breadcrumbs) updateBreadcrumb(breadcrumbs);
-  else {
-    /* Auto-build breadcrumb */
-    var crumbs = [{label:'Home',fn:'goHome()'}];
-    if(currentCat) crumbs.push({label:currentCat,fn:"openCategory('"+currentCat+"')"});
-    if(parentId){
-      var parentEl = document.getElementById(parentId);
-      if(parentEl){
-        var parentTitle = parentEl.querySelector('.gal-title');
-        var parentTxt = parentTitle ? parentTitle.textContent : parentId;
-        crumbs.push({label:parentTxt, fn:"showSection('"+parentId+"',null)"});
-      }
-    }
-    if(el){
-      var titleEl = el.querySelector('.gal-title');
-      if(titleEl) crumbs.push({label: titleEl.textContent});
-    }
-    updateBreadcrumb(crumbs);
-  }
-  setActiveTab('collections');
   window.scrollTo(0,0);
 }
 
@@ -2310,70 +1887,21 @@ function showInfoPage(id){
   hideAll();
   var pg = document.getElementById(id);
   if(pg){ pg.classList.add('visible'); window.scrollTo(0,0); }
-  if(id==='page-about') setActiveTab('about');
-}
-
-/* ── Breadcrumb ── */
-function updateBreadcrumb(crumbs){
-  /* crumbs: [{label:'Home', fn:'goHome()'}, {label:'Places'}, ...] */
-  ['bc-bar','gal-bc-bar'].forEach(function(barId){
-    var bar = document.getElementById(barId);
-    if(!bar) return;
-    bar.innerHTML = '';
-    crumbs.forEach(function(c, i){
-      if(i > 0){
-        var sep = document.createElement('span');
-        sep.className = 'bc-sep'; sep.textContent = '/';
-        bar.appendChild(sep);
-      }
-      if(c.fn && i < crumbs.length-1){
-        var btn = document.createElement('button');
-        btn.className = 'bc-back'; btn.textContent = c.label;
-        btn.setAttribute('onclick', c.fn);
-        bar.appendChild(btn);
-      } else {
-        var sp = document.createElement('span');
-        sp.className = 'bc-current'; sp.textContent = c.label;
-        bar.appendChild(sp);
-      }
-    });
-  });
 }
 
 NAV_PANELS.forEach(function(id){
   var el = document.getElementById(id);
   if(el) el.addEventListener('animationend', function(){ this.classList.remove('page-enter'); });
 });
-
-/* ── scrollToCollections: scroll down to tile-nav from hero ── */
-function scrollToCollections(){
-  var tn=document.getElementById('tile-nav');
-  if(tn && tn.classList.contains('visible')){
-    tn.scrollIntoView({behavior:'smooth', block:'start'});
-  } else {
-    /* If not on home, go home first then scroll */
-    goHome();
-    setTimeout(function(){
-      var t=document.getElementById('tile-nav');
-      if(t) t.scrollIntoView({behavior:'smooth', block:'start'});
-    }, 400);
-  }
-}
-
-/* ── Hero slideshow ── */
 (function(){
   var thumbs = """ + slides_json + """;
   var hero   = document.getElementById('hero');
   if (!thumbs.length) return;
-  var caption = hero.querySelector('.hero-caption');
-  var imgs = thumbs.map(function(src, i){
+  var imgs = thumbs.map(function(src){
     var img = document.createElement('img');
     img.src=src; img.className='slide';
-    img.loading= i===0 ? 'eager' : 'lazy';
-    img.decoding='async'; img.alt='';
-    /* Insert before caption so slides go behind text */
-    hero.insertBefore(img, caption);
-    return img;
+    img.loading='lazy'; img.decoding='async'; img.alt='';
+    hero.prepend(img); return img;
   });
   var cur=0; imgs[0].classList.add('active');
   setInterval(function(){
@@ -2383,289 +1911,194 @@ function scrollToCollections(){
   },3000);
 })();
 
-/* ── Mobile menu ── */
-function openMobileMenu(){
-  document.getElementById('mobile-menu').classList.add('open');
-  document.body.style.overflow='hidden';
-}
-function closeMobileMenu(){
-  document.getElementById('mobile-menu').classList.remove('open');
-  document.body.style.overflow='';
-}
-function mobToggleCollections(){
-  var sub = document.getElementById('mob-collections-sub');
-  if(sub) sub.classList.toggle('open');
+/* ── RIGHT DRAWER — Collections ── */
+var navDrawer = document.getElementById('nav-drawer');
+var overlay   = document.getElementById('drawer-overlay');
+
+function openNavDrawer(){ navDrawer.classList.add('open'); overlay.classList.add('open'); document.body.style.overflow='hidden'; }
+function closeNavDrawer(){ navDrawer.classList.remove('open'); overlay.classList.remove('open'); document.body.style.overflow=''; }
+function toggleDnavCat(id){
+  var row=document.getElementById(id), subs=document.getElementById('subs-'+id);
+  if(!subs) return;
+  var open=subs.classList.contains('open');
+  document.querySelectorAll('.dnav-subs.open').forEach(function(el){ el.classList.remove('open'); });
+  document.querySelectorAll('.dnav-cat.expanded').forEach(function(el){ el.classList.remove('expanded'); });
+  if(!open){ subs.classList.add('open'); row.classList.add('expanded'); }
 }
 
-/* ── Collections dropdown ── */
-function toggleCollectionsDD(e){
-  e.stopPropagation();
-  var tab = document.getElementById('tab-collections');
-  if(tab) tab.classList.toggle('dd-open');
-}
-function closeCollectionsDD(){
-  var tab = document.getElementById('tab-collections');
-  if(tab) tab.classList.remove('dd-open');
-}
-/* Close dropdown when clicking outside */
-document.addEventListener('click', function(e){
-  if(!e.target.closest('#tab-collections')) closeCollectionsDD();
-});
+/* ── LEFT DRAWER — About ── */
+var aboutDrawer = document.getElementById('about-drawer');
+function openAboutDrawer(){ aboutDrawer.classList.add('open'); overlay.classList.add('open'); document.body.style.overflow='hidden'; }
+function closeAboutDrawer(){ aboutDrawer.classList.remove('open'); overlay.classList.remove('open'); document.body.style.overflow=''; }
 
-/* ── Stub drawer functions (kept to avoid JS errors from any old refs) ── */
-function openNavDrawer(){}
-function closeNavDrawer(){}
-function openAboutDrawer(){}
-function closeAboutDrawer(){}
-function toggleDnavCat(){}
+overlay.addEventListener('click', function(){ closeNavDrawer(); closeAboutDrawer(); });
 
-/* ── Places filter pills ── */
-function setPlacesFilter(group){
-  currentFilter = group;
-  document.querySelectorAll('.places-pill').forEach(function(p){
-    p.classList.toggle('active', p.getAttribute('data-group')===group);
-  });
-  document.querySelectorAll('.places-group-section').forEach(function(s){
-    s.style.display = s.getAttribute('data-group')===group ? '' : 'none';
-  });
-  /* collapse any expanded state cards */
-  document.querySelectorAll('.places-state-cities.open').forEach(function(el){
-    el.classList.remove('open');
-  });
-  document.querySelectorAll('.cat-card.state-expanded').forEach(function(c){
-    c.classList.remove('state-expanded');
-  });
-}
+/* ── Lightbox ── */
+var lbImages=[], lbFullImages=[], lbIdx=0;
+var lb        = document.getElementById('lightbox');
+var lbImg     = document.getElementById('lb-image');
+var lbCtr     = document.getElementById('lb-counter');
+var lbDisplay = document.getElementById('lb-canvas-display');
+var lbPreloadCache = {};
+var lbCurrentLoad  = null;  /* tracks the active Image() load so we can cancel on fast navigation */
 
-/* ── Places state card expand/collapse ── */
-function toggleStateCard(card, citiesId){
-  var cities = document.getElementById(citiesId);
-  if(!cities) return;
-  var isOpen = cities.classList.contains('open');
-  /* Close all other open state sections */
-  document.querySelectorAll('.places-state-cities.open').forEach(function(el){
-    el.classList.remove('open');
-  });
-  document.querySelectorAll('.cat-card.state-expanded').forEach(function(c){
-    c.classList.remove('state-expanded');
-  });
-  if(!isOpen){
-    cities.classList.add('open');
-    card.classList.add('state-expanded');
+function lbShow(src, thumbSrc){
+  /* Cancel any in-progress load */
+  if(lbCurrentLoad){ lbCurrentLoad.onload = null; lbCurrentLoad.onerror = null; lbCurrentLoad = null; }
+
+  /* Always show thumbnail instantly — guaranteed non-blank */
+  if(thumbSrc){
+    lbImg.src = thumbSrc;
+    lbImg.style.opacity = '1';
   }
-}
 
-/* ══════════════════════════════════════════════════════
-   IMAGE DETAIL MODAL
-   ══════════════════════════════════════════════════════ */
-var imgModalImages=[], imgModalFullImages=[], imgModalIdx=0;
-var imgModal      = document.getElementById('img-modal');
-var imgModalImg   = document.getElementById('img-modal-img');
-var imgModalCtr   = document.getElementById('img-modal-counter');
-var imgModalTitle = document.getElementById('img-modal-title');
-var imgModalSub   = document.getElementById('img-modal-subtitle');
-var imgModalLike  = document.getElementById('img-modal-like-btn');
-var imgCurrentLoad = null;
-var imgPreloadCache = {};
-
-function imgShow(src, thumbSrc){
-  if(imgCurrentLoad){ imgCurrentLoad.onload=null; imgCurrentLoad.onerror=null; imgCurrentLoad=null; }
-  if(thumbSrc){ imgModalImg.src=thumbSrc; imgModal.classList.remove('loading'); }
-  var cached=imgPreloadCache[src];
-  if(cached && cached.complete && cached.naturalWidth>0){
-    imgModalImg.src=src; imgModal.classList.remove('loading');
-    imgPreloadAdj(); return;
+  /* If full image already in cache, swap immediately */
+  var cached = lbPreloadCache[src];
+  if(cached && cached.complete && cached.naturalWidth > 0){
+    lbImg.src = src;
+    lbImg.style.opacity = '1';
+    lb.classList.remove('loading');
+    lbPreloadAdjacent();
+    return;
   }
-  imgModal.classList.add('loading');
-  var full=new Image();
-  imgCurrentLoad=full;
-  full.onload=function(){
-    if(imgCurrentLoad!==full) return;
-    imgPreloadCache[src]=full; imgCurrentLoad=null;
-    imgModalImg.src=src; imgModal.classList.remove('loading');
-    imgPreloadAdj();
+
+  /* Load full image in background */
+  lb.classList.add('loading');
+  var full = new Image();
+  lbCurrentLoad = full;
+  full.onload = function(){
+    if(lbCurrentLoad !== full) return;  /* superseded */
+    lbPreloadCache[src] = full;
+    lbCurrentLoad = null;
+    lbImg.src = src;
+    lbImg.style.opacity = '1';
+    lb.classList.remove('loading');
+    lbPreloadAdjacent();
   };
-  full.onerror=function(){ if(imgCurrentLoad!==full) return; imgCurrentLoad=null; imgModal.classList.remove('loading'); };
-  imgPreloadCache[src]=full; full.src=src;
+  full.onerror = function(){
+    if(lbCurrentLoad !== full) return;
+    lbCurrentLoad = null;
+    lb.classList.remove('loading');
+  };
+  lbPreloadCache[src] = full;
+  full.src = src;
 }
 
-function imgPreloadAdj(){
-  [-1,1].forEach(function(d){
-    var idx=(imgModalIdx+d+imgModalFullImages.length)%imgModalFullImages.length;
-    var s=imgModalFullImages[idx];
-    if(s&&!imgPreloadCache[s]){ var i=new Image(); i.src=s; imgPreloadCache[s]=i; }
+function lbPreloadAdjacent(){
+  [-1, 1].forEach(function(dir){
+    var idx = (lbIdx + dir + lbFullImages.length) % lbFullImages.length;
+    var src = lbFullImages[idx];
+    if(src && !lbPreloadCache[src]){
+      var img = new Image();
+      img.src = src;
+      lbPreloadCache[src] = img;
+    }
   });
 }
 
-var imgModalItems=[];   /* current grid's .grid-item elements */
+function lbAddWatermark(ctx, w, h){
+  var fontSize = Math.max(32, Math.floor(w * 0.09));
+  ctx.save();
+  ctx.translate(w/2, h/2);
+  ctx.rotate(-Math.PI / 5);
+  ctx.font = 'bold ' + fontSize + 'px "Cormorant Garamond", Georgia, serif';
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  ctx.shadowColor   = 'rgba(0,0,0,0.2)';
+  ctx.shadowBlur    = fontSize * 0.15;
+  ctx.shadowOffsetX = fontSize * 0.03;
+  ctx.shadowOffsetY = fontSize * 0.03;
+  ctx.fillStyle = 'rgba(255,255,255,0.18)';
+  ctx.fillText('MOHANGRAPHY', 0, 0);
+  ctx.restore();
+}
 
-function openImgModal(el){
-  var grid=el.closest('.grid'); if(!grid) return;
-  imgModalItems=Array.from(grid.querySelectorAll('.grid-item'));
-  var imgEls=Array.from(grid.querySelectorAll('.grid-item-photo img'));
-  imgModalFullImages=imgEls.map(function(i){ return i.getAttribute('data-full')||i.src; });
-  imgModalImages=imgEls.map(function(i){ return i.src; });
-  imgModalIdx=imgModalItems.indexOf(el); if(imgModalIdx<0) imgModalIdx=0;
-  imgModal.classList.add('open');
+function openLightbox(el){
+  var grid = el.closest('.grid');
+  if(!grid) return;
+  var items  = Array.from(grid.querySelectorAll('.grid-item'));
+  var imgEls = Array.from(grid.querySelectorAll('.grid-item-photo img'));
+  lbFullImages = imgEls.map(function(i){ return i.getAttribute('data-full')||i.src; });
+  lbImages     = imgEls.map(function(i){ return i.src; });
+  lbIdx = items.indexOf(el);
+  if(lbIdx<0) lbIdx=0;
+  lb.classList.add('open');
   document.body.style.overflow='hidden';
-  updateImgModal();
+  lbShow(lbFullImages[lbIdx]||'', lbImages[lbIdx]||'');
+  lbCtr.textContent = (lbIdx+1)+' / '+lbImages.length;
 }
-
-function updateImgModal(){
-  imgShow(imgModalFullImages[imgModalIdx], imgModalImages[imgModalIdx]);
-  if(imgModalCtr) imgModalCtr.textContent=(imgModalIdx+1)+' / '+imgModalImages.length;
-  /* Use the stored items from the current gallery — not a page-wide query */
-  var item=imgModalItems[imgModalIdx];
-  var key=item?item.getAttribute('data-photo'):'';
-  if(imgModalLike){
-    if(localLikes&&localLikes[key]){imgModalLike.classList.add('liked');}
-    else{imgModalLike.classList.remove('liked');}
-    imgModalLike.setAttribute('data-key', key||'');
-  }
-  /* Title from remarks + city of THIS photo */
-  if(item){
-    var rem=item.getAttribute('data-remarks')||'';
-    var city=item.getAttribute('data-city')||'';
-    var state=item.getAttribute('data-state')||'';
-    if(imgModalTitle) imgModalTitle.textContent=rem||'Untitled';
-    if(imgModalSub) imgModalSub.textContent=[city,state].filter(Boolean).join(' · ')||'';
-  }
-  /* Fetch live like count from Supabase */
-  var countEl=document.getElementById('img-modal-like-count');
-  if(countEl) countEl.textContent='';
-  if(key && SUPA_URL && SUPA_URL!=='NONE'){
-    supaRequest('GET','likes?photo=eq.'+encodeURIComponent(key)+'&select=photo,count')
-      .then(function(rows){
-        var n=rows&&rows[0]?parseInt(rows[0].count)||0:0;
-        if(countEl && n>0) countEl.textContent=n;
-      }).catch(function(){});
-  }
-}
-
-function closeImgModal(){
-  if(imgCurrentLoad){imgCurrentLoad.onload=null;imgCurrentLoad.onerror=null;imgCurrentLoad=null;}
-  imgModal.classList.remove('open','loading');
+function closeLightbox(){
+  if(lbCurrentLoad){ lbCurrentLoad.onload = null; lbCurrentLoad.onerror = null; lbCurrentLoad = null; }
+  lb.classList.remove('open','loading');
   document.body.style.overflow='';
-  imgModalImg.src='';
+  /* Reset image so no stale image on next open */
+  lbImg.src = '';
+  lbImg.style.opacity = '1';
 }
-
-function imgStep(dir){
-  imgModalIdx=(imgModalIdx+dir+imgModalFullImages.length)%imgModalFullImages.length;
-  updateImgModal();
+function lbStep(dir){
+  lbIdx=(lbIdx+dir+lbFullImages.length)%lbFullImages.length;
+  lbShow(lbFullImages[lbIdx], lbImages[lbIdx]);
+  lbCtr.textContent=(lbIdx+1)+' / '+lbFullImages.length;
 }
-
-/* Touch swipe for image modal */
-var imTsX=null;
-imgModal.addEventListener('touchstart',function(e){
-  if(e.target.closest('.img-modal-panel')) return;
-  imTsX=e.touches[0].clientX;
-},{passive:true});
-imgModal.addEventListener('touchend',function(e){
-  if(imTsX===null) return;
-  var dx=e.changedTouches[0].clientX-imTsX;
-  if(Math.abs(dx)>44) imgStep(dx<0?1:-1);
-  imTsX=null;
+lb.addEventListener('click', function(e){ if(e.target===lb) closeLightbox(); });
+var tsX=null, tsY=null;
+lb.addEventListener('touchstart', function(e){ tsX=e.touches[0].clientX; tsY=e.touches[0].clientY; },{passive:true});
+lb.addEventListener('touchend', function(e){
+  if(tsX===null) return;
+  var dx=e.changedTouches[0].clientX-tsX, dy=e.changedTouches[0].clientY-tsY;
+  if(Math.abs(dx)>Math.abs(dy)&&Math.abs(dx)>44) lbStep(dx<0?1:-1);
+  tsX=null; tsY=null;
 });
 
-/* Modal like button */
-function imgModalToggleLike(){
-  var key=imgModalLike?imgModalLike.getAttribute('data-key'):'';
-  if(!key) return;
-  var liked=!!localLikes[key];
-  if(liked){ localLikes[key]=false; imgModalLike.classList.remove('liked'); }
-  else { localLikes[key]=true; imgModalLike.classList.add('liked'); }
-  localStorage.setItem('mohan_likes2',JSON.stringify(localLikes));
-  /* Supabase upsert — table: likes, columns: photo(text PK), count(int) */
-  if(SUPA_URL && SUPA_URL!=='NONE'){
-    supaRequest('GET','likes?photo=eq.'+encodeURIComponent(key)+'&select=photo,count')
-      .then(function(rows){
-        var cur = rows&&rows[0] ? parseInt(rows[0].count)||0 : 0;
-        var next = liked ? Math.max(0, cur-1) : cur+1;
-        return supaRequest('POST','likes?on_conflict=photo',{photo:key, count:next})
-          .then(function(){
-            /* Refresh count display */
-            var countEl=document.getElementById('img-modal-like-count');
-            if(countEl) countEl.textContent = next>0 ? next : '';
-          });
-      }).catch(function(){});
-  }
-}
-
-/* Right-click on modal image → watermarked download */
-imgModalImg.addEventListener('contextmenu',function(e){
+/* Right-click on lightbox → download watermarked copy via canvas */
+lbImg.addEventListener('contextmenu', function(e){
   e.preventDefault();
-  var canvas=document.getElementById('lb-canvas');
-  canvas.width=imgModalImg.naturalWidth; canvas.height=imgModalImg.naturalHeight;
-  var ctx=canvas.getContext('2d');
-  try{
-    ctx.drawImage(imgModalImg,0,0);
-    lbAddWatermark(ctx,canvas.width,canvas.height);
-    var a=document.createElement('a');
-    a.href=canvas.toDataURL('image/jpeg',0.92);
-    a.download='mohangraphy-'+(imgModalIdx+1)+'.jpg';
-    document.body.appendChild(a);a.click();document.body.removeChild(a);
-  }catch(err){ showToast('Right-click save blocked. Contact for licensed copy.'); }
+  var canvas = document.getElementById('lb-canvas');
+  canvas.width  = lbImg.naturalWidth;
+  canvas.height = lbImg.naturalHeight;
+  var ctx = canvas.getContext('2d');
+  try {
+    ctx.drawImage(lbImg, 0, 0);
+    lbAddWatermark(ctx, canvas.width, canvas.height);
+    var a = document.createElement('a');
+    a.href = canvas.toDataURL('image/jpeg', 0.92);
+    a.download = 'mohangraphy-' + (lbIdx+1) + '.jpg';
+    document.body.appendChild(a); a.click(); document.body.removeChild(a);
+  } catch(e2) {
+    /* CORS blocked canvas — just show toast */
+    showToast('Right-click save blocked. Contact for licensed copy.');
+  }
+});
+var lbLpTimer = null;
+lbImg.addEventListener('touchstart', function(){ lbLpTimer = setTimeout(function(){ showToast('Contact ncmohan.photos@gmail.com for a licensed copy.'); }, 800); },{passive:true});
+lbImg.addEventListener('touchend',  function(){ clearTimeout(lbLpTimer); },{passive:true});
+lbImg.addEventListener('touchmove', function(){ clearTimeout(lbLpTimer); },{passive:true});
+
+document.addEventListener('keydown', function(e){
+  if(e.key==='Escape'){
+    if(lb.classList.contains('open')) closeLightbox();
+    else { closeNavDrawer(); closeAboutDrawer(); }
+  }
+  if(!lb.classList.contains('open')) return;
+  if(e.key==='ArrowRight') lbStep(1);
+  if(e.key==='ArrowLeft')  lbStep(-1);
 });
 
-/* Long-press on mobile → watermark toast */
-var imLpTimer=null;
-imgModalImg.addEventListener('touchstart',function(){imLpTimer=setTimeout(function(){showToast('Contact ncmohan.photos@gmail.com for a licensed copy.');},800);},{passive:true});
-imgModalImg.addEventListener('touchend',function(){clearTimeout(imLpTimer);},{passive:true});
-imgModalImg.addEventListener('touchmove',function(){clearTimeout(imLpTimer);},{passive:true});
-
 /* ══════════════════════════════════════════════════════
-   REQUEST QUOTE MODAL
-   ══════════════════════════════════════════════════════ */
-var rqStep=1, rqSelectedSize='', rqPhotoKey='';
-var rqModal=document.getElementById('rq-modal');
-var rqSizes=[];
-
-function openRqModal(){
-  var key=imgModalLike?imgModalLike.getAttribute('data-key'):'';
-  rqPhotoKey=key; rqStep=1; rqSelectedSize='';
-  rqRender();
-  rqModal.classList.add('open');
-  document.body.style.overflow='hidden';
-}
-function closeRqModal(){
-  rqModal.classList.remove('open');
-  document.body.style.overflow='hidden'; /* keep img modal scroll locked */
-}
-function rqSelectSize(size, el){
-  rqSelectedSize=size;
-  document.querySelectorAll('.rq-size-card').forEach(function(c){c.classList.remove('selected');});
-  if(el) el.classList.add('selected');
-}
-function rqNext(){
-  if(rqStep===1&&!rqSelectedSize){ showToast('Please select a print size'); return; }
-  rqStep=2; rqRender();
-}
-function rqBack(){ rqStep=1; rqRender(); }
-function rqRender(){
-  var s1=document.getElementById('rq-step1'), s2=document.getElementById('rq-step2');
-  var st1=document.getElementById('rq-st1'), st2=document.getElementById('rq-st2');
-  if(rqStep===1){
-    if(s1) s1.style.display=''; if(s2) s2.style.display='none';
-    if(st1){st1.className='rq-step active';} if(st2){st2.className='rq-step';}
-  } else {
-    if(s1) s1.style.display='none'; if(s2) s2.style.display='';
-    if(st1){st1.className='rq-step done';} if(st2){st2.className='rq-step active';}
-  }
-}
-function rqSubmit(){
-  var name=(document.getElementById('rq-name')||{}).value||'';
-  var email=(document.getElementById('rq-email')||{}).value||'';
-  if(!name.trim()||!email.trim()){ showToast('Please fill your name and email'); return; }
-  var photo=rqPhotoKey?rqPhotoKey.split('/').pop().replace(/[.][^.]+$/,''):'(see image)';
-  var subject=encodeURIComponent('Print Quote Request — '+rqSelectedSize);
-  var bodyStr='Name: '+name+'\\nEmail: '+email+'\\n\\nPhoto: '+photo+'\\nPrint size: '+rqSelectedSize+'\\n\\nPlease send me a quote.';
-  window.location.href='mailto:""" + contact_email + """?subject='+subject+'&body='+encodeURIComponent(bodyStr);
-  closeRqModal(); closeImgModal();
-  showToast('Quote request sent!');
-}
-
-/* ══════════════════════════════════════════════════════
-   LIKES — Supabase + localStorage
+   LIKES — shared across all visitors via Supabase
+   Free tier: https://supabase.com
+   Set your project URL and anon key in content.json:
+     "supabase_url": "https://xxxx.supabase.co",
+     "supabase_anon_key": "eyJ..."
+   Table setup (run once in Supabase SQL editor):
+     CREATE TABLE likes (
+       photo TEXT PRIMARY KEY,
+       count INTEGER DEFAULT 0
+     );
+     ALTER TABLE likes ENABLE ROW LEVEL SECURITY;
+     CREATE POLICY "read" ON likes FOR SELECT USING (true);
+     CREATE POLICY "upsert" ON likes FOR INSERT WITH CHECK (true);
+     CREATE POLICY "update" ON likes FOR UPDATE USING (true);
    ══════════════════════════════════════════════════════ */
 var SUPA_URL  = '""" + supabase_url + """';
 var SUPA_KEY  = '""" + supabase_key + """';
@@ -2687,71 +2120,127 @@ function supaRequest(method, path, body){
   }).then(function(r){ return r.json(); });
 }
 
-/* Legacy barLike kept for context menu */
+function getLikeCount(photo, cb){
+  supaRequest('GET', 'likes?photo=eq.'+encodeURIComponent(photo)+'&select=count')
+    .then(function(rows){ cb(rows&&rows[0] ? rows[0].count : 0); })
+    .catch(function(){ cb(localLikes[photo]||0); });
+}
+
 function barLike(btn){
-  var item=btn?btn.closest('.grid-item'):null;
-  if(!item) return;
-  var key=getPhotoKey(item);
+  var item = btn.closest('.grid-item');
+  var key  = getPhotoKey(item);
   if(!key) return;
-  var liked=!!localLikes[key];
-  if(liked){ localLikes[key]=false; if(btn) btn.classList.remove('liked'); }
-  else { localLikes[key]=true; if(btn) btn.classList.add('liked'); }
-  localStorage.setItem('mohan_likes2',JSON.stringify(localLikes));
+  var liked = !!localLikes[key];
+  if(liked){
+    localLikes[key] = false;
+    localStorage.setItem('mohan_likes2', JSON.stringify(localLikes));
+    btn.classList.remove('liked');
+    /* Decrement in Supabase */
+    supaRequest('GET', 'likes?photo=eq.'+encodeURIComponent(key)+'&select=count')
+      .then(function(rows){
+        var cur = rows&&rows[0] ? rows[0].count : 1;
+        return supaRequest('POST', 'likes', {photo:key, count:Math.max(0,cur-1)});
+      })
+      .then(function(rows){
+        var n = rows&&rows[0] ? rows[0].count : 0;
+        refreshLikeCount(btn, n);
+      })
+      .catch(function(){
+        refreshLikeCount(btn, 0);
+      });
+  } else {
+    localLikes[key] = true;
+    localStorage.setItem('mohan_likes2', JSON.stringify(localLikes));
+    btn.classList.add('liked');
+    /* Increment in Supabase */
+    supaRequest('GET', 'likes?photo=eq.'+encodeURIComponent(key)+'&select=count')
+      .then(function(rows){
+        var cur = rows&&rows[0] ? rows[0].count : 0;
+        return supaRequest('POST', 'likes', {photo:key, count:cur+1});
+      })
+      .then(function(rows){
+        var n = rows&&rows[0] ? rows[0].count : 1;
+        refreshLikeCount(btn, n);
+      })
+      .catch(function(){
+        refreshLikeCount(btn, 1);
+      });
+  }
+}
+
+function refreshLikeCount(btn, n){
+  var span = btn.querySelector('.like-count');
+  if(span) span.textContent = n>0 ? n : '';
 }
 
 function initLikes(){
-  /* No grid bars — only sync state for modal */
+  document.querySelectorAll('.grid-item').forEach(function(item){
+    var key = getPhotoKey(item);
+    var btn = item.querySelector('.like-btn');
+    if(!key||!btn) return;
+    if(localLikes[key]) btn.classList.add('liked');
+    getLikeCount(key, function(n){ refreshLikeCount(btn, n); });
+  });
 }
 document.addEventListener('DOMContentLoaded', initLikes);
 
-/* ── Watermark helper (used for right-click download) ── */
-function lbAddWatermark(ctx, w, h){
-  var fontSize = Math.max(32, Math.floor(w * 0.09));
-  ctx.save();
-  ctx.translate(w/2, h/2); ctx.rotate(-Math.PI / 5);
-  ctx.font = 'bold ' + fontSize + 'px "Cormorant Garamond", Georgia, serif';
-  ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
-  ctx.shadowColor='rgba(0,0,0,0.2)'; ctx.shadowBlur=fontSize*0.15;
-  ctx.shadowOffsetX=fontSize*0.03; ctx.shadowOffsetY=fontSize*0.03;
-  ctx.fillStyle='rgba(255,255,255,0.18)';
-  ctx.fillText('MOHANGRAPHY', 0, 0);
-  ctx.restore();
+/* ── Buy ── */
+var pendingBuyPhoto='', pendingBuySize='';
+function barBuy(btn){
+  var item=btn.closest('.grid-item'), img=item.querySelector('img');
+  pendingBuyPhoto=img?(img.getAttribute('data-full')||img.src).split('/').pop().replace(/[.][^.]+$/,''):'';
+  showInfoPage('page-prints');
+}
+function orderSize(size){
+  pendingBuySize=size; showInfoPage('page-contact');
+  var subj=document.getElementById('cf-subject');
+  if(subj) for(var i=0;i<subj.options.length;i++){ if(subj.options[i].text.indexOf('Print')>-1){subj.selectedIndex=i;break;} }
+  var msg=document.getElementById('cf-msg');
+  if(msg&&pendingBuyPhoto) msg.value='I would like to order a print:\\nPhoto: '+pendingBuyPhoto+'\\nSize: '+pendingBuySize+'\\n\\nPlease let me know pricing and shipping details.';
+  pendingBuyPhoto=''; pendingBuySize='';
+}
+function clearContactForm(){
+  ['cf-name','cf-email','cf-msg'].forEach(function(id){ var el=document.getElementById(id); if(el) el.value=''; });
+  var subj=document.getElementById('cf-subject'); if(subj) subj.selectedIndex=0;
 }
 
 /* ══════════════════════════════════════════════════════
-   CONTEXT MENU — right-click / long-press on grid items
+   CONTEXT MENU — right-click / long-press
    ══════════════════════════════════════════════════════ */
 var ctxMenu   = document.getElementById('ctx-menu');
 var ctxTarget = null;
 
 function showCtxMenu(el, x, y){
-  ctxTarget=el;
-  ctxMenu.style.left=Math.min(x,window.innerWidth-190)+'px';
-  ctxMenu.style.top=Math.min(y,window.innerHeight-170)+'px';
-  ctxMenu.style.display='block';
+  ctxTarget = el;
+  ctxMenu.style.left = Math.min(x, window.innerWidth-190)+'px';
+  ctxMenu.style.top  = Math.min(y, window.innerHeight-170)+'px';
+  ctxMenu.style.display = 'block';
 }
 function hideCtxMenu(){ ctxMenu.style.display='none'; ctxTarget=null; }
 
-document.addEventListener('click', function(e){ if(!e.target.closest('#ctx-menu')) hideCtxMenu(); });
+document.addEventListener('click',       function(e){ if(!e.target.closest('#ctx-menu')) hideCtxMenu(); });
 document.addEventListener('contextmenu', function(e){
   var item=e.target.closest('.grid-item');
-  if(item){ e.preventDefault(); showCtxMenu(item,e.clientX,e.clientY); }
+  if(item){ e.preventDefault(); showCtxMenu(item, e.clientX, e.clientY); }
   else hideCtxMenu();
 });
 
+/* Long-press mobile */
 var lpTimer=null, lpEl=null;
-document.addEventListener('touchstart',function(e){
+document.addEventListener('touchstart', function(e){
   var item=e.target.closest('.grid-item'); if(!item) return;
-  lpEl=item; lpTimer=setTimeout(function(){ showCtxMenu(lpEl,e.touches[0].clientX,e.touches[0].clientY); },600);
+  lpEl=item; lpTimer=setTimeout(function(){ showCtxMenu(lpEl, e.touches[0].clientX, e.touches[0].clientY); },600);
 },{passive:true});
-document.addEventListener('touchend', function(){ clearTimeout(lpTimer); },{passive:true});
+document.addEventListener('touchend',  function(){ clearTimeout(lpTimer); },{passive:true});
 document.addEventListener('touchmove', function(){ clearTimeout(lpTimer); },{passive:true});
 
-function ctxLike(){ var t=ctxTarget; hideCtxMenu(); if(t) openImgModal(t); }
-function ctxBuy(){  var t=ctxTarget; hideCtxMenu(); if(t){ openImgModal(t); setTimeout(openRqModal,100); } }
+function ctxLike(){ var t=ctxTarget; hideCtxMenu(); if(t){ var b=t.querySelector('.like-btn'); if(b) barLike(b); } }
+function ctxBuy(){  var t=ctxTarget; hideCtxMenu(); if(t) barBuy(t.querySelector('.buy-btn')); }
 
 /* ══════════════════════════════════════════════════════
    ADMIN TAG EDITOR
+   Password protected. Right-click any photo → Edit tags.
+   Sends patch to patch_tags.py server (localhost:9393).
    ══════════════════════════════════════════════════════ */
 var ADMIN_UNLOCKED = false;
 var ADMIN_PASS     = '""" + admin_password + """';
@@ -2764,94 +2253,108 @@ var CATEGORIES     = """ + json.dumps(sorted([
 ])) + """;
 
 function ctxAdminEdit(){
-  var target=ctxTarget; hideCtxMenu(); if(!target) return;
-  adminItems=[target]; openAdminModal();
+  var target = ctxTarget;
+  hideCtxMenu();
+  if(!target) return;
+  adminItems = [target];
+  openAdminModal();
 }
 
 function openAdminModal(){
-  var first=adminItems[0];
-  var photo=first?first.getAttribute('data-photo'):'';
-  var state=first?first.getAttribute('data-state'):'';
-  var city=first?first.getAttribute('data-city'):'';
-  var rem=first?first.getAttribute('data-remarks'):'';
-  var cats=first?(first.getAttribute('data-cats')||'').split(',').filter(Boolean):[];
-  if(!state&&!city&&!rem&&adminLastSaved.state) state=adminLastSaved.state;
-  if(!state&&!city&&!rem&&adminLastSaved.city)  city=adminLastSaved.city;
-  if(!cats.length&&adminLastSaved.cats.length)  cats=adminLastSaved.cats.slice();
-  var catDiv=document.getElementById('admin-cats');
-  catDiv.innerHTML='';
+  var first  = adminItems[0];
+  var photo  = first ? first.getAttribute('data-photo')  : '';
+  var state  = first ? first.getAttribute('data-state')  : '';
+  var city   = first ? first.getAttribute('data-city')   : '';
+  var rem    = first ? first.getAttribute('data-remarks'): '';
+  var cats   = first ? (first.getAttribute('data-cats')||'').split(',').filter(Boolean) : [];
+
+  /* If photo has no state/city/remarks yet, carry forward from last save */
+  if(!state && !city && !rem && adminLastSaved.state)  state   = adminLastSaved.state;
+  if(!state && !city && !rem && adminLastSaved.city)   city    = adminLastSaved.city;
+  if(!cats.length  && adminLastSaved.cats.length)      cats    = adminLastSaved.cats.slice();
+
+  /* Build category buttons */
+  var catDiv = document.getElementById('admin-cats');
+  catDiv.innerHTML = '';
   CATEGORIES.forEach(function(c){
-    var btn=document.createElement('button');
-    btn.className='admin-cat'; btn.textContent=c.split('/').pop();
-    btn.title=c; btn.setAttribute('data-cat',c);
-    if(cats.indexOf(c)>-1) btn.classList.add('selected');
-    btn.onclick=function(){ btn.classList.toggle('selected'); };
+    var btn = document.createElement('button');
+    btn.className = 'admin-cat';
+    btn.textContent = c.split('/').pop();
+    btn.title = c;
+    btn.setAttribute('data-cat', c);
+    if(cats.indexOf(c) > -1) btn.classList.add('selected');
+    btn.onclick = function(){ btn.classList.toggle('selected'); };
     catDiv.appendChild(btn);
   });
-  document.getElementById('admin-photo-ref').textContent=photo.split('/').pop();
-  document.getElementById('admin-count').textContent=adminItems.length+' photo(s)';
-  document.getElementById('admin-state').value=state;
-  document.getElementById('admin-city').value=city;
-  document.getElementById('admin-remarks').value=rem;
+
+  /* Pre-fill fields */
+  document.getElementById('admin-photo-ref').textContent = photo.split('/').pop();
+  document.getElementById('admin-count').textContent     = adminItems.length + ' photo(s)';
+  document.getElementById('admin-state').value   = state;
+  document.getElementById('admin-city').value    = city;
+  document.getElementById('admin-remarks').value = rem;
+
+  /* Show correct screen */
   if(!ADMIN_UNLOCKED){
-    document.getElementById('admin-pw-screen').style.display='block';
-    document.getElementById('admin-edit-screen').style.display='none';
-    document.getElementById('admin-pw-input').value='';
-    document.getElementById('admin-pw-error').style.display='none';
+    document.getElementById('admin-pw-screen').style.display  = 'block';
+    document.getElementById('admin-edit-screen').style.display = 'none';
+    document.getElementById('admin-pw-input').value = '';
+    document.getElementById('admin-pw-error').style.display   = 'none';
   } else {
-    document.getElementById('admin-pw-screen').style.display='none';
-    document.getElementById('admin-edit-screen').style.display='block';
+    document.getElementById('admin-pw-screen').style.display  = 'none';
+    document.getElementById('admin-edit-screen').style.display = 'block';
   }
   document.getElementById('admin-modal').classList.add('open');
 }
 
 function adminCheckPassword(){
-  var pw=document.getElementById('admin-pw-input').value;
-  if(pw!==ADMIN_PASS){ document.getElementById('admin-pw-error').style.display='block'; return; }
-  ADMIN_UNLOCKED=true; document.body.classList.add('admin-unlocked');
-  document.getElementById('admin-pw-screen').style.display='none';
-  document.getElementById('admin-edit-screen').style.display='block';
+  var pw = document.getElementById('admin-pw-input').value;
+  if(pw !== ADMIN_PASS){
+    document.getElementById('admin-pw-error').style.display = 'block';
+    return;
+  }
+  ADMIN_UNLOCKED = true;
+  document.body.classList.add('admin-unlocked');
+  document.getElementById('admin-pw-screen').style.display  = 'none';
+  document.getElementById('admin-edit-screen').style.display = 'block';
 }
 
-function closeAdminModal(){ document.getElementById('admin-modal').classList.remove('open'); adminItems=[]; }
+function closeAdminModal(){
+  document.getElementById('admin-modal').classList.remove('open');
+  adminItems=[];
+}
 
 function saveAdminTags(){
-  var cats=Array.from(document.querySelectorAll('.admin-cat.selected')).map(function(b){return b.getAttribute('data-cat');});
-  var state=document.getElementById('admin-state').value.trim();
-  var city=document.getElementById('admin-city').value.trim();
-  var remarks=document.getElementById('admin-remarks').value.trim();
-  var photos=adminItems.map(function(item){return item.getAttribute('data-photo');});
-  var payload={categories:cats,state:state,city:city,remarks:remarks,photos:photos};
-  adminLastSaved={state:state,city:city,cats:cats.slice()};
+  var cats    = Array.from(document.querySelectorAll('.admin-cat.selected')).map(function(b){ return b.getAttribute('data-cat'); });
+  var state   = document.getElementById('admin-state').value.trim();
+  var city    = document.getElementById('admin-city').value.trim();
+  var remarks = document.getElementById('admin-remarks').value.trim();
+  var photos  = adminItems.map(function(item){ return item.getAttribute('data-photo'); });
+  var payload = {categories:cats, state:state, city:city, remarks:remarks, photos:photos};
+
+  /* Store for carry-forward to next photo */
+  adminLastSaved = {state:state, city:city, cats:cats.slice()};
+
+  /* Update DOM data attributes so re-editing same photo shows latest values */
   adminItems.forEach(function(item){
-    item.setAttribute('data-state',state); item.setAttribute('data-city',city);
-    item.setAttribute('data-remarks',remarks); item.setAttribute('data-cats',cats.join(','));
+    item.setAttribute('data-state',   state);
+    item.setAttribute('data-city',    city);
+    item.setAttribute('data-remarks', remarks);
+    item.setAttribute('data-cats',    cats.join(','));
   });
+
   fetch('http://localhost:9393/patch',{
-    method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(payload)
-  }).then(function(r){return r.json();})
-    .then(function(){showToast('✓ Saved. Run deploy to publish.');})
+    method:'POST',
+    headers:{'Content-Type':'application/json'},
+    body:JSON.stringify(payload)
+  }).then(function(r){ return r.json(); })
+    .then(function(d){ showToast('✓ Saved. Run deploy to publish.'); })
     .catch(function(){
       navigator.clipboard.writeText(JSON.stringify(payload,null,2))
-        .then(function(){showToast('Server offline. JSON copied to clipboard.');})
-        .catch(function(){showToast('Start patch_tags.py, then try again.');});
+        .then(function(){ showToast('Server offline. JSON copied to clipboard.'); })
+        .catch(function(){ showToast('Start patch_tags.py, then try again.'); });
     });
   closeAdminModal();
-}
-
-function toggleAdminMode(){
-  /* Double-click MOHANGRAPHY logo to open admin unlock */
-  if(ADMIN_UNLOCKED){
-    /* Already unlocked — toggle off */
-    ADMIN_UNLOCKED=false;
-    document.body.classList.remove('admin-unlocked');
-    showToast('Admin mode off');
-  } else {
-    /* Prompt for password via admin modal (with a dummy target) */
-    adminItems=[document.querySelector('.grid-item')||document.body];
-    openAdminModal();
-    /* After unlock, dismiss and show toast */
-  }
 }
 
 /* ── Toast ── */
@@ -2861,31 +2364,17 @@ function showToast(msg){
   setTimeout(function(){ t.classList.remove('show'); },3000);
 }
 
-/* ── Contact form (Get In Touch page) ── */
+/* ── Contact form ── */
 function submitContact(){
-  var name=(document.getElementById('cf-name')||{}).value||'';
-  var email=(document.getElementById('cf-email')||{}).value||'';
-  var subject=(document.getElementById('cf-subject')||{}).value||'';
-  var msg=(document.getElementById('cf-msg')||{}).value||'';
-  if(!name.trim()||!email.trim()||!msg.trim()){ showToast('Please fill all required fields.'); return; }
+  var name=document.getElementById('cf-name').value.trim();
+  var email=document.getElementById('cf-email').value.trim();
+  var subject=document.getElementById('cf-subject').value;
+  var msg=document.getElementById('cf-msg').value.trim();
+  if(!name||!email||!msg){ alert('Please fill all fields.'); return; }
   var body=encodeURIComponent('Name: '+name+'\\nEmail: '+email+'\\n\\n'+msg);
   window.location.href='mailto:""" + contact_email + """?subject='+encodeURIComponent(subject)+'&body='+body;
+  setTimeout(clearContactForm,500);
 }
-
-/* ── Keyboard shortcuts ── */
-document.addEventListener('keydown', function(e){
-  if(e.key==='Escape'){
-    if(rqModal.classList.contains('open')){ closeRqModal(); return; }
-    if(imgModal.classList.contains('open')){ closeImgModal(); return; }
-    var am=document.getElementById('admin-modal');
-    if(am&&am.classList.contains('open')){ closeAdminModal(); return; }
-    closeMobileMenu();
-  }
-  if(imgModal.classList.contains('open')){
-    if(e.key==='ArrowRight') imgStep(1);
-    if(e.key==='ArrowLeft')  imgStep(-1);
-  }
-});
 
 goHome();
 """
@@ -2905,24 +2394,12 @@ goHome();
         '  <meta property="og:type" content="website">\n'
         '  <title>MOHANGRAPHY — Photography by N C Mohan</title>\n'
         + ('  <script defer data-domain="' + plausible_domain + '" src="https://plausible.io/js/script.js"></script>\n' if plausible_domain else '')
-        + (
-            '  <!-- Google Analytics -->\n'
-            '  <script>\n'
-            '  /* GA opt-out: run once in browser console on your own devices:\n'
-            '     localStorage.setItem("ga_optout","1")  */\n'
-            '  window.dataLayer=window.dataLayer||[];\n'
-            '  function gtag(){dataLayer.push(arguments);}\n'
-            '  (function(){\n'
-            '    if(localStorage.getItem("ga_optout")==="1") return;\n'
-            '    var s=document.createElement("script");\n'
-            '    s.async=true;\n'
-            '    s.onload=function(){ gtag("js",new Date()); gtag("config","' + ga_id + '",{anonymize_ip:true}); };\n'
-            '    s.src="https://www.googletagmanager.com/gtag/js?id=' + ga_id + '";\n'
-            '    document.head.appendChild(s);\n'
-            '  })();\n'
-            '  </script>\n'
-            if ga_id else ''
-        )
+        + '  <script>/* GA opt-out — set once on your own devices via browser console: localStorage.setItem("ga_optout","1") */\n'
+        + '  if(localStorage.getItem("ga_optout")==="1"){\n'
+        + '    window["ga-disable-G-XXXXXXXXXX"]=true; /* replace G-XXXXXXXXXX with your GA measurement ID */\n'
+        + '    window["ga-disable-UA-XXXXXXXXX-X"]=true;\n'
+        + '  }\n'
+        + '  </script>\n'
         + '  <style>' + css + '</style>\n'
         '</head>\n'
         '<body>\n'
@@ -2932,53 +2409,92 @@ goHome();
         '<!-- HEADER -->\n'
         '<header>\n'
 
-        # Left — logo
-        '  <div class="site-logo" onclick="goHome()" ondblclick="toggleAdminMode()" role="button" tabindex="0"'
-        '       onkeypress="if(event.key===\'Enter\') goHome()">MOHANGRAPHY</div>\n'
-
-        # Center — tabs (Collections uses div to allow nested dropdown div)
-        '  <nav class="hdr-tabs" role="navigation">\n'
-        '    <button class="hdr-tab" id="tab-home" onclick="goHome()">Home</button>\n'
-        '    <div class="hdr-tab" id="tab-collections" role="button" tabindex="0"'
-        '         onclick="toggleCollectionsDD(event)">\n'
-        '      Collections <span class="hdr-tab-chevron">&#9662;</span>\n'
-        '      <div class="hdr-dropdown" id="hdr-collections-dd">\n'
-        + ''.join(
-            '        <button class="hdr-dd-item" onclick="openCategory(\'' + m_cat + '\'); closeCollectionsDD()">' + m_cat + '</button>\n'
-            if subs else
-            '        <button class="hdr-dd-item" onclick="showGallery(\'direct-' + m_cat + '\'); closeCollectionsDD()">' + m_cat + '</button>\n'
-            for m_cat, subs in sorted(MANUAL_STRUCTURE.items(), key=lambda x: x[0].lower())
-        ) +
-        '      </div>\n'
-        '    </div>\n'
-        '    <button class="hdr-tab" id="tab-about" onclick="showInfoPage(\'page-about\')">About Me</button>\n'
-        '  </nav>\n'
-
-        # Right — CTA + hamburger
-        '  <button class="hdr-cta" onclick="showInfoPage(\'page-contact\')">Get In Touch</button>\n'
-        '  <button class="hdr-hamburger" onclick="openMobileMenu()" aria-label="Menu">\n'
-        '    <span></span><span></span><span></span>\n'
+        # Left icon — person / about
+        '  <button class="hdr-icon-left" onclick="openAboutDrawer()" aria-label="About &amp; Contact">\n'
+        '    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">\n'
+        '      <circle cx="12" cy="8" r="4"/>\n'
+        '      <path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/>\n'
+        '    </svg>\n'
         '  </button>\n'
 
+        # Centre title — double-click toggles admin mode
+        '  <div class="site-title" onclick="goHome()" ondblclick="toggleAdminMode()" role="button" tabindex="0"\n'
+        '       onkeypress="if(event.key===\'Enter\') goHome()">M O H A N G R A P H Y</div>\n'
+
+        # Right icon — hamburger / collections
+        '  <button class="hdr-icon-right" onclick="openNavDrawer()" aria-label="Collections menu">\n'
+        '    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round">\n'
+        '      <line x1="3" y1="6"  x2="21" y2="6"/>\n'
+        '      <line x1="3" y1="12" x2="21" y2="12"/>\n'
+        '      <line x1="3" y1="18" x2="21" y2="18"/>\n'
+        '    </svg>\n'
+        '  </button>\n'
         '</header>\n\n'
 
-        # ── MOBILE MENU ────────────────────────────────────────────────────
-        '<div id="mobile-menu">\n'
-        '  <button class="mob-menu-close" onclick="closeMobileMenu()">&#x2715;</button>\n'
-        '  <button class="mob-menu-item" onclick="goHome();closeMobileMenu()">Home</button>\n'
-        '  <button class="mob-menu-item" onclick="mobToggleCollections()">Collections &#9662;</button>\n'
-        '  <div class="mob-menu-sub" id="mob-collections-sub">\n'
-        + ''.join(
-            '    <button class="mob-menu-subitem" onclick="' + (
-                "openCategory('" + m_cat + "')"
-                if subs else
-                "showGallery('direct-" + m_cat + "')"
-            ) + ';closeMobileMenu()">' + m_cat + '</button>\n'
-            for m_cat, subs in sorted(MANUAL_STRUCTURE.items(), key=lambda x: x[0].lower())
-        ) +
+        # ── OVERLAY ─────────────────────────────────────────────────────────
+        '<div id="drawer-overlay" class="drawer-overlay"></div>\n\n'
+
+        # ── RIGHT DRAWER (hamburger) — Home, Contact, Order Prints only ────────
+        '<div id="nav-drawer" role="navigation" aria-label="Menu">\n'
+        '  <div class="drawer-header">\n'
+        '    <span class="drawer-header-title">Menu</span>\n'
+        '    <button class="drawer-close" onclick="closeNavDrawer()" aria-label="Close">&#x2715;</button>\n'
         '  </div>\n'
-        '  <button class="mob-menu-item" onclick="showInfoPage(\'page-about\');closeMobileMenu()">About Me</button>\n'
-        '  <button class="mob-menu-cta" onclick="showInfoPage(\'page-contact\');closeMobileMenu()">Get In Touch</button>\n'
+        '  <div class="drawer-scroll">\n'
+        '    <div class="dnav-cat" onclick="goHome(); closeNavDrawer()">'
+        '<span class="dnav-cat-name" style="color:var(--gold)">Home</span>'
+        '<span class="dnav-chevron" style="opacity:0">&#9656;</span>'
+        '</div>\n'
+        '    <div class="dnav-divider"></div>\n'
+        '    <div class="dnav-cat" onclick="showInfoPage(\'page-contact\'); closeNavDrawer()">'
+        '<span class="dnav-cat-name">Contact</span>'
+        '<span class="dnav-chevron" style="opacity:0">&#9656;</span>'
+        '</div>\n'
+        '    <div class="dnav-cat" onclick="showInfoPage(\'page-prints\'); closeNavDrawer()">'
+        '<span class="dnav-cat-name">Order Print(s)</span>'
+        '<span class="dnav-chevron" style="opacity:0">&#9656;</span>'
+        '</div>\n'
+        '  </div>\n'
+        '</div>\n\n'
+
+        # ── LEFT DRAWER (About / Contact / Commercial) ───────────────────────
+        '<div id="about-drawer" role="navigation" aria-label="About and contact">\n'
+        '  <div class="drawer-header">\n'
+        '    <span class="drawer-header-title">Menu</span>\n'
+        '    <button class="drawer-close" onclick="closeAboutDrawer()" aria-label="Close">&#x2715;</button>\n'
+        '  </div>\n'
+        '  <div class="about-scroll">\n'
+
+        '    <div class="adrawer-section-hdr">Photographer</div>\n'
+
+        '    <div class="adrawer-item" onclick="showInfoPage(\'page-about\'); closeAboutDrawer()">\n'
+        '      <div class="adrawer-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg></div>\n'
+        '      <span class="adrawer-label">About Me</span>\n'
+        '    </div>\n'
+
+        '    <div class="adrawer-item" onclick="showInfoPage(\'page-philosophy\'); closeAboutDrawer()">\n'
+        '      <div class="adrawer-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M12 2l2 7h7l-5.5 4 2 7L12 16l-5.5 4 2-7L3 9h7z"/></svg></div>\n'
+        '      <span class="adrawer-label">Philosophy</span>\n'
+        '    </div>\n'
+
+        '    <div class="adrawer-item" onclick="showInfoPage(\'page-gear\'); closeAboutDrawer()">\n'
+        '      <div class="adrawer-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><circle cx="12" cy="12" r="3"/><path d="M12 1v4M12 19v4M4.22 4.22l2.83 2.83M16.95 16.95l2.83 2.83M1 12h4M19 12h4M4.22 19.78l2.83-2.83M16.95 7.05l2.83-2.83"/></svg></div>\n'
+        '      <span class="adrawer-label">Gear &amp; Kit</span>\n'
+        '    </div>\n'
+
+        '    <div class="adrawer-item" onclick="showInfoPage(\'page-licensing\'); closeAboutDrawer()">\n'
+        '      <div class="adrawer-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14,2 14,8 20,8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10,9 9,9 8,9"/></svg></div>\n'
+        '      <span class="adrawer-label">Licensing</span>\n'
+        '    </div>\n'
+
+        '    <div class="adrawer-section-hdr">Legal</div>\n'
+
+        '    <div class="adrawer-item" onclick="showInfoPage(\'page-legal\'); closeAboutDrawer()">\n'
+        '      <div class="adrawer-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></div>\n'
+        '      <span class="adrawer-label">Copyright &amp; Legal</span>\n'
+        '    </div>\n'
+
+        '  </div>\n'
         '</div>\n\n'
 
         # ── HERO ────────────────────────────────────────────────────────────
@@ -2988,12 +2504,12 @@ goHome();
         '    <div class="hero-tagline">Light <span class="dot">&middot;</span> Moment <span class="dot">&middot;</span> Story</div>\n'
         '    <div class="hero-byline"><span class="byline-label">Photos by</span><span class="name">N C Mohan</span></div>\n'
         '  </div>\n'
-        '  <button class="scroll-cue" onclick="scrollToCollections()" aria-label="Explore collections">\n'
-        '    <svg width="14" height="20" viewBox="0 0 12 18" fill="none">\n'
-        '      <path d="M6 2v10M2 9l4 5 4-5" stroke="rgba(255,255,255,0.65)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>\n'
+        '  <div class="scroll-cue">\n'
+        '    <svg width="12" height="18" viewBox="0 0 12 18" fill="none">\n'
+        '      <path d="M6 2v10M2 9l4 5 4-5" stroke="rgba(255,255,255,0.3)" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/>\n'
         '    </svg>\n'
         '    <span>Explore</span>\n'
-        '  </button>\n'
+        '  </div>\n'
         '</div>\n\n'
 
         # ── MAIN MENU ────────────────────────────────────────────────────────
@@ -3006,18 +2522,21 @@ goHome();
 
         # ── SUB-NAV ──────────────────────────────────────────────────────────
         '<div id="sub-nav">\n'
-        '  <div class="breadcrumb-bar" id="bc-bar"></div>\n'
+        '  <div class="breadcrumb-bar">\n'
+        '    <button class="bc-back" onclick="goHome()">&larr; Home</button>\n'
+        '    <span class="bc-sep">|</span>\n'
+        '    <span class="bc-current" id="bc-label"></span>\n'
+        '  </div>\n'
         + sub_panels +
         '\n</div>\n\n'
 
         # ── GALLERY ──────────────────────────────────────────────────────────
         '<main id="gallery-container">\n'
-        '  <div class="breadcrumb-bar" id="gal-bc-bar"></div>\n'
         + gallery_blocks +
         '\n</main>\n\n'
 
         # ── INFO PAGES ───────────────────────────────────────────────────────
-        # ABOUT ME — combined About + Philosophy + Gear & Kit
+        # ABOUT ME
         '<div id="page-about" class="info-page">\n'
         '  <div class="info-page-inner">\n'
         '    <button class="info-page-back" onclick="goHome()">&larr; Back to Home</button>\n'
@@ -3026,20 +2545,29 @@ goHome();
         '    <div class="info-page-divider"></div>\n'
         '    <div class="info-page-body">\n'
         + render_paragraphs(c_about.get('paragraphs', ['[ Add your story in content.json ]'])) +
-        '    </div>\n'
-        '    <div class="info-page-divider"></div>\n'
-        '    <div class="info-page-title" style="font-size:clamp(20px,3vw,32px);margin-bottom:6px">' + c_phil.get('title','Philosophy') + '</div>\n'
+        '    </div>\n  </div>\n</div>\n\n'
+
+        # PHILOSOPHY
+        '<div id="page-philosophy" class="info-page">\n'
+        '  <div class="info-page-inner">\n'
+        '    <button class="info-page-back" onclick="goHome()">&larr; Back to Home</button>\n'
+        '    <div class="info-page-title">' + c_phil.get('title','Philosophy') + '</div>\n'
         '    <div class="info-page-subtitle">' + c_phil.get('subtitle','How I see the world') + '</div>\n'
+        '    <div class="info-page-divider"></div>\n'
         '    <div class="info-page-body">\n'
         + render_paragraphs(c_phil.get('paragraphs', ['[ Add your philosophy in content.json ]'])) +
-        '    </div>\n'
-        '    <div class="info-page-divider"></div>\n'
-        '    <div class="info-page-title" style="font-size:clamp(20px,3vw,32px);margin-bottom:6px">' + c_gear.get('title','Gear &amp; Kit') + '</div>\n'
+        '    </div>\n  </div>\n</div>\n\n'
+
+        # GEAR
+        '<div id="page-gear" class="info-page">\n'
+        '  <div class="info-page-inner">\n'
+        '    <button class="info-page-back" onclick="goHome()">&larr; Back to Home</button>\n'
+        '    <div class="info-page-title">' + c_gear.get('title','Gear &amp; Kit') + '</div>\n'
         '    <div class="info-page-subtitle">' + c_gear.get('subtitle','The tools of the trade') + '</div>\n'
+        '    <div class="info-page-divider"></div>\n'
         '    <div class="info-page-body">\n'
         + render_items(c_gear.get('items', [])) +
-        '    </div>\n'
-        '  </div>\n</div>\n\n'
+        '    </div>\n  </div>\n</div>\n\n'
 
         # CONTACT
         '<div id="page-contact" class="info-page">\n'
@@ -3106,6 +2634,17 @@ goHome();
         + render_paragraphs(c_licens.get('paragraphs', [])) +
         '    </div>\n  </div>\n</div>\n\n'
 
+        # WORKSHOPS
+        '<div id="page-workshops" class="info-page">\n'
+        '  <div class="info-page-inner">\n'
+        '    <button class="info-page-back" onclick="goHome()">&larr; Back to Home</button>\n'
+        '    <div class="info-page-title">' + c_workshop.get('title','Workshops &amp; Tours') + '</div>\n'
+        '    <div class="info-page-subtitle">' + c_workshop.get('subtitle','Learn to see, learn to shoot') + '</div>\n'
+        '    <div class="info-page-divider"></div>\n'
+        '    <div class="info-page-body">\n'
+        + render_paragraphs(c_workshop.get('paragraphs', [])) +
+        '    </div>\n  </div>\n</div>\n\n'
+
         # LEGAL
         '<div id="page-legal" class="info-page">\n'
         '  <div class="info-page-inner">\n'
@@ -3117,81 +2656,11 @@ goHome();
         + render_items(c_legal.get('items', [])) +
         '    </div>\n  </div>\n</div>\n\n'
 
-
-        # ── IMAGE DETAIL MODAL ───────────────────────────────────────────────────
-        '<div id="img-modal" role="dialog" aria-modal="true">\n'
-        '  <div class="img-modal-photo">\n'
-        '    <button class="img-modal-close" onclick="closeImgModal()" aria-label="Close">&#x2715;</button>\n'
-        '    <button class="img-modal-nav" id="img-modal-prev" onclick="imgStep(-1)" aria-label="Previous">&#8249;</button>\n'
-        '    <button class="img-modal-nav" id="img-modal-next" onclick="imgStep(1)" aria-label="Next">&#8250;</button>\n'
-        '    <div id="img-modal-spinner"></div>\n'
-        '    <img id="img-modal-img" src="" alt="Photograph by N C Mohan">\n'
-        '    <canvas id="lb-canvas" style="display:none"></canvas>\n'
-        '  </div>\n'
-        '  <div class="img-modal-panel">\n'
-        '    <div class="img-modal-info">\n'
-        '      <div class="img-modal-counter" id="img-modal-counter"></div>\n'
-        '      <div class="img-modal-title" id="img-modal-title"></div>\n'
-        '      <div class="img-modal-subtitle" id="img-modal-subtitle"></div>\n'
-        '    </div>\n'
-        '    <div class="img-modal-actions">\n'
-        '      <button class="img-modal-like" id="img-modal-like-btn" onclick="imgModalToggleLike()">\n'
-        '        <span class="like-heart">&#10084;</span> Like\n'
-        '        <span class="like-count" id="img-modal-like-count"></span>\n'
-        '      </button>\n'
-        '      <button class="img-modal-rq" onclick="openRqModal()">Request Quote</button>\n'
-        '    </div>\n'
-        '    <div class="img-modal-copyright">&copy; N C Mohan &middot; All rights reserved</div>\n'
-        '  </div>\n'
-        '</div>\n\n'
-
-        # ── REQUEST QUOTE MODAL ───────────────────────────────────────────────────
-        '<div id="rq-modal" role="dialog" aria-modal="true">\n'
-        '  <div id="rq-box">\n'
-        '    <button class="rq-back" onclick="closeRqModal()">&#8249; Back to photo</button>\n'
-        '    <div class="rq-title">Request a Quote</div>\n'
-        '    <div class="rq-steps">\n'
-        '      <div class="rq-step active" id="rq-st1"><span class="rq-step-num">1</span> Select Size</div>\n'
-        '      <div class="rq-step-sep"></div>\n'
-        '      <div class="rq-step" id="rq-st2"><span class="rq-step-num">2</span> Contact Details</div>\n'
-        '    </div>\n'
-        '    <div id="rq-step1">\n'
-        '      <p style="font-size:10px;letter-spacing:2px;color:rgba(255,255,255,0.4);text-transform:uppercase;margin-bottom:16px">Choose a print size:</p>\n'
-        '      <div class="rq-size-grid">\n'
-        + ''.join(
-            '<div class="rq-size-card" onclick="rqSelectSize(' + chr(39) + s.get('size','') + chr(39) + ', this)">'
-            '<div class="rq-size-name">' + s.get('size','') + '</div>'
-            '<div class="rq-size-dims">' + s.get('dimensions','') + '</div>'
-            '</div>\n'
-            for s in c_prints.get('sizes', [
-                {'size':'A4','dimensions':'210 × 297 mm | 8.3 × 11.7 in'},
-                {'size':'A3','dimensions':'297 × 420 mm | 11.7 × 16.5 in'},
-                {'size':'A2','dimensions':'420 × 594 mm | 16.5 × 23.4 in'},
-                {'size':'A1','dimensions':'594 × 841 mm | 23.4 × 33.1 in'},
-            ])
-        ) +
-        '      </div>\n'
-        '      <div style="display:flex;justify-content:flex-end;margin-top:20px">\n'
-        '        <button class="btn-gold" onclick="rqNext()">Next &#8250;</button>\n'
-        '      </div>\n'
-        '    </div>\n'
-        '    <div id="rq-step2" style="display:none">\n'
-        '      <div class="rq-field"><label>Your Name *</label><input id="rq-name" type="text" placeholder="Full name"></div>\n'
-        '      <div class="rq-field"><label>Email Address *</label><input id="rq-email" type="email" placeholder="you@example.com"></div>\n'
-        '      <div class="rq-field"><label>Additional Notes</label><textarea id="rq-notes" placeholder="Any special requirements..."></textarea></div>\n'
-        '      <div style="display:flex;gap:10px;justify-content:flex-end;margin-top:20px">\n'
-        '        <button class="btn-ghost" onclick="rqBack()">&#8249; Back</button>\n'
-        '        <button class="btn-gold" onclick="rqSubmit()">Send Request</button>\n'
-        '      </div>\n'
-        '    </div>\n'
-        '  </div>\n'
-        '</div>\n\n'
-
         # ── CONTEXT MENU ─────────────────────────────────────────────────────
         '<div id="ctx-menu">\n'
         '  <div class="ctx-item" onclick="ctxLike()">&#10084;&nbsp; Like</div>\n'
         '  <div class="ctx-divider"></div>\n'
-        '  <div class="ctx-item" onclick="ctxBuy()">&#9998;&nbsp; Request Quote</div>\n'
+        '  <div class="ctx-item" onclick="ctxBuy()">&#128722;&nbsp; Buy a print</div>\n'
         '  <div class="ctx-divider"></div>\n'
         '  <div class="ctx-item ctx-admin" id="ctx-admin-item" onclick="ctxAdminEdit()">&#9881;&nbsp; Edit tags</div>\n'
         '</div>\n\n'
@@ -3230,7 +2699,21 @@ goHome();
         '  </div>\n'
         '</div>\n\n'
 
-        # Lightbox removed — replaced by img-modal
+        # ── LIGHTBOX ─────────────────────────────────────────────────────────
+        '<div id="lightbox" role="dialog" aria-modal="true">\n'
+        '  <button class="lb-btn" id="lb-close" onclick="closeLightbox()" aria-label="Close">&#x2715;</button>\n'
+        '  <button class="lb-btn" id="lb-prev"  onclick="lbStep(-1)" aria-label="Previous">&#8249;</button>\n'
+        '  <div id="lb-spinner"></div>\n'
+        '  <canvas id="lb-canvas" style="display:none"></canvas>\n'
+        '  <canvas id="lb-canvas-display"></canvas>\n'
+        '  <img id="lb-image" src="" alt="Photograph by N C Mohan">\n'
+        '  <button class="lb-btn" id="lb-next"  onclick="lbStep(1)"  aria-label="Next">&#8250;</button>\n'
+        '  <div class="lb-meta">\n'
+        '    <div class="lb-counter" id="lb-counter"></div>\n'
+        '    <div class="lb-copyright">&copy; N C Mohan &mdash; All rights reserved</div>\n'
+        '    <div class="lb-hint">For a clean copy for promotional use, contact ncmohan.photos@gmail.com</div>\n'
+        '  </div>\n'
+        '</div>\n\n'
 
         # ── COPYRIGHT BANNER ─────────────────────────────────────────────────
         '<div id="copyright-banner">\n'
@@ -3238,34 +2721,9 @@ goHome();
         ' &middot; Reproduction or use without prior written permission is strictly prohibited.\n'
         '</div>\n\n'
 
-        # ── FOOTER — scrollable, rich, contains Licensing + Legal ────────────
+        # ── FOOTER ───────────────────────────────────────────────────────────
         '<footer>\n'
-        '  <div class="footer-inner">\n'
-
-        # Licensing section
-        '    <div class="footer-section">\n'
-        '      <div class="footer-section-title">Licensing</div>\n'
-        '      <div class="footer-section-body">\n'
-        + render_paragraphs(c_licens.get('paragraphs', [
-            'All photographs are available for commercial and editorial licensing.',
-            'Please <a href="#" onclick="showInfoPage(\'page-contact\'); return false;" style="color:var(--gold)">get in touch</a> to discuss usage rights and pricing.'
-        ])) +
-        '      </div>\n'
-        '    </div>\n'
-
-        # Copyright & Legal section
-        '    <div class="footer-section">\n'
-        '      <div class="footer-section-title">Copyright &amp; Legal</div>\n'
-        '      <div class="footer-section-body">\n'
-        + render_items(c_legal.get('items', [
-            {'heading': 'Copyright', 'detail': 'All photographs &copy; N C Mohan. All rights reserved. Reproduction or use without prior written permission is strictly prohibited.'},
-            {'heading': 'Usage', 'detail': 'Personal, non-commercial viewing is permitted. Any other use requires a written licence agreement.'}
-        ])) +
-        '      </div>\n'
-        '    </div>\n'
-
-        '    <div class="footer-copy">&copy; ' + photographer + ' &middot; All rights reserved &middot; Mohangraphy</div>\n'
-        '  </div>\n'
+        '  <span class="footer-copy">&copy; N C Mohan &middot; All rights reserved</span>\n'
         '</footer>\n\n'
 
         '<script>' + js + '</script>\n'
@@ -3285,104 +2743,5 @@ goHome();
     print("  Hero slides  : " + str(len(hero_slides)) + " (Megamalai, 3s rotation)")
     print("=" * 55)
 
-def clean_metadata():
-    """
-    Remove entries from photo_metadata.json whose source file no longer
-    exists on disk. Runs automatically before every build.
-    Returns the number of entries removed.
-    """
-    if not os.path.exists(DATA_FILE):
-        return 0
-    with open(DATA_FILE, 'r') as f:
-        try:
-            data = json.load(f)
-        except Exception:
-            return 0
-
-    removed = []
-    cleaned = {}
-    for key, info in data.items():
-        rel_path = info.get('path', '').strip()
-        if not rel_path:
-            cleaned[key] = info   # keep entries with no path (safety)
-            continue
-        full_path = os.path.join(ROOT_DIR, rel_path)
-        if os.path.exists(full_path):
-            cleaned[key] = info
-        else:
-            removed.append(rel_path)
-
-    if removed:
-        with open(DATA_FILE, 'w') as f:
-            json.dump(cleaned, f, indent=2)
-        print(f"  🗑  Cleaned {len(removed)} deleted photo(s) from photo_metadata.json:")
-        for r in removed:
-            print(f"       - {r}")
-    else:
-        print(f"  ✅ photo_metadata.json is clean — no deleted photos found")
-
-    return len(removed)
-
-
-def git_deploy():
-    """
-    Stage all changes, commit with a timestamp, and push to GitHub.
-    Runs automatically after every build.
-    """
-    import datetime
-    stamp = datetime.datetime.now().strftime("%Y-%m-%d %H:%M")
-
-    def run(cmd, cwd=ROOT_DIR):
-        result = subprocess.run(cmd, cwd=cwd, capture_output=True, text=True)
-        return result.returncode, result.stdout.strip(), result.stderr.strip()
-
-    print()
-    print("─" * 55)
-    print("DEPLOYING TO GITHUB...")
-    print("─" * 55)
-
-    # git add everything
-    code, out, err = run(["git", "add", "-A"])
-    if code != 0:
-        print(f"  ❌ git add failed: {err}")
-        return
-
-    # Check if there's actually anything to commit
-    code, out, err = run(["git", "status", "--porcelain"])
-    if not out.strip():
-        print("  ✅ Nothing new to deploy — GitHub is already up to date.")
-        return
-
-    # Count changed files for the commit message
-    changed = [l for l in out.splitlines() if l.strip()]
-    msg = f"Deploy {stamp} — {len(changed)} file(s) updated"
-
-    code, out, err = run(["git", "commit", "-m", msg])
-    if code != 0:
-        print(f"  ❌ git commit failed: {err}")
-        return
-    print(f"  ✅ Committed: {msg}")
-
-    code, out, err = run(["git", "push"])
-    if code != 0:
-        print(f"  ❌ git push failed: {err}")
-        print(f"     {err}")
-        return
-    print(f"  ✅ Pushed to GitHub successfully!")
-    print(f"  🌐 Live in ~30 seconds at: https://mohangraphy.github.io")
-    print("─" * 55)
-
-
 if __name__ == "__main__":
-    print("=" * 55)
-    print("MOHANGRAPHY DEPLOY")
-    print("=" * 55)
-    print()
-    print("Step 1 — Checking for deleted photos...")
-    clean_metadata()
-    print()
-    print("Step 2 — Building site...")
     generate_html()
-    print()
-    print("Step 3 — Deploying to GitHub...")
-    git_deploy()
