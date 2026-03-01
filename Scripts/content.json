@@ -1,5 +1,4 @@
 {
-  "_instructions": "Edit this file to update your website content. After saving, run deploy.py to publish changes. Do NOT change the key names (words on the left of the colon). Only change the values (text on the right).",
   "site": {
     "title": "MOHANGRAPHY",
     "tagline": "Light · Moment · Story",
@@ -11,6 +10,7 @@
     "supabase_anon_key": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhqY3ByeWZnb2RncXF0YmJsa2xnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzIxODEzMjcsImV4cCI6MjA4Nzc1NzMyN30.M9KoprG4uaH3wcZ7nI0Hip4IAdqiy8m5UoiB9DzjreI",
     "admin_password": "mohan2024",
     "plausible_domain": "ncmohan.github.io"
+	"ga_measurement_id": "G-R6KXTMCP64"
   },
   "about": {
     "title": "About Me",
@@ -40,8 +40,8 @@
       {
         "heading": "Primary Lenses",
         "detail": "Nikkor 35mm, 50mm f/1.8, 11-20mm, 55-300mm, 200-500mm"
-      }
-{
+      },
+      {
         "heading": "Softwares",
         "detail": "Nikon NX Studio, AffinityPro2 and DarkTable"
       }
@@ -99,14 +99,6 @@
       "<strong>Editorial Licensing</strong> : Images may be licensed for editorial use in publications, documentaries, and educational material.",
       "<strong>Commercial Licensing</strong> : Advertising, product packaging, and corporate communications require a separate commercial licence.",
       "To discuss licensing terms, please send an email with the image title and your intended usage details."
-    ]
-  },
-  "workshops": {
-    "title": "Workshops & Tours",
-    "subtitle": "Learn to see, learn to shoot",
-    "paragraphs": [
-      "I occasionally lead small-group <strong>photography workshops and field tours</strong> in locations I know intimately — including the Western Ghats, Megamalai, and other destinations across India.",
-      "To register interest or ask about upcoming dates, please use the Contact page."
     ]
   },
   "legal": {
