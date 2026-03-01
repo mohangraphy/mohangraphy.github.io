@@ -17,16 +17,16 @@
     "subtitle": "Photographer · N C Mohan",
     "paragraphs": [
       "I am <strong>N C Mohan</strong>, a photographer based in India with a deep passion for capturing the world in its most honest and luminous moments. My work spans landscapes, wildlife, architecture, and the quiet beauty of everyday life.",
-      "Photography for me is the intersection of <strong>light, moment, and story</strong> — three elements that are fleeting, unrepeatable, and endlessly compelling. I chase the quality of light as obsessively as I chase the subject within it.",
-      "My journeys have taken me across India's diverse terrains — from the mist-laden hills of <strong>Megamalai</strong> of the South to the <strong>Snow-clad Himalayas</strong> of the North, the coastlines of West and East, the deserts of <strong>Rajasthan</strong> and the high-altitude desert of <strong>Ladakh</strong>, and the many forests that define this extraordinary country."
+      "Photography for me is the intersection of <strong>light, moment, and story</strong>, three elements that are fleeting, unrepeatable, and endlessly compelling. I chase the quality of light as obsessively as I chase the subject within it.",
+      "My journeys have taken me across India's diverse terrains, from the mist-laden hills of <strong>Megamalai</strong> of the South to the <strong>Snow-clad Himalayas</strong> of the North, the untamed paradise of the <strong>North East</strong>, the coastlines of West and East, the deserts of <strong>Rajasthan</strong> and the high-altitude desert of <strong>Ladakh</strong>, and the many forests that define this extraordinary country."
     ]
   },
   "philosophy": {
     "title": "Philosophy",
     "subtitle": "How I see the world",
     "paragraphs": [
-      "Every photograph begins with <strong>seeing</strong> — not just looking. I believe the camera is a tool for attention, a device that forces you to slow down and notice what is already there.",
-      "I am drawn to available light — dawn, dusk, storm light, the last rays cutting through forest canopy. I rarely intervene in a scene. My instinct is to <strong>wait, watch, and respond</strong>."
+      "Every photograph begins with <strong>seeing</strong>, not just looking. I believe the camera is a tool for attention, a device that forces you to slow down and notice what is already there.",
+      "I am drawn to available light - dawn, dusk, storm light, the last rays cutting through forest canopy. I rarely intervene in a scene. My instinct is to <strong>wait, watch, and respond</strong>."
     ]
   },
   "gear": {
@@ -41,12 +41,16 @@
         "heading": "Primary Lenses",
         "detail": "Nikkor 35mm, 50mm f/1.8, 11-20mm, 55-300mm, 200-500mm"
       }
+{
+        "heading": "Softwares",
+        "detail": "Nikon NX Studio, AffinityPro2 and DarkTable"
+      }
     ]
   },
   "contact": {
     "title": "Get in Touch",
     "subtitle": "Inquiries & Collaborations",
-    "intro": "Whether you are interested in a print, a licensing inquiry, or simply want to talk photography — I would love to hear from you. I typically respond within 48 hours.",
+    "intro": "Whether you are interested in a print, a licensing inquiry, or simply want to talk photography, I would love to hear from you. I typically respond within 48 hours.",
     "subjects": [
       "General Enquiry",
       "Print Purchase",
@@ -91,9 +95,9 @@
     "title": "Image Licensing",
     "subtitle": "Professional Usage",
     "paragraphs": [
-      "Rights-managed licensing for editorial, commercial, or digital use is available. My work has appeared in various publications and exhibitions.",
-      "<strong>Editorial Licensing</strong> — images may be licensed for editorial use in publications, documentaries, and educational material.",
-      "<strong>Commercial Licensing</strong> — advertising, product packaging, and corporate communications require a separate commercial licence.",
+      "Rights-managed licensing for editorial, commercial, or digital use is available.",
+      "<strong>Editorial Licensing</strong> : Images may be licensed for editorial use in publications, documentaries, and educational material.",
+      "<strong>Commercial Licensing</strong> : Advertising, product packaging, and corporate communications require a separate commercial licence.",
       "To discuss licensing terms, please send an email with the image title and your intended usage details."
     ]
   },
