@@ -35,6 +35,18 @@ Right-click photo → Edit Tags → fill in → Save
 Terminal shows "Updated 1 photo"
 When done, run deploy.py to publish
 
+cd /Users/ncm/Pictures/Mohangraphy
+python3 Scripts/curator.py
+```
 
+Run it whenever you **add new photos** to your folder. It will skip photos already tagged and only show you the new untagged ones.
+
+## The simple workflow
+```
+Add new photos to /Photos/...
+        ↓
+python3 Scripts/curator.py   ← tag the new photos
+        ↓
+python3 Scripts/Claude_mohangraphy.py   ← build + deploy
 
 cd /Users/ncm/Pictures/Mohangraphy && python3 Scripts/Claude_mohangraphy.py
