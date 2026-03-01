@@ -386,6 +386,18 @@ def generate_html():
     # Build path→full metadata dict for embedding into grid items
     meta_by_path = {e.get('path','').strip(): e for e in unique if e.get('path','').strip()}
 
+    # About Me photo — copy Scripts/about_photo.jpg to root if it exists
+    about_photo_src = os.path.join(ROOT_DIR, "Scripts", "about_photo.jpg")
+    about_photo_dst = os.path.join(ROOT_DIR, "about_photo.jpg")
+    has_about_photo = False
+    if os.path.exists(about_photo_src):
+        import shutil as _shutil
+        _shutil.copy2(about_photo_src, about_photo_dst)
+        has_about_photo = True
+        print(f"  📷 About Me photo found and copied")
+    elif os.path.exists(about_photo_dst):
+        has_about_photo = True  # already there from previous run
+
     print(f"Unique photos: {len(unique)}")
     print(f"Mountains photos found: {len(tag_map.get('Nature/Mountains', []))}")
 
@@ -708,6 +720,39 @@ header {
 }
 .info-page-body p { margin-bottom: 20px; }
 .info-page-body strong { color: var(--gold); font-weight: 600; }
+
+/* About Me — photo + text side by side */
+.about-layout {
+  display: grid;
+  grid-template-columns: 280px 1fr;
+  gap: clamp(32px, 5vw, 64px);
+  align-items: start;
+  margin-bottom: 32px;
+}
+.about-photo-wrap {
+  position: sticky; top: calc(var(--hdr) + 32px);
+}
+.about-photo-wrap img {
+  width: 100%; display: block;
+  border: 1px solid rgba(201,169,110,0.15);
+  filter: grayscale(15%);
+  transition: filter .4s;
+}
+.about-photo-wrap img:hover { filter: grayscale(0%); }
+.about-photo-caption {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 8px; letter-spacing: 3px; text-transform: uppercase;
+  color: rgba(255,255,255,0.25); margin-top: 10px; text-align: center;
+}
+@media (max-width: 640px) {
+  .about-layout {
+    grid-template-columns: 1fr;
+  }
+  .about-photo-wrap {
+    position: static;
+    max-width: 260px; margin: 0 auto 8px;
+  }
+}
 
 /* Contact form fields */
 .contact-field {
@@ -2891,6 +2936,28 @@ goHome();
 """
 
     # ── ASSEMBLE HTML ─────────────────────────────────────────────────────────
+    # Pre-build about body HTML (avoids inline ternary in string concat)
+    about_paras = render_paragraphs(c_about.get('paragraphs', ['[ Add your story in content.json ]']))
+    if has_about_photo:
+        about_body_html = (
+            '    <div class="about-layout">\n'
+            '      <div class="about-photo-wrap">\n'
+            '        <img src="about_photo.jpg" alt="' + photographer + '">\n'
+            '        <div class="about-photo-caption">' + photographer + '</div>\n'
+            '      </div>\n'
+            '      <div class="info-page-body">\n'
+            + about_paras +
+            '      </div>\n'
+            '    </div>\n'
+        )
+    else:
+        about_body_html = (
+            '    <div class="info-page-body">\n'
+            + about_paras +
+            '    </div>\n'
+        )
+
+
     html = (
         '<!DOCTYPE html>\n'
         '<html lang="en">\n'
@@ -3024,10 +3091,8 @@ goHome();
         '    <div class="info-page-title">' + c_about.get('title','About Me') + '</div>\n'
         '    <div class="info-page-subtitle">' + c_about.get('subtitle','Photographer · ' + photographer) + '</div>\n'
         '    <div class="info-page-divider"></div>\n'
-        '    <div class="info-page-body">\n'
-        + render_paragraphs(c_about.get('paragraphs', ['[ Add your story in content.json ]'])) +
-        '    </div>\n'
-        '    <div class="info-page-divider"></div>\n'
+        + about_body_html
+        + '    <div class="info-page-divider"></div>\n'
         '    <div class="info-page-title" style="font-size:clamp(20px,3vw,32px);margin-bottom:6px">' + c_phil.get('title','Philosophy') + '</div>\n'
         '    <div class="info-page-subtitle">' + c_phil.get('subtitle','How I see the world') + '</div>\n'
         '    <div class="info-page-body">\n'
@@ -3273,6 +3338,7 @@ goHome();
         '</html>'
     )
 
+
     out_path = os.path.join(ROOT_DIR, "index.html")
     with open(out_path, "w", encoding="utf-8") as f:
         f.write(html)
@@ -3362,6 +3428,13 @@ def git_deploy():
         print(f"  ❌ git commit failed: {err}")
         return
     print(f"  ✅ Committed: {msg}")
+
+    # Pull remote changes first so push is never rejected
+    code, out, err = run(["git", "pull", "--rebase"])
+    if code != 0:
+        print(f"  ❌ git pull failed: {err}")
+        print(f"     Run: git pull --rebase  then try again.")
+        return
 
     code, out, err = run(["git", "push"])
     if code != 0:
