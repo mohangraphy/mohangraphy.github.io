@@ -2087,7 +2087,7 @@ footer {
                 ) +
                 '<div class="cat-card-bar">'
                 '<div class="cat-card-name">' + item['name'] + '</div>'
-                ''
+                '<div class="cat-card-count">' + cnt + '</div>'
                 '</div>'
                 '\n</div>'
             )
@@ -2109,7 +2109,7 @@ footer {
                     ) +
                     '<div class="cat-card-bar">'
                     '<div class="cat-card-name">' + item['name'] + '</div>'
-                    ''
+                    '<div class="cat-card-count">' + cnt + '</div>'
                     '</div>'
                     '\n</div>'
                 )
