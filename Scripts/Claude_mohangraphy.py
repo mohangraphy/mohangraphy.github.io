@@ -976,7 +976,13 @@ header {
 
 /* ── Minimum font-size 14px on desktop ── */
 @media (min-width: 1025px) {
-  .cat-card-count, .gal-sub, .bc-sep, .footer-copy { font-size: 14px !important; }
+  .cat-card-count, .gal-sub, .bc-sep, #visit-count {
+  opacity: 0.45;
+  font-size: inherit;
+  letter-spacing: inherit;
+}
+
+.footer-copy { font-size: 14px !important; }
   .hdr-tab { font-size: 11px; }
 }
 
@@ -2744,6 +2750,25 @@ function barLike(btn){
   localStorage.setItem('mohan_likes2',JSON.stringify(localLikes));
 }
 
+function initVisits(){
+  if(!SUPA_URL || SUPA_URL==='NONE') return;
+  /* Increment visit count in Supabase */
+  supaRequest('GET','visits?id=eq.total&select=id,count')
+    .then(function(rows){
+      var cur = rows&&rows[0] ? parseInt(rows[0].count)||0 : 0;
+      var next = cur + 1;
+      return supaRequest('POST','visits?on_conflict=id',{id:'total', count:next})
+        .then(function(){
+          /* Display in footer — only show if > 0 */
+          var el = document.getElementById('visit-count');
+          if(el && next > 0){
+            el.textContent = ' · ' + next.toLocaleString() + ' visits';
+          }
+        });
+    }).catch(function(){});
+}
+document.addEventListener('DOMContentLoaded', initVisits);
+
 function initLikes(){
   /* No grid bars — only sync state for modal */
 }
@@ -3329,7 +3354,7 @@ goHome();
         '      </div>\n'
         '    </div>\n'
 
-        '    <div class="footer-copy">&copy; ' + photographer + ' &middot; All rights reserved &middot; Mohangraphy</div>\n'
+        '    <div class="footer-copy">&copy; ' + photographer + ' &middot; All rights reserved &middot; Mohangraphy<span id="visit-count"></span></div>\n'
         '  </div>\n'
         '</footer>\n\n'
 
