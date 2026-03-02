@@ -221,8 +221,10 @@ def build_maps(unique_entries):
             continue
         all_paths.append(path)
         overlay_place = city if city else state
+        date_added = info.get('date_added', '')
         path_info_map[path] = {'place': overlay_place, 'remarks': remarks,
-                               'state': state, 'city': city}
+                               'state': state, 'city': city,
+                               'date_added': date_added}
 
         for raw_tag in tags:
             if raw_tag in MOUNTAINS_TAGS or raw_tag == "Nature/Landscape/Mountains":
@@ -336,11 +338,12 @@ def grid_item_html(thumb_path, orig_path, alt, path_info, meta_by_path=None, web
     Build a single grid cell. Embeds existing metadata as data-* attributes.
     Lightbox uses 2048px web copy (Web/) not the original.
     """
-    info    = path_info.get(orig_path, {})
-    remarks = info.get('remarks', '').strip()
-    place   = info.get('place',   '').strip()
-    state   = info.get('state',   '').strip()
-    city    = info.get('city',    '').strip()
+    info       = path_info.get(orig_path, {})
+    remarks    = info.get('remarks',    '').strip()
+    place      = info.get('place',      '').strip()
+    state      = info.get('state',      '').strip()
+    city       = info.get('city',       '').strip()
+    date_added = info.get('date_added', '').strip()
 
     cats = []
     if meta_by_path and orig_path in meta_by_path:
@@ -362,11 +365,12 @@ def grid_item_html(thumb_path, orig_path, alt, path_info, meta_by_path=None, web
 
     return (
         '<div class="grid-item"'
-        ' data-photo="'   + qa(orig_path) + '"'
-        ' data-state="'   + qa(state)     + '"'
-        ' data-city="'    + qa(city)      + '"'
-        ' data-remarks="' + qa(remarks)   + '"'
-        ' data-cats="'    + qa(','.join(cats)) + '"'
+        ' data-photo="'      + qa(orig_path)  + '"'
+        ' data-state="'      + qa(state)      + '"'
+        ' data-city="'       + qa(city)       + '"'
+        ' data-remarks="'    + qa(remarks)    + '"'
+        ' data-cats="'       + qa(','.join(cats)) + '"'
+        ' data-date-added="' + qa(date_added) + '"'
         ' onclick="openImgModal(this)">'
         '<div class="grid-item-photo">'
         + thumb_img(thumb_path, web_path, alt)
@@ -977,7 +981,7 @@ header {
 /* ── Minimum font-size 14px on desktop ── */
 @media (min-width: 1025px) {
   .cat-card-count, .gal-sub, .bc-sep, #visit-count {
-  opacity: 0.45;
+  opacity: 0.6;
   font-size: inherit;
   letter-spacing: inherit;
 }
@@ -1898,8 +1902,35 @@ footer {
   border-top: 1px solid rgba(255,255,255,0.05);
   padding-top: 20px;
   font-size: 10px; letter-spacing: 2px;
-  color: rgba(255,255,255,0.2); text-align: center;
+  color: rgba(255,255,255,0.55); text-align: center;
 }
+
+/* ── NEW badge on recently added photos ── */
+.new-badge {
+  position: absolute; top: 10px; right: 10px;
+  background: rgba(201,169,110,0.15);
+  border: 1px solid rgba(201,169,110,0.6);
+  color: var(--gold);
+  font-family: 'Montserrat', sans-serif;
+  font-size: 7px; letter-spacing: 3px; font-weight: 600;
+  text-transform: uppercase;
+  padding: 3px 7px;
+  pointer-events: none;
+  z-index: 3;
+}
+
+/* ── Recently Added banner ── */
+#new-photos-banner {
+  display: none;
+  text-align: center;
+  padding: 10px 20px;
+  font-family: 'Montserrat', sans-serif;
+  font-size: 8px; letter-spacing: 3px; text-transform: uppercase;
+  color: var(--gold); opacity: 0.75;
+  cursor: pointer; transition: opacity .2s;
+  margin-bottom: 8px;
+}
+#new-photos-banner:hover { opacity: 1; }
 
 /* ── PAGE TRANSITIONS ── */
 .page-enter { animation: pEnter .35s ease forwards; }
@@ -1964,7 +1995,7 @@ footer {
                         ) +
                         '<div class="cat-card-bar">'
                         '<div class="cat-card-name">' + state + '</div>'
-                        ''
+                        '<div class="cat-card-count">' + str(len(state_all)) + ' Photos</div>'
                         '</div>'
                         '</div>'
                     )
@@ -1990,7 +2021,7 @@ footer {
                             ) +
                             '<div class="cat-card-bar">'
                             '<div class="cat-card-name">' + city + '</div>'
-                            ''
+                            '<div class="cat-card-count">' + str(len(city_paths)) + ' Photos</div>'
                             '</div>'
                             '</div>'
                         )
@@ -2397,6 +2428,74 @@ NAV_PANELS.forEach(function(id){
 });
 
 /* ── scrollToCollections: scroll down to tile-nav from hero ── */
+/* ── Recently Added: mark new photos + show banner ── */
+var NEW_DAYS = 14;
+
+function markNewPhotos(){
+  var now = new Date();
+  var newItems = [];
+  document.querySelectorAll('.grid-item[data-date-added]').forEach(function(item){
+    var da = item.getAttribute('data-date-added');
+    if(!da) return;
+    var added = new Date(da);
+    var diffDays = (now - added) / (1000 * 60 * 60 * 24);
+    if(diffDays <= NEW_DAYS && diffDays >= 0){
+      /* Add NEW badge if not already there */
+      if(!item.querySelector('.new-badge')){
+        var badge = document.createElement('div');
+        badge.className = 'new-badge';
+        badge.textContent = 'NEW';
+        item.querySelector('.grid-item-photo').appendChild(badge);
+      }
+      newItems.push(item);
+    }
+  });
+  /* Show banner if new photos exist */
+  var banner = document.getElementById('new-photos-banner');
+  var label  = document.getElementById('new-photos-label');
+  if(banner && newItems.length > 0){
+    label.textContent = newItems.length + ' photo' + (newItems.length > 1 ? 's' : '') + ' added recently — view them';
+    banner.style.display = 'block';
+  }
+}
+
+function showNewPhotos(){
+  /* Build a temporary gallery of new photos and show it */
+  var now = new Date();
+  var newPaths = [];
+  document.querySelectorAll('.grid-item[data-date-added]').forEach(function(item){
+    var da = item.getAttribute('data-date-added');
+    if(!da) return;
+    var diffDays = (now - new Date(da)) / (1000 * 60 * 60 * 24);
+    if(diffDays <= NEW_DAYS && diffDays >= 0) newPaths.push(item);
+  });
+  if(!newPaths.length) return;
+
+  /* Show them in the gallery container as a temp block */
+  var galContainer = document.getElementById('gallery-container');
+  var existing = document.getElementById('gallery-new-photos');
+  if(existing) existing.remove();
+
+  var block = document.createElement('div');
+  block.className = 'section-block';
+  block.id = 'gallery-new-photos';
+  block.innerHTML = '<div class="gal-header"><div class="gal-title">Recently Added</div>'
+    + '<div class="gal-sub">' + newPaths.length + ' Photos · Last ' + NEW_DAYS + ' days</div></div>'
+    + '<div class="grid">'
+    + newPaths.map(function(item){ return item.outerHTML; }).join('')
+    + '</div>';
+  galContainer.prepend(block);
+
+  /* Show gallery container */
+  hideAllSections();
+  galContainer.classList.add('visible');
+  block.scrollIntoView({behavior:'smooth', block:'start'});
+}
+
+document.addEventListener('DOMContentLoaded', function(){
+  markNewPhotos();
+});
+
 function scrollToCollections(){
   var tn=document.getElementById('tile-nav');
   if(tn && tn.classList.contains('visible')){
@@ -3090,6 +3189,7 @@ goHome();
 
         # ── MAIN MENU ────────────────────────────────────────────────────────
         '<div id="tile-nav">\n'
+        '  <div id="new-photos-banner" onclick="showNewPhotos()">&#10022; <span id="new-photos-label"></span></div>\n'
         '  <div class="tile-nav-label">Collections</div>\n'
         '  <div class="cat-grid">\n'
         + cat_tiles_html +
