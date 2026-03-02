@@ -1,4 +1,7 @@
 
+cp ~/Downloads/Claude_mohangraphy.py /Users/ncm/Pictures/Mohangraphy/Scripts/
+cd /Users/ncm/Pictures/Mohangraphy && python3 Scripts/Claude_mohangraphy.py
+
 python3 /Users/ncm/Pictures/Mohangraphy/Scripts/Claude_deploy.py
 
  "intro": "All prints are produced on <strong>archival fine-art paper</strong> using pigment-based inks, guaranteeing colour accuracy and longevity of over 100 years under normal display conditions.",

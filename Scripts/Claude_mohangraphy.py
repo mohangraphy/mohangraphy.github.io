@@ -419,7 +419,7 @@ def generate_html():
     supabase_url     = site.get('supabase_url',     'https://xjcpryfgodgqqtbblklg.supabase.co')
     supabase_key     = site.get('supabase_anon_key','eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhqY3ByeWZnb2RncXF0YmJsa2xnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzIxODEzMjcsImV4cCI6MjA4Nzc1NzMyN30.M9KoprG4uaH3wcZ7nI0Hip4IAdqiy8m5UoiB9DzjreI')
     admin_password   = site.get('admin_password',   'mohan2024')
-    plausible_domain = site.get('plausible_domain', 'ncmohan.github.io')
+    plausible_domain = site.get('plausible_domain', 'www.mohangraphy.com')
     ga_id            = site.get('ga_measurement_id','')   # add G-XXXXXXXXXX to content.json
 
     # Generate / verify thumbnails + 2048px web copies
@@ -1958,7 +1958,7 @@ footer {
                         ) +
                         '<div class="cat-card-bar">'
                         '<div class="cat-card-name">' + state + '</div>'
-                        '<div class="cat-card-count">' + str(len(state_all)) + ' Photos</div>'
+                        ''
                         '</div>'
                         '</div>'
                     )
@@ -1984,7 +1984,7 @@ footer {
                             ) +
                             '<div class="cat-card-bar">'
                             '<div class="cat-card-name">' + city + '</div>'
-                            '<div class="cat-card-count">' + str(len(city_paths)) + ' Photos</div>'
+                            ''
                             '</div>'
                             '</div>'
                         )
@@ -2081,7 +2081,7 @@ footer {
                 ) +
                 '<div class="cat-card-bar">'
                 '<div class="cat-card-name">' + item['name'] + '</div>'
-                '<div class="cat-card-count">' + cnt + '</div>'
+                ''
                 '</div>'
                 '\n</div>'
             )
@@ -2103,7 +2103,7 @@ footer {
                     ) +
                     '<div class="cat-card-bar">'
                     '<div class="cat-card-name">' + item['name'] + '</div>'
-                    '<div class="cat-card-count">' + cnt + '</div>'
+                    ''
                     '</div>'
                     '\n</div>'
                 )
@@ -2188,7 +2188,7 @@ footer {
             ) +
             '<div class="cat-card-bar">'
             '<div class="cat-card-name">' + m_cat + '</div>'
-            '<div class="cat-card-count">' + count_lbl + '</div>'
+            ''
             '</div>'
             '\n</div>'
         )
@@ -3339,6 +3339,11 @@ goHome();
     )
 
 
+    # Write CNAME file — tells GitHub Pages to serve on custom domain
+    cname_path = os.path.join(ROOT_DIR, "CNAME")
+    with open(cname_path, "w") as f:
+        f.write("www.mohangraphy.com")
+
     out_path = os.path.join(ROOT_DIR, "index.html")
     with open(out_path, "w", encoding="utf-8") as f:
         f.write(html)
@@ -3442,7 +3447,7 @@ def git_deploy():
         print(f"     {err}")
         return
     print(f"  ✅ Pushed to GitHub successfully!")
-    print(f"  🌐 Live in ~30 seconds at: https://mohangraphy.github.io")
+    print(f"  🌐 Live in ~30 seconds at: https://www.mohangraphy.com")
     print("─" * 55)
 
 
