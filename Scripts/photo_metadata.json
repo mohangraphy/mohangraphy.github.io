@@ -383,12 +383,14 @@
     },
     "3e3639cd29e9aa0531fb6b8348c4328a": {
         "path": "Photos/Places/International/2025-0714-Calgary-NCM_6749.jpg",
+        "filename": "2025-0714-Calgary-NCM_6749.jpg",
         "categories": [
             "Nature/Landscape",
             "Places/International"
         ],
-        "place": "Banff",
-        "filename": "2025-0714-Calgary-NCM_6749.jpg",
+        "state": "Canada",
+        "city": "Banff",
+        "remarks": "",
         "date_added": "2026-03-03"
     }
 }

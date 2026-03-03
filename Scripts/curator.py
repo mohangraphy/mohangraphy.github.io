@@ -2,6 +2,7 @@ import os
 import json
 import hashlib
 import subprocess
+import datetime
 
 # --- SETTINGS ---
 ROOT_DIR = "/Users/ncm/Pictures/Mohangraphy"
@@ -71,6 +72,66 @@ def ask_mac_question(title, prompt, buttons=["Next", "Stop"]):
     out, _ = proc.communicate()
     return out.decode('utf-8').strip().split(':')[-1]
 
+def ask_location(selected_cats, existing={}):
+    """
+    Ask for location details based on whether photo is National or International.
+    National  → State + City
+    International → Country + City
+    Returns dict with keys: state, city
+    """
+    is_national      = "Places/National"      in selected_cats
+    is_international = "Places/International" in selected_cats
+
+    # If neither Places category selected, still ask for a location (used as overlay)
+    if not is_national and not is_international:
+        # Simple single location field for non-Places photos
+        current = existing.get('city', '') or existing.get('state', '') or existing.get('place', '')
+        location = ask_mac_input("Location", "Enter Location Name (e.g., Megamalai):", current)
+        return {"state": location, "city": location}
+
+    # Determine National or International
+    if is_national and is_international:
+        # Both selected — ask which applies to this photo
+        choice = ask_mac_question(
+            "National or International?",
+            "Is this photo National (India) or International?",
+            ["National", "International"]
+        )
+        is_national      = (choice == "National")
+        is_international = (choice == "International")
+
+    if is_national:
+        current_state = existing.get('state', '')
+        current_city  = existing.get('city',  '')
+        state = ask_mac_input(
+            "Location — National",
+            "Enter State (e.g., Karnataka, Tamil Nadu, Kerala):",
+            current_state
+        )
+        city = ask_mac_input(
+            "Location — National",
+            f"Enter City / Place (e.g., Badami, Munnar, Megamalai):",
+            current_city
+        )
+        return {"state": state.strip(), "city": city.strip()}
+
+    if is_international:
+        current_state = existing.get('state', '')
+        current_city  = existing.get('city',  '')
+        country = ask_mac_input(
+            "Location — International",
+            "Enter Country (e.g., Canada, Japan, France):",
+            current_state
+        )
+        city = ask_mac_input(
+            "Location — International",
+            f"Enter City / Place (e.g., Banff, Tokyo, Paris):",
+            current_city
+        )
+        return {"state": country.strip(), "city": city.strip()}
+
+    return {"state": "", "city": ""}
+
 def run_curator():
     data = clean_and_load_data()
 
@@ -81,17 +142,27 @@ def run_curator():
                 disk_files.append(os.path.join(root, f))
 
     for path in disk_files:
-        f_hash = get_file_hash(path)
+        f_hash   = get_file_hash(path)
         filename = os.path.basename(path)
         rel_path = os.path.relpath(path, ROOT_DIR)
         
-        exists = f_hash in data
-        status_msg = "ALREADY TAGGED" if exists else "NEW PHOTO"
-        current_tags = data[f_hash].get('categories', []) if exists else []
-        current_place = data[f_hash].get('place', "") if exists else ""
-        
+        exists        = f_hash in data
+        status_msg    = "ALREADY TAGGED" if exists else "NEW PHOTO"
+        current_tags  = data[f_hash].get('categories', []) if exists else []
+        current_state = data[f_hash].get('state', '') if exists else ''
+        current_city  = data[f_hash].get('city',  '') if exists else ''
+        # Backward compat — old entries may have 'place' instead of state/city
+        if not current_state and not current_city and exists:
+            current_state = data[f_hash].get('place', '')
+
         subprocess.run(["open", path])
-        action = ask_mac_question("Curator", f"{status_msg}: {filename}\nTags: {current_tags}\nPlace: {current_place}", ["Edit/Tag", "Skip", "Stop"])
+        action = ask_mac_question(
+            "Curator",
+            f"{status_msg}: {filename}\n"
+            f"Tags: {current_tags}\n"
+            f"State/Country: {current_state}   City: {current_city}",
+            ["Edit/Tag", "Skip", "Stop"]
+        )
         
         if action == "Stop": break
         if action == "Skip": continue
@@ -99,13 +170,22 @@ def run_curator():
         # 1. Select Categories
         selected_cats = choose_from_mac_list("Select Categories", f"Tagging: {filename}", FLAT_CATEGORIES)
         if selected_cats is None: continue
-        
-        # 2. ASK FOR PLACE NAME (The fixed part)
-        selected_place = ask_mac_input("Location", "Enter Place Name (e.g., Megamalai):", current_place)
-        
-        # 3. Ask for date added (defaults to today)
-        import datetime
-        today = datetime.date.today().strftime('%Y-%m-%d')
+
+        # 2. Location — smart National vs International
+        existing_location = {"state": current_state, "city": current_city}
+        location = ask_location(selected_cats, existing_location)
+
+        # 3. Remarks (optional caption shown as overlay on photo)
+        current_remarks = data[f_hash].get('remarks', '') if exists else ''
+        remarks = ask_mac_input(
+            "Remarks (optional)",
+            "Enter photo caption/remarks (shown as overlay, e.g., 'Great Hornbill in flight'):\n"
+            "Leave blank if not needed.",
+            current_remarks
+        )
+
+        # 4. Date added (defaults to today)
+        today        = datetime.date.today().strftime('%Y-%m-%d')
         current_date = data[f_hash].get('date_added', today) if exists else today
         selected_date = ask_mac_input(
             "Date Added",
@@ -118,19 +198,22 @@ def run_curator():
         except ValueError:
             selected_date = today
 
-        # 4. Overwrite with Fresh Data
+        # 5. Save
         data[f_hash] = {
-            "path": rel_path,
+            "path":       rel_path,
+            "filename":   filename,
             "categories": selected_cats,
-            "place": selected_place,
-            "filename": filename,
+            "state":      location["state"],
+            "city":       location["city"],
+            "remarks":    remarks.strip(),
             "date_added": selected_date
         }
         
         with open(DATA_FILE, 'w') as f:
             json.dump(data, f, indent=4)
+        print(f"  ✅ Saved: {filename}  |  {location['state']} / {location['city']}")
 
-    print(f"✅ Finished! Total photos in database: {len(data)}")
+    print(f"\n✅ Finished! Total photos in database: {len(data)}")
 
 if __name__ == "__main__":
     run_curator()
