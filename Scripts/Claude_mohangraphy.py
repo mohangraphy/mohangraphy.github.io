@@ -3433,7 +3433,19 @@ goHome();
         '</div>\n\n'
 
         # Lightbox removed — replaced by img-modal
-
+# ── SUBSCRIBE SECTION ────────────────────────────────────────────────
+        '<section id="subscribe-section">\n'
+        '  <div class="subscribe-inner">\n'
+        '    <div class="subscribe-title">Stay in the Loop</div>\n'
+        '    <div class="subscribe-subtitle">Be the first to know when new photographs are added</div>\n'
+        '    <div class="subscribe-form">\n'
+        '      <input type="text" id="sub-name" placeholder="Your Name (optional)">\n'
+        '      <input type="email" id="sub-email" placeholder="Your Email Address *">\n'
+        '      <button onclick="subscribeVisitor()">Notify Me</button>\n'
+        '    </div>\n'
+        '    <div id="subscribe-msg"></div>\n'
+        '  </div>\n'
+        '</section>\n\n'
         # ── COPYRIGHT BANNER ─────────────────────────────────────────────────
         '<div id="copyright-banner">\n'
         '  &copy; All photographs are the exclusive property of N C Mohan and are protected under copyright law.'
