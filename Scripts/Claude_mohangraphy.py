@@ -2516,37 +2516,38 @@ function markNewPhotos(){
 }
 
 function showNewPhotos(){
-  /* Build a temporary gallery of new photos and show it */
+  /* Only collect from ORIGINAL blocks — exclude previously cloned #gallery-new-photos */
   var now = new Date();
-  var newPaths = [];
-  document.querySelectorAll('.grid-item[data-date-added]').forEach(function(item){
+  var newItems = [];
+  document.querySelectorAll('.section-block:not(#gallery-new-photos) .grid-item[data-date-added]').forEach(function(item){
     var da = item.getAttribute('data-date-added');
     if(!da) return;
     var diffDays = (now - new Date(da)) / (1000 * 60 * 60 * 24);
-    if(diffDays <= NEW_DAYS && diffDays >= 0) newPaths.push(item);
+    if(diffDays <= NEW_DAYS && diffDays >= 0) newItems.push(item);
   });
-  if(!newPaths.length) return;
+  if(!newItems.length) return;
 
-  /* Show them in the gallery container as a temp block */
+  /* Navigate FIRST — hideAll() must run before we create the block */
+  hideAll();
   var galContainer = document.getElementById('gallery-container');
+  galContainer.classList.add('visible');
+
+  /* Remove any previous clone */
   var existing = document.getElementById('gallery-new-photos');
   if(existing) existing.remove();
 
+  /* Build block — add 'visible' class right away so it shows */
   var block = document.createElement('div');
-  block.className = 'section-block';
+  block.className = 'section-block visible';
   block.id = 'gallery-new-photos';
   block.style.paddingTop = 'calc(var(--hdr) + 32px)';
   block.innerHTML = '<div class="gal-header"><div class="gal-title">Recently Added</div>'
-    + '<div class="gal-sub">' + newPaths.length + ' Photos · Last ' + NEW_DAYS + ' days</div></div>'
+    + '<div class="gal-sub">' + newItems.length + ' Photo' + (newItems.length > 1 ? 's' : '') + ' · Last ' + NEW_DAYS + ' days</div></div>'
     + '<div class="grid">'
-    + newPaths.map(function(item){ return item.outerHTML; }).join('')
+    + newItems.map(function(item){ return item.outerHTML; }).join('')
     + '</div>';
   galContainer.prepend(block);
-
-  /* Show gallery container */
-  hideAll();
-  galContainer.classList.add('visible');
-  block.scrollIntoView({behavior:'smooth', block:'start'});
+  window.scrollTo(0, 0);
 }
 
 document.addEventListener('DOMContentLoaded', function(){
