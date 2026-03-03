@@ -1922,25 +1922,30 @@ footer {
 /* ── Recently Added banner ── */
 #new-photos-banner {
   display: none;
+  position: absolute;
+  bottom: 32px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 3;
+  white-space: nowrap;
   text-align: center;
-  padding: 14px 20px;
+  padding: 10px 28px;
   font-family: 'Montserrat', sans-serif;
-  font-size: 9px; letter-spacing: 3px; text-transform: uppercase;
-  background: rgba(201,169,110,0.08);
-  border: 1px solid rgba(201,169,110,0.3);
-  border-left: 3px solid var(--gold);
+  font-size: 9px; letter-spacing: 4px; text-transform: uppercase;
+  background: rgba(0,0,0,0.55);
+  border: 1px solid rgba(201,169,110,0.45);
   color: var(--gold);
   cursor: pointer;
-  margin: 16px clamp(14px,4vw,44px) 0;
   animation: bannerPulse 2.5s ease-in-out infinite;
   transition: background .2s, border-color .2s;
+  backdrop-filter: blur(4px);
 }
 #new-photos-banner:hover {
   background: rgba(201,169,110,0.15);
   border-color: var(--gold);
 }
 @keyframes bannerPulse {
-  0%, 100% { opacity: 0.8; }
+  0%, 100% { opacity: 0.75; }
   50%       { opacity: 1; }
 }
 
@@ -1951,9 +1956,6 @@ footer {
   to   { opacity: 1; transform: none; }
 }
 
-/* ══════════════════════════════════════════════════
-   SUBSCRIBER SIGN-UP
-   ══════════════════════════════════════════════════ */
 #subscribe-section {
   padding: clamp(48px,8vw,96px) clamp(20px,5vw,80px);
   text-align: center;
@@ -1963,58 +1965,33 @@ footer {
 .subscribe-inner { max-width: 520px; margin: 0 auto; }
 .subscribe-title {
   font-family: 'Cormorant Garamond', serif;
-  font-size: clamp(26px,4vw,42px);
-  font-weight: 300;
-  letter-spacing: clamp(4px,1.5vw,10px);
-  text-transform: uppercase;
-  color: rgba(255,255,255,0.9);
-  margin-bottom: 10px;
+  font-size: clamp(26px,4vw,42px); font-weight: 300;
+  letter-spacing: clamp(4px,1.5vw,10px); text-transform: uppercase;
+  color: rgba(255,255,255,0.9); margin-bottom: 10px;
 }
 .subscribe-subtitle {
   font-family: 'Montserrat', sans-serif;
-  font-size: 9px; letter-spacing: 4px;
-  text-transform: uppercase;
-  color: rgba(255,255,255,0.25);
-  margin-bottom: 36px;
+  font-size: 9px; letter-spacing: 4px; text-transform: uppercase;
+  color: rgba(255,255,255,0.65); margin-bottom: 36px;
 }
-.subscribe-form {
-  display: flex; flex-wrap: wrap;
-  gap: 10px; justify-content: center;
-  margin-bottom: 16px;
-}
+.subscribe-form { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; margin-bottom: 16px; }
 .subscribe-form input {
-  flex: 1 1 180px;
-  background: transparent;
-  border: none;
+  flex: 1 1 180px; background: transparent; border: none;
   border-bottom: 1px solid rgba(201,169,110,0.3);
-  color: rgba(255,255,255,0.8);
-  padding: 10px 4px;
-  font-family: 'Montserrat', sans-serif;
-  font-size: 12px; letter-spacing: 1px;
-  outline: none;
-  transition: border-color .25s;
+  color: rgba(255,255,255,0.85); padding: 10px 4px;
+  font-family: 'Montserrat', sans-serif; font-size: 12px; letter-spacing: 1px;
+  outline: none; transition: border-color .25s;
 }
-.subscribe-form input::placeholder { color: rgba(255,255,255,0.2); }
+.subscribe-form input::placeholder { color: rgba(255,255,255,0.5); }
 .subscribe-form input:focus { border-color: var(--gold); }
 .subscribe-form button {
-  background: none;
-  border: 1px solid rgba(201,169,110,0.5);
-  color: var(--gold);
-  padding: 10px 28px;
-  font-family: 'Montserrat', sans-serif;
-  font-size: 9px; letter-spacing: 4px;
-  text-transform: uppercase;
-  cursor: pointer;
-  transition: background .25s, color .25s, border-color .25s;
-  white-space: nowrap;
+  background: none; border: 1px solid rgba(201,169,110,0.5); color: var(--gold);
+  padding: 10px 28px; font-family: 'Montserrat', sans-serif;
+  font-size: 9px; letter-spacing: 4px; text-transform: uppercase;
+  cursor: pointer; transition: background .25s, color .25s, border-color .25s; white-space: nowrap;
 }
 .subscribe-form button:hover { background: var(--gold); color: #000; border-color: var(--gold); }
-#subscribe-msg {
-  font-family: 'Montserrat', sans-serif;
-  font-size: 10px; letter-spacing: 2px;
-  color: var(--gold); min-height: 20px;
-  margin-top: 4px;
-}
+#subscribe-msg { font-family: 'Montserrat', sans-serif; font-size: 10px; letter-spacing: 2px; color: var(--gold); min-height: 20px; margin-top: 4px; }
 """
 
     # ── BUILD GALLERY BLOCKS + SUB-PANELS ────────────────────────────────────
@@ -2533,7 +2510,7 @@ function markNewPhotos(){
   var banner = document.getElementById('new-photos-banner');
   var label  = document.getElementById('new-photos-label');
   if(banner && newItems.length > 0){
-    label.textContent = newItems.length + ' photo' + (newItems.length > 1 ? 's' : '') + ' added recently — view them';
+    label.textContent = newItems.length + ' photo' + (newItems.length > 1 ? 's' : '') + ' added recently — view ' + (newItems.length > 1 ? 'them' : 'it');
     banner.style.display = 'block';
   }
 }
@@ -2558,6 +2535,7 @@ function showNewPhotos(){
   var block = document.createElement('div');
   block.className = 'section-block';
   block.id = 'gallery-new-photos';
+  block.style.paddingTop = 'calc(var(--hdr) + 32px)';
   block.innerHTML = '<div class="gal-header"><div class="gal-title">Recently Added</div>'
     + '<div class="gal-sub">' + newPaths.length + ' Photos · Last ' + NEW_DAYS + ' days</div></div>'
     + '<div class="grid">'
@@ -2565,12 +2543,10 @@ function showNewPhotos(){
     + '</div>';
   galContainer.prepend(block);
 
-  /* Show gallery container and make block visible */
+  /* Show gallery container */
   hideAll();
   galContainer.classList.add('visible');
-  block.classList.add('visible');
-  window.scrollTo(0, 0);
-  setTimeout(function(){ block.scrollIntoView({behavior:'smooth', block:'start'}); }, 80);
+  block.scrollIntoView({behavior:'smooth', block:'start'});
 }
 
 document.addEventListener('DOMContentLoaded', function(){
@@ -3278,11 +3254,11 @@ goHome();
         '    </svg>\n'
         '    <span>Explore</span>\n'
         '  </button>\n'
+        '  <div id="new-photos-banner" onclick="showNewPhotos()">&#10022; <span id="new-photos-label"></span></div>\n'
         '</div>\n\n'
 
         # ── MAIN MENU ────────────────────────────────────────────────────────
         '<div id="tile-nav">\n'
-        '  <div id="new-photos-banner" onclick="showNewPhotos()">&#10022; <span id="new-photos-label"></span></div>\n'
         '  <div class="tile-nav-label">Collections</div>\n'
         '  <div class="cat-grid">\n'
         + cat_tiles_html +
