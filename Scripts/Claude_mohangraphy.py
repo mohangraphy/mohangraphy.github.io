@@ -1992,6 +1992,16 @@ footer {
 }
 .subscribe-form button:hover { background: var(--gold); color: #000; border-color: var(--gold); }
 #subscribe-msg { font-family: 'Montserrat', sans-serif; font-size: 10px; letter-spacing: 2px; color: var(--gold); min-height: 20px; margin-top: 4px; }
+
+.new-photo-wrap { display: flex; flex-direction: column; }
+.new-photo-tags { display: flex; flex-wrap: wrap; gap: 6px; padding: 8px 4px 4px; }
+.new-photo-tag {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 7px; letter-spacing: 2px;
+  color: var(--gold); opacity: 0.8;
+  border: 1px solid rgba(201,169,110,0.3);
+  padding: 3px 7px;
+}
 """
 
     # ── BUILD GALLERY BLOCKS + SUB-PANELS ────────────────────────────────────
@@ -2489,12 +2499,14 @@ var NEW_DAYS = 14;
 
 function markNewPhotos(){
   var now = new Date();
-  var newItems = [];
-  document.querySelectorAll('.grid-item[data-date-added]').forEach(function(item){
-    var da = item.getAttribute('data-date-added');
+  var seenPaths = {};
+  var uniqueCount = 0;
+  /* Only scan original blocks — not any cloned recently-added block */
+  document.querySelectorAll('.section-block:not(#gallery-new-photos) .grid-item[data-date-added]').forEach(function(item){
+    var da   = item.getAttribute('data-date-added');
+    var path = item.getAttribute('data-photo') || '';
     if(!da) return;
-    var added = new Date(da);
-    var diffDays = (now - added) / (1000 * 60 * 60 * 24);
+    var diffDays = (now - new Date(da)) / (1000 * 60 * 60 * 24);
     if(diffDays <= NEW_DAYS && diffDays >= 0){
       /* Add NEW badge if not already there */
       if(!item.querySelector('.new-badge')){
@@ -2503,49 +2515,66 @@ function markNewPhotos(){
         badge.textContent = 'NEW';
         item.querySelector('.grid-item-photo').appendChild(badge);
       }
-      newItems.push(item);
+      /* Count each unique photo only once */
+      if(!seenPaths[path]){
+        seenPaths[path] = true;
+        uniqueCount++;
+      }
     }
   });
-  /* Show banner if new photos exist */
+  /* Show banner with correct unique count */
   var banner = document.getElementById('new-photos-banner');
   var label  = document.getElementById('new-photos-label');
-  if(banner && newItems.length > 0){
-    label.textContent = newItems.length + ' photo' + (newItems.length > 1 ? 's' : '') + ' added recently — view ' + (newItems.length > 1 ? 'them' : 'it');
+  if(banner && uniqueCount > 0){
+    label.textContent = uniqueCount + ' photo' + (uniqueCount > 1 ? 's' : '') + ' added recently — view ' + (uniqueCount > 1 ? 'them' : 'it');
     banner.style.display = 'block';
   }
 }
 
 function showNewPhotos(){
-  /* Only collect from ORIGINAL blocks — exclude previously cloned #gallery-new-photos */
+  /* Collect unique photos by path — one entry per photo regardless of categories */
   var now = new Date();
-  var newItems = [];
+  var seenPaths = {};
+  var uniqueItems = [];
   document.querySelectorAll('.section-block:not(#gallery-new-photos) .grid-item[data-date-added]').forEach(function(item){
-    var da = item.getAttribute('data-date-added');
+    var da   = item.getAttribute('data-date-added');
+    var path = item.getAttribute('data-photo') || '';
     if(!da) return;
     var diffDays = (now - new Date(da)) / (1000 * 60 * 60 * 24);
-    if(diffDays <= NEW_DAYS && diffDays >= 0) newItems.push(item);
+    if(diffDays <= NEW_DAYS && diffDays >= 0 && !seenPaths[path]){
+      seenPaths[path] = true;
+      uniqueItems.push(item);
+    }
   });
-  if(!newItems.length) return;
+  if(!uniqueItems.length) return;
 
-  /* Navigate FIRST — hideAll() must run before we create the block */
+  /* Step 1: navigate first — hideAll must run before block is in DOM */
   hideAll();
   var galContainer = document.getElementById('gallery-container');
   galContainer.classList.add('visible');
 
-  /* Remove any previous clone */
+  /* Step 2: remove old clone */
   var existing = document.getElementById('gallery-new-photos');
   if(existing) existing.remove();
 
-  /* Build block — add 'visible' class right away so it shows */
+  /* Step 3: build grid HTML — add tags row under each photo */
+  var gridHTML = uniqueItems.map(function(item){
+    var cats = (item.getAttribute('data-cats') || '').split(',').map(function(s){ return s.trim(); }).filter(Boolean);
+    var tagsHTML = cats.length
+      ? '<div class="new-photo-tags">' + cats.map(function(cat){
+          return '<span class="new-photo-tag">' + cat.replace(/\//g,' / ').toUpperCase() + '</span>';
+        }).join('') + '</div>'
+      : '';
+    return '<div class="new-photo-wrap">' + item.outerHTML + tagsHTML + '</div>';
+  }).join('');
+
+  /* Step 4: create block with display:block inline so hideAll cannot hide it */
   var block = document.createElement('div');
-  block.className = 'section-block visible';
   block.id = 'gallery-new-photos';
-  block.style.paddingTop = 'calc(var(--hdr) + 32px)';
+  block.style.cssText = 'display:block !important; padding-top:calc(var(--hdr) + 32px);';
   block.innerHTML = '<div class="gal-header"><div class="gal-title">Recently Added</div>'
-    + '<div class="gal-sub">' + newItems.length + ' Photo' + (newItems.length > 1 ? 's' : '') + ' · Last ' + NEW_DAYS + ' days</div></div>'
-    + '<div class="grid">'
-    + newItems.map(function(item){ return item.outerHTML; }).join('')
-    + '</div>';
+    + '<div class="gal-sub">' + uniqueItems.length + ' Photo' + (uniqueItems.length > 1 ? 's' : '') + ' · Last ' + NEW_DAYS + ' days</div></div>'
+    + '<div class="grid">' + gridHTML + '</div>';
   galContainer.prepend(block);
   window.scrollTo(0, 0);
 }
@@ -3131,18 +3160,13 @@ async function subscribeVisitor(){
   var email = (document.getElementById('sub-email') || {}).value || '';
   var msg   = document.getElementById('subscribe-msg');
   if(!email.trim()){ msg.textContent='Please enter your email.'; return; }
-  var re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-  if(!re.test(email)){ msg.textContent='Please enter a valid email address.'; return; }
-  msg.textContent='Subscribing...';
+  var emailOk = email.indexOf('@') > 0 && email.lastIndexOf('.') > email.indexOf('@');
+  if(!emailOk){ msg.textContent='Please enter a valid email address.'; return; }
+  msg.textContent='Subscribing…';
   try{
     var res = await fetch(SUPA_URL+'/rest/v1/subscribers',{
       method:'POST',
-      headers:{
-        'apikey':SUPA_KEY,
-        'Authorization':'Bearer '+SUPA_KEY,
-        'Content-Type':'application/json',
-        'Prefer':'return=minimal'
-      },
+      headers:{'apikey':SUPA_KEY,'Authorization':'Bearer '+SUPA_KEY,'Content-Type':'application/json','Prefer':'return=minimal'},
       body: JSON.stringify({name: name.trim()||null, email: email.trim().toLowerCase()})
     });
     if(res.status===201||res.status===200){
@@ -3151,12 +3175,8 @@ async function subscribeVisitor(){
       document.getElementById('sub-email').value='';
     } else if(res.status===409){
       msg.textContent='You’re already subscribed — thank you!';
-    } else {
-      msg.textContent='Something went wrong. Please try again.';
-    }
-  } catch(err){
-    msg.textContent='Connection error. Please try again.';
-  }
+    } else { msg.textContent='Something went wrong. Please try again.'; }
+  } catch(err){ msg.textContent='Connection error. Please try again.'; }
 }
 
 goHome();
