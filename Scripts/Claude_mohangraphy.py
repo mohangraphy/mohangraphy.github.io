@@ -2849,20 +2849,32 @@ function barLike(btn){
   localStorage.setItem('mohan_likes2',JSON.stringify(localLikes));
 }
 
+// Owner mode — visit mohangraphy.com?owner=yes once on each device
+if(new URLSearchParams(window.location.search).get('owner')==='yes'){
+  localStorage.setItem('mohan_owner','yes');
+  alert('Owner mode activated — your visits will not be counted!');
+}
+
 function initVisits(){
   if(!SUPA_URL || SUPA_URL==='NONE') return;
-  /* Increment visit count in Supabase */
+  if(localStorage.getItem('mohan_owner')==='yes'){
+    // Show count but don't increment
+    supaRequest('GET','visits?id=eq.total&select=id,count')
+      .then(function(rows){
+        var cur=rows&&rows[0]?parseInt(rows[0].count)||0:0;
+        var el=document.getElementById('visit-count');
+        if(el&&cur>0) el.textContent=' · '+cur.toLocaleString()+' visits';
+      }).catch(function(){});
+    return;
+  }
   supaRequest('GET','visits?id=eq.total&select=id,count')
     .then(function(rows){
-      var cur = rows&&rows[0] ? parseInt(rows[0].count)||0 : 0;
-      var next = cur + 1;
-      return supaRequest('POST','visits?on_conflict=id',{id:'total', count:next})
+      var cur=rows&&rows[0]?parseInt(rows[0].count)||0:0;
+      var next=cur+1;
+      return supaRequest('POST','visits?on_conflict=id',{id:'total',count:next})
         .then(function(){
-          /* Display in footer — only show if > 0 */
-          var el = document.getElementById('visit-count');
-          if(el && next > 0){
-            el.textContent = ' · ' + next.toLocaleString() + ' visits';
-          }
+          var el=document.getElementById('visit-count');
+          if(el&&next>0) el.textContent=' · '+next.toLocaleString()+' visits';
         });
     }).catch(function(){});
 }
