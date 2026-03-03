@@ -1721,7 +1721,10 @@ header {
   /* Force gold on mobile — override any OS default button colour */
   .img-modal-like { color: rgba(255,255,255,0.55) !important; border-color: rgba(255,255,255,0.2) !important; }
   .img-modal-like:hover, .img-modal-like.liked { color: var(--gold) !important; border-color: var(--gold) !important; }
+  /* Prevent iOS/Android rendering ❤ as red emoji — force text rendering */
   .like-heart { color: inherit !important; }
+  .like-heart { font-family: monospace; }
+  span.like-heart { -webkit-text-stroke: 0; text-shadow: none; }
 }
 
 /* ══════════════════════════════════════════════════════
@@ -1938,6 +1941,47 @@ footer {
   from { opacity: 0; transform: translateY(10px); }
   to   { opacity: 1; transform: none; }
 }
+
+/* ══════════════════════════════════════════════════
+   SUBSCRIBER SIGN-UP
+   ══════════════════════════════════════════════════ */
+#subscribe-section {
+  background: #0f0f0f;
+  border-top: 1px solid rgba(201,169,110,0.15);
+  padding: 60px clamp(20px,5vw,80px);
+  text-align: center;
+}
+.subscribe-inner { max-width: 560px; margin: 0 auto; }
+.subscribe-title {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: clamp(24px,4vw,38px); font-weight: 300;
+  letter-spacing: 6px; text-transform: uppercase;
+  color: #fff; margin-bottom: 10px;
+}
+.subscribe-subtitle {
+  font-size: 10px; letter-spacing: 3px; text-transform: uppercase;
+  color: rgba(255,255,255,0.35); margin-bottom: 32px;
+}
+.subscribe-form {
+  display: flex; flex-wrap: wrap; gap: 10px;
+  justify-content: center; margin-bottom: 14px;
+}
+.subscribe-form input {
+  flex: 1 1 200px; background: #111;
+  border: 1px solid rgba(201,169,110,0.2);
+  color: #fff; padding: 12px 16px;
+  font-family: 'Montserrat',sans-serif; font-size: 12px;
+  outline: none; border-radius: 0;
+}
+.subscribe-form input:focus { border-color: var(--gold); }
+.subscribe-form button {
+  background: none; border: 1px solid var(--gold); color: var(--gold);
+  padding: 12px 28px; font-family: 'Montserrat',sans-serif;
+  font-size: 9px; letter-spacing: 3px; text-transform: uppercase;
+  cursor: pointer; transition: background .2s, color .2s;
+}
+.subscribe-form button:hover { background: var(--gold); color: #000; }
+#subscribe-msg { font-size: 11px; letter-spacing: 1px; color: var(--gold); min-height: 18px; }
 """
 
     # ── BUILD GALLERY BLOCKS + SUB-PANELS ────────────────────────────────────
@@ -3068,6 +3112,42 @@ document.addEventListener('keydown', function(e){
   }
 });
 
+
+/* ══════════════════════════════════════════════════
+   SUBSCRIBER SIGN-UP — saves to Supabase subscribers table
+   ══════════════════════════════════════════════════ */
+async function subscribeVisitor() {
+  var name  = (document.getElementById('sub-name')  || {}).value || '';
+  var email = (document.getElementById('sub-email') || {}).value || '';
+  var msg   = document.getElementById('subscribe-msg');
+  if (!email.trim()) { msg.textContent = 'Please enter your email.'; return; }
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { msg.textContent = 'Please enter a valid email.'; return; }
+  msg.textContent = 'Subscribing\u2026';
+  try {
+    var res = await fetch(SUPA_URL + '/rest/v1/subscribers', {
+      method: 'POST',
+      headers: {
+        'apikey':        SUPA_KEY,
+        'Authorization': 'Bearer ' + SUPA_KEY,
+        'Content-Type':  'application/json',
+        'Prefer':        'return=minimal'
+      },
+      body: JSON.stringify({ name: name.trim() || null, email: email.trim().toLowerCase() })
+    });
+    if (res.status === 201 || res.status === 200) {
+      msg.textContent = '\u2713 Subscribed! You\u2019ll be notified when new photos arrive.';
+      document.getElementById('sub-name').value  = '';
+      document.getElementById('sub-email').value = '';
+    } else if (res.status === 409) {
+      msg.textContent = 'You\u2019re already subscribed \u2014 thank you!';
+    } else {
+      msg.textContent = 'Something went wrong. Please try again.';
+    }
+  } catch (err) {
+    msg.textContent = 'Connection error. Please try again.';
+  }
+}
+
 goHome();
 """
 
@@ -3338,7 +3418,7 @@ goHome();
         '    </div>\n'
         '    <div class="img-modal-actions">\n'
         '      <button class="img-modal-like" id="img-modal-like-btn" onclick="imgModalToggleLike()">\n'
-        '        <span class="like-heart">&#10084;</span> Like\n'
+        '        <span class="like-heart">&#10084;&#xFE0E;</span> Like\n'
         '        <span class="like-count" id="img-modal-like-count"></span>\n'
         '      </button>\n'
         '      <button class="img-modal-rq" onclick="openRqModal()">Request Quote</button>\n'
