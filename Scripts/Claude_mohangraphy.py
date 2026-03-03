@@ -3126,6 +3126,39 @@ document.addEventListener('keydown', function(e){
   }
 });
 
+async function subscribeVisitor(){
+  var name  = (document.getElementById('sub-name')  || {}).value || '';
+  var email = (document.getElementById('sub-email') || {}).value || '';
+  var msg   = document.getElementById('subscribe-msg');
+  if(!email.trim()){ msg.textContent='Please enter your email.'; return; }
+  var re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  if(!re.test(email)){ msg.textContent='Please enter a valid email address.'; return; }
+  msg.textContent='Subscribing...';
+  try{
+    var res = await fetch(SUPA_URL+'/rest/v1/subscribers',{
+      method:'POST',
+      headers:{
+        'apikey':SUPA_KEY,
+        'Authorization':'Bearer '+SUPA_KEY,
+        'Content-Type':'application/json',
+        'Prefer':'return=minimal'
+      },
+      body: JSON.stringify({name: name.trim()||null, email: email.trim().toLowerCase()})
+    });
+    if(res.status===201||res.status===200){
+      msg.textContent='✓ Subscribed! You’ll be notified when new photos arrive.';
+      document.getElementById('sub-name').value='';
+      document.getElementById('sub-email').value='';
+    } else if(res.status===409){
+      msg.textContent='You’re already subscribed — thank you!';
+    } else {
+      msg.textContent='Something went wrong. Please try again.';
+    }
+  } catch(err){
+    msg.textContent='Connection error. Please try again.';
+  }
+}
+
 goHome();
 """
 
