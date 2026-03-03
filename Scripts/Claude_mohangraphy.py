@@ -1950,6 +1950,71 @@ footer {
   from { opacity: 0; transform: translateY(10px); }
   to   { opacity: 1; transform: none; }
 }
+
+/* ══════════════════════════════════════════════════
+   SUBSCRIBER SIGN-UP
+   ══════════════════════════════════════════════════ */
+#subscribe-section {
+  padding: clamp(48px,8vw,96px) clamp(20px,5vw,80px);
+  text-align: center;
+  border-top: 1px solid rgba(201,169,110,0.12);
+  background: var(--dark);
+}
+.subscribe-inner { max-width: 520px; margin: 0 auto; }
+.subscribe-title {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: clamp(26px,4vw,42px);
+  font-weight: 300;
+  letter-spacing: clamp(4px,1.5vw,10px);
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.9);
+  margin-bottom: 10px;
+}
+.subscribe-subtitle {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 9px; letter-spacing: 4px;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.25);
+  margin-bottom: 36px;
+}
+.subscribe-form {
+  display: flex; flex-wrap: wrap;
+  gap: 10px; justify-content: center;
+  margin-bottom: 16px;
+}
+.subscribe-form input {
+  flex: 1 1 180px;
+  background: transparent;
+  border: none;
+  border-bottom: 1px solid rgba(201,169,110,0.3);
+  color: rgba(255,255,255,0.8);
+  padding: 10px 4px;
+  font-family: 'Montserrat', sans-serif;
+  font-size: 12px; letter-spacing: 1px;
+  outline: none;
+  transition: border-color .25s;
+}
+.subscribe-form input::placeholder { color: rgba(255,255,255,0.2); }
+.subscribe-form input:focus { border-color: var(--gold); }
+.subscribe-form button {
+  background: none;
+  border: 1px solid rgba(201,169,110,0.5);
+  color: var(--gold);
+  padding: 10px 28px;
+  font-family: 'Montserrat', sans-serif;
+  font-size: 9px; letter-spacing: 4px;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: background .25s, color .25s, border-color .25s;
+  white-space: nowrap;
+}
+.subscribe-form button:hover { background: var(--gold); color: #000; border-color: var(--gold); }
+#subscribe-msg {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 10px; letter-spacing: 2px;
+  color: var(--gold); min-height: 20px;
+  margin-top: 4px;
+}
 """
 
     # ── BUILD GALLERY BLOCKS + SUB-PANELS ────────────────────────────────────
@@ -2500,10 +2565,12 @@ function showNewPhotos(){
     + '</div>';
   galContainer.prepend(block);
 
-  /* Show gallery container */
+  /* Show gallery container and make block visible */
   hideAll();
   galContainer.classList.add('visible');
-  block.scrollIntoView({behavior:'smooth', block:'start'});
+  block.classList.add('visible');
+  window.scrollTo(0, 0);
+  setTimeout(function(){ block.scrollIntoView({behavior:'smooth', block:'start'}); }, 80);
 }
 
 document.addEventListener('DOMContentLoaded', function(){
