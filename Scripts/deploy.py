@@ -38,6 +38,12 @@ REQUIRED_SIGNATURES = [
      'Recently Added navigation fix'),
     ('new-photo-wrap',
      'Category tags on Recently Added photos'),
+    ('CAT_ORDER',
+     'Category order fix (Nature · Places · Architecture · People & Culture)'),
+    ('People & Culture',
+     'People & Culture category rename fix'),
+    ('Nature/Landscapes',
+     'Landscapes sub-category fix (Mountains folded in)'),
 ]
 
 # ── Helpers ───────────────────────────────────────────────────────────────────
