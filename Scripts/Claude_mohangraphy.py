@@ -14,23 +14,22 @@ THUMB_WIDTH      = 800
 WEB_WIDTH        = 2048   # max long-edge for lightbox display
 
 MANUAL_STRUCTURE = {
-    "Nature":           ["Landscapes", "Sunsets", "Wildlife", "Birds", "Flora"],
-    "Places":           ["National", "International"],
-    "Architecture":     [],
-    "People & Culture": ["Portraits", "Street", "Culture"],
+    "Places":       ["National", "International"],
+    "Nature":       ["Birds", "Flowers", "Landscape", "Mountains", "Sunsets and Sunrises", "Wildlife"],
+    "People":       ["Portraits"],
+    "Architecture": [],
 }
-# Sub-category display ORDER — preserved exactly as defined above
-CAT_ORDER = ["Nature", "Places", "Architecture", "People & Culture"]
 
 # ── TAG MAP: what metadata tag resolves to each MANUAL_STRUCTURE sub-key ──────
 # The curator stores "Nature/Landscape/Mountains" — map that to the "Mountains"
 # sub-category under Nature.
 TAG_OVERRIDES = {
-    "Nature/Sunsets and Sunrises":   "Nature/Sunsets",   # alias
+    "Nature/Mountains":              "Nature/Landscape/Mountains",   # alias
+    "Nature/Sunsets and Sunrises":   "Nature/Sunsets",               # alias
 }
 
-# Mountains photos fold into Landscapes sub-category
-MOUNTAINS_TAGS = {"Nature/Landscape/Mountains", "Nature/Mountains", "Nature/Landscape/Mountains"}
+# All tag strings that count as "Mountains" content
+MOUNTAINS_TAGS = {"Nature/Landscape/Mountains", "Nature/Mountains"}
 SUNSETS_TAGS   = {"Nature/Sunsets and Sunrises", "Nature/Sunsets"}
 
 # ── HELPERS ───────────────────────────────────────────────────────────────────
@@ -229,51 +228,23 @@ def build_maps(unique_entries):
 
         for raw_tag in tags:
             if raw_tag in MOUNTAINS_TAGS or raw_tag == "Nature/Landscape/Mountains":
-                # Mountains fold into Landscapes
-                t = "Nature/Landscapes"
-                tag_map.setdefault(t, [])
-                if path not in tag_map[t]:
-                    tag_map[t].append(path)
-            elif raw_tag in SUNSETS_TAGS or raw_tag == "Nature/Sunsets":
-                t = "Nature/Sunsets"
-                tag_map.setdefault(t, [])
-                if path not in tag_map[t]:
-                    tag_map[t].append(path)
-            elif raw_tag in ("Birds", "Nature/Birds"):
-                t = "Nature/Birds"
-                tag_map.setdefault(t, [])
-                if path not in tag_map[t]:
-                    tag_map[t].append(path)
-            elif raw_tag in ("Flowers", "Nature/Flowers", "Nature/Flora"):
-                t = "Nature/Flora"
-                tag_map.setdefault(t, [])
-                if path not in tag_map[t]:
-                    tag_map[t].append(path)
-            elif raw_tag in ("Nature/Landscape", "Nature/Landscape/Mountains"):
-                t = "Nature/Landscapes"
-                tag_map.setdefault(t, [])
-                if path not in tag_map[t]:
-                    tag_map[t].append(path)
-            elif raw_tag == "Nature/Wildlife":
-                t = "Nature/Wildlife"
-                tag_map.setdefault(t, [])
-                if path not in tag_map[t]:
-                    tag_map[t].append(path)
-            elif raw_tag in ("People/Portraits", "People & Culture/Portraits"):
-                t = "People & Culture/Portraits"
-                tag_map.setdefault(t, [])
-                if path not in tag_map[t]:
-                    tag_map[t].append(path)
-            elif raw_tag in ("People & Culture/Street",):
-                t = "People & Culture/Street"
-                tag_map.setdefault(t, [])
-                if path not in tag_map[t]:
-                    tag_map[t].append(path)
-            elif raw_tag in ("People & Culture/Culture",):
-                t = "People & Culture/Culture"
-                tag_map.setdefault(t, [])
-                if path not in tag_map[t]:
-                    tag_map[t].append(path)
+                for t in ["Nature/Mountains", "Nature/Landscape"]:
+                    tag_map.setdefault(t, [])
+                    if path not in tag_map[t]:
+                        tag_map[t].append(path)
+            elif raw_tag in SUNSETS_TAGS:
+                norm = "Nature/Sunsets and Sunrises"
+                tag_map.setdefault(norm, [])
+                if path not in tag_map[norm]:
+                    tag_map[norm].append(path)
+            elif raw_tag == "Birds":
+                tag_map.setdefault("Nature/Birds", [])
+                if path not in tag_map["Nature/Birds"]:
+                    tag_map["Nature/Birds"].append(path)
+            elif raw_tag == "Flowers":
+                tag_map.setdefault("Nature/Flowers", [])
+                if path not in tag_map["Nature/Flowers"]:
+                    tag_map["Nature/Flowers"].append(path)
             else:
                 tag_map.setdefault(raw_tag, [])
                 if path not in tag_map[raw_tag]:
@@ -307,10 +278,10 @@ def get_display_paths(m_cat, s_cat, tag_map):
         if disk_paths:
             return disk_paths
 
-    # Special case: Landscapes includes old Mountains photos
-    if s_cat == "Landscapes":
+    # Special case: Mountains
+    if s_cat == "Mountains":
         paths = []
-        for t in ["Nature/Landscapes", "Nature/Landscape", "Nature/Mountains", "Nature/Landscape/Mountains"]:
+        for t in ["Nature/Mountains", "Nature/Landscape/Mountains"]:
             for p in tag_map.get(t, []):
                 if p not in paths:
                     paths.append(p)
@@ -432,7 +403,7 @@ def generate_html():
         has_about_photo = True  # already there from previous run
 
     print(f"Unique photos: {len(unique)}")
-    print(f"Landscapes photos found: {len(tag_map.get('Nature/Landscapes', []))}")
+    print(f"Mountains photos found: {len(tag_map.get('Nature/Mountains', []))}")
 
     # Load editable content
     C = load_content()
@@ -468,7 +439,7 @@ def generate_html():
 
     # Cover photo per main category (use thumb)
     cat_covers = {}
-    for m_cat, subs in sorted(MANUAL_STRUCTURE.items(), key=lambda x: CAT_ORDER.index(x[0]) if x[0] in CAT_ORDER else 99):
+    for m_cat, subs in sorted(MANUAL_STRUCTURE.items(), key=lambda x: x[0].lower()):
         pool = []
         if m_cat == "Places":
             for grp in place_map.values():          # grp = {state: {city: [paths]}}
@@ -2021,6 +1992,11 @@ footer {
 }
 .subscribe-form button:hover { background: var(--gold); color: #000; border-color: var(--gold); }
 #subscribe-msg { font-family: 'Montserrat', sans-serif; font-size: 10px; letter-spacing: 2px; color: var(--gold); min-height: 20px; margin-top: 4px; }
+
+.new-photo-wrap { display: flex; flex-direction: column; }
+.new-photo-tags { display: flex; flex-wrap: wrap; gap: 6px; padding: 8px 4px 4px; }
+.new-photo-tag { font-family: 'Montserrat', sans-serif; font-size: 7px; letter-spacing: 2px; color: var(--gold); opacity: 0.8; border: 1px solid rgba(201,169,110,0.3); padding: 3px 7px; }
+
 """
 
     # ── BUILD GALLERY BLOCKS + SUB-PANELS ────────────────────────────────────
@@ -2028,10 +2004,10 @@ footer {
     sub_panels     = ""
 
     # Sort main categories A→Z; sub-lists are also sorted A→Z below
-    sorted_structure = sorted(MANUAL_STRUCTURE.items(), key=lambda x: CAT_ORDER.index(x[0]) if x[0] in CAT_ORDER else 99)
+    sorted_structure = sorted(MANUAL_STRUCTURE.items(), key=lambda x: x[0].lower())
 
     for m_cat, subs in sorted_structure:
-        # Sub-categories preserved in MANUAL_STRUCTURE definition order
+        subs = sorted(subs, key=lambda s: s.lower())   # sort sub-categories A→Z
         sub_items = []
 
         if m_cat == "Places":
@@ -2259,7 +2235,7 @@ footer {
 
     # ── MAIN CATEGORY TILES ───────────────────────────────────────────────────
     cat_tiles_html = ""
-    for m_cat, subs in sorted(MANUAL_STRUCTURE.items(), key=lambda x: CAT_ORDER.index(x[0]) if x[0] in CAT_ORDER else 99):
+    for m_cat, subs in sorted(MANUAL_STRUCTURE.items(), key=lambda x: x[0].lower()):
         raw_cover   = cat_covers.get(m_cat, "")
         thumb_cover = thumb_map.get(raw_cover, raw_cover) if raw_cover else ""
 
@@ -2518,64 +2494,82 @@ var NEW_DAYS = 14;
 
 function markNewPhotos(){
   var now = new Date();
-  var newItems = [];
-  document.querySelectorAll('.grid-item[data-date-added]').forEach(function(item){
-    var da = item.getAttribute('data-date-added');
+  var seenPaths = {};
+  var uniqueCount = 0;
+  document.querySelectorAll('.section-block:not(#gallery-new-photos) .grid-item[data-date-added]').forEach(function(item){
+    var da   = item.getAttribute('data-date-added');
+    var path = item.getAttribute('data-photo') || '';
     if(!da) return;
-    var added = new Date(da);
-    var diffDays = (now - added) / (1000 * 60 * 60 * 24);
+    var diffDays = (now - new Date(da)) / (1000 * 60 * 60 * 24);
     if(diffDays <= NEW_DAYS && diffDays >= 0){
-      /* Add NEW badge if not already there */
       if(!item.querySelector('.new-badge')){
         var badge = document.createElement('div');
         badge.className = 'new-badge';
         badge.textContent = 'NEW';
         item.querySelector('.grid-item-photo').appendChild(badge);
       }
-      newItems.push(item);
+      if(!seenPaths[path]){
+        seenPaths[path] = true;
+        uniqueCount++;
+      }
     }
   });
-  /* Show banner if new photos exist */
   var banner = document.getElementById('new-photos-banner');
   var label  = document.getElementById('new-photos-label');
-  if(banner && newItems.length > 0){
-    label.textContent = newItems.length + ' photo' + (newItems.length > 1 ? 's' : '') + ' added recently — view ' + (newItems.length > 1 ? 'them' : 'it');
+  if(banner && uniqueCount > 0){
+    label.textContent = uniqueCount + ' photo' + (uniqueCount > 1 ? 's' : '') + ' added recently — view ' + (uniqueCount > 1 ? 'them' : 'it');
     banner.style.display = 'block';
   }
 }
 
 function showNewPhotos(){
-  /* Build a temporary gallery of new photos and show it */
+  /* Collect unique photos by path — one entry per photo regardless of categories */
   var now = new Date();
-  var newPaths = [];
-  document.querySelectorAll('.grid-item[data-date-added]').forEach(function(item){
-    var da = item.getAttribute('data-date-added');
+  var seenPaths = {};
+  var uniqueItems = [];
+  document.querySelectorAll('.section-block:not(#gallery-new-photos) .grid-item[data-date-added]').forEach(function(item){
+    var da   = item.getAttribute('data-date-added');
+    var path = item.getAttribute('data-photo') || '';
     if(!da) return;
     var diffDays = (now - new Date(da)) / (1000 * 60 * 60 * 24);
-    if(diffDays <= NEW_DAYS && diffDays >= 0) newPaths.push(item);
+    if(diffDays <= NEW_DAYS && diffDays >= 0 && !seenPaths[path]){
+      seenPaths[path] = true;
+      uniqueItems.push(item);
+    }
   });
-  if(!newPaths.length) return;
+  if(!uniqueItems.length) return;
 
-  /* Show them in the gallery container as a temp block */
+  /* Step 1: run hideAll FIRST — clears all panels */
+  hideAll();
+
+  /* Step 2: show gallery container */
   var galContainer = document.getElementById('gallery-container');
+  galContainer.classList.add('visible');
+
+  /* Step 3: remove any old clone */
   var existing = document.getElementById('gallery-new-photos');
   if(existing) existing.remove();
 
-  var block = document.createElement('div');
-  block.className = 'section-block';
-  block.id = 'gallery-new-photos';
-  block.style.paddingTop = 'calc(var(--hdr) + 32px)';
-  block.innerHTML = '<div class="gal-header"><div class="gal-title">Recently Added</div>'
-    + '<div class="gal-sub">' + newPaths.length + ' Photos · Last ' + NEW_DAYS + ' days</div></div>'
-    + '<div class="grid">'
-    + newPaths.map(function(item){ return item.outerHTML; }).join('')
-    + '</div>';
-  galContainer.prepend(block);
+  /* Step 4: build tags HTML for each photo */
+  var gridHTML = uniqueItems.map(function(item){
+    var cats = (item.getAttribute('data-cats') || '').split(',').map(function(s){ return s.trim(); }).filter(Boolean);
+    var tagsHTML = cats.length
+      ? '<div class="new-photo-tags">' + cats.map(function(cat){
+          return '<span class="new-photo-tag">' + cat.replace(/\//g,' / ').toUpperCase() + '</span>';
+        }).join('') + '</div>'
+      : '';
+    return '<div class="new-photo-wrap">' + item.outerHTML + tagsHTML + '</div>';
+  }).join('');
 
-  /* Show gallery container */
-  hideAll();
-  galContainer.classList.add('visible');
-  block.scrollIntoView({behavior:'smooth', block:'start'});
+  /* Step 5: create block with inline display:block so hideAll cannot hide it */
+  var block = document.createElement('div');
+  block.id = 'gallery-new-photos';
+  block.style.cssText = 'display:block !important; padding-top:calc(var(--hdr) + 32px);';
+  block.innerHTML = '<div class="gal-header"><div class="gal-title">Recently Added</div>'
+    + '<div class="gal-sub">' + uniqueItems.length + ' Photo' + (uniqueItems.length > 1 ? 's' : '') + ' · Last ' + NEW_DAYS + ' days</div></div>'
+    + '<div class="grid">' + gridHTML + '</div>';
+  galContainer.prepend(block);
+  window.scrollTo(0, 0);
 }
 
 document.addEventListener('DOMContentLoaded', function(){
@@ -3025,10 +3019,9 @@ var ADMIN_PASS     = '""" + admin_password + """';
 var adminItems     = [];
 var adminLastSaved = {state:'', city:'', cats:[]};
 var CATEGORIES     = """ + json.dumps(sorted([
-    "Nature/Landscapes","Nature/Sunsets","Nature/Wildlife","Nature/Birds","Nature/Flora",
-    "Places/National","Places/International",
-    "Architecture",
-    "People & Culture/Portraits","People & Culture/Street","People & Culture/Culture"
+    "Architecture","Nature/Birds","Nature/Flowers","Nature/Landscape",
+    "Nature/Landscape/Mountains","Nature/Sunsets","Nature/Wildlife",
+    "People/Portraits","Places/International","Places/National"
 ])) + """;
 
 function ctxAdminEdit(){
@@ -3155,6 +3148,30 @@ document.addEventListener('keydown', function(e){
   }
 });
 
+async function subscribeVisitor(){
+  var name  = (document.getElementById('sub-name')  || {}).value || '';
+  var email = (document.getElementById('sub-email') || {}).value || '';
+  var msg   = document.getElementById('subscribe-msg');
+  if(!email.trim()){ msg.textContent='Please enter your email.'; return; }
+  var emailOk = email.indexOf('@') > 0 && email.lastIndexOf('.') > email.indexOf('@');
+  if(!emailOk){ msg.textContent='Please enter a valid email address.'; return; }
+  msg.textContent='Subscribing…';
+  try{
+    var res = await fetch(SUPA_URL+'/rest/v1/subscribers',{
+      method:'POST',
+      headers:{'apikey':SUPA_KEY,'Authorization':'Bearer '+SUPA_KEY,'Content-Type':'application/json','Prefer':'return=minimal'},
+      body: JSON.stringify({name: name.trim()||null, email: email.trim().toLowerCase()})
+    });
+    if(res.status===201||res.status===200){
+      msg.textContent='✓ Subscribed! You’ll be notified when new photos arrive.';
+      document.getElementById('sub-name').value='';
+      document.getElementById('sub-email').value='';
+    } else if(res.status===409){
+      msg.textContent='You’re already subscribed — thank you!';
+    } else { msg.textContent='Something went wrong. Please try again.'; }
+  } catch(err){ msg.textContent='Connection error. Please try again.'; }
+}
+
 goHome();
 """
 
@@ -3237,7 +3254,7 @@ goHome();
             '        <button class="hdr-dd-item" onclick="openCategory(\'' + m_cat + '\'); closeCollectionsDD()">' + m_cat + '</button>\n'
             if subs else
             '        <button class="hdr-dd-item" onclick="showGallery(\'direct-' + m_cat + '\'); closeCollectionsDD()">' + m_cat + '</button>\n'
-            for m_cat, subs in sorted(MANUAL_STRUCTURE.items(), key=lambda x: CAT_ORDER.index(x[0]) if x[0] in CAT_ORDER else 99)
+            for m_cat, subs in sorted(MANUAL_STRUCTURE.items(), key=lambda x: x[0].lower())
         ) +
         '      </div>\n'
         '    </div>\n'
@@ -3264,7 +3281,7 @@ goHome();
                 if subs else
                 "showGallery('direct-" + m_cat + "')"
             ) + ';closeMobileMenu()">' + m_cat + '</button>\n'
-            for m_cat, subs in sorted(MANUAL_STRUCTURE.items(), key=lambda x: CAT_ORDER.index(x[0]) if x[0] in CAT_ORDER else 99)
+            for m_cat, subs in sorted(MANUAL_STRUCTURE.items(), key=lambda x: x[0].lower())
         ) +
         '  </div>\n'
         '  <button class="mob-menu-item" onclick="showInfoPage(\'page-about\');closeMobileMenu()">About Me</button>\n'
@@ -3588,7 +3605,7 @@ goHome();
     print("BUILD COMPLETE")
     print("  Output       : " + out_path)
     print("  Unique photos: " + str(len(unique)))
-    print("  Landscapes   : " + str(len(tag_map.get('Nature/Landscapes', []))) + " photos")
+    print("  Mountains    : " + str(len(tag_map.get('Nature/Mountains', []))) + " photos")
     print("  Hero slides  : " + str(len(hero_slides)) + " (Megamalai, 3s rotation)")
     print("=" * 55)
 
