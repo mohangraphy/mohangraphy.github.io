@@ -44,6 +44,10 @@ REQUIRED_SIGNATURES = [
      'People & Culture category rename fix'),
     ('Nature/Landscapes',
      'Landscapes sub-category fix (Mountains folded in)'),
+    ('load_blog_posts',
+     'Travel Stories blog system'),
+    ('showStoriesIndex',
+     'Travel Stories JS navigation'),
 ]
 
 # ── Helpers ───────────────────────────────────────────────────────────────────
