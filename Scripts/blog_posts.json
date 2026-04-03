@@ -1,0 +1,32 @@
+[
+    {
+        "place": "Madurai",
+        "country": "",
+        "dates_visited": "March 2026",
+        "title": "Madurai - A 2500 year old city",
+        "place_tag": "Madurai",
+        "summary": "Located on the banks of the Vaigai river, this city is steeped in Tamil history, literature, and tradition.",
+        "history": "Information on Madurai is available : https://en.wikipedia.org/wiki/Madurai#History",
+        "transport": "Visited Madurai to attend a family function. Drove from Coimbatore with family members. Road condition was fairly good.",
+        "stay": "Stayed in a Guest House in SS Colony.",
+        "highlights": [
+            "Meenakshi Sundareswarar Temple",
+            "Mariamman Temple Tank",
+            "Azaghar Kovil (Temple)",
+            "Pazhamudhir Solai",
+            "Thiruparankundram",
+            "Thirumalai Nayakkar Mahal"
+        ],
+        "tips": [
+            "Avoid summer months",
+            "from mid-March. Plenty of local food restaurants available. If one wants to enjoy the local delicacies",
+            "one should venture eating in local restaurants",
+            "often known as \"Mess\" instead of big restaurants. Definitely worth trying \"Acharya Bhavan\" in SS Colony !"
+        ],
+        "collections_links": [
+            "Places",
+            "Architecture"
+        ],
+        "id": "madurai-2026"
+    }
+]
