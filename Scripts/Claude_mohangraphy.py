@@ -201,16 +201,12 @@ def build_maps(unique_entries):
     KNOWN_STATES = {
         'megamalai':   ('Tamil Nadu', 'Megamalai'),
         'munnar':      ('Kerala',     'Munnar'),
-        'thekkady':    ('Kerala',     'Thekkady'),
         'badami':      ('Karnataka',  'Badami'),
         'pattadhakal': ('Karnataka',  'Pattadhakal'),
         'hampi':       ('Karnataka',  'Hampi'),
-        'aihole':      ('Karnataka',  'Aihole'),
         'coorg':       ('Karnataka',  'Coorg'),
         'ooty':        ('Tamil Nadu', 'Ooty'),
         'kodaikanal':  ('Tamil Nadu', 'Kodaikanal'),
-        'madurai':     ('Tamil Nadu', 'Madurai'),
-        'banff':       ('Alberta',    'Banff'),
     }
 
     for info in unique_entries:
@@ -307,20 +303,6 @@ def build_maps(unique_entries):
                 if path not in pm[state][city]:
                     pm[state][city].append(path)
             elif "Places/International" in raw_tag and state and city:
-                pm = place_map["International"]
-                pm.setdefault(state, {})
-                pm[state].setdefault(city, [])
-                if path not in pm[state][city]:
-                    pm[state][city].append(path)
-            # Fallback: if state/city were resolved from KNOWN_STATES but category
-            # was stored as bare "Places/National" or similar variant, catch it here
-            elif raw_tag in ("Places/National", "National") and state and city:
-                pm = place_map["National"]
-                pm.setdefault(state, {})
-                pm[state].setdefault(city, [])
-                if path not in pm[state][city]:
-                    pm[state][city].append(path)
-            elif raw_tag in ("Places/International", "International") and state and city:
                 pm = place_map["International"]
                 pm.setdefault(state, {})
                 pm[state].setdefault(city, [])
@@ -2079,8 +2061,8 @@ footer {
 }
 .stories-header-title {
   font-family: 'Cormorant Garamond', serif;
-  font-size: clamp(28px, 6vw, 54px); font-weight: 600;
-  letter-spacing: clamp(4px,1.5vw,10px); text-transform: uppercase;
+  font-size: clamp(28px,6vw,60px); font-weight: 300;
+  letter-spacing: clamp(4px,1.5vw,14px); text-transform: uppercase;
   color: rgba(255,255,255,0.92); line-height: 1;
 }
 .stories-header-sub {
@@ -2260,12 +2242,12 @@ footer {
 }
 
 /* ── Highlights ── */
-.story-highlights { list-style: none; padding: 0; margin: 10px 0 20px; }
+.story-highlights { list-style: none; padding: 0; margin: 12px 0 24px; }
 .story-highlights li {
   font-family: 'Cormorant Garamond', serif;
-  font-size: clamp(15px,1.8vw,18px); font-weight: 300;
-  color: rgba(255,255,255,0.58); line-height: 1.5;
-  padding: 5px 0 5px 22px; position: relative;
+  font-size: clamp(15px,1.8vw,19px); font-weight: 300;
+  color: rgba(255,255,255,0.58); line-height: 1.8;
+  padding: 9px 0 9px 22px; position: relative;
   border-bottom: 1px solid rgba(255,255,255,0.04);
 }
 .story-highlights li::before {
@@ -2284,22 +2266,12 @@ footer {
 .story-tips-box li {
   font-family: 'Montserrat', sans-serif;
   font-size: 12px; letter-spacing: 0.4px;
-  color: rgba(255,255,255,0.62); line-height: 1.7;
-  padding: 7px 0 7px 18px; position: relative;
-  border-bottom: 1px solid rgba(255,255,255,0.05);
+  color: rgba(255,255,255,0.58); line-height: 1.85;
+  padding-left: 16px; position: relative; margin-bottom: 5px;
 }
-.story-tips-box li:last-child { border-bottom: none; }
 .story-tips-box li::before {
-  content: '›'; position: absolute; left: 0; top: 7px;
-  color: var(--gold); font-size: 16px; line-height: 1.3;
-}
-.story-tips-box a, .story-body a {
-  color: var(--gold); text-decoration: underline;
-  text-underline-offset: 3px; text-decoration-color: rgba(201,169,110,0.4);
-  transition: text-decoration-color .2s;
-}
-.story-tips-box a:hover, .story-body a:hover {
-  text-decoration-color: var(--gold);
+  content: '›'; position: absolute; left: 0;
+  color: var(--gold); font-size: 14px; line-height: 1.5;
 }
 
 /* ── Inline photo strip ── */
@@ -2342,13 +2314,11 @@ footer {
 }
 .story-cta-btn-ghost:hover { border-color: rgba(201,169,110,0.4); color: var(--gold); }
 
-/* ── Empty state — only visible to admin ── */
+/* ── Empty state ── */
 .stories-empty {
-  display: none;
   text-align: center;
   padding: clamp(48px,10vw,100px) clamp(16px,5vw,80px);
 }
-body.admin-unlocked .stories-empty { display: block; }
 .stories-empty-title {
   font-family: 'Cormorant Garamond', serif;
   font-size: clamp(20px,4vw,38px); font-weight: 300;
@@ -2722,7 +2692,6 @@ function hideAll(){
   });
   document.getElementById('copyright-banner').classList.remove('visible');
   document.querySelectorAll('.info-page').forEach(function(p){ p.classList.remove('visible'); });
-  document.querySelectorAll('.story-post').forEach(function(p){ p.classList.remove('visible'); });
   document.querySelectorAll('.sub-panel').forEach(function(p){ p.classList.remove('active'); });
   document.querySelectorAll('.section-block').forEach(function(b){ b.classList.remove('visible'); });
   setActiveTab(null);
@@ -3128,14 +3097,8 @@ function updateImgModal(){
     var rem=item.getAttribute('data-remarks')||'';
     var city=item.getAttribute('data-city')||'';
     var state=item.getAttribute('data-state')||'';
-    if(imgModalTitle) imgModalTitle.textContent=rem||city||'Photograph';
-    if(imgModalSub){
-      var parts=[];
-      if(rem && city) parts.push(city);
-      else if(!rem && state && city && city!==state) parts.push(city);
-      if(state) parts.push(state);
-      imgModalSub.textContent=parts.filter(Boolean).join(' \u00b7 ');
-    }
+    if(imgModalTitle) imgModalTitle.textContent=rem||'Untitled';
+    if(imgModalSub) imgModalSub.textContent=[city,state].filter(Boolean).join(' · ')||'';
   }
   /* Fetch live like count from Supabase */
   var countEl=document.getElementById('img-modal-like-count');
@@ -3454,13 +3417,6 @@ function adminCheckPassword(){
 
 function closeAdminModal(){ document.getElementById('admin-modal').classList.remove('open'); adminItems=[]; }
 
-function adminSetStatus(msg, isError){
-  var el=document.getElementById('admin-status-msg');
-  if(!el) return;
-  el.textContent=msg;
-  el.style.color=isError?'#e04060':'rgba(201,169,110,0.7)';
-}
-
 function saveAdminTags(){
   var cats=Array.from(document.querySelectorAll('.admin-cat.selected')).map(function(b){return b.getAttribute('data-cat');});
   var state=document.getElementById('admin-state').value.trim();
@@ -3473,46 +3429,16 @@ function saveAdminTags(){
     item.setAttribute('data-state',state); item.setAttribute('data-city',city);
     item.setAttribute('data-remarks',remarks); item.setAttribute('data-cats',cats.join(','));
   });
-  adminSetStatus('Saving…');
   fetch('http://localhost:9393/patch',{
     method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(payload)
   }).then(function(r){return r.json();})
-    .then(function(){ adminSetStatus('✓ Saved — click Deploy Now to publish.'); })
+    .then(function(){showToast('✓ Saved. Run deploy to publish.');})
     .catch(function(){
-      adminSetStatus('Server offline. Start patch_tags.py on your Mac first.', true);
+      navigator.clipboard.writeText(JSON.stringify(payload,null,2))
+        .then(function(){showToast('Server offline. JSON copied to clipboard.');})
+        .catch(function(){showToast('Start patch_tags.py, then try again.');});
     });
-}
-
-function deleteAdminPhoto(){
-  if(!adminItems.length) return;
-  var photo=adminItems[0].getAttribute('data-photo')||'';
-  var name=photo.split('/').pop();
-  if(!confirm('Delete "'+name+'" from the site?\n\nThis removes it from photo_metadata.json and hides it from the site after next deploy. The original file is NOT deleted from your Mac.')) return;
-  adminSetStatus('Deleting…');
-  fetch('http://localhost:9393/delete',{
-    method:'POST', headers:{'Content-Type':'application/json'},
-    body:JSON.stringify({photos:[photo]})
-  }).then(function(r){return r.json();})
-    .then(function(){
-      adminSetStatus('✓ Deleted — click Deploy Now to publish.');
-      adminItems.forEach(function(item){ item.style.opacity='0.2'; item.style.pointerEvents='none'; });
-    })
-    .catch(function(){ adminSetStatus('Server offline. Start patch_tags.py first.', true); });
-}
-
-function runDeploy(){
-  adminSetStatus('Deploying… this takes ~30 seconds.');
-  fetch('http://localhost:9393/deploy',{method:'POST'})
-    .then(function(r){return r.json();})
-    .then(function(d){
-      if(d.ok){
-        adminSetStatus('✓ Deployed! Site will update in ~30 seconds.');
-        showToast('✓ Deployed successfully!');
-      } else {
-        adminSetStatus('Deploy failed: '+d.error, true);
-      }
-    })
-    .catch(function(){ adminSetStatus('Server offline. Start patch_tags.py first.', true); });
+  closeAdminModal();
 }
 
 function toggleAdminMode(){
@@ -3599,16 +3525,6 @@ goHome();
 
     def _eh(s):
         return _htmlmod.escape(str(s))
-
-    def _linkify(s):
-        """Escape HTML then auto-link http/https URLs."""
-        import re as _re
-        escaped = _htmlmod.escape(str(s))
-        return _re.sub(
-            r'(https?://[^\s&]+)',
-            r'<a href="\1" target="_blank" rel="noopener">\1</a>',
-            escaped
-        )
 
     def build_blog_html(posts, path_info, thumb_map, web_map, meta_by_path):
         """Build stories index cards + individual post pages."""
@@ -3760,7 +3676,7 @@ goHome();
             if tips:
                 tips_html = (
                     '<div class="story-tips-box"><ul>'
-                    + "".join("<li>" + _linkify(t) + "</li>" for t in tips)
+                    + "".join("<li>" + _eh(t) + "</li>" for t in tips)
                     + "</ul></div>"
                 )
 
@@ -3814,7 +3730,7 @@ goHome();
                 + '<div class="story-post-dates">' + _eh(dates) + "</div>\n"
                 + ('<div class="story-section-label">About the Place</div>'
                    + '<div class="story-body"><p>'
-                   + _linkify(history).replace("\n", "</p><p>")
+                   + _eh(history).replace("\n", "</p><p>")
                    + "</p></div>"
                    + '<div class="story-post-divider"></div>'
                    if history else "")
@@ -4280,14 +4196,10 @@ goHome();
         '      <div class="admin-field"><label>State / Country</label><input id="admin-state" type="text" placeholder="e.g. Karnataka"></div>\n'
         '      <div class="admin-field"><label>City</label><input id="admin-city" type="text" placeholder="e.g. Badami"></div>\n'
         '      <div class="admin-field"><label>Remarks</label><textarea id="admin-remarks" placeholder="e.g. Great Hornbill in flight"></textarea></div>\n'
-        '      <p class="admin-note" id="admin-status-msg">patch_tags.py must be running on your Mac to save.</p>\n'
-        '      <div class="admin-row" style="flex-wrap:wrap;gap:8px;">\n'
+        '      <p class="admin-note">Run patch_tags.py on your Mac first, then Save will update photo_metadata.json automatically.</p>\n'
+        '      <div class="admin-row">\n'
         '        <button class="btn-ghost" onclick="closeAdminModal()">Cancel</button>\n'
-        '        <button class="btn-ghost" style="color:#e04060;border-color:rgba(224,64,96,0.4);" onclick="deleteAdminPhoto()">&#128465; Delete Photo</button>\n'
-        '        <button class="btn-gold" onclick="saveAdminTags()">Save Tags</button>\n'
-        '      </div>\n'
-        '      <div style="margin-top:12px;padding-top:12px;border-top:1px solid rgba(255,255,255,0.06);">\n'
-        '        <button class="btn-gold" style="width:100%;justify-content:center;" onclick="runDeploy()">&#9654;&nbsp; Save &amp; Deploy Now</button>\n'
+        '        <button class="btn-gold" onclick="saveAdminTags()">Save</button>\n'
         '      </div>\n'
         '    </div>\n'
         '  </div>\n'
