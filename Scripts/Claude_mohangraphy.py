@@ -207,6 +207,14 @@ def build_maps(unique_entries):
         'coorg':       ('Karnataka',  'Coorg'),
         'ooty':        ('Tamil Nadu', 'Ooty'),
         'kodaikanal':  ('Tamil Nadu', 'Kodaikanal'),
+        'thekkady':    ('Kerala',     'Thekkady'),
+        'madurai':     ('Tamil Nadu', 'Madurai'),
+        'aihole':      ('Karnataka',  'Aihole'),
+        'banff':       ('Alberta',    'Banff'),
+        'thekkady':    ('Kerala',     'Thekkady'),
+        'madurai':     ('Tamil Nadu', 'Madurai'),
+        'aihole':      ('Karnataka',  'Aihole'),
+        'banff':       ('Alberta',    'Banff'),
     }
 
     for info in unique_entries:
