@@ -492,12 +492,13 @@
     },
     "b3b1e41bbaa721c95d3f53cdeac39931": {
         "path": "Photos/2026-0306-Thekkady-NCM-8274.JPG",
+        "filename": "2026-0306-Thekkady-NCM-8274.JPG",
         "categories": [
             "Nature/Birds",
             "Places/National"
         ],
-        "place": "Thekkady, Kerala",
-        "filename": "2026-0306-Thekkady-NCM-8274.JPG",
-        "date_added": "2026-04-02"
+        "state": "Kerala",
+        "city": "Thekkady",
+        "remarks": "Common Kingfisher"
     }
 }
