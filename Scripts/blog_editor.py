@@ -34,7 +34,7 @@ ROOT      = "/Users/ncm/Pictures/Mohangraphy"
 BLOG_FILE = os.path.join(ROOT, "Scripts/blog_posts.json")
 META_FILE = os.path.join(ROOT, "Scripts/photo_metadata.json")
 
-KNOWN_PLACES_DEFAULT = ["Aihole", "Badami", "Banff", "Megamalai", "Munnar", "Pattadhakal"]
+KNOWN_PLACES_DEFAULT = ["Hampi", "Megamalai"]
 
 COLLECTIONS = ["Nature", "Places", "Architecture", "People & Culture"]
 
@@ -128,23 +128,22 @@ def make_slug(place, dates):
 
 def edit_post(post=None, known_places=None):
     is_new = post is None
-    p = dict(post) if post else {{}}
+    p = dict(post) if post else {}
     kp = known_places or []
 
-    # Place — pick from known list or type a new one
-    place_opts = ["[ Type a new place name... ]"] + kp
+    # Place — always offer free-text entry PLUS pick from tagged photos
+    place_opts = ["[ Enter a new place name ]"] + kp
     sel = ask_choice(
         "Place",
-        "Select a place you have already visited and tagged photos for,\\n"
-        "or choose the first option to enter a new place name:",
+        "Pick a place already tagged in your photos,\\nor choose the first option to type any new place:",
         place_opts
     )
     if sel is None: return None
     if not sel:
-        ask_btn("Cancelled", "No place selected — cancelling.", ["OK"])
+        ask_btn("Cancelled", "No place selected.", ["OK"])
         return None
-    if sel[0].startswith("[ Type"):
-        val = ask_input("Place Name", "Enter the place name (e.g. Megamalai):", p.get("place",""))
+    if sel[0].startswith("[ Enter"):
+        val = ask_input("Place Name", "Enter the place name (e.g. Spiti Valley):", p.get("place",""))
         if val is None: return None
         p["place"] = val.strip()
     else:
@@ -159,16 +158,16 @@ def edit_post(post=None, known_places=None):
     p["dates_visited"] = val.strip()
 
     val = ask_input("Post Title",
-                    "Headline (e.g. Megamalai - Into the Wild):",
-                    p.get("title", p["place"]))
+                    "Headline for the blog post\\n(e.g. Megamalai - Into the Wild):",
+                    p.get("title", p.get("place","")))
     if val is None: return None
     p["title"] = val.strip()
 
     val = ask_input("Place Tag",
                     "Place tag for photo matching.\\n"
-                    "This must match the city or place field in your photo tags.\\n"
-                    "(Usually the same as the place name)",
-                    p.get("place_tag", p["place"]))
+                    "Must match the city or place field in your photo tags.\\n"
+                    "Leave blank if you have no tagged photos yet - you can add them later.",
+                    p.get("place_tag", p.get("place","")))
     if val is None: return None
     p["place_tag"] = val.strip()
 
@@ -179,22 +178,22 @@ def edit_post(post=None, known_places=None):
     p["summary"] = val.strip()
 
     val = ask_input("Historical Context",
-                    "Brief historical / cultural background about the place:\\n"
-                    "(Tip: use multiple sentences separated by newline for paragraphs)",
+                    "Brief historical or cultural background about the place.\\n"
+                    "Use a full paragraph or two:",
                     p.get("history",""))
     if val is None: return None
     p["history"] = val.strip()
 
     val = ask_input("Getting There",
                     "How did you travel there?\\n"
-                    '(e.g. "Drove from Bangalore via Kumili — about 6 hrs")',
+                    "(e.g. Drove from Bangalore via Kumili, about 6 hrs)",
                     p.get("transport",""))
     if val is None: return None
     p["transport"] = val.strip()
 
     val = ask_input("Where You Stayed",
                     "Accommodation and area:\\n"
-                    '(e.g. "High Waves Eco Resort, inside the reserve")',
+                    "(e.g. High Waves Eco Resort, inside the reserve)",
                     p.get("stay",""))
     if val is None: return None
     p["stay"] = val.strip()
@@ -215,13 +214,13 @@ def edit_post(post=None, known_places=None):
 
     sel = ask_choice("Collections Links",
                      "Which Collections menu items should link from this post?\\n"
-                     "(Select one or more)",
+                     "(Select one or more - OK to skip if none apply yet)",
                      COLLECTIONS, multiple=True)
     if sel is None: return None
     p["collections_links"] = sel
 
     if "id" not in p or not p["id"]:
-        p["id"] = make_slug(p["place"], p.get("dates_visited",""))
+        p["id"] = make_slug(p.get("place","post"), p.get("dates_visited",""))
     return p
 
 # ── main ──────────────────────────────────────────────────────────────────────
@@ -231,6 +230,7 @@ def main():
     posts = load_posts()
 
     while True:
+        count = str(len(posts))
         actions = ["New post"]
         for post in posts:
             actions.append("Edit: " + post.get("title", post.get("place","(untitled)")))
@@ -240,7 +240,7 @@ def main():
 
         sel = ask_choice(
             "Travel Stories Editor",
-            f"{{len(posts)}} post(s) saved.\\nWhat would you like to do?",
+            count + " post(s) saved. What would you like to do?",
             actions
         )
         if not sel or sel[0] == "Done": break
@@ -250,15 +250,15 @@ def main():
         if action == "New post":
             new_post = edit_post(known_places=known_places)
             if new_post:
-                existing_ids = {{p.get("id") for p in posts}}
+                existing_ids = set(p.get("id") for p in posts)
                 slug = new_post["id"]
                 if slug in existing_ids:
                     i = 2
-                    while f"{{slug}}-{{i}}" in existing_ids: i += 1
-                    new_post["id"] = f"{{slug}}-{{i}}"
+                    while (slug + "-" + str(i)) in existing_ids: i += 1
+                    new_post["id"] = slug + "-" + str(i)
                 posts.append(new_post)
                 save_posts(posts)
-                notify("Saved: " + new_post["title"])
+                notify("Saved: " + new_post.get("title",""))
 
         elif action.startswith("Edit: "):
             title_part = action[6:]
@@ -269,7 +269,7 @@ def main():
                 if updated:
                     posts[idx] = updated
                     save_posts(posts)
-                    notify("Updated: " + updated["title"])
+                    notify("Updated: " + updated.get("title",""))
 
         elif action.startswith("Delete: "):
             title_part = action[8:]
@@ -278,7 +278,7 @@ def main():
             if idx is not None:
                 confirm = ask_btn(
                     "Confirm Delete",
-                    "Delete " + posts[idx].get("title","(untitled)") + "?\nThis cannot be undone.",
+                    "Delete " + posts[idx].get("title","this post") + "?\\nThis cannot be undone.",
                     ["Cancel","Delete"], default="Cancel"
                 )
                 if confirm == "Delete":
@@ -286,7 +286,7 @@ def main():
                     save_posts(posts)
                     notify("Deleted: " + removed.get("title",""))
 
-    print(f"Done. {{len(posts)}} post(s) in {{BLOG_FILE}}")
+    print("Done. " + str(len(posts)) + " post(s) in " + BLOG_FILE)
     print("Run deploy.py to publish.")
 
 if __name__ == "__main__":
