@@ -8,8 +8,9 @@
         ],
         "state": "Tamil Nadu",
         "city": "Megamalai",
+        "country": "",
         "remarks": "Sunrise - Valley View",
-        "date_added": ""
+        "date_added": "2026-04-04"
     },
     "3497fa3ff118f72e119237f29070a6dd": {
         "path": "Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4736-38.jpg",
@@ -20,8 +21,9 @@
         ],
         "state": "Tamil Nadu",
         "city": "Megamalai",
+        "country": "",
         "remarks": "Sunrise - Valley View",
-        "date_added": ""
+        "date_added": "2026-04-04"
     },
     "2ed6d6e8261c8ac62dd69b09d42d306f": {
         "path": "Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4915-17.jpg",
@@ -32,7 +34,9 @@
         ],
         "state": "Tamil Nadu",
         "city": "Megamalai",
-        "remarks": ""
+        "country": "",
+        "remarks": "Highways Village",
+        "date_added": "2026-03-06"
     },
     "de7df5737132b3ccd4cd082a7dabbc5b": {
         "path": "Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4955.jpg",
@@ -43,8 +47,9 @@
         ],
         "state": "Tamil Nadu",
         "city": "Megamalai",
+        "country": "",
         "remarks": "Enroute to Munnar",
-        "date_added": ""
+        "date_added": "2026-03-06"
     },
     "38fb418c5cb26d593acef9c54427b2c7": {
         "path": "Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4897.jpg",
@@ -55,8 +60,9 @@
         ],
         "state": "Tamil Nadu",
         "city": "Megamalai",
+        "country": "",
         "remarks": "Tea Gardens",
-        "date_added": ""
+        "date_added": "2026-04-04"
     },
     "53f96b3b13a40dfefb45ac524ad11035": {
         "path": "Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4921-23.jpg",
@@ -67,8 +73,9 @@
         ],
         "state": "Tamil Nadu",
         "city": "Megamalai",
+        "country": "",
         "remarks": "Highways Village",
-        "date_added": ""
+        "date_added": "2026-03-06"
     },
     "639257179e8baecf76928ad6410bf43e": {
         "path": "Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4715-17.jpg",
@@ -79,8 +86,9 @@
         ],
         "state": "Tamil Nadu",
         "city": "Megamalai",
+        "country": "",
         "remarks": "Sunrise - Valley View",
-        "date_added": ""
+        "date_added": "2026-04-04"
     },
     "778aee4a3eab8334020e32a49b79878e": {
         "path": "Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4655.jpg",
@@ -91,8 +99,9 @@
         ],
         "state": "Tamil Nadu",
         "city": "Megamalai",
+        "country": "",
         "remarks": "Sunrise - Valley View",
-        "date_added": ""
+        "date_added": "2026-04-04"
     },
     "308a52d1deed6f48ed8e638319f0c04f": {
         "path": "Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4675.jpg",
@@ -103,7 +112,9 @@
         ],
         "state": "Tamil Nadu",
         "city": "Megamalai",
-        "remarks": ""
+        "country": "",
+        "remarks": "",
+        "date_added": "2026-04-04"
     },
     "9dfea9e3a14fd561b172d591c9a491ce": {
         "path": "Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4649.jpg",
@@ -114,6 +125,7 @@
         ],
         "state": "Tamil Nadu",
         "city": "Megamalai",
+        "country": "",
         "remarks": "Sunrise - Valley View",
         "date_added": "2026-04-02"
     },
@@ -121,23 +133,27 @@
         "path": "Photos/Architecture/2024-01-Badami-JPG/2024-01-Badami-Day0-NCM_6002.jpg",
         "filename": "2024-01-Badami-Day0-NCM_6002.jpg",
         "categories": [
-            "Architecture",
-            "Places/National"
+            "Places/National",
+            "Architecture"
         ],
         "state": "Karnataka",
         "city": "Badami",
-        "remarks": "Malegitti Shivalaya Temple, 6th-8th century CE,"
+        "country": "",
+        "remarks": "Malegitti Shivalaya Temple, 6th-8th century CE,",
+        "date_added": "2026-04-04"
     },
     "0bb8f9f085b4666f1676830f65c34c23": {
         "path": "Photos/Architecture/2024-01-Badami-JPG/2024-01-Badami-Day0-NCM_6121.jpg",
         "filename": "2024-01-Badami-Day0-NCM_6121.jpg",
         "categories": [
-            "Architecture",
-            "Places/National"
+            "Places/National",
+            "Architecture"
         ],
         "state": "Karnataka",
         "city": "Badami",
-        "remarks": ""
+        "country": "",
+        "remarks": "",
+        "date_added": "2026-04-04"
     },
     "4e7e91c4de407850650611cfb5fb7e24": {
         "path": "Photos/Architecture/2024-01-Badami-JPG/2024-01-Badami-Day0-NCM_6142.jpg",
@@ -147,29 +163,35 @@
         ],
         "state": "Karnataka",
         "city": "Badami",
-        "remarks": "Rock-cut temples"
+        "country": "",
+        "remarks": "Rock-cut temples",
+        "date_added": "2026-04-04"
     },
     "59a41a3c6c8d85696fb421b88fbe61d3": {
         "path": "Photos/Architecture/2024-01-Badami-JPG/2024-01-Badami-Day1-NCM_6264.jpg",
         "filename": "2024-01-Badami-Day1-NCM_6264.jpg",
         "categories": [
-            "Architecture",
-            "Places/National"
+            "Places/National",
+            "Architecture"
         ],
         "state": "Karnataka",
         "city": "Pattadhakal",
-        "remarks": ""
+        "country": "",
+        "remarks": "",
+        "date_added": "2026-04-04"
     },
     "e0b09b37aedef3e1fe5299bc9154a521": {
         "path": "Photos/Architecture/2024-01-Badami-JPG/2024-01-Badami-Day1-NCM_6334.jpg",
         "filename": "2024-01-Badami-Day1-NCM_6334.jpg",
         "categories": [
-            "Architecture",
-            "Places/National"
+            "Places/National",
+            "Architecture"
         ],
         "state": "Karnataka",
         "city": "Pattadhakal",
-        "remarks": ""
+        "country": "",
+        "remarks": "",
+        "date_added": "2026-04-04"
     },
     "c2b131277cc0e3498daf300f70ab49ff": {
         "path": "Photos/Architecture/2024-01-Badami-JPG/2024-01-Badami-Day1-NCM_6413.jpg",
@@ -397,8 +419,9 @@
         "categories": [
             "Places/International"
         ],
-        "state": "Canada",
-        "city": "Banff",
+        "state": "",
+        "city": "Banff/Alberta",
+        "country": "Canada",
         "remarks": "",
         "date_added": "2026-03-03"
     },
@@ -406,8 +429,8 @@
         "path": "Photos/Megamalai/2026-0306-Megamalai-NCM-7879-81.jpg",
         "filename": "2026-0306-Megamalai-NCM-7879-81.jpg",
         "categories": [],
-        "state": "Megamalai",
-        "city": "",
+        "state": "Tamil Nadu",
+        "city": "Megamalai",
         "country": "",
         "remarks": "Sunrise - Valley View",
         "date_added": "2026-03-06"
@@ -421,6 +444,7 @@
         ],
         "state": "Tamil Nadu",
         "city": "Megamalai",
+        "country": "",
         "remarks": "Tea Gardens",
         "date_added": "2026-03-06"
     },
@@ -428,7 +452,7 @@
         "path": "Photos/Megamalai/2026-0305-Megamalai-NCM-7720.jpg",
         "filename": "2026-0305-Megamalai-NCM-7720.jpg",
         "categories": [],
-        "state": "Megamalai",
+        "state": "Tamil Nadu",
         "city": "Megamalai",
         "country": "",
         "remarks": "Tea Gardens",

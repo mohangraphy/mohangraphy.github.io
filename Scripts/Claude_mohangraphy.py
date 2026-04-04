@@ -2631,14 +2631,12 @@ footer {
             )
 
         if m_cat == "Places":
-            # Places gets a description header + filter pills for National/International
-            # Split sub_items into National and International groups
-            nat_cards = ""
-            intl_cards = ""
+            # Show National and International as two equal cards — no filter pills
+            both_cards = ""
             for item in sub_items:
-                cnt = str(item["count"]) + " Photos" if item["count"] else "Coming Soon"
+                cnt   = str(item["count"]) + " Photos" if item["count"] else "Coming Soon"
                 cover = item.get("cover", "")
-                card_html = (
+                both_cards += (
                     '\n<div class="cat-card" onclick="showGallery(\'' + item['id'] + '\')">'
                     + (
                         '<img class="cat-card-img" src="' + cover + '" loading="lazy" decoding="async" alt="">'
@@ -2651,10 +2649,6 @@ footer {
                     '</div>'
                     '\n</div>'
                 )
-                if item['name'] == 'National':
-                    nat_cards = card_html
-                elif item['name'] == 'International':
-                    intl_cards = card_html
 
             sub_panels += (
                 '\n<div class="sub-panel" id="subpanel-Places">'
@@ -2662,12 +2656,7 @@ footer {
                 '<div class="subpanel-title">Places</div>'
                 '<div class="subpanel-desc">Photographs from around India and the world</div>'
                 '</div>'
-                '\n<div class="places-filters">'
-                '<button class="places-pill active" data-group="National" onclick="setPlacesFilter(\'National\')">National</button>'
-                '<button class="places-pill" data-group="International" onclick="setPlacesFilter(\'International\')">International</button>'
-                '</div>'
-                '\n<div class="places-group-section cat-grid-4" data-group="National">' + nat_cards + '\n</div>'
-                '\n<div class="places-group-section cat-grid-4" data-group="International" style="display:none">' + intl_cards + '\n</div>'
+                '\n<div class="cat-grid-4">' + both_cards + '\n</div>'
                 '\n</div>'
             )
         else:
