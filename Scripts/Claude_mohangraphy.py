@@ -15,7 +15,7 @@ THUMB_WIDTH      = 800
 WEB_WIDTH        = 2048   # max long-edge for lightbox display
 
 MANUAL_STRUCTURE = {
-    "Nature":           ["Landscapes", "Sunsets", "Wildlife", "Birds", "Flora"],
+    "Nature":           ["Landscapes", "Wildlife", "Birds", "Flora"],
     "Places":           ["National", "International"],
     "Architecture":     [],
     "People & Culture": ["Portraits", "Street", "Culture"],
@@ -3914,7 +3914,15 @@ goHome();
         '      Collections <span class="hdr-tab-chevron">&#9662;</span>\n'
         '      <div class="hdr-dropdown" id="hdr-collections-dd">\n'
         + ''.join(
-            '        <button class="hdr-dd-item" onclick="openCategory(\'' + m_cat + '\'); closeCollectionsDD()">' + m_cat + '</button>\n'
+            (
+                '        <div class="hdr-dd-item" style="color:rgba(201,169,110,0.9);pointer-events:none;cursor:default;border-bottom:1px solid rgba(201,169,110,0.12);">' + m_cat + '</div>\n'
+                + ''.join(
+                    '        <button class="hdr-dd-item" style="padding-left:28px" onclick="openCategory(\'' + m_cat + '\');showGallery(\'' + (
+                        'places-group-' + s if m_cat == 'Places' else 'sub-' + m_cat + '-' + s.replace(' ', '-')
+                    ) + '\'); closeCollectionsDD()">' + s + '</button>\n'
+                    for s in subs
+                )
+            )
             if subs else
             '        <button class="hdr-dd-item" onclick="showGallery(\'direct-' + m_cat + '\'); closeCollectionsDD()">' + m_cat + '</button>\n'
             for m_cat, subs in sorted(MANUAL_STRUCTURE.items(), key=lambda x: CAT_ORDER.index(x[0]) if x[0] in CAT_ORDER else 99)
@@ -3940,11 +3948,17 @@ goHome();
         '  <button class="mob-menu-item" onclick="mobToggleCollections()">Collections &#9662;</button>\n'
         '  <div class="mob-menu-sub" id="mob-collections-sub">\n'
         + ''.join(
-            '    <button class="mob-menu-subitem" onclick="' + (
-                "openCategory('" + m_cat + "')"
-                if subs else
-                "showGallery('direct-" + m_cat + "')"
-            ) + ';closeMobileMenu()">' + m_cat + '</button>\n'
+            (
+                '    <div class="mob-menu-subitem" style="color:rgba(201,169,110,0.7);pointer-events:none;padding-bottom:4px;">' + m_cat + '</div>\n'
+                + ''.join(
+                    '    <button class="mob-menu-subitem" style="padding-left:48px" onclick="openCategory(\'' + m_cat + '\');showGallery(\'' + (
+                        'places-group-' + s if m_cat == 'Places' else 'sub-' + m_cat + '-' + s.replace(' ', '-')
+                    ) + '\');closeMobileMenu()">' + s + '</button>\n'
+                    for s in subs
+                )
+            )
+            if subs else
+            '    <button class="mob-menu-subitem" onclick="showGallery(\'direct-' + m_cat + '\');closeMobileMenu()">' + m_cat + '</button>\n'
             for m_cat, subs in sorted(MANUAL_STRUCTURE.items(), key=lambda x: CAT_ORDER.index(x[0]) if x[0] in CAT_ORDER else 99)
         ) +
         '  </div>\n'
