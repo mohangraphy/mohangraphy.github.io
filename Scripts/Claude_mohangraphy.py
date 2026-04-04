@@ -319,6 +319,20 @@ def build_maps(unique_entries):
 
     return tag_map, place_map, list(dict.fromkeys(all_paths)), path_info_map
 
+def debug_place_map(place_map):
+    """Print a summary of what ended up in place_map for diagnosis."""
+    print("  ── place_map debug ──")
+    for group in ["National", "International"]:
+        data = place_map.get(group, {})
+        if not data:
+            print(f"  {group}: (empty — no photos found with Places/{group} tag + state + city)")
+        else:
+            total = sum(len(paths) for cities in data.values() for paths in cities.values())
+            print(f"  {group}: {total} photo(s)")
+            for state, cities in sorted(data.items()):
+                for city, paths in sorted(cities.items()):
+                    print(f"    {state} / {city}: {len(paths)} photo(s)")
+
 def get_display_paths(m_cat, s_cat, tag_map):
     """
     Resolve which photos belong to a category or sub-category.
@@ -439,6 +453,7 @@ def generate_html():
     raw_data = load_index()
     unique   = deduplicate_by_path(raw_data)
     tag_map, place_map, all_paths, path_info = build_maps(unique)
+    debug_place_map(place_map)
 
     # Build path→full metadata dict for embedding into grid items
     meta_by_path = {e.get('path','').strip(): e for e in unique if e.get('path','').strip()}
@@ -2363,9 +2378,20 @@ footer {
                 grp_data = place_map[group]   # {state: {city: [paths]}}
 
                 if not grp_data:
-                    # No photos yet — show Coming Soon tile
-                    sub_items.append({"id": "wip-Places-" + group, "name": group,
+                    # No photos yet — add a Coming Soon tile AND a section-block
+                    # so showGallery('places-group-International') lands somewhere
+                    wip_id = "places-group-" + group
+                    sub_items.append({"id": wip_id, "name": group,
                                       "cover": "", "count": 0, "subtitle": "Coming soon"})
+                    gallery_blocks += (
+                        '\n<div class="section-block" id="' + wip_id + '">'
+                        '\n  <div class="gal-header">'
+                        '<div class="gal-title">' + group + '</div>'
+                        '<div class="gal-sub">Coming Soon</div>'
+                        '</div>'
+                        '\n  <div class="wip-message">No ' + group + ' photos added yet</div>'
+                        '\n</div>'
+                    )
                     continue
 
                 # Collect all paths in this group for cover + count
