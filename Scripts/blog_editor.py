@@ -165,56 +165,29 @@ def edit_post(post=None, known_places=None):
     p["title"] = val.strip()
 
     val = ask_input("Place Tag",
-                    "Place tag for photo matching.\\n"
-                    "This must match the city or place field in your photo tags.\\n"
+                    "Place tag for photo linking.\n"
+                    "Must match the city or place field in your photo tags.\n"
                     "(Usually the same as the place name)",
                     p.get("place_tag", p["place"]))
     if val is None: return None
     p["place_tag"] = val.strip()
 
     val = ask_input("Summary",
-                    "Short teaser shown on the index card (1-2 sentences):",
+                    "Short teaser shown on the index list (1-2 sentences):",
                     p.get("summary",""))
     if val is None: return None
     p["summary"] = val.strip()
 
-    val = ask_input("Historical Context",
-                    "Brief historical / cultural background about the place:\\n"
-                    "(Tip: use multiple sentences separated by newline for paragraphs)",
-                    p.get("history",""))
+    val = ask_input("Article Body",
+                    "Paste your full write-up here.\n"
+                    "Use a blank line between paragraphs.\n"
+                    "(Tip: for long articles, edit blog_posts.json directly)",
+                    p.get("body",""))
     if val is None: return None
-    p["history"] = val.strip()
-
-    val = ask_input("Getting There",
-                    "How did you travel there?\\n"
-                    '(e.g. "Drove from Bangalore via Kumili — about 6 hrs")',
-                    p.get("transport",""))
-    if val is None: return None
-    p["transport"] = val.strip()
-
-    val = ask_input("Where You Stayed",
-                    "Accommodation and area:\\n"
-                    '(e.g. "High Waves Eco Resort, inside the reserve")',
-                    p.get("stay",""))
-    if val is None: return None
-    p["stay"] = val.strip()
-
-    val = ask_input("Highlights",
-                    "Key highlights of the visit.\\n"
-                    "Separate each one with a comma:",
-                    ", ".join(p.get("highlights",[])))
-    if val is None: return None
-    p["highlights"] = [h.strip() for h in val.split(",") if h.strip()]
-
-    val = ask_input("Tips for Visitors",
-                    "Practical tips for anyone planning to visit.\\n"
-                    "Separate each tip with a comma:",
-                    ", ".join(p.get("tips",[])))
-    if val is None: return None
-    p["tips"] = [t.strip() for t in val.split(",") if t.strip()]
+    p["body"] = val.strip()
 
     sel = ask_choice("Collections Links",
-                     "Which Collections menu items should link from this post?\\n"
+                     "Which Collections menu items should link from this post?\n"
                      "(Select one or more)",
                      COLLECTIONS, multiple=True)
     if sel is None: return None

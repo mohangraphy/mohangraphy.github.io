@@ -18,7 +18,7 @@ MANUAL_STRUCTURE = {
     "Nature":           ["Landscapes", "Wildlife", "Birds", "Flora"],
     "Places":           ["National", "International"],
     "Architecture":     [],
-    "People & Culture": ["Portraits", "Street", "Culture"],
+    "People & Culture": [],
 }
 # Sub-category display ORDER — preserved exactly as defined above
 CAT_ORDER = ["Nature", "Places", "Architecture", "People & Culture"]
@@ -289,18 +289,10 @@ def build_maps(unique_entries):
                 tag_map.setdefault(t2, [])
                 if path not in tag_map[t2]:
                     tag_map[t2].append(path)
-            elif raw_tag in ("People/Portraits", "People & Culture/Portraits"):
-                t2 = "People & Culture/Portraits"
-                tag_map.setdefault(t2, [])
-                if path not in tag_map[t2]:
-                    tag_map[t2].append(path)
-            elif raw_tag in ("People & Culture/Street",):
-                t2 = "People & Culture/Street"
-                tag_map.setdefault(t2, [])
-                if path not in tag_map[t2]:
-                    tag_map[t2].append(path)
-            elif raw_tag in ("People & Culture/Culture",):
-                t2 = "People & Culture/Culture"
+            elif raw_tag in ("People/Portraits", "People & Culture/Portraits",
+                             "People & Culture/Street", "People & Culture/Culture",
+                             "People & Culture"):
+                t2 = "People & Culture"
                 tag_map.setdefault(t2, [])
                 if path not in tag_map[t2]:
                     tag_map[t2].append(path)
@@ -318,12 +310,17 @@ def build_maps(unique_entries):
                 pm[state].setdefault(city, [])
                 if path not in pm[state][city]:
                     pm[state][city].append(path)
-            elif "Places/International" in raw_tag and country and city:
-                pm = place_map["International"]
-                pm.setdefault(country, {})
-                pm[country].setdefault(city, [])
-                if path not in pm[country][city]:
-                    pm[country][city].append(path)
+            elif "Places/International" in raw_tag:
+                # country field takes priority; fall back to state if country blank
+                # e.g. curator entered State=Calgary, Country=Canada → country=Canada, city=Calgary(→Banff via KNOWN_STATES)
+                intl_country = country if country else state
+                intl_city    = city    if city    else state
+                if intl_country and intl_city:
+                    pm = place_map["International"]
+                    pm.setdefault(intl_country, {})
+                    pm[intl_country].setdefault(intl_city, [])
+                    if path not in pm[intl_country][intl_city]:
+                        pm[intl_country][intl_city].append(path)
 
     return tag_map, place_map, list(dict.fromkeys(all_paths)), path_info_map
 
@@ -2363,6 +2360,64 @@ footer {
   color: rgba(255,255,255,0.18);
 }
 
+/* ── Blog list (Travel Stories index) ── */
+.blog-list {
+  max-width: 780px; margin: 0 auto;
+  padding: clamp(20px,3vw,40px) clamp(16px,4vw,64px);
+}
+.blog-row {
+  display: flex; align-items: center; justify-content: space-between;
+  gap: 16px; padding: clamp(18px,2.5vw,28px) 0;
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+  cursor: pointer;
+  transition: border-color .2s;
+  -webkit-tap-highlight-color: transparent;
+}
+.blog-row:first-child { border-top: 1px solid rgba(255,255,255,0.06); }
+.blog-row:hover { border-bottom-color: rgba(201,169,110,0.3); }
+.blog-row-main { flex: 1; min-width: 0; }
+.blog-row-title {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: clamp(18px,2.8vw,26px); font-weight: 600;
+  letter-spacing: 1px; color: #fff; line-height: 1.3;
+  transition: color .2s;
+}
+.blog-row:hover .blog-row-title { color: var(--gold); }
+.blog-row-summary {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 11px; letter-spacing: 0.3px; line-height: 1.7;
+  color: rgba(255,255,255,0.38); margin-top: 5px;
+}
+.blog-row-meta {
+  display: flex; flex-direction: column; align-items: flex-end;
+  gap: 4px; flex-shrink: 0;
+}
+.blog-row-loc {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 9px; letter-spacing: 2px; text-transform: uppercase;
+  color: var(--gold); opacity: .75;
+}
+.blog-row-date {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 9px; letter-spacing: 1px;
+  color: rgba(255,255,255,0.28);
+}
+.blog-row-arrow {
+  font-size: 22px; color: rgba(201,169,110,0.4);
+  transition: transform .2s, color .2s; margin-top: 4px;
+}
+.blog-row:hover .blog-row-arrow { transform: translateX(4px); color: var(--gold); }
+.blog-post-loc {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 8px; letter-spacing: 5px; text-transform: uppercase;
+  color: var(--gold); opacity: .75; margin-bottom: 10px;
+}
+@media (max-width: 480px) {
+  .blog-row { flex-direction: column; align-items: flex-start; gap: 8px; }
+  .blog-row-meta { flex-direction: row; align-items: center; gap: 10px; }
+  .blog-row-arrow { display: none; }
+}
+
 /* Mobile tweaks */
 @media (max-width: 480px) {
   .story-cta-btn, .story-cta-btn-ghost { flex: 1 1 100%; }
@@ -3407,10 +3462,10 @@ var ADMIN_PASS     = '""" + admin_password + """';
 var adminItems     = [];
 var adminLastSaved = {state:'', city:'', cats:[]};
 var CATEGORIES     = """ + json.dumps(sorted([
-    "Nature/Landscapes","Nature/Sunsets","Nature/Wildlife","Nature/Birds","Nature/Flora",
+    "Nature/Landscapes","Nature/Wildlife","Nature/Birds","Nature/Flora",
     "Places/National","Places/International",
     "Architecture",
-    "People & Culture/Portraits","People & Culture/Street","People & Culture/Culture"
+    "People & Culture"
 ])) + """;
 
 function ctxAdminEdit(){
@@ -3575,231 +3630,117 @@ goHome();
         return _htmlmod.escape(str(s))
 
     def build_blog_html(posts, path_info, thumb_map, web_map, meta_by_path):
-        """Build stories index cards + individual post pages."""
+        """
+        Simple blog:
+          - Index page  : list of titles as clickable links + date + one-line summary
+          - Post page   : title, date, full body text (pasted in), then photo CTA buttons
+          blog_posts.json fields used:
+            id, title, dates_visited, place, country, summary, body, place_tag,
+            collections_links
+        """
         if not posts:
             empty = (
                 '<div class="stories-empty">'
                 '<div class="stories-empty-title">No Stories Yet</div>'
-                '<div class="stories-empty-sub">Run blog_editor.py to write your first travel story</div>'
+                '<div class="stories-empty-sub">Add posts to blog_posts.json and redeploy</div>'
                 '</div>'
             )
             return empty, ""
 
-        index_cards = ""
-        post_pages  = ""
+        index_rows = ""
+        post_pages = ""
 
         for post in posts:
-            pid        = "story-" + _ea(post.get("id", ""))
-            place      = post.get("place", "")
-            country    = post.get("country", "")
-            dates      = post.get("dates_visited", "")
-            title      = post.get("title", place)
-            summary    = post.get("summary", "")
-            history    = post.get("history", "")
-            transport  = post.get("transport", "")
-            stay       = post.get("stay", "")
-            tips       = post.get("tips", [])
-            highlights = post.get("highlights", [])
-            cats_link  = post.get("collections_links", [])
-            place_tag  = post.get("place_tag", place)
-
-            place_lower = place_tag.lower().strip()
-
-            # Hero image: first photo whose city/place matches this post
-            hero_thumb = ""
-            for p, pinfo in path_info.items():
-                city_v  = pinfo.get("city",  "").lower().strip()
-                state_v = pinfo.get("state", "").lower().strip()
-                place_v = pinfo.get("place", "").lower().strip()
-                if place_lower and place_lower in (city_v, state_v, place_v):
-                    hero_thumb = thumb_map.get(p, p)
-                    break
+            pid       = "story-" + _ea(post.get("id", ""))
+            title     = _eh(post.get("title",  post.get("place", "Untitled")))
+            dates     = _eh(post.get("dates_visited", ""))
+            place     = post.get("place", "")
+            country   = post.get("country", "")
+            summary   = _eh(post.get("summary", ""))
+            body      = post.get("body", "")          # free-text write-up, newlines = paragraphs
+            place_tag = post.get("place_tag", place)
+            cats_link = post.get("collections_links", [])
 
             loc_parts = [x for x in [place, country] if x]
             loc_str   = " \u00b7 ".join(loc_parts)
-            meta_str  = (loc_str + (" \u00b7 " + dates if dates else "")) if loc_str else dates
 
-            # ── Index card ──
-            hero_img_html = (
-                '<img class="story-card-hero" src="' + _ea(hero_thumb) +
-                '" loading="lazy" decoding="async" alt="' + _ea(title) + '">'
-                if hero_thumb else
-                '<div class="story-card-hero-placeholder"><span>No Preview</span></div>'
-            )
-            cat_tags_html = "".join(
-                '<span class="story-card-cat">' + _eh(c) + "</span>"
-                for c in cats_link
-            )
-            index_cards += (
-                '<div class="story-card" onclick="showStoryPost(\'' + _ea(pid) + '\')">'
-                + hero_img_html
-                + '<div class="story-card-body">'
-                + '<div class="story-card-meta">' + _eh(meta_str) + "</div>"
-                + '<div class="story-card-title">' + _eh(title) + "</div>"
-                + '<div class="story-card-summary">'
-                + _eh(summary[:150] + ("..." if len(summary) > 150 else ""))
-                + "</div>"
-                + "</div>"
-                + '<div class="story-card-footer">'
-                + '<div class="story-card-cats">' + cat_tags_html + "</div>"
-                + '<span class="story-card-arrow">\u203a</span>'
-                + "</div>"
-                + "</div>\n"
+            # ── Index row ──────────────────────────────────────────────────
+            index_rows += (
+                '<div class="blog-row" onclick="showStoryPost(\'' + _ea(pid) + '\')">'
+                '<div class="blog-row-main">'
+                '<div class="blog-row-title">' + title + '</div>'
+                + ('<div class="blog-row-summary">' + summary + '</div>' if post.get("summary") else '')
+                + '</div>'
+                '<div class="blog-row-meta">'
+                + ('<span class="blog-row-loc">' + _eh(loc_str) + '</span>' if loc_str else '')
+                + ('<span class="blog-row-date">' + dates + '</span>' if post.get("dates_visited") else '')
+                + '<span class="blog-row-arrow">\u203a</span>'
+                '</div>'
+                '</div>\n'
             )
 
-            # ── Photos from this place ──
-            place_photos = []
-            for p, pinfo in path_info.items():
-                city_v  = pinfo.get("city",  "").lower().strip()
-                state_v = pinfo.get("state", "").lower().strip()
-                place_v = pinfo.get("place", "").lower().strip()
-                if place_lower and place_lower in (city_v, state_v, place_v):
-                    place_photos.append(p)
-
-            strip_photos = place_photos[:12]
-            strip_html = ""
-            if strip_photos:
-                strip_items = ""
-                for p in strip_photos:
-                    th    = thumb_map.get(p, p)
-                    webp  = web_map.get(p, p)
-                    pi    = path_info.get(p, {})
-                    rem   = pi.get("remarks",    "").strip()
-                    cv    = pi.get("city",        "").strip()
-                    sv    = pi.get("state",       "").strip()
-                    da    = pi.get("date_added",  "").strip()
-                    cats_p = meta_by_path.get(p, {}).get("categories", [])
-                    strip_items += (
-                        '<div class="grid-item"'
-                        ' data-photo="'      + _ea(p)              + '"'
-                        ' data-state="'      + _ea(sv)             + '"'
-                        ' data-city="'       + _ea(cv)             + '"'
-                        ' data-remarks="'    + _ea(rem)            + '"'
-                        ' data-cats="'       + _ea(",".join(cats_p)) + '"'
-                        ' data-date-added="' + _ea(da)             + '"'
-                        ' onclick="openImgModal(this)">'
-                        '<div class="grid-item-photo">'
-                        '<img src="' + _ea(th) + '" data-full="' + _ea(webp) + '"'
-                        ' loading="lazy" decoding="async"'
-                        ' alt="' + _ea(rem or cv) + '"'
-                        ' style="width:100%;height:100%;object-fit:cover;display:block;">'
-                        '<div class="grid-item-overlay"></div>'
-                        "</div>"
-                        "</div>\n"
-                    )
-                strip_html = (
-                    '<div class="story-section-label">Photographs</div>'
-                    '<div class="story-photo-strip grid">' + strip_items + "</div>"
+            # ── CTA buttons at end of post ─────────────────────────────────
+            place_lower = place_tag.lower().strip()
+            place_photos = [
+                p for p, pi in path_info.items()
+                if place_lower and place_lower in (
+                    pi.get("city","").lower().strip(),
+                    pi.get("state","").lower().strip(),
+                    pi.get("place","").lower().strip()
                 )
-            elif place_lower:
-                strip_html = (
-                    '<div class="story-section-label">Photographs</div>'
-                    '<p style="font-size:11px;letter-spacing:1px;'
-                    'color:rgba(255,255,255,0.28);font-family:Montserrat,sans-serif;">'
-                    "Photos tagged <em>" + _eh(place_tag) +
-                    "</em> will appear here once added and deployed.</p>"
-                )
+            ]
 
-            # ── Logistics ──
-            logistic_items = ""
-            for icon, label, val in [
-                ("\u2708", "Getting There", transport),
-                ("\U0001f3e8", "Where I Stayed", stay),
-            ]:
-                if val:
-                    logistic_items += (
-                        '<div class="story-logistic-card">'
-                        '<div class="story-logistic-icon">' + icon + "</div>"
-                        '<div class="story-logistic-label">' + _eh(label) + "</div>"
-                        '<div class="story-logistic-value">' + _eh(val) + "</div>"
-                        "</div>"
-                    )
-            logistics_html = (
-                '<div class="story-logistics">' + logistic_items + "</div>"
-                if logistic_items else ""
-            )
-
-            # ── Tips ──
-            tips_html = ""
-            if tips:
-                tips_html = (
-                    '<div class="story-tips-box"><ul>'
-                    + "".join("<li>" + _eh(t) + "</li>" for t in tips)
-                    + "</ul></div>"
-                )
-
-            # ── Highlights ──
-            highlights_html = ""
-            if highlights:
-                highlights_html = (
-                    '<ul class="story-highlights">'
-                    + "".join("<li>" + _eh(h) + "</li>" for h in highlights)
-                    + "</ul>"
-                )
-
-            # ── CTA buttons ──
-            cta_buttons = ""
+            cta_html = ""
             if place_photos:
-                cta_buttons += (
+                cta_html += (
                     '<button class="story-cta-btn"'
                     ' onclick="showStoryGallery(\'' + _ea(pid) + "','" + _ea(place_tag) + "')"
-                    + '">\u25b6&nbsp; View All '
-                    + str(len(place_photos))
-                    + " Photos from " + _eh(place) + "</button>"
+                    + '">\u25b6\u00a0 View Photos from ' + _eh(place) + '</button>'
                 )
             for cat_name in cats_link:
-                if MANUAL_STRUCTURE.get(cat_name):
+                if MANUAL_STRUCTURE.get(cat_name) is not None and MANUAL_STRUCTURE[cat_name]:
                     js_call = "openCategory('" + _ea(cat_name) + "')"
                 else:
                     js_call = "showGallery('direct-" + _ea(cat_name) + "')"
-                cta_buttons += (
+                cta_html += (
                     '<button class="story-cta-btn-ghost"'
-                    ' onclick="' + js_call + ";closeStoryPost()\">"
-                    + "\u25b6&nbsp; " + _eh(cat_name) + " Collection</button>"
+                    ' onclick="' + js_call + ';closeStoryPost()">'
+                    + '\u25b6\u00a0 ' + _eh(cat_name) + ' Collection</button>'
                 )
 
-            # ── Hero for post page ──
-            post_hero_html = (
-                '<img class="story-post-hero" src="' + _ea(hero_thumb) +
-                '" loading="lazy" decoding="async" alt="' + _ea(title) + '">'
-                if hero_thumb else
-                '<div class="story-post-hero-placeholder"></div>'
-            )
+            # ── Body paragraphs ────────────────────────────────────────────
+            # Support \n\n as paragraph breaks, \n as line breaks within paragraph
+            if body:
+                paras = [p.strip() for p in body.split('\n\n') if p.strip()]
+                body_html = ''.join(
+                    '<p>' + _eh(para).replace('\n', '<br>') + '</p>'
+                    for para in paras
+                )
+            else:
+                body_html = '<p style="color:rgba(255,255,255,0.25);font-style:italic;">No write-up yet. Add a \\"body\\" field to this post in blog_posts.json.</p>'
 
-            # ── Assemble post page ──
+            # ── Assemble post page ─────────────────────────────────────────
             post_pages += (
                 '<div id="' + _ea(pid) + '" class="story-post">\n'
-                + post_hero_html
-                + '<div class="story-post-inner">\n'
-                + '<button class="story-post-back" onclick="closeStoryPost()">'
-                + "\u2039 Travel Stories</button>\n"
-                + '<div class="story-post-eyebrow">' + _eh(loc_str) + "</div>\n"
-                + '<div class="story-post-title">' + _eh(title) + "</div>\n"
-                + '<div class="story-post-dates">' + _eh(dates) + "</div>\n"
-                + ('<div class="story-section-label">About the Place</div>'
-                   + '<div class="story-body"><p>'
-                   + _eh(history).replace("\n", "</p><p>")
-                   + "</p></div>"
-                   + '<div class="story-post-divider"></div>'
-                   if history else "")
-                + ('<div class="story-section-label">Getting There &amp; Staying</div>'
-                   + logistics_html
-                   if logistic_items else "")
-                + ('<div class="story-section-label">Tips for Visitors</div>'
-                   + tips_html
-                   if tips else "")
-                + ('<div class="story-section-label">Highlights</div>'
-                   + highlights_html
-                   + '<div class="story-post-divider"></div>'
-                   if highlights else "")
-                + strip_html
-                + '<div class="story-post-divider"></div>'
-                + '<div class="story-cta-row">' + cta_buttons + "</div>\n"
-                + "</div>\n"
-                + "</div>\n\n"
+                '<div class="story-post-inner">\n'
+                '<button class="story-post-back" onclick="closeStoryPost()">'
+                '\u2039 Travel Stories</button>\n'
+                + ('<div class="blog-post-loc">' + _eh(loc_str) + '</div>\n' if loc_str else '')
+                + '<div class="story-post-title">' + title + '</div>\n'
+                + ('<div class="story-post-dates">' + dates + '</div>\n' if post.get("dates_visited") else '')
+                + '<div class="story-post-divider"></div>\n'
+                + '<div class="story-body">' + body_html + '</div>\n'
+                + ('<div class="story-post-divider"></div>\n'
+                   '<div class="story-cta-row">' + cta_html + '</div>\n'
+                   if cta_html else '')
+                + '</div>\n</div>\n\n'
             )
 
-        return '<div class="stories-grid">' + index_cards + "</div>", post_pages
+        index_html = (
+            '<div class="blog-list">' + index_rows + '</div>'
+        )
+        return index_html, post_pages
+
 
     stories_index_html, story_post_pages = build_blog_html(
         blog_posts, path_info, thumb_map, web_map, meta_by_path
