@@ -2248,10 +2248,14 @@ footer {
 }
 .story-body p { margin-bottom: 14px; }
 .story-body h2 {
-  font-family: 'Montserrat', sans-serif;
-  font-size: clamp(14px, 1.8vw, 16px); font-weight: 700;
-  color: #fff; letter-spacing: 0.5px;
-  margin: 28px 0 10px; text-transform: none;
+  font-family: 'Montserrat', sans-serif !important;
+  font-size: clamp(14px, 1.8vw, 16px) !important;
+  font-weight: 700 !important;
+  color: #fff !important;
+  letter-spacing: 0.5px;
+  margin: 28px 0 10px;
+  text-transform: none;
+  line-height: 1.4;
 }
 
 /* ── Logistics cards ── */
@@ -2796,6 +2800,7 @@ function hideAll(){
   });
   document.getElementById('copyright-banner').classList.remove('visible');
   document.querySelectorAll('.info-page').forEach(function(p){ p.classList.remove('visible'); });
+  document.querySelectorAll('.story-post').forEach(function(p){ p.classList.remove('visible'); });
   document.querySelectorAll('.sub-panel').forEach(function(p){ p.classList.remove('active'); });
   document.querySelectorAll('.section-block').forEach(function(b){ b.classList.remove('visible'); });
   /* Remove dynamically injected blocks — these use inline display:block !important
