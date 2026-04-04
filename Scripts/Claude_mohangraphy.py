@@ -2242,11 +2242,17 @@ footer {
   color: var(--gold); opacity: .65; margin-bottom: 12px;
 }
 .story-body {
-  font-family: 'Cormorant Garamond', serif;
-  font-size: clamp(16px, 2vw, 20px); font-weight: 300;
-  color: rgba(255,255,255,0.6); line-height: 1.9;
+  font-family: 'Montserrat', sans-serif;
+  font-size: clamp(13px, 1.6vw, 15px); font-weight: 400;
+  color: rgba(255,255,255,0.82); line-height: 1.75;
 }
-.story-body p { margin-bottom: 16px; }
+.story-body p { margin-bottom: 14px; }
+.story-body h2 {
+  font-family: 'Montserrat', sans-serif;
+  font-size: clamp(14px, 1.8vw, 16px); font-weight: 700;
+  color: #fff; letter-spacing: 0.5px;
+  margin: 28px 0 10px; text-transform: none;
+}
 
 /* ── Logistics cards ── */
 .story-logistics {
@@ -3698,24 +3704,31 @@ goHome();
                     + '">\u25b6\u00a0 View Photos from ' + _eh(place) + '</button>'
                 )
             for cat_name in cats_link:
-                if MANUAL_STRUCTURE.get(cat_name) is not None and MANUAL_STRUCTURE[cat_name]:
-                    js_call = "openCategory('" + _ea(cat_name) + "')"
+                # Always use openCategory for cats with subs, showGallery for flat ones
+                if MANUAL_STRUCTURE.get(cat_name):
+                    js_call = "hideAll();openCategory('" + _ea(cat_name) + "')"
                 else:
-                    js_call = "showGallery('direct-" + _ea(cat_name) + "')"
+                    js_call = "hideAll();showGallery('direct-" + _ea(cat_name) + "')"
                 cta_html += (
                     '<button class="story-cta-btn-ghost"'
-                    ' onclick="' + js_call + ';closeStoryPost()">'
+                    ' onclick="' + js_call + '">'
                     + '\u25b6\u00a0 ' + _eh(cat_name) + ' Collection</button>'
                 )
 
             # ── Body paragraphs ────────────────────────────────────────────
-            # Support \n\n as paragraph breaks, \n as line breaks within paragraph
+            # \n\n = paragraph break, \n = line break within paragraph
+            # Lines starting with ## become bold sub-headings
             if body:
                 paras = [p.strip() for p in body.split('\n\n') if p.strip()]
-                body_html = ''.join(
-                    '<p>' + _eh(para).replace('\n', '<br>') + '</p>'
-                    for para in paras
-                )
+                body_parts = []
+                for para in paras:
+                    if para.startswith('##'):
+                        # Sub-heading
+                        heading_text = _eh(para.lstrip('#').strip())
+                        body_parts.append('<h2>' + heading_text + '</h2>')
+                    else:
+                        body_parts.append('<p>' + _eh(para).replace('\n', '<br>') + '</p>')
+                body_html = ''.join(body_parts)
             else:
                 body_html = '<p style="color:rgba(255,255,255,0.25);font-style:italic;">No write-up yet. Add a \\"body\\" field to this post in blog_posts.json.</p>'
 
