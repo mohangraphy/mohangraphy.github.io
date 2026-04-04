@@ -222,8 +222,9 @@ def build_maps(unique_entries):
         tags    = info.get('categories', [])
         place   = info.get('place', '').strip()
         remarks = info.get('remarks', '').strip()
-        state   = info.get('state', '').strip()
-        city    = info.get('city',  '').strip()
+        state   = info.get('state',   '').strip()
+        city    = info.get('city',    '').strip()
+        country = info.get('country', '').strip()
 
         # Backward-compat: parse old-style place fields into state + city
         if not state and ' - ' in place:
@@ -243,13 +244,18 @@ def build_maps(unique_entries):
         if state and not city:
             city = state
 
+        # For International: if country is set but city is blank, use state as city
+        # (handles cases where curator filled State=Calgary, Country=Canada)
+        if country and not city and state:
+            city = state
+
         if not path:
             continue
         all_paths.append(path)
-        overlay_place = city if city else state
+        overlay_place = city if city else (state if state else country)
         date_added = info.get('date_added', '')
         path_info_map[path] = {'place': overlay_place, 'remarks': remarks,
-                               'state': state, 'city': city,
+                               'state': state, 'city': city, 'country': country,
                                'date_added': date_added}
 
         for raw_tag in tags:
@@ -303,19 +309,21 @@ def build_maps(unique_entries):
                 if path not in tag_map[raw_tag]:
                     tag_map[raw_tag].append(path)
 
-            # Build place_map: National/International → State → City → [paths]
+            # Build place_map:
+            # National     → State   → City → [paths]
+            # International → Country → City → [paths]
             if "Places/National" in raw_tag and state and city:
                 pm = place_map["National"]
                 pm.setdefault(state, {})
                 pm[state].setdefault(city, [])
                 if path not in pm[state][city]:
                     pm[state][city].append(path)
-            elif "Places/International" in raw_tag and state and city:
+            elif "Places/International" in raw_tag and country and city:
                 pm = place_map["International"]
-                pm.setdefault(state, {})
-                pm[state].setdefault(city, [])
-                if path not in pm[state][city]:
-                    pm[state][city].append(path)
+                pm.setdefault(country, {})
+                pm[country].setdefault(city, [])
+                if path not in pm[country][city]:
+                    pm[country][city].append(path)
 
     return tag_map, place_map, list(dict.fromkeys(all_paths)), path_info_map
 
@@ -324,14 +332,15 @@ def debug_place_map(place_map):
     print("  ── place_map debug ──")
     for group in ["National", "International"]:
         data = place_map.get(group, {})
+        top_label = "State" if group == "National" else "Country"
         if not data:
-            print(f"  {group}: (empty — no photos found with Places/{group} tag + state + city)")
+            print(f"  {group}: (empty — no photos found with Places/{group} tag + {top_label.lower()} + city)")
         else:
             total = sum(len(paths) for cities in data.values() for paths in cities.values())
             print(f"  {group}: {total} photo(s)")
-            for state, cities in sorted(data.items()):
+            for top, cities in sorted(data.items()):
                 for city, paths in sorted(cities.items()):
-                    print(f"    {state} / {city}: {len(paths)} photo(s)")
+                    print(f"    {top_label}: {top} / City: {city}: {len(paths)} photo(s)")
 
 def get_display_paths(m_cat, s_cat, tag_map):
     """
@@ -2468,7 +2477,7 @@ footer {
                             '\n<div class="section-block" id="' + city_id + '">'
                             '\n  <div class="gal-header">'
                             '<div class="gal-title">' + city + '</div>'
-                            '<div class="gal-sub">' + state + ' &middot; ' + group + ' &middot; ' + str(len(city_paths)) + ' Photos</div>'
+                            '<div class="gal-sub">' + (state if group == 'National' else state) + ' &middot; ' + group + ' &middot; ' + str(len(city_paths)) + ' Photos</div>'
                             '</div>'
                             + ('\n  <div class="grid">' + imgs + '</div>' if city_paths else '\n  <div class="wip-message">Work in progress</div>')
                             + '\n</div>'
@@ -3940,15 +3949,7 @@ goHome();
         '      Collections <span class="hdr-tab-chevron">&#9662;</span>\n'
         '      <div class="hdr-dropdown" id="hdr-collections-dd">\n'
         + ''.join(
-            (
-                '        <div class="hdr-dd-item" style="color:rgba(201,169,110,0.9);pointer-events:none;cursor:default;border-bottom:1px solid rgba(201,169,110,0.12);">' + m_cat + '</div>\n'
-                + ''.join(
-                    '        <button class="hdr-dd-item" style="padding-left:28px" onclick="openCategory(\'' + m_cat + '\');showGallery(\'' + (
-                        'places-group-' + s if m_cat == 'Places' else 'sub-' + m_cat + '-' + s.replace(' ', '-')
-                    ) + '\'); closeCollectionsDD()">' + s + '</button>\n'
-                    for s in subs
-                )
-            )
+            '        <button class="hdr-dd-item" onclick="openCategory(\'' + m_cat + '\'); closeCollectionsDD()">' + m_cat + '</button>\n'
             if subs else
             '        <button class="hdr-dd-item" onclick="showGallery(\'direct-' + m_cat + '\'); closeCollectionsDD()">' + m_cat + '</button>\n'
             for m_cat, subs in sorted(MANUAL_STRUCTURE.items(), key=lambda x: CAT_ORDER.index(x[0]) if x[0] in CAT_ORDER else 99)
@@ -3974,17 +3975,11 @@ goHome();
         '  <button class="mob-menu-item" onclick="mobToggleCollections()">Collections &#9662;</button>\n'
         '  <div class="mob-menu-sub" id="mob-collections-sub">\n'
         + ''.join(
-            (
-                '    <div class="mob-menu-subitem" style="color:rgba(201,169,110,0.7);pointer-events:none;padding-bottom:4px;">' + m_cat + '</div>\n'
-                + ''.join(
-                    '    <button class="mob-menu-subitem" style="padding-left:48px" onclick="openCategory(\'' + m_cat + '\');showGallery(\'' + (
-                        'places-group-' + s if m_cat == 'Places' else 'sub-' + m_cat + '-' + s.replace(' ', '-')
-                    ) + '\');closeMobileMenu()">' + s + '</button>\n'
-                    for s in subs
-                )
-            )
-            if subs else
-            '    <button class="mob-menu-subitem" onclick="showGallery(\'direct-' + m_cat + '\');closeMobileMenu()">' + m_cat + '</button>\n'
+            '    <button class="mob-menu-subitem" onclick="' + (
+                "openCategory('" + m_cat + "')"
+                if subs else
+                "showGallery('direct-" + m_cat + "')"
+            ) + ';closeMobileMenu()">' + m_cat + '</button>\n'
             for m_cat, subs in sorted(MANUAL_STRUCTURE.items(), key=lambda x: CAT_ORDER.index(x[0]) if x[0] in CAT_ORDER else 99)
         ) +
         '  </div>\n'
