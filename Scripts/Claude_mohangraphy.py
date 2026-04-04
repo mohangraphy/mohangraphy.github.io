@@ -2243,7 +2243,7 @@ footer {
 }
 .story-body {
   font-family: 'Montserrat', sans-serif;
-  font-size: clamp(13px, 1.6vw, 15px); font-weight: 400;
+  font-size: clamp(14px, 1.8vw, 16px); font-weight: 400;
   color: rgba(255,255,255,0.82); line-height: 1.75;
 }
 .story-body p { margin-bottom: 14px; }
@@ -2256,6 +2256,21 @@ footer {
   margin: 28px 0 10px;
   text-transform: none;
   line-height: 1.4;
+}
+.story-inline-photo {
+  width: 100%; margin: 24px 0;
+  display: block;
+}
+.story-inline-photo img {
+  width: 100%; display: block;
+  border: 1px solid rgba(201,169,110,0.1);
+  cursor: pointer;
+}
+.story-inline-caption {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 10px; letter-spacing: 2px;
+  color: rgba(255,255,255,0.3); text-transform: uppercase;
+  margin-top: 8px; text-align: center;
 }
 
 /* ── Logistics cards ── */
@@ -3711,15 +3726,63 @@ goHome();
 
             # ── Body paragraphs ────────────────────────────────────────────
             # \n\n = paragraph break, \n = line break within paragraph
-            # Lines starting with ## become bold sub-headings
+            # ## Heading text        → bold sub-heading
+            # [photo: filename.jpg]  → inline photo (clickable, opens lightbox)
+            # [photo: filename.jpg | My caption]  → inline photo with caption
             if body:
                 paras = [p.strip() for p in body.split('\n\n') if p.strip()]
                 body_parts = []
                 for para in paras:
                     if para.startswith('##'):
-                        # Sub-heading
-                        heading_text = _eh(para.lstrip('#').strip())
-                        body_parts.append('<h2>' + heading_text + '</h2>')
+                        body_parts.append('<h2>' + _eh(para.lstrip('#').strip()) + '</h2>')
+                    elif para.startswith('[photo:') and para.endswith(']'):
+                        inner   = para[7:-1].strip()
+                        parts   = inner.split('|', 1)
+                        fname   = parts[0].strip()
+                        caption = parts[1].strip() if len(parts) > 1 else ''
+                        # Find photo by filename match in thumb_map
+                        photo_path = next(
+                            (p for p in thumb_map if os.path.basename(p).lower() == fname.lower()),
+                            None
+                        )
+                        if photo_path:
+                            th     = thumb_map.get(photo_path, photo_path)
+                            web    = web_map.get(photo_path, photo_path)
+                            pi     = path_info.get(photo_path, {})
+                            rem    = pi.get('remarks',    '').strip()
+                            sv     = pi.get('state',      '').strip()
+                            cv     = pi.get('city',       '').strip()
+                            da     = pi.get('date_added', '').strip()
+                            cats_p = meta_by_path.get(photo_path, {}).get('categories', [])
+                            cap_html = (
+                                '<div class="story-inline-caption">' + _eh(caption) + '</div>'
+                                if caption else ''
+                            )
+                            body_parts.append(
+                                '<div class="story-inline-photo">'
+                                '<div class="grid-item"'
+                                ' data-photo="'      + _ea(photo_path)        + '"'
+                                ' data-state="'      + _ea(sv)                + '"'
+                                ' data-city="'       + _ea(cv)                + '"'
+                                ' data-remarks="'    + _ea(rem)               + '"'
+                                ' data-cats="'       + _ea(','.join(cats_p))  + '"'
+                                ' data-date-added="' + _ea(da)                + '"'
+                                ' onclick="openImgModal(this)">'
+                                '<div class="grid-item-photo">'
+                                '<img src="' + _ea(th) + '" data-full="' + _ea(web) + '"'
+                                ' loading="lazy" decoding="async"'
+                                ' alt="' + _ea(caption or rem or cv) + '"'
+                                ' style="width:100%;height:100%;object-fit:cover;display:block;">'
+                                '<div class="grid-item-overlay"></div>'
+                                '</div></div>'
+                                + cap_html +
+                                '</div>'
+                            )
+                        else:
+                            body_parts.append(
+                                '<p style="color:rgba(201,169,110,0.4);font-size:11px;'
+                                'font-style:italic;">[Photo not found: ' + _eh(fname) + ']</p>'
+                            )
                     else:
                         body_parts.append('<p>' + _eh(para).replace('\n', '<br>') + '</p>')
                 body_html = ''.join(body_parts)

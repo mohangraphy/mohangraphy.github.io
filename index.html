@@ -1737,7 +1737,7 @@ footer {
 }
 .story-body {
   font-family: 'Montserrat', sans-serif;
-  font-size: clamp(13px, 1.6vw, 15px); font-weight: 400;
+  font-size: clamp(14px, 1.8vw, 16px); font-weight: 400;
   color: rgba(255,255,255,0.82); line-height: 1.75;
 }
 .story-body p { margin-bottom: 14px; }
@@ -1750,6 +1750,21 @@ footer {
   margin: 28px 0 10px;
   text-transform: none;
   line-height: 1.4;
+}
+.story-inline-photo {
+  width: 100%; margin: 24px 0;
+  display: block;
+}
+.story-inline-photo img {
+  width: 100%; display: block;
+  border: 1px solid rgba(201,169,110,0.1);
+  cursor: pointer;
+}
+.story-inline-caption {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 10px; letter-spacing: 2px;
+  color: rgba(255,255,255,0.3); text-transform: uppercase;
+  margin-top: 8px; text-align: center;
 }
 
 /* ── Logistics cards ── */
@@ -1990,13 +2005,13 @@ footer {
   <div class="tile-nav-label">Collections</div>
   <div class="cat-grid">
 
-<div class="cat-card" onclick="openCategory('Nature')" role="button" tabindex="0" onkeypress="if(event.key==='Enter') this.click()"><img class="cat-card-img" src="Thumbs/Photos/Greece/DSC_3747.jpg" loading="lazy" decoding="async" alt=""><div class="cat-card-bar"><div class="cat-card-name">Nature</div></div>
+<div class="cat-card" onclick="openCategory('Nature')" role="button" tabindex="0" onkeypress="if(event.key==='Enter') this.click()"><img class="cat-card-img" src="Thumbs/Photos/Canada/2025-0712-Calgary-NCM_5785_Original.jpg" loading="lazy" decoding="async" alt=""><div class="cat-card-bar"><div class="cat-card-name">Nature</div></div>
 </div>
-<div class="cat-card" onclick="openCategory('Places')" role="button" tabindex="0" onkeypress="if(event.key==='Enter') this.click()"><img class="cat-card-img" src="Thumbs/Photos/Canada/2025-0711-Calgary-NCM_5476_Original.jpg" loading="lazy" decoding="async" alt=""><div class="cat-card-bar"><div class="cat-card-name">Places</div></div>
+<div class="cat-card" onclick="openCategory('Places')" role="button" tabindex="0" onkeypress="if(event.key==='Enter') this.click()"><img class="cat-card-img" src="Thumbs/Photos/Architecture/2024-01-Badami-JPG/2024-01-Badami-Day2-NCM_6882.jpg" loading="lazy" decoding="async" alt=""><div class="cat-card-bar"><div class="cat-card-name">Places</div></div>
 </div>
-<div class="cat-card" onclick="showGallery('direct-Architecture')" role="button" tabindex="0" onkeypress="if(event.key==='Enter') this.click()"><img class="cat-card-img" src="Thumbs/Photos/Architecture/2024-01-Badami-JPG/2024-01-Badami-Day2-NCM_6882.jpg" loading="lazy" decoding="async" alt=""><div class="cat-card-bar"><div class="cat-card-name">Architecture</div></div>
+<div class="cat-card" onclick="showGallery('direct-Architecture')" role="button" tabindex="0" onkeypress="if(event.key==='Enter') this.click()"><img class="cat-card-img" src="Thumbs/Photos/Tadoba/2026-0324-Tadoba-NCM-8873.JPG" loading="lazy" decoding="async" alt=""><div class="cat-card-bar"><div class="cat-card-name">Architecture</div></div>
 </div>
-<div class="cat-card" onclick="showGallery('direct-People & Culture')" role="button" tabindex="0" onkeypress="if(event.key==='Enter') this.click()"><img class="cat-card-img" src="Thumbs/Photos/Canada/2025-0711-Calgary-NCM_5210_Original.jpg" loading="lazy" decoding="async" alt=""><div class="cat-card-bar"><div class="cat-card-name">People & Culture</div></div>
+<div class="cat-card" onclick="showGallery('direct-People & Culture')" role="button" tabindex="0" onkeypress="if(event.key==='Enter') this.click()"><img class="cat-card-img" src="Thumbs/Photos/Tadoba/2026-0324-Tadoba-NCM-9197.JPG" loading="lazy" decoding="async" alt=""><div class="cat-card-bar"><div class="cat-card-name">People & Culture</div></div>
 </div>
   </div>
 
@@ -2008,36 +2023,36 @@ footer {
 <div class="sub-panel" id="subpanel-Nature">
 <div class="subpanel-header"><div class="subpanel-title">Nature</div></div>
 <div class="cat-grid-4">
-<div class="cat-card" onclick="showGallery('sub-Nature-Landscapes')"><img class="cat-card-img" src="Thumbs/Photos/Canada/2025-0711-Calgary-NCM_5351_Original.jpg" loading="lazy" decoding="async" alt=""><div class="cat-card-bar"><div class="cat-card-name">Landscapes</div><div class="cat-card-count">45 Photos</div></div>
+<div class="cat-card" onclick="showGallery('sub-Nature-Landscapes')"><img class="cat-card-img" src="Thumbs/Photos/Canada/2025-0711-Calgary-NCM_5326_Original.jpg" loading="lazy" decoding="async" alt=""><div class="cat-card-bar"><div class="cat-card-name">Landscapes</div><div class="cat-card-count">45 Photos</div></div>
 </div>
-<div class="cat-card" onclick="showGallery('sub-Nature-Wildlife')"><img class="cat-card-img" src="Thumbs/Photos/Birds/Munnar Birds/2026-0127-MunnarBirds-NCM-6103.JPG" loading="lazy" decoding="async" alt=""><div class="cat-card-bar"><div class="cat-card-name">Wildlife</div><div class="cat-card-count">7 Photos</div></div>
+<div class="cat-card" onclick="showGallery('sub-Nature-Wildlife')"><img class="cat-card-img" src="Thumbs/Photos/Tadoba/2026-0324-Tadoba-NCM-9481.JPG" loading="lazy" decoding="async" alt=""><div class="cat-card-bar"><div class="cat-card-name">Wildlife</div><div class="cat-card-count">7 Photos</div></div>
 </div>
 <div class="cat-card" onclick="showGallery('sub-Nature-Birds')"><img class="cat-card-img" src="Thumbs/Photos/Birds/Munnar Birds/2026-0127-MunnarBirds-NCM-5870.JPG" loading="lazy" decoding="async" alt=""><div class="cat-card-bar"><div class="cat-card-name">Birds</div><div class="cat-card-count">17 Photos</div></div>
 </div>
-<div class="cat-card" onclick="showGallery('sub-Nature-Flora')"><img class="cat-card-img" src="Thumbs/Photos/Thekkady/2026-0306-Thekkady-NCM-8176.JPG" loading="lazy" decoding="async" alt=""><div class="cat-card-bar"><div class="cat-card-name">Flora</div><div class="cat-card-count">6 Photos</div></div>
+<div class="cat-card" onclick="showGallery('sub-Nature-Flora')"><img class="cat-card-img" src="Thumbs/Photos/Canada/2025-0712-Calgary-NCM_5986_Original.jpg" loading="lazy" decoding="async" alt=""><div class="cat-card-bar"><div class="cat-card-name">Flora</div><div class="cat-card-count">6 Photos</div></div>
 </div>
 </div>
 </div>
 <div class="sub-panel" id="subpanel-Places">
 <div class="subpanel-header"><div class="subpanel-title">Places</div><div class="subpanel-desc">Photographs from around India and the world</div></div>
 <div class="cat-grid-4">
-<div class="cat-card" onclick="showGallery('places-group-National')"><img class="cat-card-img" src="Thumbs/Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4675.jpg" loading="lazy" decoding="async" alt=""><div class="cat-card-bar"><div class="cat-card-name">National</div><div class="cat-card-count">58 Photos</div></div>
+<div class="cat-card" onclick="showGallery('places-group-National')"><img class="cat-card-img" src="Thumbs/Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4736-38.jpg" loading="lazy" decoding="async" alt=""><div class="cat-card-bar"><div class="cat-card-name">National</div><div class="cat-card-count">58 Photos</div></div>
 </div>
-<div class="cat-card" onclick="showGallery('places-group-International')"><img class="cat-card-img" src="Thumbs/Photos/Greece/DSC_3601.jpg" loading="lazy" decoding="async" alt=""><div class="cat-card-bar"><div class="cat-card-name">International</div><div class="cat-card-count">33 Photos</div></div>
+<div class="cat-card" onclick="showGallery('places-group-International')"><img class="cat-card-img" src="Thumbs/Photos/Greece/DSC_4235.jpg" loading="lazy" decoding="async" alt=""><div class="cat-card-bar"><div class="cat-card-name">International</div><div class="cat-card-count">33 Photos</div></div>
 </div>
 </div>
 </div>
 <div class="sub-panel" id="subpanel-Architecture">
 <div class="subpanel-header"><div class="subpanel-title">Architecture</div></div>
 <div class="cat-grid-4">
-<div class="cat-card" onclick="showGallery('direct-Architecture')"><img class="cat-card-img" src="Thumbs/Photos/Greece/DSC_4235.jpg" loading="lazy" decoding="async" alt=""><div class="cat-card-bar"><div class="cat-card-name">Architecture</div><div class="cat-card-count">23 Photos</div></div>
+<div class="cat-card" onclick="showGallery('direct-Architecture')"><img class="cat-card-img" src="Thumbs/Photos/Tadoba/2026-0324-Tadoba-NCM-8736.JPG" loading="lazy" decoding="async" alt=""><div class="cat-card-bar"><div class="cat-card-name">Architecture</div><div class="cat-card-count">23 Photos</div></div>
 </div>
 </div>
 </div>
 <div class="sub-panel" id="subpanel-People & Culture">
 <div class="subpanel-header"><div class="subpanel-title">People & Culture</div></div>
 <div class="cat-grid-4">
-<div class="cat-card" onclick="showGallery('direct-People & Culture')"><img class="cat-card-img" src="Thumbs/Photos/Canada/2025-0712-Calgary-NCM_5965_Original.jpg" loading="lazy" decoding="async" alt=""><div class="cat-card-bar"><div class="cat-card-name">People & Culture</div><div class="cat-card-count">8 Photos</div></div>
+<div class="cat-card" onclick="showGallery('direct-People & Culture')"><img class="cat-card-img" src="Thumbs/Photos/Tadoba/2026-0324-Tadoba-NCM-9729.JPG" loading="lazy" decoding="async" alt=""><div class="cat-card-bar"><div class="cat-card-name">People & Culture</div><div class="cat-card-count">8 Photos</div></div>
 </div>
 </div>
 </div>
@@ -2076,7 +2091,7 @@ footer {
 </div>
 <div class="section-block" id="places-state-National-Karnataka">
   <div class="gal-header"><div class="gal-title">Karnataka</div><div class="gal-sub">National &middot; 10 Photos</div></div>
-  <div class="cat-grid-4"><div class="cat-card" onclick="showSection('places-city-National-Karnataka-Aihole','places-state-National-Karnataka')"><img class="cat-card-img" src="Thumbs/Photos/Architecture/2024-01-Badami-JPG/2024-01-Badami-Day1-NCM_6596.jpg" loading="lazy" decoding="async" alt=""><div class="cat-card-bar"><div class="cat-card-name">Aihole</div><div class="cat-card-count">2 Photos</div></div></div><div class="cat-card" onclick="showSection('places-city-National-Karnataka-Badami','places-state-National-Karnataka')"><img class="cat-card-img" src="Thumbs/Photos/Architecture/2024-01-Badami-JPG/2024-01-Badami-Day2-NCM_6863.jpg" loading="lazy" decoding="async" alt=""><div class="cat-card-bar"><div class="cat-card-name">Badami</div><div class="cat-card-count">5 Photos</div></div></div><div class="cat-card" onclick="showSection('places-city-National-Karnataka-Pattadhakal','places-state-National-Karnataka')"><img class="cat-card-img" src="Thumbs/Photos/Architecture/2024-01-Badami-JPG/2024-01-Badami-Day1-NCM_6334.jpg" loading="lazy" decoding="async" alt=""><div class="cat-card-bar"><div class="cat-card-name">Pattadhakal</div><div class="cat-card-count">3 Photos</div></div></div>
+  <div class="cat-grid-4"><div class="cat-card" onclick="showSection('places-city-National-Karnataka-Aihole','places-state-National-Karnataka')"><img class="cat-card-img" src="Thumbs/Photos/Architecture/2024-01-Badami-JPG/2024-01-Badami-Day1-NCM_6596.jpg" loading="lazy" decoding="async" alt=""><div class="cat-card-bar"><div class="cat-card-name">Aihole</div><div class="cat-card-count">2 Photos</div></div></div><div class="cat-card" onclick="showSection('places-city-National-Karnataka-Badami','places-state-National-Karnataka')"><img class="cat-card-img" src="Thumbs/Photos/Architecture/2024-01-Badami-JPG/2024-01-Badami-Day2-NCM_6825.jpg" loading="lazy" decoding="async" alt=""><div class="cat-card-bar"><div class="cat-card-name">Badami</div><div class="cat-card-count">5 Photos</div></div></div><div class="cat-card" onclick="showSection('places-city-National-Karnataka-Pattadhakal','places-state-National-Karnataka')"><img class="cat-card-img" src="Thumbs/Photos/Architecture/2024-01-Badami-JPG/2024-01-Badami-Day1-NCM_6334.jpg" loading="lazy" decoding="async" alt=""><div class="cat-card-bar"><div class="cat-card-name">Pattadhakal</div><div class="cat-card-count">3 Photos</div></div></div>
   </div>
 </div>
 <div class="section-block" id="places-city-National-Kerala-Munnar">
@@ -2089,7 +2104,7 @@ footer {
 </div>
 <div class="section-block" id="places-state-National-Kerala">
   <div class="gal-header"><div class="gal-title">Kerala</div><div class="gal-sub">National &middot; 15 Photos</div></div>
-  <div class="cat-grid-4"><div class="cat-card" onclick="showSection('places-city-National-Kerala-Munnar','places-state-National-Kerala')"><img class="cat-card-img" src="Thumbs/Photos/Birds/Munnar Birds/2026-0127-MunnarBirds-NCM-5534.JPG" loading="lazy" decoding="async" alt=""><div class="cat-card-bar"><div class="cat-card-name">Munnar</div><div class="cat-card-count">14 Photos</div></div></div><div class="cat-card" onclick="showSection('places-city-National-Kerala-Thekkady','places-state-National-Kerala')"><img class="cat-card-img" src="Thumbs/Photos/Thekkady/2026-0306-Thekkady-NCM-8274.JPG" loading="lazy" decoding="async" alt=""><div class="cat-card-bar"><div class="cat-card-name">Thekkady</div><div class="cat-card-count">1 Photos</div></div></div>
+  <div class="cat-grid-4"><div class="cat-card" onclick="showSection('places-city-National-Kerala-Munnar','places-state-National-Kerala')"><img class="cat-card-img" src="Thumbs/Photos/Birds/Munnar Birds/2026-0127-MunnarBirds-NCM-6276.JPG" loading="lazy" decoding="async" alt=""><div class="cat-card-bar"><div class="cat-card-name">Munnar</div><div class="cat-card-count">14 Photos</div></div></div><div class="cat-card" onclick="showSection('places-city-National-Kerala-Thekkady','places-state-National-Kerala')"><img class="cat-card-img" src="Thumbs/Photos/Thekkady/2026-0306-Thekkady-NCM-8274.JPG" loading="lazy" decoding="async" alt=""><div class="cat-card-bar"><div class="cat-card-name">Thekkady</div><div class="cat-card-count">1 Photos</div></div></div>
   </div>
 </div>
 <div class="section-block" id="places-city-National-Maharashtra-Aurangabad">
@@ -2119,12 +2134,12 @@ footer {
 </div>
 <div class="section-block" id="places-state-National-Tamil-Nadu">
   <div class="gal-header"><div class="gal-title">Tamil Nadu</div><div class="gal-sub">National &middot; 15 Photos</div></div>
-  <div class="cat-grid-4"><div class="cat-card" onclick="showSection('places-city-National-Tamil_Nadu-Madurai','places-state-National-Tamil-Nadu')"><img class="cat-card-img" src="Thumbs/Photos/Madurai/2026-0308-Madurai-NCM-8622-24.jpg" loading="lazy" decoding="async" alt=""><div class="cat-card-bar"><div class="cat-card-name">Madurai</div><div class="cat-card-count">3 Photos</div></div></div><div class="cat-card" onclick="showSection('places-city-National-Tamil_Nadu-Megamalai','places-state-National-Tamil-Nadu')"><img class="cat-card-img" src="Thumbs/Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4897.jpg" loading="lazy" decoding="async" alt=""><div class="cat-card-bar"><div class="cat-card-name">Megamalai</div><div class="cat-card-count">11 Photos</div></div></div><div class="cat-card" onclick="showSection('places-city-National-Tamil_Nadu-Tadoba','places-state-National-Tamil-Nadu')"><img class="cat-card-img" src="Thumbs/Photos/Thekkady/2026-0306-Thekkady-NCM-8176.JPG" loading="lazy" decoding="async" alt=""><div class="cat-card-bar"><div class="cat-card-name">Tadoba</div><div class="cat-card-count">1 Photos</div></div></div>
+  <div class="cat-grid-4"><div class="cat-card" onclick="showSection('places-city-National-Tamil_Nadu-Madurai','places-state-National-Tamil-Nadu')"><img class="cat-card-img" src="Thumbs/Photos/Madurai/2026-0308-Madurai-NCM-8651-53.jpg" loading="lazy" decoding="async" alt=""><div class="cat-card-bar"><div class="cat-card-name">Madurai</div><div class="cat-card-count">3 Photos</div></div></div><div class="cat-card" onclick="showSection('places-city-National-Tamil_Nadu-Megamalai','places-state-National-Tamil-Nadu')"><img class="cat-card-img" src="Thumbs/Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4733-35.jpg" loading="lazy" decoding="async" alt=""><div class="cat-card-bar"><div class="cat-card-name">Megamalai</div><div class="cat-card-count">11 Photos</div></div></div><div class="cat-card" onclick="showSection('places-city-National-Tamil_Nadu-Tadoba','places-state-National-Tamil-Nadu')"><img class="cat-card-img" src="Thumbs/Photos/Thekkady/2026-0306-Thekkady-NCM-8176.JPG" loading="lazy" decoding="async" alt=""><div class="cat-card-bar"><div class="cat-card-name">Tadoba</div><div class="cat-card-count">1 Photos</div></div></div>
   </div>
 </div>
 <div class="section-block" id="places-group-National">
   <div class="gal-header"><div class="gal-title">National</div><div class="gal-sub">58 Photos</div></div>
-  <div class="cat-grid-4"><div class="cat-card" onclick="showSection('places-state-National-Karnataka','places-group-National')"><img class="cat-card-img" src="Thumbs/Photos/Architecture/2024-01-Badami-JPG/2024-01-Badami-Day0-NCM_6002.jpg" loading="lazy" decoding="async" alt=""><div class="cat-card-bar"><div class="cat-card-name">Karnataka</div><div class="cat-card-count">10 Photos</div></div></div><div class="cat-card" onclick="showSection('places-state-National-Kerala','places-group-National')"><img class="cat-card-img" src="Thumbs/Photos/Birds/Munnar Birds/2026-0127-MunnarBirds-NCM-5437.JPG" loading="lazy" decoding="async" alt=""><div class="cat-card-bar"><div class="cat-card-name">Kerala</div><div class="cat-card-count">15 Photos</div></div></div><div class="cat-card" onclick="showSection('places-state-National-Maharashtra','places-group-National')"><img class="cat-card-img" src="Thumbs/Photos/Tadoba/2026-0324-Tadoba-NCM-9959.JPG" loading="lazy" decoding="async" alt=""><div class="cat-card-bar"><div class="cat-card-name">Maharashtra</div><div class="cat-card-count">18 Photos</div></div></div><div class="cat-card" onclick="showSection('places-state-National-Tamil-Nadu','places-group-National')"><img class="cat-card-img" src="Thumbs/Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4921-23.jpg" loading="lazy" decoding="async" alt=""><div class="cat-card-bar"><div class="cat-card-name">Tamil Nadu</div><div class="cat-card-count">15 Photos</div></div></div>
+  <div class="cat-grid-4"><div class="cat-card" onclick="showSection('places-state-National-Karnataka','places-group-National')"><img class="cat-card-img" src="Thumbs/Photos/Architecture/2024-01-Badami-JPG/2024-01-Badami-Day0-NCM_6002.jpg" loading="lazy" decoding="async" alt=""><div class="cat-card-bar"><div class="cat-card-name">Karnataka</div><div class="cat-card-count">10 Photos</div></div></div><div class="cat-card" onclick="showSection('places-state-National-Kerala','places-group-National')"><img class="cat-card-img" src="Thumbs/Photos/Birds/Munnar Birds/2026-0127-MunnarBirds-NCM-5534.JPG" loading="lazy" decoding="async" alt=""><div class="cat-card-bar"><div class="cat-card-name">Kerala</div><div class="cat-card-count">15 Photos</div></div></div><div class="cat-card" onclick="showSection('places-state-National-Maharashtra','places-group-National')"><img class="cat-card-img" src="Thumbs/Photos/Tadoba/2026-0324-Tadoba-NCM-8893.JPG" loading="lazy" decoding="async" alt=""><div class="cat-card-bar"><div class="cat-card-name">Maharashtra</div><div class="cat-card-count">18 Photos</div></div></div><div class="cat-card" onclick="showSection('places-state-National-Tamil-Nadu','places-group-National')"><img class="cat-card-img" src="Thumbs/Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4897.jpg" loading="lazy" decoding="async" alt=""><div class="cat-card-bar"><div class="cat-card-name">Tamil Nadu</div><div class="cat-card-count">15 Photos</div></div></div>
   </div>
 </div>
 <div class="section-block" id="places-city-International-Canada-Banff/Alberta">
@@ -2137,7 +2152,7 @@ footer {
 </div>
 <div class="section-block" id="places-state-International-Canada">
   <div class="gal-header"><div class="gal-title">Canada</div><div class="gal-sub">International &middot; 21 Photos</div></div>
-  <div class="cat-grid-4"><div class="cat-card" onclick="showSection('places-city-International-Canada-Banff/Alberta','places-state-International-Canada')"><img class="cat-card-img" src="Thumbs/Photos/Canada/2025-0712-Calgary-NCM_5965_Original.jpg" loading="lazy" decoding="async" alt=""><div class="cat-card-bar"><div class="cat-card-name">Banff/Alberta</div><div class="cat-card-count">3 Photos</div></div></div><div class="cat-card" onclick="showSection('places-city-International-Canada-Calgary/Alberta','places-state-International-Canada')"><img class="cat-card-img" src="Thumbs/Photos/Canada/2025-0711-Calgary-NCM_5351_Original.jpg" loading="lazy" decoding="async" alt=""><div class="cat-card-bar"><div class="cat-card-name">Calgary/Alberta</div><div class="cat-card-count">18 Photos</div></div></div>
+  <div class="cat-grid-4"><div class="cat-card" onclick="showSection('places-city-International-Canada-Banff/Alberta','places-state-International-Canada')"><img class="cat-card-img" src="Thumbs/Photos/Canada/2025-0712-Calgary-NCM_5986_Original.jpg" loading="lazy" decoding="async" alt=""><div class="cat-card-bar"><div class="cat-card-name">Banff/Alberta</div><div class="cat-card-count">3 Photos</div></div></div><div class="cat-card" onclick="showSection('places-city-International-Canada-Calgary/Alberta','places-state-International-Canada')"><img class="cat-card-img" src="Thumbs/Photos/Canada/2025-0711-Calgary-NCM_5476_Original.jpg" loading="lazy" decoding="async" alt=""><div class="cat-card-bar"><div class="cat-card-name">Calgary/Alberta</div><div class="cat-card-count">18 Photos</div></div></div>
   </div>
 </div>
 <div class="section-block" id="places-city-International-Greece-Delphi">
@@ -2154,12 +2169,12 @@ footer {
 </div>
 <div class="section-block" id="places-state-International-Greece">
   <div class="gal-header"><div class="gal-title">Greece</div><div class="gal-sub">International &middot; 12 Photos</div></div>
-  <div class="cat-grid-4"><div class="cat-card" onclick="showSection('places-city-International-Greece-Delphi','places-state-International-Greece')"><img class="cat-card-img" src="Thumbs/Photos/Greece/DSC_3962-PanoBW.jpg" loading="lazy" decoding="async" alt=""><div class="cat-card-bar"><div class="cat-card-name">Delphi</div><div class="cat-card-count">3 Photos</div></div></div><div class="cat-card" onclick="showSection('places-city-International-Greece-Hydra','places-state-International-Greece')"><img class="cat-card-img" src="Thumbs/Photos/Greece/DSC_4215.jpg" loading="lazy" decoding="async" alt=""><div class="cat-card-bar"><div class="cat-card-name">Hydra</div><div class="cat-card-count">3 Photos</div></div></div><div class="cat-card" onclick="showSection('places-city-International-Greece-Santorini','places-state-International-Greece')"><img class="cat-card-img" src="Thumbs/Photos/Greece/DSC_3181.jpg" loading="lazy" decoding="async" alt=""><div class="cat-card-bar"><div class="cat-card-name">Santorini</div><div class="cat-card-count">6 Photos</div></div></div>
+  <div class="cat-grid-4"><div class="cat-card" onclick="showSection('places-city-International-Greece-Delphi','places-state-International-Greece')"><img class="cat-card-img" src="Thumbs/Photos/Greece/DSC_3962-Pano.jpg" loading="lazy" decoding="async" alt=""><div class="cat-card-bar"><div class="cat-card-name">Delphi</div><div class="cat-card-count">3 Photos</div></div></div><div class="cat-card" onclick="showSection('places-city-International-Greece-Hydra','places-state-International-Greece')"><img class="cat-card-img" src="Thumbs/Photos/Greece/DSC_4235.jpg" loading="lazy" decoding="async" alt=""><div class="cat-card-bar"><div class="cat-card-name">Hydra</div><div class="cat-card-count">3 Photos</div></div></div><div class="cat-card" onclick="showSection('places-city-International-Greece-Santorini','places-state-International-Greece')"><img class="cat-card-img" src="Thumbs/Photos/Greece/DSC_3521-Pano.jpg" loading="lazy" decoding="async" alt=""><div class="cat-card-bar"><div class="cat-card-name">Santorini</div><div class="cat-card-count">6 Photos</div></div></div>
   </div>
 </div>
 <div class="section-block" id="places-group-International">
   <div class="gal-header"><div class="gal-title">International</div><div class="gal-sub">33 Photos</div></div>
-  <div class="cat-grid-4"><div class="cat-card" onclick="showSection('places-state-International-Canada','places-group-International')"><img class="cat-card-img" src="Thumbs/Photos/Canada/2025-0712-Calgary-NCM_5986_Original.jpg" loading="lazy" decoding="async" alt=""><div class="cat-card-bar"><div class="cat-card-name">Canada</div><div class="cat-card-count">21 Photos</div></div></div><div class="cat-card" onclick="showSection('places-state-International-Greece','places-group-International')"><img class="cat-card-img" src="Thumbs/Photos/Greece/DSC_4094_01.jpg" loading="lazy" decoding="async" alt=""><div class="cat-card-bar"><div class="cat-card-name">Greece</div><div class="cat-card-count">12 Photos</div></div></div>
+  <div class="cat-grid-4"><div class="cat-card" onclick="showSection('places-state-International-Canada','places-group-International')"><img class="cat-card-img" src="Thumbs/Photos/Canada/2025-0712-Calgary-NCM_5604_Original.jpg" loading="lazy" decoding="async" alt=""><div class="cat-card-bar"><div class="cat-card-name">Canada</div><div class="cat-card-count">21 Photos</div></div></div><div class="cat-card" onclick="showSection('places-state-International-Greece','places-group-International')"><img class="cat-card-img" src="Thumbs/Photos/Greece/DSC_3600.jpg" loading="lazy" decoding="async" alt=""><div class="cat-card-bar"><div class="cat-card-name">Greece</div><div class="cat-card-count">12 Photos</div></div></div>
   </div>
 </div>
 <div class="section-block" id="direct-Architecture">
@@ -2708,7 +2723,7 @@ function scrollToCollections(){
 
 /* ── Hero slideshow ── */
 (function(){
-  var thumbs = ["Thumbs/Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4715-17.jpg", "Thumbs/Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4897.jpg", "Thumbs/Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4675.jpg", "Thumbs/Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4955.jpg", "Thumbs/Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4921-23.jpg", "Thumbs/Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4736-38.jpg", "Thumbs/Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4649.jpg", "Thumbs/Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4915-17.jpg", "Thumbs/Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4655.jpg", "Thumbs/Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4733-35.jpg"];
+  var thumbs = ["Thumbs/Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4955.jpg", "Thumbs/Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4649.jpg", "Thumbs/Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4915-17.jpg", "Thumbs/Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4675.jpg", "Thumbs/Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4921-23.jpg", "Thumbs/Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4897.jpg", "Thumbs/Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4736-38.jpg", "Thumbs/Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4733-35.jpg", "Thumbs/Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4715-17.jpg", "Thumbs/Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4655.jpg"];
   var hero   = document.getElementById('hero');
   if (!thumbs.length) return;
   var caption = hero.querySelector('.hero-caption');

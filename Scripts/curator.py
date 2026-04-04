@@ -66,7 +66,15 @@ def save_data(data):
     with open(DATA_FILE, 'w', encoding='utf-8') as f:
         json.dump(data, f, indent=4, ensure_ascii=False)
 
-def scan_photos():
+def open_photo_front(path):
+    """Open photo and bring it to the front of the screen."""
+    subprocess.Popen(['open', path])
+    # Brief pause then bring Preview to front via osascript
+    time.sleep(0.8)
+    subprocess.Popen([
+        'osascript', '-e',
+        'tell application "Preview" to activate'
+    ])
     files = []
     for root, _, names in os.walk(PHOTOS_DIR):
         for n in sorted(names):
@@ -99,7 +107,11 @@ def build_page(state):
         def_remarks = ''   # always blank for new photos
 
     today = datetime.date.today().strftime('%Y-%m-%d')
-    def_date = photo.get('date_added', today) if tagged else today
+    if tagged:
+        def_date = photo.get('date_added', today)
+    else:
+        # Carry forward date from previous photo; fall back to today
+        def_date = prev.get('date', today)
 
     status_label = 'ALREADY TAGGED' if tagged else 'NEW PHOTO'
     status_color = '#c9a96e' if tagged else '#6ec9a9'
@@ -334,6 +346,7 @@ class CuratorServer(BaseHTTPRequestHandler):
                 'city':       city,
                 'country':    country,
                 'remarks':    remarks,
+                'date':       date,
             })
 
             print(f"  ✅ {filename} | {', '.join(cats)} | {state or country} / {city}")
@@ -346,7 +359,6 @@ class CuratorServer(BaseHTTPRequestHandler):
             self._json({'status': 'next'})
 
         elif action == 'skip':
-            # Still update carry-forward from skipped photo's existing data
             cur = srv.state['photo']
             if cur:
                 srv.prev.update({
@@ -355,6 +367,7 @@ class CuratorServer(BaseHTTPRequestHandler):
                     'city':       cur.get('city',       srv.prev.get('city', '')),
                     'country':    cur.get('country',    srv.prev.get('country', '')),
                     'remarks':    cur.get('remarks',    ''),
+                    'date':       cur.get('date_added', srv.prev.get('date', '')),
                 })
             if not self._advance(srv):
                 self._json({'status': 'done'})
@@ -386,8 +399,8 @@ class CuratorServer(BaseHTTPRequestHandler):
                 'prev':     dict(srv.prev),
             })
 
-            # Open photo in Preview
-            subprocess.Popen(['open', path])
+            # Open photo in front of browser
+            threading.Thread(target=open_photo_front, args=(path,), daemon=True).start()
             return True
         return False
 
@@ -438,13 +451,15 @@ def main():
         'prev':     dict(server.prev),
     }
 
-    # Open Preview for first photo
-    subprocess.Popen(['open', first_path])
-
-    # Open browser after a short delay
+    # Open browser first, then photo on top
     def open_browser():
-        time.sleep(0.6)
+        time.sleep(0.4)
         subprocess.Popen(['open', f'http://localhost:{PORT}'])
+        # Then bring photo to front
+        time.sleep(0.8)
+        subprocess.Popen(['open', first_path])
+        time.sleep(0.8)
+        subprocess.Popen(['osascript', '-e', 'tell application "Preview" to activate'])
     threading.Thread(target=open_browser, daemon=True).start()
 
     print(f"🌐 Curator running at http://localhost:{PORT}")
