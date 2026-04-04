@@ -100,12 +100,14 @@
     },
     "9dfea9e3a14fd561b172d591c9a491ce": {
         "path": "Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4649.jpg",
+        "filename": "2026-0127-Megamalai-NCM-4649.jpg",
         "categories": [
             "Nature/Landscapes",
             "Places/National"
         ],
-        "place": "Megamalai, Tamil Nadu",
-        "filename": "2026-0127-Megamalai-NCM-4649.jpg",
+        "state": "Tamil Nadu",
+        "city": "Megamalai",
+        "remarks": "",
         "date_added": "2026-04-02"
     },
     "5fade2d4eed79b1a580ac7da812d47e6": {
@@ -407,12 +409,14 @@
     },
     "d0714f42b7e36287e4618fbcb104d7fa": {
         "path": "Photos/2026-0306-Megamalai-NCM-7879-81.jpg",
+        "filename": "2026-0306-Megamalai-NCM-7879-81.jpg",
         "categories": [
             "Nature/Landscapes",
             "Places/National"
         ],
-        "place": "Megamalai, Tamil Nadu",
-        "filename": "2026-0306-Megamalai-NCM-7879-81.jpg",
+        "state": "Tamil Nadu",
+        "city": "Megamalai",
+        "remarks": "",
         "date_added": "2026-04-02"
     },
     "87210a773897d600c8b9a174e37fa58a": {
@@ -428,12 +432,14 @@
     },
     "98cf6c1434aae1ba9bcaeea50847e551": {
         "path": "Photos/2026-0305-Megamalai-NCM-7807.jpg",
+        "filename": "2026-0305-Megamalai-NCM-7807.jpg",
         "categories": [
             "Nature/Landscapes",
             "Places/National"
         ],
-        "place": "Megamalai, Tamil Nadu",
-        "filename": "2026-0305-Megamalai-NCM-7807.jpg",
+        "state": "Tamil Nadu",
+        "city": "Megamalai",
+        "remarks": "Tea Gardens",
         "date_added": "2026-04-02"
     },
     "5d680f0a6167c52f71fdd34bb2764a50": {
@@ -525,7 +531,7 @@
         ],
         "state": "Maharashtra",
         "city": "Tadoba",
-        "remarks": "",
+        "remarks": "Safari",
         "date_added": "2026-03-26"
     },
     "df57d9f59d27abbe45970c329140b5af": {
