@@ -2737,8 +2737,12 @@ function hideAll(){
   document.querySelectorAll('.info-page').forEach(function(p){ p.classList.remove('visible'); });
   document.querySelectorAll('.sub-panel').forEach(function(p){ p.classList.remove('active'); });
   document.querySelectorAll('.section-block').forEach(function(b){ b.classList.remove('visible'); });
+  /* Remove dynamically injected blocks — these use inline display:block !important
+     so class removal alone won't hide them */
+  ['gallery-new-photos','gallery-story-temp'].forEach(function(id){
+    var el = document.getElementById(id); if(el) el.remove();
+  });
   setActiveTab(null);
-  /* Re-show new photos banner after any navigation — always visible on tile-nav */
   markNewPhotos();
 }
 
@@ -2944,10 +2948,11 @@ function showNewPhotos(){
     return '<div class="new-photo-wrap">' + item.outerHTML + tagsHTML + '</div>';
   }).join('');
 
-  /* Step 5: create block with inline display:block so hideAll cannot hide it */
+  /* Step 5: create block — hideAll will remove it by id when navigating away */
   var block = document.createElement('div');
   block.id = 'gallery-new-photos';
-  block.style.cssText = 'display:block !important; padding-top:calc(var(--hdr) + 32px);';
+  block.className = 'section-block visible';
+  block.style.cssText = 'padding-top:calc(var(--hdr) + 32px);';
   block.innerHTML = '<div class="gal-header"><div class="gal-title">Recently Added</div>'
     + '<div class="gal-sub">' + uniqueItems.length + ' Photo' + (uniqueItems.length > 1 ? 's' : '') + ' · Last ' + NEW_DAYS + ' days</div></div>'
     + '<div class="grid">' + gridHTML + '</div>';
@@ -3854,8 +3859,8 @@ goHome();
         + "  });\n"
         + "  var blk=document.createElement('div');\n"
         + "  blk.id='gallery-story-temp';\n"
-        + "  blk.style.cssText='display:block !important;"
-        + "padding-top:calc(var(--hdr)+32px);';\n"
+        + "  blk.className='section-block visible';\n"
+        + "  blk.style.cssText='padding-top:calc(var(--hdr)+32px);';\n"
         + "  blk.innerHTML='<div class=\"gal-header\">'"
         + "+'<div class=\"gal-title\">'+placeTag+'</div>'"
         + "+'<div class=\"gal-sub\">'+matched.length+' Photo'"
