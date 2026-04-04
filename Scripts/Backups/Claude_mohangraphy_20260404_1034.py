@@ -15,7 +15,7 @@ THUMB_WIDTH      = 800
 WEB_WIDTH        = 2048   # max long-edge for lightbox display
 
 MANUAL_STRUCTURE = {
-    "Nature":           ["Landscapes", "Sunsets", "Wildlife", "Birds", "Flora"],
+    "Nature":           ["Landscapes", "Wildlife", "Birds", "Flora"],
     "Places":           ["National", "International"],
     "Architecture":     [],
     "People & Culture": ["Portraits", "Street", "Culture"],
@@ -222,8 +222,9 @@ def build_maps(unique_entries):
         tags    = info.get('categories', [])
         place   = info.get('place', '').strip()
         remarks = info.get('remarks', '').strip()
-        state   = info.get('state', '').strip()
-        city    = info.get('city',  '').strip()
+        state   = info.get('state',   '').strip()
+        city    = info.get('city',    '').strip()
+        country = info.get('country', '').strip()
 
         # Backward-compat: parse old-style place fields into state + city
         if not state and ' - ' in place:
@@ -243,13 +244,18 @@ def build_maps(unique_entries):
         if state and not city:
             city = state
 
+        # For International: if country is set but city is blank, use state as city
+        # (handles cases where curator filled State=Calgary, Country=Canada)
+        if country and not city and state:
+            city = state
+
         if not path:
             continue
         all_paths.append(path)
-        overlay_place = city if city else state
+        overlay_place = city if city else (state if state else country)
         date_added = info.get('date_added', '')
         path_info_map[path] = {'place': overlay_place, 'remarks': remarks,
-                               'state': state, 'city': city,
+                               'state': state, 'city': city, 'country': country,
                                'date_added': date_added}
 
         for raw_tag in tags:
@@ -303,21 +309,38 @@ def build_maps(unique_entries):
                 if path not in tag_map[raw_tag]:
                     tag_map[raw_tag].append(path)
 
-            # Build place_map: National/International → State → City → [paths]
+            # Build place_map:
+            # National     → State   → City → [paths]
+            # International → Country → City → [paths]
             if "Places/National" in raw_tag and state and city:
                 pm = place_map["National"]
                 pm.setdefault(state, {})
                 pm[state].setdefault(city, [])
                 if path not in pm[state][city]:
                     pm[state][city].append(path)
-            elif "Places/International" in raw_tag and state and city:
+            elif "Places/International" in raw_tag and country and city:
                 pm = place_map["International"]
-                pm.setdefault(state, {})
-                pm[state].setdefault(city, [])
-                if path not in pm[state][city]:
-                    pm[state][city].append(path)
+                pm.setdefault(country, {})
+                pm[country].setdefault(city, [])
+                if path not in pm[country][city]:
+                    pm[country][city].append(path)
 
     return tag_map, place_map, list(dict.fromkeys(all_paths)), path_info_map
+
+def debug_place_map(place_map):
+    """Print a summary of what ended up in place_map for diagnosis."""
+    print("  ── place_map debug ──")
+    for group in ["National", "International"]:
+        data = place_map.get(group, {})
+        top_label = "State" if group == "National" else "Country"
+        if not data:
+            print(f"  {group}: (empty — no photos found with Places/{group} tag + {top_label.lower()} + city)")
+        else:
+            total = sum(len(paths) for cities in data.values() for paths in cities.values())
+            print(f"  {group}: {total} photo(s)")
+            for top, cities in sorted(data.items()):
+                for city, paths in sorted(cities.items()):
+                    print(f"    {top_label}: {top} / City: {city}: {len(paths)} photo(s)")
 
 def get_display_paths(m_cat, s_cat, tag_map):
     """
@@ -439,6 +462,7 @@ def generate_html():
     raw_data = load_index()
     unique   = deduplicate_by_path(raw_data)
     tag_map, place_map, all_paths, path_info = build_maps(unique)
+    debug_place_map(place_map)
 
     # Build path→full metadata dict for embedding into grid items
     meta_by_path = {e.get('path','').strip(): e for e in unique if e.get('path','').strip()}
@@ -2363,9 +2387,20 @@ footer {
                 grp_data = place_map[group]   # {state: {city: [paths]}}
 
                 if not grp_data:
-                    # No photos yet — show Coming Soon tile
-                    sub_items.append({"id": "wip-Places-" + group, "name": group,
+                    # No photos yet — add a Coming Soon tile AND a section-block
+                    # so showGallery('places-group-International') lands somewhere
+                    wip_id = "places-group-" + group
+                    sub_items.append({"id": wip_id, "name": group,
                                       "cover": "", "count": 0, "subtitle": "Coming soon"})
+                    gallery_blocks += (
+                        '\n<div class="section-block" id="' + wip_id + '">'
+                        '\n  <div class="gal-header">'
+                        '<div class="gal-title">' + group + '</div>'
+                        '<div class="gal-sub">Coming Soon</div>'
+                        '</div>'
+                        '\n  <div class="wip-message">No ' + group + ' photos added yet</div>'
+                        '\n</div>'
+                    )
                     continue
 
                 # Collect all paths in this group for cover + count
@@ -2442,7 +2477,7 @@ footer {
                             '\n<div class="section-block" id="' + city_id + '">'
                             '\n  <div class="gal-header">'
                             '<div class="gal-title">' + city + '</div>'
-                            '<div class="gal-sub">' + state + ' &middot; ' + group + ' &middot; ' + str(len(city_paths)) + ' Photos</div>'
+                            '<div class="gal-sub">' + (state if group == 'National' else state) + ' &middot; ' + group + ' &middot; ' + str(len(city_paths)) + ' Photos</div>'
                             '</div>'
                             + ('\n  <div class="grid">' + imgs + '</div>' if city_paths else '\n  <div class="wip-message">Work in progress</div>')
                             + '\n</div>'
@@ -2702,8 +2737,12 @@ function hideAll(){
   document.querySelectorAll('.info-page').forEach(function(p){ p.classList.remove('visible'); });
   document.querySelectorAll('.sub-panel').forEach(function(p){ p.classList.remove('active'); });
   document.querySelectorAll('.section-block').forEach(function(b){ b.classList.remove('visible'); });
+  /* Remove dynamically injected blocks — these use inline display:block !important
+     so class removal alone won't hide them */
+  ['gallery-new-photos','gallery-story-temp'].forEach(function(id){
+    var el = document.getElementById(id); if(el) el.remove();
+  });
   setActiveTab(null);
-  /* Re-show new photos banner after any navigation — always visible on tile-nav */
   markNewPhotos();
 }
 
@@ -2909,10 +2948,11 @@ function showNewPhotos(){
     return '<div class="new-photo-wrap">' + item.outerHTML + tagsHTML + '</div>';
   }).join('');
 
-  /* Step 5: create block with inline display:block so hideAll cannot hide it */
+  /* Step 5: create block — hideAll will remove it by id when navigating away */
   var block = document.createElement('div');
   block.id = 'gallery-new-photos';
-  block.style.cssText = 'display:block !important; padding-top:calc(var(--hdr) + 32px);';
+  block.className = 'section-block visible';
+  block.style.cssText = 'padding-top:calc(var(--hdr) + 32px);';
   block.innerHTML = '<div class="gal-header"><div class="gal-title">Recently Added</div>'
     + '<div class="gal-sub">' + uniqueItems.length + ' Photo' + (uniqueItems.length > 1 ? 's' : '') + ' · Last ' + NEW_DAYS + ' days</div></div>'
     + '<div class="grid">' + gridHTML + '</div>';
@@ -3819,8 +3859,8 @@ goHome();
         + "  });\n"
         + "  var blk=document.createElement('div');\n"
         + "  blk.id='gallery-story-temp';\n"
-        + "  blk.style.cssText='display:block !important;"
-        + "padding-top:calc(var(--hdr)+32px);';\n"
+        + "  blk.className='section-block visible';\n"
+        + "  blk.style.cssText='padding-top:calc(var(--hdr)+32px);';\n"
         + "  blk.innerHTML='<div class=\"gal-header\">'"
         + "+'<div class=\"gal-title\">'+placeTag+'</div>'"
         + "+'<div class=\"gal-sub\">'+matched.length+' Photo'"
