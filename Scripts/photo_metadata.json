@@ -1260,5 +1260,96 @@
         "country": "Canada",
         "remarks": "Street View",
         "date_added": "2025-07-12"
+    },
+    "e3d140b4d6e7bb4df669228e80e5faa8": {
+        "path": "Photos/Tadoba/2026-0324-Tadoba-NCM-8706.JPG",
+        "filename": "2026-0324-Tadoba-NCM-8706.JPG",
+        "categories": [
+            "Places/International",
+            "Architecture"
+        ],
+        "state": "",
+        "city": "Tadoba",
+        "country": "Maharashtra",
+        "remarks": "",
+        "date_added": "2026-03-26"
+    },
+    "683c104a2f09e8e9219c916a2296fe31": {
+        "path": "Photos/Tadoba/Edit-2026-0326-Tadoba-VCM-IMG-4456.jpg",
+        "filename": "Edit-2026-0326-Tadoba-VCM-IMG-4456.jpg",
+        "categories": [
+            "Nature/Landscapes",
+            "Places/National"
+        ],
+        "state": "Maharashtra",
+        "city": "Aurangabad",
+        "country": "",
+        "remarks": "Biwi Ka Maqbara",
+        "date_added": "2026-03-28"
+    },
+    "c8b576ba34ff186fb33702cf50842dc5": {
+        "path": "Photos/Tadoba/edit-2026-0324-Tadoba-IMG-9115.jpg",
+        "filename": "edit-2026-0324-Tadoba-IMG-9115.jpg",
+        "categories": [
+            "Nature/Landscapes",
+            "Places/National"
+        ],
+        "state": "Maharashtra",
+        "city": "Aurangabad",
+        "country": "",
+        "remarks": "ME-2 Samruddhi Mahamarg",
+        "date_added": "2026-03-28"
+    },
+    "755d79ca35a41acd4ebce481abe66d06": {
+        "path": "Photos/Tadoba/edit-2026-0324-Tadoba-IMG-9120.jpg",
+        "filename": "edit-2026-0324-Tadoba-IMG-9120.jpg",
+        "categories": [
+            "Nature/Landscapes",
+            "Places/National"
+        ],
+        "state": "Maharashtra",
+        "city": "Aurangabad",
+        "country": "",
+        "remarks": "ME-2 Samruddhi Mahamarg",
+        "date_added": "2026-03-28"
+    },
+    "3a029f2f5cc13fd885326914da97d988": {
+        "path": "Photos/Tadoba/edit-2026-0326-Tadoba-VCM-IMG-4481.jpg",
+        "filename": "edit-2026-0326-Tadoba-VCM-IMG-4481.jpg",
+        "categories": [
+            "Nature/Landscapes",
+            "Places/National"
+        ],
+        "state": "Maharashtra",
+        "city": "Tadoba",
+        "country": "",
+        "remarks": "Karwa Safari",
+        "date_added": "2026-03-28"
+    },
+    "684b3621bab1d440534265d3ed24acb0": {
+        "path": "Photos/Tadoba/edit-2026-0326-Tadoba-VCM-IMG-4497.jpg",
+        "filename": "edit-2026-0326-Tadoba-VCM-IMG-4497.jpg",
+        "categories": [
+            "Nature/Landscapes",
+            "Places/National"
+        ],
+        "state": "Maharashtra",
+        "city": "Tadoba",
+        "country": "",
+        "remarks": "Pond @ Karwa",
+        "date_added": "2026-03-28"
+    },
+    "8fdeab04df12323d8f6c415661271767": {
+        "path": "Photos/Tadoba/edit-IMG_4915.jpg",
+        "filename": "edit-IMG_4915.jpg",
+        "categories": [
+            "Nature/Landscapes",
+            "Places/National"
+        ],
+        "state": "Maharashtra",
+        "city": "Tadoba",
+        "country": "",
+        "remarks": "Dewada Safari Gate",
+        "date_added": "2026-03-28"
     }
 }
