@@ -21,15 +21,22 @@ PHOTOS_DIR = os.path.join(ROOT_DIR, "Photos")
 DATA_FILE  = os.path.join(ROOT_DIR, "Scripts/photo_metadata.json")
 PORT       = 9797
 
+# Categories stored in photo_metadata.json
+# These map to the website's 4 collections:
+#   Landscape     ← Nature/Landscapes
+#   Flora & Fauna ← Nature/Wildlife, Nature/Birds, Nature/Flora
+#   Architecture  ← Architecture
+#   People & Culture ← People & Culture
+# National/International determines India vs Overseas filter pill
 CATEGORIES = [
-    "Nature/Landscapes",
-    "Nature/Wildlife",
-    "Nature/Birds",
-    "Nature/Flora",
-    "Places/National",
-    "Places/International",
-    "Architecture",
-    "People & Culture",
+    "Nature/Landscapes",      # → Landscape
+    "Nature/Wildlife",        # → Flora & Fauna
+    "Nature/Birds",           # → Flora & Fauna
+    "Nature/Flora",           # → Flora & Fauna
+    "Places/National",        # → India filter
+    "Places/International",   # → Overseas filter
+    "Architecture",           # → Architecture
+    "People & Culture",       # → People & Culture
 ]
 
 # ── Helpers ───────────────────────────────────────────────────────────────────
@@ -104,9 +111,21 @@ def build_page(state):
     status_label = 'ALREADY TAGGED' if tagged else 'NEW PHOTO'
     status_color = '#c9a96e' if tagged else '#6ec9a9'
 
+    # Friendly labels showing what each tag maps to on the website
+    CAT_LABELS = {
+        "Nature/Landscapes":    "Landscapes  →  Landscape",
+        "Nature/Wildlife":      "Wildlife  →  Flora & Fauna",
+        "Nature/Birds":         "Birds  →  Flora & Fauna",
+        "Nature/Flora":         "Flora  →  Flora & Fauna",
+        "Places/National":      "National  →  India",
+        "Places/International": "International  →  Overseas",
+        "Architecture":         "Architecture",
+        "People & Culture":     "People & Culture",
+    }
+
     cat_btns = ''
     for c in CATEGORIES:
-        label    = c.split('/')[-1].upper()
+        label    = CAT_LABELS.get(c, c.split('/')[-1].upper())
         selected = 'selected' if c in def_cats else ''
         cat_btns += (
             f'<button class="cat-btn {selected}" data-cat="{c}" '

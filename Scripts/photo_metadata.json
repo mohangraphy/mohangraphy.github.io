@@ -159,6 +159,7 @@
         "path": "Photos/Architecture/2024-01-Badami-JPG/2024-01-Badami-Day0-NCM_6142.jpg",
         "filename": "2024-01-Badami-Day0-NCM_6142.jpg",
         "categories": [
+            "Places/National",
             "Architecture"
         ],
         "state": "Karnataka",
@@ -468,7 +469,10 @@
     "d0714f42b7e36287e4618fbcb104d7fa": {
         "path": "Photos/Megamalai/2026-0306-Megamalai-NCM-7879-81.jpg",
         "filename": "2026-0306-Megamalai-NCM-7879-81.jpg",
-        "categories": [],
+        "categories": [
+            "Nature/Landscapes",
+            "Places/National"
+        ],
         "state": "Tamil Nadu",
         "city": "Megamalai",
         "country": "",
@@ -491,7 +495,10 @@
     "f4d75c5f8a01d2dd422f87c196d21f1c": {
         "path": "Photos/Megamalai/2026-0305-Megamalai-NCM-7720.jpg",
         "filename": "2026-0305-Megamalai-NCM-7720.jpg",
-        "categories": [],
+        "categories": [
+            "Nature/Landscapes",
+            "Places/National"
+        ],
         "state": "Tamil Nadu",
         "city": "Megamalai",
         "country": "",
@@ -611,7 +618,7 @@
         ],
         "state": "",
         "city": "Santorini",
-        "country": "Greece",
+        "country": "",
         "remarks": "Sunset at Santorini",
         "date_added": "2018-10-14"
     },
@@ -624,7 +631,7 @@
         ],
         "state": "",
         "city": "Santorini",
-        "country": "Greece",
+        "country": "",
         "remarks": "Sunset at Santorini",
         "date_added": "2018-10-14"
     },
@@ -637,7 +644,7 @@
         ],
         "state": "",
         "city": "Santorini",
-        "country": "Greece",
+        "country": "",
         "remarks": "Sunset at Santorini",
         "date_added": "2018-10-14"
     },
@@ -645,12 +652,12 @@
         "path": "Photos/Greece/DSC_3747.jpg",
         "filename": "DSC_3747.jpg",
         "categories": [
-            "Nature/Landscapes",
-            "Places/International"
+            "Places/International",
+            "Architecture"
         ],
         "state": "",
         "city": "Delphi",
-        "country": "Greece",
+        "country": "",
         "remarks": "",
         "date_added": "2018-10-15"
     },
@@ -658,12 +665,12 @@
         "path": "Photos/Greece/DSC_3962-Pano.jpg",
         "filename": "DSC_3962-Pano.jpg",
         "categories": [
-            "Nature/Landscapes",
-            "Places/International"
+            "Places/International",
+            "Architecture"
         ],
         "state": "",
         "city": "Delphi",
-        "country": "Greece",
+        "country": "",
         "remarks": "Amphitheater",
         "date_added": "2018-10-15"
     },
@@ -671,13 +678,12 @@
         "path": "Photos/Greece/DSC_3962-PanoBW.jpg",
         "filename": "DSC_3962-PanoBW.jpg",
         "categories": [
-            "Nature/Landscapes",
             "Places/International",
             "Architecture"
         ],
         "state": "",
         "city": "Delphi",
-        "country": "Greece",
+        "country": "",
         "remarks": "Amphitheater",
         "date_added": "2018-10-15"
     },
@@ -690,7 +696,7 @@
         ],
         "state": "",
         "city": "Hydra",
-        "country": "Greece",
+        "country": "",
         "remarks": "Ferry Ride",
         "date_added": "2018-10-15"
     },
@@ -703,7 +709,7 @@
         ],
         "state": "",
         "city": "Hydra",
-        "country": "Greece",
+        "country": "",
         "remarks": "Church",
         "date_added": "2018-10-16"
     },
@@ -716,7 +722,7 @@
         ],
         "state": "",
         "city": "Hydra",
-        "country": "Greece",
+        "country": "",
         "remarks": "Church",
         "date_added": "2018-10-16"
     },
@@ -880,7 +886,6 @@
         "path": "Photos/Tadoba/2026-0324-Tadoba-NCM-9729.JPG",
         "filename": "2026-0324-Tadoba-NCM-9729.JPG",
         "categories": [
-            "Nature/Landscapes",
             "Places/National",
             "People & Culture"
         ],
@@ -960,12 +965,11 @@
         "filename": "2025-0711-Calgary-NCM_5163_Original.jpg",
         "categories": [
             "Nature/Landscapes",
-            "Nature/Flora",
             "Places/International"
         ],
         "state": "",
         "city": "Calgary/Alberta",
-        "country": "Canada",
+        "country": "",
         "remarks": "Enroute to Horseshoe Canyon",
         "date_added": "2025-07-11"
     },
@@ -974,12 +978,11 @@
         "filename": "2025-0711-Calgary-NCM_5165_Original.jpg",
         "categories": [
             "Nature/Landscapes",
-            "Nature/Flora",
             "Places/International"
         ],
         "state": "",
         "city": "Calgary/Alberta",
-        "country": "Canada",
+        "country": "",
         "remarks": "Enroute to Horseshoe Canyon",
         "date_added": "2025-07-11"
     },
@@ -988,12 +991,11 @@
         "filename": "2025-0711-Calgary-NCM_5210_Original.jpg",
         "categories": [
             "Nature/Landscapes",
-            "Places/International",
-            "People & Culture"
+            "Places/International"
         ],
         "state": "",
         "city": "Calgary/Alberta",
-        "country": "Canada",
+        "country": "",
         "remarks": "Enroute to Horseshoe Canyon",
         "date_added": "2025-07-11"
     },
@@ -1002,12 +1004,11 @@
         "filename": "2025-0711-Calgary-NCM_5283_Original.jpg",
         "categories": [
             "Nature/Landscapes",
-            "Nature/Flora",
             "Places/International"
         ],
         "state": "",
         "city": "Calgary/Alberta",
-        "country": "Canada",
+        "country": "",
         "remarks": "Enroute to Horseshoe Canyon",
         "date_added": "2025-07-11"
     },
@@ -1020,7 +1021,7 @@
         ],
         "state": "",
         "city": "Calgary/Alberta",
-        "country": "Canada",
+        "country": "",
         "remarks": "Horseshoe Canyon",
         "date_added": "2025-07-11"
     },
@@ -1033,7 +1034,7 @@
         ],
         "state": "",
         "city": "Calgary/Alberta",
-        "country": "Canada",
+        "country": "",
         "remarks": "Horseshoe Canyon",
         "date_added": "2025-07-11"
     },
@@ -1046,7 +1047,7 @@
         ],
         "state": "",
         "city": "Calgary/Alberta",
-        "country": "Canada",
+        "country": "",
         "remarks": "Horseshoe Canyon",
         "date_added": "2025-07-11"
     },
@@ -1054,13 +1055,12 @@
         "path": "Photos/Canada/2025-0711-Calgary-NCM_5348_Original.jpg",
         "filename": "2025-0711-Calgary-NCM_5348_Original.jpg",
         "categories": [
-            "Nature/Landscapes",
             "Places/International",
             "People & Culture"
         ],
         "state": "",
         "city": "Calgary/Alberta",
-        "country": "Canada",
+        "country": "",
         "remarks": "Horseshoe Canyon",
         "date_added": "2025-07-11"
     },
@@ -1073,7 +1073,7 @@
         ],
         "state": "",
         "city": "Calgary/Alberta",
-        "country": "Canada",
+        "country": "",
         "remarks": "Horseshoe Canyon",
         "date_added": "2025-07-11"
     },
@@ -1086,7 +1086,7 @@
         ],
         "state": "",
         "city": "Calgary/Alberta",
-        "country": "Canada",
+        "country": "",
         "remarks": "Horseshoe Canyon",
         "date_added": "2025-07-11"
     },
@@ -1099,7 +1099,7 @@
         ],
         "state": "",
         "city": "Calgary/Alberta",
-        "country": "Canada",
+        "country": "",
         "remarks": "Enroute - Horseshoe Canyon",
         "date_added": "2025-07-11"
     },
@@ -1108,12 +1108,11 @@
         "filename": "2025-0711-Calgary-NCM_5479_Original.jpg",
         "categories": [
             "Nature/Landscapes",
-            "Places/International",
-            "People & Culture"
+            "Places/International"
         ],
         "state": "",
         "city": "Calgary/Alberta",
-        "country": "Canada",
+        "country": "",
         "remarks": "Enroute - Horseshoe Canyon",
         "date_added": "2025-07-11"
     },
@@ -1121,11 +1120,12 @@
         "path": "Photos/Canada/2025-0711-Calgary-NCM_5487_Original.jpg",
         "filename": "2025-0711-Calgary-NCM_5487_Original.jpg",
         "categories": [
-            "Nature/Landscapes"
+            "Nature/Landscapes",
+            "Places/International"
         ],
-        "state": "Canada",
+        "state": "",
         "city": "Calgary/Alberta",
-        "country": "",
+        "country": "Canada",
         "remarks": "Enroute - Horseshoe Canyon",
         "date_added": "2025-07-11"
     },
@@ -1138,7 +1138,7 @@
         ],
         "state": "",
         "city": "Calgary/Alberta",
-        "country": "Canada",
+        "country": "",
         "remarks": "Moraine Lake",
         "date_added": "2025-07-12"
     },
@@ -1151,7 +1151,7 @@
         ],
         "state": "",
         "city": "Calgary/Alberta",
-        "country": "Canada",
+        "country": "",
         "remarks": "Lake Louise",
         "date_added": "2025-07-12"
     },
@@ -1159,11 +1159,12 @@
         "path": "Photos/Canada/2025-0712-Calgary-NCM_5739_Original.jpg",
         "filename": "2025-0712-Calgary-NCM_5739_Original.jpg",
         "categories": [
-            "Nature/Landscapes"
+            "Nature/Landscapes",
+            "Places/International"
         ],
-        "state": "Canada",
+        "state": "",
         "city": "Calgary/Alberta",
-        "country": "",
+        "country": "Canada",
         "remarks": "Lake Louise",
         "date_added": "2025-07-12"
     },
@@ -1176,47 +1177,46 @@
         ],
         "state": "",
         "city": "Calgary/Alberta",
-        "country": "Canada",
-        "remarks": "Camrose Golf Course",
+        "country": "",
+        "remarks": "Camrose",
         "date_added": "2025-07-12"
     },
     "f5753e55aa3d0d61706b22f4df5f5b6b": {
         "path": "Photos/Canada/2025-0712-Calgary-NCM_5842_Original.jpg",
         "filename": "2025-0712-Calgary-NCM_5842_Original.jpg",
         "categories": [
-            "Nature/Landscapes",
             "Nature/Wildlife",
             "Places/International"
         ],
         "state": "",
         "city": "Calgary/Alberta",
-        "country": "Canada",
-        "remarks": "Columbian Ground Squirrel @ Camrose Golf Course",
+        "country": "",
+        "remarks": "Columbian Ground Squirrel",
         "date_added": "2025-07-12"
     },
     "ea8965de3e6fc5a7acd4d76ceeec0aab": {
         "path": "Photos/Canada/2025-0712-Calgary-NCM_5846_Original.jpg",
         "filename": "2025-0712-Calgary-NCM_5846_Original.jpg",
         "categories": [
-            "Nature/Landscapes",
             "Nature/Wildlife",
             "Places/International"
         ],
         "state": "",
         "city": "Calgary/Alberta",
-        "country": "Canada",
-        "remarks": "Columbian Ground Squirrel @ Camrose Golf Course",
+        "country": "",
+        "remarks": "Columbian Ground Squirrel",
         "date_added": "2025-07-12"
     },
     "4985175f53422534b2f64276e5ab127c": {
         "path": "Photos/Canada/2025-0712-Calgary-NCM_5862_Original.jpg",
         "filename": "2025-0712-Calgary-NCM_5862_Original.jpg",
         "categories": [
-            "Nature/Landscapes"
+            "Nature/Landscapes",
+            "Places/International"
         ],
-        "state": "Canada",
+        "state": "",
         "city": "Calgary/Alberta",
-        "country": "",
+        "country": "Canada",
         "remarks": "Camrose Golf Course",
         "date_added": "2025-07-12"
     },
@@ -1229,7 +1229,7 @@
         ],
         "state": "",
         "city": "Calgary/Alberta",
-        "country": "Canada",
+        "country": "",
         "remarks": "Camrose Golf Course",
         "date_added": "2025-07-12"
     },
@@ -1242,7 +1242,7 @@
         ],
         "state": "",
         "city": "Banff/Alberta",
-        "country": "Canada",
+        "country": "",
         "remarks": "Pink Bloom",
         "date_added": "2025-07-12"
     },
@@ -1250,14 +1250,12 @@
         "path": "Photos/Canada/2025-0712-Calgary-NCM_5986_Original.jpg",
         "filename": "2025-0712-Calgary-NCM_5986_Original.jpg",
         "categories": [
-            "Nature/Landscapes",
-            "Nature/Flora",
             "Places/International",
             "People & Culture"
         ],
         "state": "",
         "city": "Banff/Alberta",
-        "country": "Canada",
+        "country": "",
         "remarks": "Street View",
         "date_added": "2025-07-12"
     },
@@ -1265,12 +1263,12 @@
         "path": "Photos/Tadoba/2026-0324-Tadoba-NCM-8706.JPG",
         "filename": "2026-0324-Tadoba-NCM-8706.JPG",
         "categories": [
-            "Places/International",
+            "Places/National",
             "Architecture"
         ],
         "state": "",
         "city": "Tadoba",
-        "country": "Maharashtra",
+        "country": "",
         "remarks": "",
         "date_added": "2026-03-26"
     },
@@ -1278,8 +1276,8 @@
         "path": "Photos/Tadoba/Edit-2026-0326-Tadoba-VCM-IMG-4456.jpg",
         "filename": "Edit-2026-0326-Tadoba-VCM-IMG-4456.jpg",
         "categories": [
-            "Nature/Landscapes",
-            "Places/National"
+            "Places/National",
+            "Architecture"
         ],
         "state": "Maharashtra",
         "city": "Aurangabad",
@@ -1291,8 +1289,8 @@
         "path": "Photos/Tadoba/edit-2026-0324-Tadoba-IMG-9115.jpg",
         "filename": "edit-2026-0324-Tadoba-IMG-9115.jpg",
         "categories": [
-            "Nature/Landscapes",
-            "Places/National"
+            "Places/National",
+            "People & Culture"
         ],
         "state": "Maharashtra",
         "city": "Aurangabad",
@@ -1304,8 +1302,8 @@
         "path": "Photos/Tadoba/edit-2026-0324-Tadoba-IMG-9120.jpg",
         "filename": "edit-2026-0324-Tadoba-IMG-9120.jpg",
         "categories": [
-            "Nature/Landscapes",
-            "Places/National"
+            "Places/National",
+            "People & Culture"
         ],
         "state": "Maharashtra",
         "city": "Aurangabad",
@@ -1317,8 +1315,8 @@
         "path": "Photos/Tadoba/edit-2026-0326-Tadoba-VCM-IMG-4481.jpg",
         "filename": "edit-2026-0326-Tadoba-VCM-IMG-4481.jpg",
         "categories": [
-            "Nature/Landscapes",
-            "Places/National"
+            "Places/National",
+            "People & Culture"
         ],
         "state": "Maharashtra",
         "city": "Tadoba",
@@ -1343,8 +1341,8 @@
         "path": "Photos/Tadoba/edit-IMG_4915.jpg",
         "filename": "edit-IMG_4915.jpg",
         "categories": [
-            "Nature/Landscapes",
-            "Places/National"
+            "Places/National",
+            "People & Culture"
         ],
         "state": "Maharashtra",
         "city": "Tadoba",
