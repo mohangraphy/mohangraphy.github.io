@@ -15,24 +15,37 @@ THUMB_WIDTH      = 800
 WEB_WIDTH        = 2048   # max long-edge for lightbox display
 
 MANUAL_STRUCTURE = {
-    "Nature":           ["Landscapes", "Wildlife", "Birds", "Flora"],
-    "Places":           ["National", "International"],
-    "Architecture":     [],
-    "People & Culture": [],
+    "Landscape":       [],
+    "Flora & Fauna":   [],
+    "Architecture":    [],
+    "People & Culture":[],
 }
-# Sub-category display ORDER — preserved exactly as defined above
-CAT_ORDER = ["Nature", "Places", "Architecture", "People & Culture"]
+# Display ORDER in Collections menu
+CAT_ORDER = ["Landscape", "Flora & Fauna", "Architecture", "People & Culture"]
 
-# ── TAG MAP: what metadata tag resolves to each MANUAL_STRUCTURE sub-key ──────
-# The curator stores "Nature/Landscape/Mountains" — map that to the "Mountains"
-# sub-category under Nature.
-TAG_OVERRIDES = {
-    "Nature/Sunsets and Sunrises":   "Nature/Sunsets",   # alias
+# ── NEW ARCHITECTURE ──────────────────────────────────────────────────────────
+# Each category has India / Overseas filter pills.
+# India   → city cards (city + state from metadata)
+# Overseas → country cards → city cards (city + country from metadata)
+#
+# Which old tags map to which new category:
+CAT_TAG_MAP = {
+    "Landscape": {
+        "Nature/Landscapes", "Nature/Landscape", "Nature/Landscape/Mountains",
+        "Nature/Mountains", "Nature/Sunsets and Sunrises", "Nature/Sunsets",
+    },
+    "Flora & Fauna": {
+        "Nature/Wildlife", "Nature/Birds", "Nature/Flora",
+        "Nature/Flowers", "Flowers", "Birds", "Nature/Flowers",
+    },
+    "Architecture": {
+        "Architecture",
+    },
+    "People & Culture": {
+        "People & Culture", "People/Portraits", "People & Culture/Portraits",
+        "People & Culture/Street", "People & Culture/Culture",
+    },
 }
-
-# Mountains fold into Landscapes sub-category
-MOUNTAINS_TAGS = {"Nature/Landscape/Mountains", "Nature/Mountains"}
-SUNSETS_TAGS   = {"Nature/Sunsets and Sunrises", "Nature/Sunsets"}
 
 # ── HELPERS ───────────────────────────────────────────────────────────────────
 
@@ -180,20 +193,32 @@ def thumb_img(rel_path, web_rel_path, alt=""):
 def build_maps(unique_entries):
     """
     Returns:
-      tag_map      : normalised-tag → [unique paths]
-      place_map    : {
-                       National:      {state: {city: [paths]}},
-                       International: {country: {city: [paths]}}
-                     }
+      cat_city_map : {category: {
+                        'India':    {city: {state: [paths]}},
+                        'Overseas': {country: {city: [paths]}}
+                      }}
       all_paths    : [all unique paths]
-      path_info    : {path: {place, remarks, state, city}} for overlay display
+      path_info    : {path: {remarks, state, city, country, date_added}}
 
-    Place field format:  "State - City"  (National)
-                     or  "Country - City" (International)
-    If no separator found, the whole value is treated as the top-level key.
+    Every photo is classified by:
+      1. Content category  (Landscape / Flora & Fauna / Architecture / People & Culture)
+      2. Location          (India: state+city  OR  Overseas: country+city)
+
+    A photo tagged Places/National AND Nature/Landscapes appears in:
+      → Landscape → India → [its city]
+    A photo tagged Places/International AND Nature/Birds appears in:
+      → Flora & Fauna → Overseas → [its country] → [its city]
     """
-    tag_map       = {}
-    place_map     = {"National": {}, "International": {}}
+    # Build reverse lookup: tag string → category name
+    tag_to_cat = {}
+    for cat, tags in CAT_TAG_MAP.items():
+        for t in tags:
+            tag_to_cat[t] = cat
+
+    # cat_city_map[cat]['India'][city][state] = [paths]
+    # cat_city_map[cat]['Overseas'][country][city] = [paths]
+    cat_city_map = {cat: {'India': {}, 'Overseas': {}} for cat in CAT_ORDER}
+
     all_paths     = []
     path_info_map = {}
 
@@ -211,10 +236,7 @@ def build_maps(unique_entries):
         'madurai':     ('Tamil Nadu', 'Madurai'),
         'aihole':      ('Karnataka',  'Aihole'),
         'banff':       ('Alberta',    'Banff'),
-        'thekkady':    ('Kerala',     'Thekkady'),
-        'madurai':     ('Tamil Nadu', 'Madurai'),
-        'aihole':      ('Karnataka',  'Aihole'),
-        'banff':       ('Alberta',    'Banff'),
+        'tadoba':      ('Maharashtra','Tadoba'),
     }
 
     for info in unique_entries:
@@ -226,155 +248,87 @@ def build_maps(unique_entries):
         city    = info.get('city',    '').strip()
         country = info.get('country', '').strip()
 
-        # Backward-compat: parse old-style place fields into state + city
+        # Backward-compat: parse old-style place fields
         if not state and ' - ' in place:
-            parts  = place.split(' - ', 1)
+            parts = place.split(' - ', 1)
             state, city = parts[0].strip(), parts[1].strip()
         elif not state and place:
             lookup = KNOWN_STATES.get(place.lower().strip())
             if lookup:
                 state, city = lookup
             else:
-                # Unknown single-word place: treat as CITY under an unknown state.
-                # The state will remain blank — user should re-tag via curator.
                 city  = place
                 state = ''
 
-        # If we have state but no city, city = state (shows under the state tile)
         if state and not city:
             city = state
-
-        # For International: if country is set but city is blank, use state as city
-        # (handles cases where curator filled State=Calgary, Country=Canada)
         if country and not city and state:
             city = state
 
         if not path:
             continue
         all_paths.append(path)
-        overlay_place = city if city else (state if state else country)
         date_added = info.get('date_added', '')
-        path_info_map[path] = {'place': overlay_place, 'remarks': remarks,
-                               'state': state, 'city': city, 'country': country,
-                               'date_added': date_added}
+        path_info_map[path] = {
+            'remarks':    remarks,
+            'state':      state,
+            'city':       city,
+            'country':    country,
+            'date_added': date_added,
+        }
+
+        # Determine content category from tags
+        content_cats = set()
+        is_national     = False
+        is_international = False
 
         for raw_tag in tags:
-            if raw_tag in MOUNTAINS_TAGS or raw_tag == "Nature/Landscape/Mountains":
-                t2 = "Nature/Landscapes"
-                tag_map.setdefault(t2, [])
-                if path not in tag_map[t2]:
-                    tag_map[t2].append(path)
-            elif raw_tag in SUNSETS_TAGS or raw_tag == "Nature/Sunsets":
-                t2 = "Nature/Sunsets"
-                tag_map.setdefault(t2, [])
-                if path not in tag_map[t2]:
-                    tag_map[t2].append(path)
-            elif raw_tag in ("Birds", "Nature/Birds"):
-                t2 = "Nature/Birds"
-                tag_map.setdefault(t2, [])
-                if path not in tag_map[t2]:
-                    tag_map[t2].append(path)
-            elif raw_tag in ("Flowers", "Nature/Flowers", "Nature/Flora"):
-                t2 = "Nature/Flora"
-                tag_map.setdefault(t2, [])
-                if path not in tag_map[t2]:
-                    tag_map[t2].append(path)
-            elif raw_tag in ("Nature/Landscape", "Nature/Landscape/Mountains"):
-                t2 = "Nature/Landscapes"
-                tag_map.setdefault(t2, [])
-                if path not in tag_map[t2]:
-                    tag_map[t2].append(path)
-            elif raw_tag == "Nature/Wildlife":
-                t2 = "Nature/Wildlife"
-                tag_map.setdefault(t2, [])
-                if path not in tag_map[t2]:
-                    tag_map[t2].append(path)
-            elif raw_tag in ("People/Portraits", "People & Culture/Portraits",
-                             "People & Culture/Street", "People & Culture/Culture",
-                             "People & Culture"):
-                t2 = "People & Culture"
-                tag_map.setdefault(t2, [])
-                if path not in tag_map[t2]:
-                    tag_map[t2].append(path)
-            else:
-                tag_map.setdefault(raw_tag, [])
-                if path not in tag_map[raw_tag]:
-                    tag_map[raw_tag].append(path)
+            cat = tag_to_cat.get(raw_tag)
+            if cat:
+                content_cats.add(cat)
+            if 'Places/National' in raw_tag:
+                is_national = True
+            if 'Places/International' in raw_tag:
+                is_international = True
 
-            # Build place_map:
-            # National     → State   → City → [paths]
-            # International → Country → City → [paths]
-            if "Places/National" in raw_tag and state and city:
-                pm = place_map["National"]
-                pm.setdefault(state, {})
-                pm[state].setdefault(city, [])
-                if path not in pm[state][city]:
-                    pm[state][city].append(path)
-            elif "Places/International" in raw_tag:
-                # country field takes priority; fall back to state if country blank
-                # e.g. curator entered State=Calgary, Country=Canada → country=Canada, city=Calgary(→Banff via KNOWN_STATES)
-                intl_country = country if country else state
-                intl_city    = city    if city    else state
-                if intl_country and intl_city:
-                    pm = place_map["International"]
-                    pm.setdefault(intl_country, {})
-                    pm[intl_country].setdefault(intl_city, [])
-                    if path not in pm[intl_country][intl_city]:
-                        pm[intl_country][intl_city].append(path)
+        # If no content category tag found, skip location assignment
+        # (photo will still appear if found by folder scan)
+        if not content_cats:
+            continue
 
-    return tag_map, place_map, list(dict.fromkeys(all_paths)), path_info_map
+        # Determine location bucket
+        if is_international:
+            intl_country = country if country else state
+            intl_city    = city    if city    else state
+            if intl_country and intl_city:
+                for cat in content_cats:
+                    m = cat_city_map[cat]['Overseas']
+                    m.setdefault(intl_country, {})
+                    m[intl_country].setdefault(intl_city, [])
+                    if path not in m[intl_country][intl_city]:
+                        m[intl_country][intl_city].append(path)
 
-def debug_place_map(place_map):
-    """Print a summary of what ended up in place_map for diagnosis."""
-    print("  ── place_map debug ──")
-    for group in ["National", "International"]:
-        data = place_map.get(group, {})
-        top_label = "State" if group == "National" else "Country"
-        if not data:
-            print(f"  {group}: (empty — no photos found with Places/{group} tag + {top_label.lower()} + city)")
+        elif is_national:
+            if city:
+                for cat in content_cats:
+                    m = cat_city_map[cat]['India']
+                    m.setdefault(city, {})
+                    m[city].setdefault(state, [])
+                    if path not in m[city][state]:
+                        m[city][state].append(path)
+
         else:
-            total = sum(len(paths) for cities in data.values() for paths in cities.values())
-            print(f"  {group}: {total} photo(s)")
-            for top, cities in sorted(data.items()):
-                for city, paths in sorted(cities.items()):
-                    print(f"    {top_label}: {top} / City: {city}: {len(paths)} photo(s)")
+            # No Places tag — put under India using whatever location we have
+            if city or state:
+                effective_city = city or state
+                for cat in content_cats:
+                    m = cat_city_map[cat]['India']
+                    m.setdefault(effective_city, {})
+                    m[effective_city].setdefault(state, [])
+                    if path not in m[effective_city][state]:
+                        m[effective_city][state].append(path)
 
-def get_display_paths(m_cat, s_cat, tag_map):
-    """
-    Resolve which photos belong to a category or sub-category.
-    Priority: disk folder scan → tag_map lookup.
-    For flat categories (no s_cat), scans the disk folder too.
-    """
-    if s_cat:
-        disk_folder = os.path.join(ROOT_DIR, "Photos", m_cat, s_cat)
-        disk_paths  = scan_folder_for_photos(disk_folder)
-        if disk_paths:
-            return disk_paths
-
-    # Landscapes includes Mountains photos
-    if s_cat == "Landscapes":
-        paths = []
-        for t in ["Nature/Landscapes", "Nature/Landscape", "Nature/Mountains", "Nature/Landscape/Mountains"]:
-            for p in tag_map.get(t, []):
-                if p not in paths:
-                    paths.append(p)
-        return paths
-
-    tag_key = m_cat + "/" + s_cat if s_cat else m_cat
-
-    # For flat categories (no subs), also try disk folder
-    if not s_cat:
-        disk_folder = os.path.join(ROOT_DIR, "Photos", m_cat)
-        disk_paths  = scan_folder_for_photos(disk_folder)
-        tag_paths   = list(dict.fromkeys(tag_map.get(tag_key, [])))
-        # Merge: disk paths take priority, add any tag-only paths
-        merged = list(disk_paths)
-        for p in tag_paths:
-            if p not in merged:
-                merged.append(p)
-        return merged
-
-    return list(dict.fromkeys(tag_map.get(tag_key, [])))
+    return cat_city_map, all_paths, path_info_map
 
 
 # ── THUMBNAIL BATCH ───────────────────────────────────────────────────────────
@@ -458,14 +412,12 @@ def generate_html():
     # Load photo data
     raw_data = load_index()
     unique   = deduplicate_by_path(raw_data)
-    tag_map, place_map, all_paths, path_info = build_maps(unique)
-    debug_place_map(place_map)
+    cat_city_map, all_paths, path_info = build_maps(unique)
 
     # Build path→full metadata dict for embedding into grid items
     meta_by_path = {e.get('path','').strip(): e for e in unique if e.get('path','').strip()}
     # Load travel-story blog posts
     blog_posts = load_blog_posts()
-
 
     # About Me photo — copy Scripts/about_photo.jpg to root if it exists
     about_photo_src = os.path.join(ROOT_DIR, "Scripts", "about_photo.jpg")
@@ -477,10 +429,9 @@ def generate_html():
         has_about_photo = True
         print(f"  📷 About Me photo found and copied")
     elif os.path.exists(about_photo_dst):
-        has_about_photo = True  # already there from previous run
+        has_about_photo = True
 
     print(f"Unique photos: {len(unique)}")
-    print(f"Landscapes photos found: {len(tag_map.get('Nature/Landscapes', []))}")
 
     # Load editable content
     C = load_content()
@@ -501,7 +452,7 @@ def generate_html():
     supabase_key     = site.get('supabase_anon_key','eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhqY3ByeWZnb2RncXF0YmJsa2xnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzIxODEzMjcsImV4cCI6MjA4Nzc1NzMyN30.M9KoprG4uaH3wcZ7nI0Hip4IAdqiy8m5UoiB9DzjreI')
     admin_password   = site.get('admin_password',   'mohan2024')
     plausible_domain = site.get('plausible_domain', 'www.mohangraphy.com')
-    ga_id            = site.get('ga_measurement_id','')   # add G-XXXXXXXXXX to content.json
+    ga_id            = site.get('ga_measurement_id','')
 
     # Generate / verify thumbnails + 2048px web copies
     thumb_map, web_map = ensure_thumbs(all_paths)
@@ -509,24 +460,22 @@ def generate_html():
     # Hero slides — Megamalai landscape only, 3-second rotation
     megamalai_paths = scan_folder_for_photos(MEGAMALAI_FOLDER)
     if not megamalai_paths:
-        megamalai_paths = tag_map.get("Nature/Landscape", all_paths[:20])
+        megamalai_paths = all_paths[:20]
     hero_slides = random.sample(megamalai_paths, min(len(megamalai_paths), 15))
-    # Use thumbs for hero too (faster initial load)
     hero_thumb_paths = [thumb_map.get(p, p) for p in hero_slides]
 
-    # Cover photo per main category (use thumb)
+    # Cover photo per main category — pick first available photo from India or Overseas
     cat_covers = {}
-    for m_cat, subs in sorted(MANUAL_STRUCTURE.items(), key=lambda x: CAT_ORDER.index(x[0]) if x[0] in CAT_ORDER else 99):
+    for m_cat in CAT_ORDER:
         pool = []
-        if m_cat == "Places":
-            for grp in place_map.values():          # grp = {state: {city: [paths]}}
-                for cities in grp.values():
-                    for paths in cities.values():
+        for region in ['India', 'Overseas']:
+            region_data = cat_city_map.get(m_cat, {}).get(region, {})
+            for top in region_data.values():
+                if isinstance(top, dict):
+                    for paths in top.values():
                         pool.extend(paths)
-        else:
-            for s in subs:
-                pool.extend(get_display_paths(m_cat, s, tag_map))
-            pool.extend(tag_map.get(m_cat, []))
+                elif isinstance(top, list):
+                    pool.extend(top)
         raw = pick_cover(pool)
         cat_covers[m_cat] = thumb_map.get(raw, raw)
 
@@ -2455,336 +2404,223 @@ footer {
     gallery_blocks = ""
     sub_panels     = ""
 
-    # Sort main categories A→Z; sub-lists are also sorted A→Z below
-    sorted_structure = sorted(MANUAL_STRUCTURE.items(), key=lambda x: CAT_ORDER.index(x[0]) if x[0] in CAT_ORDER else 99)
+    # ── NEW ARCHITECTURE: each category → India/Overseas pills → city/country cards ──
+    for m_cat in CAT_ORDER:
+        india_data    = cat_city_map.get(m_cat, {}).get('India', {})
+        overseas_data = cat_city_map.get(m_cat, {}).get('Overseas', {})
 
-    for m_cat, subs in sorted_structure:
-        # Sub-categories preserved in MANUAL_STRUCTURE definition order
-        sub_items = []
+        # ── India: city cards ─────────────────────────────────────────────────
+        india_city_cards = ""
+        for city in sorted(india_data.keys(), key=str.lower):
+            state_dict = india_data[city]   # {state: [paths]}
+            city_paths = [p for ps in state_dict.values() for p in ps]
+            state_name = next(iter(state_dict.keys()), '')
+            city_id    = 'gallery-' + m_cat.replace(' ','_').replace('&','n') + '-india-' + city.replace(' ','_')
+            city_cover = thumb_map.get(pick_cover(city_paths), '')
 
-        if m_cat == "Places":
-            for group in ["National", "International"]:   # National first
-                grp_data = place_map[group]   # {state: {city: [paths]}}
+            india_city_cards += (
+                '\n<div class="cat-card" onclick="showGallery(\'' + city_id + '\')">'
+                + ('<img class="cat-card-img" src="' + city_cover + '" loading="lazy" decoding="async" alt="">'
+                   if city_cover else '<div class="cat-card-placeholder"><span>Coming<br>Soon</span></div>')
+                + '<div class="cat-card-bar">'
+                '<div class="cat-card-name">' + city + '</div>'
+                '<div class="cat-card-count">' + (state_name + ' · ' if state_name else '') + str(len(city_paths)) + ' Photos</div>'
+                '</div>\n</div>'
+            )
 
-                if not grp_data:
-                    # No photos yet — add a Coming Soon tile AND a section-block
-                    # so showGallery('places-group-International') lands somewhere
-                    wip_id = "places-group-" + group
-                    sub_items.append({"id": wip_id, "name": group,
-                                      "cover": "", "count": 0, "subtitle": "Coming soon"})
-                    gallery_blocks += (
-                        '\n<div class="section-block" id="' + wip_id + '">'
-                        '\n  <div class="gal-header">'
-                        '<div class="gal-title">' + group + '</div>'
-                        '<div class="gal-sub">Coming Soon</div>'
-                        '</div>'
-                        '\n  <div class="wip-message">No ' + group + ' photos added yet</div>'
-                        '\n</div>'
-                    )
-                    continue
-
-                # Collect all paths in this group for cover + count
-                grp_all = []
-                for cities in grp_data.values():
-                    for paths in cities.values():
-                        grp_all.extend(paths)
-                grp_cover = thumb_map.get(pick_cover(grp_all), "")
-                grp_id    = "places-group-" + group
-
-                sub_items.append({"id": grp_id, "name": group,
-                                  "cover": grp_cover, "count": len(grp_all),
-                                  "subtitle": m_cat})
-
-                # ── State tiles shown when user clicks National/International ──
-                state_tiles_html = ""
-                for state in sorted(grp_data.keys(), key=str.lower):
-                    cities    = grp_data[state]
-                    state_all = [p for ps in cities.values() for p in ps]
-                    state_cover = thumb_map.get(pick_cover(state_all), "")
-                    state_id    = "places-state-" + group + "-" + state.replace(' ', '-')
-
-                    st_thumb = (
-                        '<div class="sub-tile-thumb"><img src="' + state_cover + '" loading="lazy" decoding="async" alt=""></div>'
-                        if state_cover else
-                        '<div class="sub-tile-thumb"><div class="sub-tile-thumb-placeholder"><span>Coming<br>Soon</span></div></div>'
-                    )
-                    state_tiles_html += (
-                        '<div class="cat-card" onclick="showSection(\'' + state_id + '\',\'' + grp_id + '\')">'
-                        + (
-                            '<img class="cat-card-img" src="' + state_cover + '" loading="lazy" decoding="async" alt="">'
-                            if state_cover else
-                            '<div class="cat-card-placeholder"><span>Coming<br>Soon</span></div>'
-                        ) +
-                        '<div class="cat-card-bar">'
-                        '<div class="cat-card-name">' + state + '</div>'
-                        '<div class="cat-card-count">' + str(len(state_all)) + ' Photos</div>'
-                        '</div>'
-                        '</div>'
-                    )
-
-                    # ── City tiles shown when user clicks a State ──────────────
-                    city_tiles_html = ""
-                    for city in sorted(cities.keys(), key=str.lower):
-                        city_paths = cities[city]
-                        city_id    = "places-city-" + group + "-" + state.replace(' ','_') + "-" + city.replace(' ','_')
-                        city_cover = thumb_map.get(pick_cover(city_paths), "")
-
-                        ct_thumb = (
-                            '<div class="sub-tile-thumb"><img src="' + city_cover + '" loading="lazy" decoding="async" alt=""></div>'
-                            if city_cover else
-                            '<div class="sub-tile-thumb"><div class="sub-tile-thumb-placeholder"><span>Coming<br>Soon</span></div></div>'
-                        )
-                        city_tiles_html += (
-                            '<div class="cat-card" onclick="showSection(\'' + city_id + '\',\'' + state_id + '\')">'
-                            + (
-                                '<img class="cat-card-img" src="' + city_cover + '" loading="lazy" decoding="async" alt="">'
-                                if city_cover else
-                                '<div class="cat-card-placeholder"><span>Coming<br>Soon</span></div>'
-                            ) +
-                            '<div class="cat-card-bar">'
-                            '<div class="cat-card-name">' + city + '</div>'
-                            '<div class="cat-card-count">' + str(len(city_paths)) + ' Photos</div>'
-                            '</div>'
-                            '</div>'
-                        )
-
-                        # ── Photo grid for this city ───────────────────────────
-                        imgs = "".join([
-                            grid_item_html(thumb_map.get(p, p), p, city, path_info, meta_by_path, web_map)
-                            for p in city_paths
-                        ])
-                        gallery_blocks += (
-                            '\n<div class="section-block" id="' + city_id + '">'
-                            '\n  <div class="gal-header">'
-                            '<div class="gal-title">' + city + '</div>'
-                            '<div class="gal-sub">' + (state if group == 'National' else state) + ' &middot; ' + group + ' &middot; ' + str(len(city_paths)) + ' Photos</div>'
-                            '</div>'
-                            + ('\n  <div class="grid">' + imgs + '</div>' if city_paths else '\n  <div class="wip-message">Work in progress</div>')
-                            + '\n</div>'
-                        )
-
-                    # State panel shows city tiles
-                    gallery_blocks += (
-                        '\n<div class="section-block" id="' + state_id + '">'
-                        '\n  <div class="gal-header">'
-                        '<div class="gal-title">' + state + '</div>'
-                        '<div class="gal-sub">' + group + ' &middot; ' + str(len(state_all)) + ' Photos</div>'
-                        '</div>'
-                        '\n  <div class="cat-grid-4">' + city_tiles_html + '\n  </div>'
-                        '\n</div>'
-                    )
-
-                # Group panel (National/International) shows state tiles
-                gallery_blocks += (
-                    '\n<div class="section-block" id="' + grp_id + '">'
-                    '\n  <div class="gal-header">'
-                    '<div class="gal-title">' + group + '</div>'
-                    '<div class="gal-sub">' + str(len(grp_all)) + ' Photos</div>'
-                    '</div>'
-                    '\n  <div class="cat-grid-4">' + state_tiles_html + '\n  </div>'
-                    '\n</div>'
+            # Photo grid for this India city
+            imgs = ""
+            for p in city_paths:
+                pi     = path_info.get(p, {})
+                rem    = pi.get('remarks', '').strip()
+                sv     = pi.get('state',   '').strip()
+                cv     = pi.get('city',    '').strip()
+                da     = pi.get('date_added', '').strip()
+                cats_p = meta_by_path.get(p, {}).get('categories', [])
+                th     = thumb_map.get(p, p)
+                web    = web_map.get(p, p)
+                # Overlay: Remarks · City · State
+                overlay_parts = [x for x in [rem, cv, sv] if x]
+                overlay_text  = ' · '.join(overlay_parts)
+                overlay_html  = ('<div class="grid-item-info"><span class="grid-item-info-text">'
+                                 + overlay_text + '</span></div>') if overlay_text else ''
+                imgs += (
+                    '<div class="grid-item"'
+                    ' data-photo="'      + p              + '"'
+                    ' data-state="'      + sv             + '"'
+                    ' data-city="'       + cv             + '"'
+                    ' data-remarks="'    + rem            + '"'
+                    ' data-cats="'       + ','.join(cats_p) + '"'
+                    ' data-date-added="' + da             + '"'
+                    ' onclick="openImgModal(this)">'
+                    '<div class="grid-item-photo">'
+                    '<img src="' + th + '" data-full="' + web + '" loading="lazy" decoding="async" alt="' + rem + '"'
+                    ' style="width:100%;height:100%;object-fit:cover;display:block;">'
+                    '<div class="grid-item-overlay"></div>'
+                    + overlay_html +
+                    '</div></div>'
                 )
-
-        elif subs:
-            for s_cat in subs:
-                orig_paths = get_display_paths(m_cat, s_cat, tag_map)
-                s_id    = "sub-" + m_cat + "-" + s_cat.replace(' ', '-')
-                s_cover = thumb_map.get(pick_cover(orig_paths), "")
-                sub_items.append({"id": s_id, "name": s_cat, "cover": s_cover,
-                                  "count": len(orig_paths), "subtitle": m_cat})
-                imgs = "".join([
-                    grid_item_html(thumb_map.get(p, p), p, s_cat, path_info, meta_by_path, web_map)
-                    for p in orig_paths
-                ])
-                gallery_blocks += (
-                    '\n<div class="section-block" id="' + s_id + '">'
-                    '\n  <div class="gal-header">'
-                    '<div class="gal-title">' + s_cat + '</div>'
-                    '<div class="gal-sub">' + m_cat + ' &middot; ' + str(len(orig_paths)) + ' Photos</div>'
-                    '</div>'
-                    + ('\n  <div class="grid">' + imgs + '</div>' if orig_paths else '\n  <div class="wip-message">Work in progress</div>')
-                    + '\n</div>'
-                )
-
-        else:
-            orig_paths = get_display_paths(m_cat, "", tag_map)
-            s_id    = "direct-" + m_cat
-            s_cover = thumb_map.get(pick_cover(orig_paths), "")
-            sub_items.append({"id": s_id, "name": m_cat, "cover": s_cover,
-                              "count": len(orig_paths), "subtitle": ""})
-            imgs = "".join([
-                grid_item_html(thumb_map.get(p, p), p, m_cat, path_info, meta_by_path, web_map)
-                for p in orig_paths
-            ])
             gallery_blocks += (
-                '\n<div class="section-block" id="' + s_id + '">'
+                '\n<div class="section-block" id="' + city_id + '">'
                 '\n  <div class="gal-header">'
-                '<div class="gal-title">' + m_cat + '</div>'
-                '<div class="gal-sub">' + str(len(orig_paths)) + ' Photos</div>'
+                '<div class="gal-title">' + city + '</div>'
+                '<div class="gal-sub">' + m_cat + ' · ' + (state_name + ' · ' if state_name else '') + str(len(city_paths)) + ' Photos</div>'
                 '</div>'
-                + ('\n  <div class="grid">' + imgs + '</div>' if orig_paths else '\n  <div class="wip-message">Work in progress</div>')
+                + ('\n  <div class="grid">' + imgs + '</div>' if city_paths else '\n  <div class="wip-message">Work in progress</div>')
                 + '\n</div>'
             )
 
-        # Sub-panel tiles — card grid
-        sub_tiles_html = ""
-        for item in sub_items:
-            cnt = str(item["count"]) + " Photos" if item["count"] else "Coming Soon"
-            cover = item.get("cover", "")
-            sub_tiles_html += (
-                '\n<div class="cat-card" onclick="showGallery(\'' + item['id'] + '\')">'
-                + (
-                    '<img class="cat-card-img" src="' + cover + '" loading="lazy" decoding="async" alt="">'
-                    if cover else
-                    '<div class="cat-card-placeholder"><span>Coming<br>Soon</span></div>'
-                ) +
-                '<div class="cat-card-bar">'
-                '<div class="cat-card-name">' + item['name'] + '</div>'
-                '<div class="cat-card-count">' + cnt + '</div>'
-                '</div>'
-                '\n</div>'
+        # ── Overseas: country cards → city cards ──────────────────────────────
+        overseas_country_cards = ""
+        for country in sorted(overseas_data.keys(), key=str.lower):
+            city_dict   = overseas_data[country]   # {city: [paths]}
+            ctry_paths  = [p for ps in city_dict.values() for p in ps]
+            ctry_id     = 'gallery-' + m_cat.replace(' ','_').replace('&','n') + '-overseas-' + country.replace(' ','_')
+            ctry_cover  = thumb_map.get(pick_cover(ctry_paths), '')
+
+            overseas_country_cards += (
+                '\n<div class="cat-card" onclick="showGallery(\'' + ctry_id + '\')">'
+                + ('<img class="cat-card-img" src="' + ctry_cover + '" loading="lazy" decoding="async" alt="">'
+                   if ctry_cover else '<div class="cat-card-placeholder"><span>Coming<br>Soon</span></div>')
+                + '<div class="cat-card-bar">'
+                '<div class="cat-card-name">' + country + '</div>'
+                '<div class="cat-card-count">' + str(len(ctry_paths)) + ' Photos</div>'
+                '</div>\n</div>'
             )
 
-        if m_cat == "Places":
-            # Show National and International as two equal cards — no filter pills
-            both_cards = ""
-            for item in sub_items:
-                cnt   = str(item["count"]) + " Photos" if item["count"] else "Coming Soon"
-                cover = item.get("cover", "")
-                both_cards += (
-                    '\n<div class="cat-card" onclick="showGallery(\'' + item['id'] + '\')">'
-                    + (
-                        '<img class="cat-card-img" src="' + cover + '" loading="lazy" decoding="async" alt="">'
-                        if cover else
-                        '<div class="cat-card-placeholder"><span>Coming<br>Soon</span></div>'
-                    ) +
-                    '<div class="cat-card-bar">'
-                    '<div class="cat-card-name">' + item['name'] + '</div>'
-                    '<div class="cat-card-count">' + cnt + '</div>'
-                    '</div>'
-                    '\n</div>'
+            # City cards within this country
+            city_cards_html = ""
+            for city in sorted(city_dict.keys(), key=str.lower):
+                city_paths = city_dict[city]
+                city_id    = ctry_id + '-' + city.replace(' ','_')
+                city_cover = thumb_map.get(pick_cover(city_paths), '')
+
+                city_cards_html += (
+                    '\n<div class="cat-card" onclick="showGallery(\'' + city_id + '\')">'
+                    + ('<img class="cat-card-img" src="' + city_cover + '" loading="lazy" decoding="async" alt="">'
+                       if city_cover else '<div class="cat-card-placeholder"><span>Coming<br>Soon</span></div>')
+                    + '<div class="cat-card-bar">'
+                    '<div class="cat-card-name">' + city + '</div>'
+                    '<div class="cat-card-count">' + str(len(city_paths)) + ' Photos</div>'
+                    '</div>\n</div>'
                 )
 
-            sub_panels += (
-                '\n<div class="sub-panel" id="subpanel-Places">'
-                '\n<div class="subpanel-header">'
-                '<div class="subpanel-title">Places</div>'
-                '<div class="subpanel-desc">Photographs from around India and the world</div>'
+                # Photo grid for this overseas city
+                imgs = ""
+                for p in city_paths:
+                    pi     = path_info.get(p, {})
+                    rem    = pi.get('remarks', '').strip()
+                    sv     = pi.get('state',   '').strip()
+                    cv     = pi.get('city',    '').strip()
+                    co     = pi.get('country', '').strip()
+                    da     = pi.get('date_added', '').strip()
+                    cats_p = meta_by_path.get(p, {}).get('categories', [])
+                    th     = thumb_map.get(p, p)
+                    web    = web_map.get(p, p)
+                    # Overlay: Remarks · City · Country
+                    overlay_parts = [x for x in [rem, cv, co or country] if x]
+                    overlay_text  = ' · '.join(overlay_parts)
+                    overlay_html  = ('<div class="grid-item-info"><span class="grid-item-info-text">'
+                                     + overlay_text + '</span></div>') if overlay_text else ''
+                    imgs += (
+                        '<div class="grid-item"'
+                        ' data-photo="'      + p              + '"'
+                        ' data-state="'      + sv             + '"'
+                        ' data-city="'       + cv             + '"'
+                        ' data-remarks="'    + rem            + '"'
+                        ' data-cats="'       + ','.join(cats_p) + '"'
+                        ' data-date-added="' + da             + '"'
+                        ' onclick="openImgModal(this)">'
+                        '<div class="grid-item-photo">'
+                        '<img src="' + th + '" data-full="' + web + '" loading="lazy" decoding="async" alt="' + rem + '"'
+                        ' style="width:100%;height:100%;object-fit:cover;display:block;">'
+                        '<div class="grid-item-overlay"></div>'
+                        + overlay_html +
+                        '</div></div>'
+                    )
+                gallery_blocks += (
+                    '\n<div class="section-block" id="' + city_id + '">'
+                    '\n  <div class="gal-header">'
+                    '<div class="gal-title">' + city + '</div>'
+                    '<div class="gal-sub">' + m_cat + ' · ' + country + ' · ' + str(len(city_paths)) + ' Photos</div>'
+                    '</div>'
+                    + ('\n  <div class="grid">' + imgs + '</div>' if city_paths else '\n  <div class="wip-message">Work in progress</div>')
+                    + '\n</div>'
+                )
+
+            # Country panel shows city cards
+            gallery_blocks += (
+                '\n<div class="section-block" id="' + ctry_id + '">'
+                '\n  <div class="gal-header">'
+                '<div class="gal-title">' + country + '</div>'
+                '<div class="gal-sub">' + m_cat + ' · Overseas · ' + str(len(ctry_paths)) + ' Photos</div>'
                 '</div>'
-                '\n<div class="cat-grid-4">' + both_cards + '\n</div>'
+                '\n  <div class="cat-grid-4">' + city_cards_html + '\n  </div>'
                 '\n</div>'
             )
-        else:
-            sub_panels += (
-                '\n<div class="sub-panel" id="subpanel-' + m_cat + '">'
-                '\n<div class="subpanel-header">'
-                '<div class="subpanel-title">' + m_cat + '</div>'
-                '</div>'
-                '\n<div class="cat-grid-4">'
-                + sub_tiles_html
-                + '\n</div>\n</div>'
-            )
+
+        # ── Sub-panel for this category: India/Overseas pills ─────────────────
+        india_empty    = not india_data
+        overseas_empty = not overseas_data
+
+        if india_empty:
+            india_city_cards = '<div class="wip-message">No India photos tagged yet</div>'
+        if overseas_empty:
+            overseas_country_cards = '<div class="wip-message">No Overseas photos tagged yet</div>'
+
+        sub_panels += (
+            '\n<div class="sub-panel" id="subpanel-' + m_cat.replace(' ','_').replace('&','n') + '">'
+            '\n<div class="subpanel-header">'
+            '<div class="subpanel-title">' + m_cat + '</div>'
+            '</div>'
+            # Filter pills
+            '\n<div class="places-filters" style="padding-top:clamp(16px,3vw,28px)">'
+            '<button class="places-pill active" data-region="india-' + m_cat.replace(' ','_').replace('&','n') + '"'
+            ' onclick="setCatFilter(this,\'india-' + m_cat.replace(' ','_').replace('&','n') + '\')">India</button>'
+            '<button class="places-pill" data-region="overseas-' + m_cat.replace(' ','_').replace('&','n') + '"'
+            ' onclick="setCatFilter(this,\'overseas-' + m_cat.replace(' ','_').replace('&','n') + '\')">Overseas</button>'
+            '</div>'
+            # India section (default visible)
+            '\n<div class="cat-region-section cat-grid-4" id="india-' + m_cat.replace(' ','_').replace('&','n') + '">'
+            + india_city_cards +
+            '\n</div>'
+            # Overseas section (default hidden)
+            '\n<div class="cat-region-section cat-grid-4" id="overseas-' + m_cat.replace(' ','_').replace('&','n') + '" style="display:none">'
+            + overseas_country_cards +
+            '\n</div>'
+            '\n</div>'
+        )
 
     # ── MAIN CATEGORY TILES ───────────────────────────────────────────────────
     cat_tiles_html = ""
-    for m_cat, subs in sorted(MANUAL_STRUCTURE.items(), key=lambda x: CAT_ORDER.index(x[0]) if x[0] in CAT_ORDER else 99):
+    for m_cat in CAT_ORDER:
         raw_cover   = cat_covers.get(m_cat, "")
         thumb_cover = thumb_map.get(raw_cover, raw_cover) if raw_cover else ""
-
-        # Count photos correctly per category type
-        if m_cat == "Places":
-            # Sum all photos across both National and International
-            total = sum(
-                len(paths)
-                for grp in place_map.values()
-                for cities in grp.values()
-                for paths in cities.values()
-            )
-        elif subs:
-            total = count_folder(os.path.join(ROOT_DIR, "Photos", m_cat))
-        else:
-            # Flat category: merge disk + tagged
-            total = len(get_display_paths(m_cat, "", tag_map))
-
+        # Count all photos in this category
+        total = sum(
+            len(paths)
+            for region in ['India', 'Overseas']
+            for top in cat_city_map.get(m_cat, {}).get(region, {}).values()
+            for paths in (top.values() if isinstance(top, dict) else [top])
+        )
         count_lbl = str(total) + " Photos" if total else "Coming Soon"
-        click     = ("openCategory('" + m_cat + "')" if subs
-                     else "showGallery('direct-" + m_cat + "')")
-
-        # Right-side thumbnail or "Coming Soon" placeholder
-        if thumb_cover:
-            thumb_html = (
-                '<div class="cat-tile-thumb">'
-                '<img src="' + thumb_cover + '" loading="lazy" decoding="async" alt="">'
-                '</div>'
-            )
-        else:
-            thumb_html = (
-                '<div class="cat-tile-thumb">'
-                '<div class="cat-tile-thumb-placeholder">'
-                '<span>Coming<br>Soon</span>'
-                '</div>'
-                '</div>'
-            )
+        panel_id  = 'subpanel-' + m_cat.replace(' ','_').replace('&','n')
 
         cat_tiles_html += (
-            '\n<div class="cat-card" onclick="' + click + '" role="button" tabindex="0"'
+            '\n<div class="cat-card" onclick="openCategory(\'' + m_cat + '\')" role="button" tabindex="0"'
             ' onkeypress="if(event.key===\'Enter\') this.click()">'
-            + (
-                '<img class="cat-card-img" src="' + thumb_cover + '" loading="lazy" decoding="async" alt="">'
-                if thumb_cover else
-                '<div class="cat-card-placeholder"><span>Coming<br>Soon</span></div>'
-            ) +
-            '<div class="cat-card-bar">'
+            + ('<img class="cat-card-img" src="' + thumb_cover + '" loading="lazy" decoding="async" alt="">'
+               if thumb_cover else '<div class="cat-card-placeholder"><span>Coming<br>Soon</span></div>')
+            + '<div class="cat-card-bar">'
             '<div class="cat-card-name">' + m_cat + '</div>'
-            ''
             '</div>'
             '\n</div>'
         )
 
-    # ── BUILD RIGHT DRAWER (Collections nav) ─────────────────────────────────
-    # Generated dynamically so new categories auto-appear, already sorted A→Z
-    nav_drawer_rows = ''
-    for m_cat, subs in sorted_structure:
-        subs_sorted = sorted(subs, key=lambda s: s.lower())
-        cat_id = 'dnav-' + m_cat.replace(' ', '-')
-        if subs_sorted:
-            # Expandable row
-            sub_rows = ''
-            for s in subs_sorted:
-                sid = ('sub-' + m_cat + '-' + s.replace(' ', '-')
-                       if m_cat != 'Places'
-                       else '')
-                action = ("showGallery('" + sid + "'); closeNavDrawer()"
-                          if sid else "openCategory('" + m_cat + "'); closeNavDrawer()")
-                sub_rows += (
-                    '<div class="dnav-sub" onclick="' + action + '">'
-                    '<span class="dnav-sub-dot"></span>'
-                    '<span class="dnav-sub-name">' + s + '</span>'
-                    '</div>'
-                )
-            nav_drawer_rows += (
-                '<div class="dnav-cat" id="' + cat_id + '" '
-                'onclick="toggleDnavCat(\'' + cat_id + '\')">'
-                '<span class="dnav-cat-name">' + m_cat + '</span>'
-                '<span class="dnav-chevron">&#9656;</span>'
-                '</div>'
-                '<div class="dnav-subs" id="subs-' + cat_id + '">'
-                + sub_rows +
-                '</div>'
-            )
-        else:
-            # Direct link — no sub-menu
-            action = "showGallery('direct-" + m_cat + "'); closeNavDrawer()"
-            nav_drawer_rows += (
-                '<div class="dnav-cat" onclick="' + action + '">'
-                '<span class="dnav-cat-name">' + m_cat + '</span>'
-                '<span class="dnav-chevron" style="opacity:0">&#9656;</span>'
-                '</div>'
-            )
+    nav_drawer_rows = ''  # legacy — not used with new header dropdown
 
     # ── JAVASCRIPT ────────────────────────────────────────────────────────────
     slides_json = json.dumps(hero_thumb_paths)
-
     js = """
 /* ══════════════════════════════════════════════════════
    NAVIGATION — single source of truth
@@ -2833,9 +2669,10 @@ function openCategory(cat){
   currentCat = cat; hideAll();
   var sn = document.getElementById('sub-nav');
   if(sn) sn.classList.add('visible','page-enter');
-  /* Update breadcrumb */
   updateBreadcrumb([{label:'Home',fn:'goHome()'}, {label:cat}]);
-  var p = document.getElementById('subpanel-'+cat);
+  /* Panel IDs use _ and n substitutions to match Python generation */
+  var panelId = 'subpanel-' + cat.replace(/ /g,'_').replace(/&/g,'n');
+  var p = document.getElementById(panelId);
   if(p) p.classList.add('active');
   setActiveTab('collections');
   window.scrollTo(0,0);
@@ -3107,40 +2944,19 @@ function openAboutDrawer(){}
 function closeAboutDrawer(){}
 function toggleDnavCat(){}
 
-/* ── Places filter pills ── */
-function setPlacesFilter(group){
-  currentFilter = group;
-  document.querySelectorAll('.places-pill').forEach(function(p){
-    p.classList.toggle('active', p.getAttribute('data-group')===group);
+/* ── Category India/Overseas filter pills ── */
+function setCatFilter(btn, regionId){
+  /* Find sibling pills in the same sub-panel and toggle active */
+  var panel = btn.closest('.sub-panel');
+  if(!panel) return;
+  panel.querySelectorAll('.places-pill').forEach(function(p){
+    p.classList.remove('active');
   });
-  document.querySelectorAll('.places-group-section').forEach(function(s){
-    s.style.display = s.getAttribute('data-group')===group ? '' : 'none';
+  btn.classList.add('active');
+  /* Show the matching region section, hide the other */
+  panel.querySelectorAll('.cat-region-section').forEach(function(s){
+    s.style.display = (s.id === regionId) ? '' : 'none';
   });
-  /* collapse any expanded state cards */
-  document.querySelectorAll('.places-state-cities.open').forEach(function(el){
-    el.classList.remove('open');
-  });
-  document.querySelectorAll('.cat-card.state-expanded').forEach(function(c){
-    c.classList.remove('state-expanded');
-  });
-}
-
-/* ── Places state card expand/collapse ── */
-function toggleStateCard(card, citiesId){
-  var cities = document.getElementById(citiesId);
-  if(!cities) return;
-  var isOpen = cities.classList.contains('open');
-  /* Close all other open state sections */
-  document.querySelectorAll('.places-state-cities.open').forEach(function(el){
-    el.classList.remove('open');
-  });
-  document.querySelectorAll('.cat-card.state-expanded').forEach(function(c){
-    c.classList.remove('state-expanded');
-  });
-  if(!isOpen){
-    cities.classList.add('open');
-    card.classList.add('state-expanded');
-  }
 }
 
 /* ══════════════════════════════════════════════════════
@@ -3966,9 +3782,7 @@ goHome();
         '      <div class="hdr-dropdown" id="hdr-collections-dd">\n'
         + ''.join(
             '        <button class="hdr-dd-item" onclick="openCategory(\'' + m_cat + '\'); closeCollectionsDD()">' + m_cat + '</button>\n'
-            if subs else
-            '        <button class="hdr-dd-item" onclick="showGallery(\'direct-' + m_cat + '\'); closeCollectionsDD()">' + m_cat + '</button>\n'
-            for m_cat, subs in sorted(MANUAL_STRUCTURE.items(), key=lambda x: CAT_ORDER.index(x[0]) if x[0] in CAT_ORDER else 99)
+            for m_cat in CAT_ORDER
         ) +
         '      </div>\n'
         '    </div>\n'
@@ -3991,12 +3805,8 @@ goHome();
         '  <button class="mob-menu-item" onclick="mobToggleCollections()">Collections &#9662;</button>\n'
         '  <div class="mob-menu-sub" id="mob-collections-sub">\n'
         + ''.join(
-            '    <button class="mob-menu-subitem" onclick="' + (
-                "openCategory('" + m_cat + "')"
-                if subs else
-                "showGallery('direct-" + m_cat + "')"
-            ) + ';closeMobileMenu()">' + m_cat + '</button>\n'
-            for m_cat, subs in sorted(MANUAL_STRUCTURE.items(), key=lambda x: CAT_ORDER.index(x[0]) if x[0] in CAT_ORDER else 99)
+            '    <button class="mob-menu-subitem" onclick="openCategory(\'' + m_cat + '\');closeMobileMenu()">' + m_cat + '</button>\n'
+            for m_cat in CAT_ORDER
         ) +
         '  </div>\n'
         '  <button class="mob-menu-item" onclick="showInfoPage(\'page-about\');closeMobileMenu()">About Me</button>\n'
@@ -4333,7 +4143,12 @@ goHome();
     print("BUILD COMPLETE")
     print("  Output       : " + out_path)
     print("  Unique photos: " + str(len(unique)))
-    print("  Landscapes   : " + str(len(tag_map.get('Nature/Landscapes', []))) + " photos")
+    total_cats = {cat: sum(len(ps) for region in ['India','Overseas']
+                  for top in cat_city_map.get(cat,{}).get(region,{}).values()
+                  for ps in (top.values() if isinstance(top,dict) else [top]))
+                  for cat in CAT_ORDER}
+    for cat, cnt in total_cats.items():
+        print(f"  {cat:<20}: {cnt} photos")
     print("  Hero slides  : " + str(len(hero_slides)) + " (Megamalai, 3s rotation)")
     print("=" * 55)
 
