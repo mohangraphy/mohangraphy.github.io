@@ -796,7 +796,8 @@
         "filename": "2026-0324-Tadoba-NCM-9088.JPG",
         "categories": [
             "Places/National",
-            "People & Culture"
+            "People & Culture",
+            "People & Culture/Street"
         ],
         "state": "Maharashtra",
         "city": "Tadoba",
@@ -809,7 +810,8 @@
         "filename": "2026-0324-Tadoba-NCM-9197.JPG",
         "categories": [
             "Places/National",
-            "People & Culture"
+            "People & Culture",
+            "People & Culture/Street"
         ],
         "state": "Maharashtra",
         "city": "Tadoba",
@@ -887,7 +889,8 @@
         "filename": "2026-0324-Tadoba-NCM-9729.JPG",
         "categories": [
             "Places/National",
-            "People & Culture"
+            "People & Culture",
+            "People & Culture/Street"
         ],
         "state": "Maharashtra",
         "city": "Tadoba",
@@ -912,8 +915,9 @@
         "path": "Photos/Tadoba/2026-0324-Tadoba-NCM-9800.JPG",
         "filename": "2026-0324-Tadoba-NCM-9800.JPG",
         "categories": [
+            "Places/National",
             "Nature/Flora",
-            "Places/National"
+            "People & Culture/Street"
         ],
         "state": "Maharashtra",
         "city": "Tadoba",
@@ -938,8 +942,10 @@
         "path": "Photos/Tadoba/2026-0324-Tadoba-NCM-9959.JPG",
         "filename": "2026-0324-Tadoba-NCM-9959.JPG",
         "categories": [
+            "Places/National",
             "Nature/Landscapes",
-            "Places/National"
+            "People & Culture",
+            "People & Culture/Street"
         ],
         "state": "Maharashtra",
         "city": "Tadoba",
@@ -951,8 +957,10 @@
         "path": "Photos/Tadoba/2026-0324-Tadoba-NCM-9966.JPG",
         "filename": "2026-0324-Tadoba-NCM-9966.JPG",
         "categories": [
+            "Places/National",
             "Nature/Landscapes",
-            "Places/National"
+            "People & Culture",
+            "People & Culture/Street"
         ],
         "state": "Maharashtra",
         "city": "Tadoba",
@@ -1238,7 +1246,8 @@
         "filename": "2025-0712-Calgary-NCM_5965_Original.jpg",
         "categories": [
             "Places/International",
-            "People & Culture"
+            "People & Culture",
+            "People & Culture/Street"
         ],
         "state": "",
         "city": "Banff/Alberta",
@@ -1251,7 +1260,8 @@
         "filename": "2025-0712-Calgary-NCM_5986_Original.jpg",
         "categories": [
             "Places/International",
-            "People & Culture"
+            "People & Culture",
+            "People & Culture/Street"
         ],
         "state": "",
         "city": "Banff/Alberta",
@@ -1269,7 +1279,7 @@
         "state": "Maharashtra",
         "city": "Aurangabad",
         "country": "",
-        "remarks": "",
+        "remarks": "Biwi Ka Maqbara",
         "date_added": "2026-03-26"
     },
     "683c104a2f09e8e9219c916a2296fe31": {
@@ -1290,12 +1300,13 @@
         "filename": "edit-2026-0324-Tadoba-IMG-9115.jpg",
         "categories": [
             "Places/National",
-            "People & Culture"
+            "People & Culture",
+            "People & Culture/Street"
         ],
         "state": "Maharashtra",
         "city": "Aurangabad",
         "country": "",
-        "remarks": "ME-2 Samruddhi Mahamarg",
+        "remarks": "Highway Art - ME-2 - Samruddhi Mahamarg",
         "date_added": "2026-03-28"
     },
     "755d79ca35a41acd4ebce481abe66d06": {
@@ -1303,12 +1314,13 @@
         "filename": "edit-2026-0324-Tadoba-IMG-9120.jpg",
         "categories": [
             "Places/National",
-            "People & Culture"
+            "People & Culture",
+            "People & Culture/Street"
         ],
         "state": "Maharashtra",
         "city": "Aurangabad",
         "country": "",
-        "remarks": "ME-2 Samruddhi Mahamarg",
+        "remarks": "Highway Art - ME-2 - Samruddhi Mahamarg",
         "date_added": "2026-03-28"
     },
     "3a029f2f5cc13fd885326914da97d988": {
@@ -1316,7 +1328,8 @@
         "filename": "edit-2026-0326-Tadoba-VCM-IMG-4481.jpg",
         "categories": [
             "Places/National",
-            "People & Culture"
+            "People & Culture",
+            "People & Culture/Street"
         ],
         "state": "Maharashtra",
         "city": "Tadoba",
@@ -1328,8 +1341,8 @@
         "path": "Photos/Tadoba/edit-2026-0326-Tadoba-VCM-IMG-4497.jpg",
         "filename": "edit-2026-0326-Tadoba-VCM-IMG-4497.jpg",
         "categories": [
-            "Nature/Landscapes",
-            "Places/National"
+            "Places/National",
+            "People & Culture/Street"
         ],
         "state": "Maharashtra",
         "city": "Tadoba",
@@ -1338,16 +1351,85 @@
         "date_added": "2026-03-28"
     },
     "8fdeab04df12323d8f6c415661271767": {
-        "path": "Photos/Tadoba/edit-IMG_4915.jpg",
+        "path": "Photos/Blog/edit-IMG_4915.jpg",
         "filename": "edit-IMG_4915.jpg",
         "categories": [
             "Places/National",
-            "People & Culture"
+            "People & Culture",
+            "People & Culture/Street"
         ],
         "state": "Maharashtra",
         "city": "Tadoba",
         "country": "",
         "remarks": "Dewada Safari Gate",
+        "date_added": "2026-03-28"
+    },
+    "d317921c69dddfaed511577a7f2a22f4": {
+        "path": "Photos/Blog/2026-0324-Tadoba-IMG-9115.jpg",
+        "filename": "2026-0324-Tadoba-IMG-9115.jpg",
+        "categories": [
+            "Places/National",
+            "Nature/Landscapes"
+        ],
+        "state": "Maharashtra",
+        "city": "Tadoba",
+        "country": "",
+        "remarks": "Highway Art - ME2",
+        "date_added": "2026-03-06"
+    },
+    "5f6d33e2f457118059e34d1663c5b949": {
+        "path": "Photos/Blog/2026-0324-Tadoba-IMG-9120.jpg",
+        "filename": "2026-0324-Tadoba-IMG-9120.jpg",
+        "categories": [
+            "Places/National",
+            "Nature/Landscapes"
+        ],
+        "state": "Maharashtra",
+        "city": "Tadoba",
+        "country": "",
+        "remarks": "Highway Art - ME2",
+        "date_added": "2026-03-06"
+    },
+    "2489c0ccd02e87cac5f771f7b62aefc3": {
+        "path": "Photos/Blog/2026-0324-Tadoba-NCM-8706.JPG",
+        "filename": "2026-0324-Tadoba-NCM-8706.JPG",
+        "categories": [
+            "Places/National",
+            "Nature/Landscapes"
+        ],
+        "state": "Maharashtra",
+        "city": "Aurangabad",
+        "country": "",
+        "remarks": "Biwi Ka Maqbara",
+        "date_added": "2026-03-06"
+    },
+    "29f7b37233207a35b111259152aaa1d1": {
+        "path": "Photos/Blog/edit-2026-0326-Tadoba-VCM-IMG-4481.jpg",
+        "filename": "edit-2026-0326-Tadoba-VCM-IMG-4481.jpg",
+        "categories": [
+            "Places/National",
+            "Architecture",
+            "People & Culture",
+            "People & Culture/Street"
+        ],
+        "state": "Maharashtra",
+        "city": "Tadoba",
+        "country": "",
+        "remarks": "Safari @ Karwa",
+        "date_added": "2026-03-28"
+    },
+    "071e00ba1d5a95c98403358f0a752b90": {
+        "path": "Photos/Blog/edit-2026-0326-Tadoba-VCM-IMG-4497.jpg",
+        "filename": "edit-2026-0326-Tadoba-VCM-IMG-4497.jpg",
+        "categories": [
+            "Places/National",
+            "People & Culture",
+            "People & Culture/Street"
+        ],
+        "state": "Maharashtra",
+        "city": "Tadoba",
+        "country": "",
+        "remarks": "Pond @ Karwa",
         "date_added": "2026-03-28"
     }
 }
