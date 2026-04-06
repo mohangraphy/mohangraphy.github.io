@@ -1366,18 +1366,20 @@ header {
 /* Remarks/place info — slides up on hover */
 .grid-item-info {
   position: absolute; bottom: 0; left: 0; right: 0;
-  padding: 18px 8px 5px;
-  background: linear-gradient(to top, rgba(0,0,0,0.75) 0%, transparent 100%);
+  padding: 24px 8px 6px;
+  background: linear-gradient(to top, rgba(0,0,0,0.82) 0%, transparent 100%);
   opacity: 0;
   transition: opacity .35s;
   pointer-events: none;
 }
 .grid-item:hover .grid-item-info { opacity: 1; }
 .grid-item-info-text {
-  font-size: 9px; letter-spacing: 1.5px;
-  color: rgba(255,255,255,0.9);
+  font-size: 9px; letter-spacing: 1.2px;
+  color: rgba(255,255,255,0.92);
   font-family: 'Montserrat', sans-serif;
-  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  white-space: normal;
+  word-wrap: break-word;
+  line-height: 1.6;
   display: block;
 }
 
@@ -2227,9 +2229,10 @@ footer {
 }
 .story-inline-caption {
   font-family: 'Montserrat', sans-serif;
-  font-size: 10px; letter-spacing: 2px;
-  color: rgba(255,255,255,0.3); text-transform: uppercase;
+  font-size: 11px; letter-spacing: 1.5px;
+  color: rgba(255,255,255,0.75); text-transform: uppercase;
   margin-top: 8px; text-align: center;
+  line-height: 1.5;
 }
 
 /* ── Logistics cards ── */
