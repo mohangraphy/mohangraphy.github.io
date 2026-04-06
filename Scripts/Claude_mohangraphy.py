@@ -11,6 +11,7 @@ BLOG_FILE        = os.path.join(ROOT_DIR, "Scripts/blog_posts.json")  # travel s
 THUMBS_DIR       = os.path.join(ROOT_DIR, "Thumbs")
 WEB_DIR          = os.path.join(ROOT_DIR, "Web")    # 2048px web-optimised copies
 MEGAMALAI_FOLDER = os.path.join(ROOT_DIR, "Photos/Nature/Landscape/Megamalai")
+BLOG_PHOTOS_DIR  = os.path.join(ROOT_DIR, "Photos/Blog")   # blog-only photos — not in Collections
 THUMB_WIDTH      = 800
 WEB_WIDTH        = 2048   # max long-edge for lightbox display
 
@@ -37,6 +38,7 @@ CAT_TAG_MAP = {
     "Flora & Fauna": {
         "Nature/Wildlife", "Nature/Birds", "Nature/Flora",
         "Nature/Flowers", "Flowers", "Birds", "Nature/Flowers",
+        "Flora & Fauna",    # top-level tag used when all three apply
     },
     "Architecture": {
         "Architecture",
@@ -44,6 +46,7 @@ CAT_TAG_MAP = {
     "People & Culture": {
         "People & Culture", "People/Portraits", "People & Culture/Portraits",
         "People & Culture/Street", "People & Culture/Culture",
+        "People & Culture/Abstract",   # new sub-tag for future Search
     },
 }
 
@@ -332,14 +335,17 @@ def build_maps(unique_entries):
 
 
 # ── THUMBNAIL BATCH ───────────────────────────────────────────────────────────
-def ensure_thumbs(all_paths):
-    """Pre-generate thumbnails AND 2048px web copies for all photos."""
-    total = len(all_paths)
+def ensure_thumbs(all_paths, blog_paths=None):
+    """Pre-generate thumbnails AND 2048px web copies for all photos.
+    blog_paths are processed for thumbs but NOT added to Collections.
+    """
+    combined = list(all_paths) + (blog_paths or [])
+    total = len(combined)
     print(f"  Generating thumbnails + 2048px web copies ({total} photos)...")
     print(f"  First run takes a few minutes. Subsequent runs are instant (skips existing).")
     thumb_map = {}
     web_map   = {}
-    for i, p in enumerate(all_paths):
+    for i, p in enumerate(combined):
         thumb_map[p] = make_thumb(p)
         web_map[p]   = make_web(p)
         if (i + 1) % 20 == 0:
@@ -455,7 +461,11 @@ def generate_html():
     ga_id            = site.get('ga_measurement_id','')
 
     # Generate / verify thumbnails + 2048px web copies
-    thumb_map, web_map = ensure_thumbs(all_paths)
+    # Blog photos are processed for thumbs but never appear in Collections
+    blog_only_paths = scan_folder_for_photos(BLOG_PHOTOS_DIR)
+    if blog_only_paths:
+        print(f"  📝 Blog-only photos found: {len(blog_only_paths)} (will get thumbnails, won't appear in Collections)")
+    thumb_map, web_map = ensure_thumbs(all_paths, blog_only_paths)
 
     # Hero slides — Megamalai landscape only, 3-second rotation
     megamalai_paths = scan_folder_for_photos(MEGAMALAI_FOLDER)

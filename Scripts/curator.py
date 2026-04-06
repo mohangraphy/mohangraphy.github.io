@@ -21,23 +21,41 @@ PHOTOS_DIR = os.path.join(ROOT_DIR, "Photos")
 DATA_FILE  = os.path.join(ROOT_DIR, "Scripts/photo_metadata.json")
 PORT       = 9797
 
-# Categories stored in photo_metadata.json
-# These map to the website's 4 collections:
-#   Landscape     ← Nature/Landscapes
-#   Flora & Fauna ← Nature/Wildlife, Nature/Birds, Nature/Flora
-#   Architecture  ← Architecture
-#   People & Culture ← People & Culture
-# National/International determines India vs Overseas filter pill
-CATEGORIES = [
-    "Nature/Landscapes",      # → Landscape
-    "Nature/Wildlife",        # → Flora & Fauna
-    "Nature/Birds",           # → Flora & Fauna
-    "Nature/Flora",           # → Flora & Fauna
-    "Places/National",        # → India filter
-    "Places/International",   # → Overseas filter
-    "Architecture",           # → Architecture
-    "People & Culture",       # → People & Culture
+# ── Category groups shown in the curator tagging panel ───────────────────────
+# Each group is a (group_label, [(tag, button_label), ...]) tuple.
+# Tags are stored as-is in photo_metadata.json.
+# The deploy script maps them to website Collections via CAT_TAG_MAP.
+#
+# Group 1 — Location  : always pick one (determines India vs Overseas pill)
+# Group 2 — Collection: always pick one (which Collection the photo appears in)
+# Group 3 — Nature    : optional detail within Flora & Fauna
+# Group 4 — People    : optional sub-tags for future Search feature
+#
+CATEGORY_GROUPS = [
+    ("LOCATION", [
+        ("Places/National",        "India"),
+        ("Places/International",   "Overseas"),
+    ]),
+    ("COLLECTION", [
+        ("Nature/Landscapes",      "Landscape"),
+        ("Flora & Fauna",          "Flora & Fauna"),
+        ("Architecture",           "Architecture"),
+        ("People & Culture",       "People & Culture"),
+    ]),
+    ("NATURE — detail (optional)", [
+        ("Nature/Wildlife",        "Wildlife"),
+        ("Nature/Birds",           "Birds"),
+        ("Nature/Flora",           "Flora"),
+    ]),
+    ("PEOPLE — sub-tags (for Search)", [
+        ("People & Culture/Portraits", "Portraits"),
+        ("People & Culture/Street",    "Street"),
+        ("People & Culture/Abstract",  "Abstract"),
+    ]),
 ]
+
+# Flat list of all tags — used for carry-forward and save logic
+CATEGORIES = [tag for _, items in CATEGORY_GROUPS for tag, _ in items]
 
 # ── Helpers ───────────────────────────────────────────────────────────────────
 
@@ -95,14 +113,17 @@ def build_page(state):
 
     if tagged:
         def_cats    = photo.get('categories', [])
-        def_state   = photo.get('state',   photo.get('place', ''))
+        # For International photos, country is stored in 'country' field
+        # The State/Country input shows whichever is set
+        def_state   = photo.get('country', '') or photo.get('state', photo.get('place', ''))
         def_city    = photo.get('city',    '')
         def_country = photo.get('country', '')
         def_remarks = photo.get('remarks', '')
         def_date    = photo.get('date_added', datetime.date.today().strftime('%Y-%m-%d'))
     else:
         def_cats    = prev.get('categories', [])
-        def_state   = prev.get('state',   '')
+        # Carry forward whichever location field was last used
+        def_state   = prev.get('country', '') or prev.get('state', '')
         def_city    = prev.get('city',    '')
         def_country = prev.get('country', '')
         def_remarks = ''
@@ -111,26 +132,20 @@ def build_page(state):
     status_label = 'ALREADY TAGGED' if tagged else 'NEW PHOTO'
     status_color = '#c9a96e' if tagged else '#6ec9a9'
 
-    # Friendly labels showing what each tag maps to on the website
-    CAT_LABELS = {
-        "Nature/Landscapes":    "Landscapes  →  Landscape",
-        "Nature/Wildlife":      "Wildlife  →  Flora & Fauna",
-        "Nature/Birds":         "Birds  →  Flora & Fauna",
-        "Nature/Flora":         "Flora  →  Flora & Fauna",
-        "Places/National":      "National  →  India",
-        "Places/International": "International  →  Overseas",
-        "Architecture":         "Architecture",
-        "People & Culture":     "People & Culture",
-    }
-
+    # Build category buttons in groups with dividers
     cat_btns = ''
-    for c in CATEGORIES:
-        label    = CAT_LABELS.get(c, c.split('/')[-1].upper())
-        selected = 'selected' if c in def_cats else ''
-        cat_btns += (
-            f'<button class="cat-btn {selected}" data-cat="{c}" '
-            f'onclick="toggleCat(this)">{label}</button>'
-        )
+    for group_label, items in CATEGORY_GROUPS:
+        # Group label
+        cat_btns += f'<div class="cat-group-label">{group_label}</div>'
+        # Buttons for this group
+        cat_btns += '<div class="cat-group">'
+        for tag, label in items:
+            selected = 'selected' if tag in def_cats else ''
+            cat_btns += (
+                f'<button class="cat-btn {selected}" data-cat="{tag}" '
+                f'onclick="toggleCat(this)">{label}</button>'
+            )
+        cat_btns += '</div>'
 
     return f'''<!DOCTYPE html>
 <html lang="en">
@@ -197,8 +212,15 @@ html, body {{
   color: rgba(255,255,255,0.35); margin-bottom: 8px; display: block;
 }}
 
-/* Category buttons */
-.cat-wrap {{ display: flex; flex-wrap: wrap; gap: 7px; margin-bottom: 20px; }}
+
+/* Category groups */
+.cat-group-label {{
+  font-size: 7px; letter-spacing: 3px; text-transform: uppercase;
+  color: rgba(201,169,110,0.55); margin: 12px 0 6px;
+  font-weight: 700;
+}}
+.cat-group-label:first-child {{ margin-top: 0; }}
+.cat-group {{ display: flex; flex-wrap: wrap; gap: 7px; margin-bottom: 4px; }}
 .cat-btn {{
   padding: 6px 12px; border-radius: 20px;
   font-size: 9px; font-weight: 700; letter-spacing: 2px;
@@ -276,7 +298,7 @@ textarea {{ min-height: 64px; resize: vertical; }}
       <div class="status">{status_label}</div>
 
       <label class="label">Categories</label>
-      <div class="cat-wrap" id="cats">{cat_btns}</div>
+      <div id="cats">{cat_btns}</div>
 
       <div class="field">
         <label class="label">State / Country</label>
