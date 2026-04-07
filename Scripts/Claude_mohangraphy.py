@@ -463,8 +463,13 @@ def generate_html():
     # Generate / verify thumbnails + 2048px web copies
     # Blog photos are processed for thumbs but never appear in Collections
     blog_only_paths = scan_folder_for_photos(BLOG_PHOTOS_DIR)
+    print(f"  📁 Blog folder: {BLOG_PHOTOS_DIR}")
     if blog_only_paths:
-        print(f"  📝 Blog-only photos found: {len(blog_only_paths)} (will get thumbnails, won't appear in Collections)")
+        print(f"  📝 Blog-only photos found: {len(blog_only_paths)}")
+        for bp in blog_only_paths:
+            print(f"     {os.path.basename(bp)}")
+    else:
+        print(f"  ⚠️  No blog photos found — folder may be empty or missing")
     thumb_map, web_map = ensure_thumbs(all_paths, blog_only_paths)
 
     # Hero slides — Megamalai landscape only, 3-second rotation
@@ -3556,65 +3561,82 @@ goHome();
             # ── Body paragraphs ────────────────────────────────────────────
             # \n\n = paragraph break, \n = line break within paragraph
             # ## Heading text        → bold sub-heading
-            # [photo: filename.jpg]  → inline photo (clickable, opens lightbox)
+            # [photo: filename.jpg]  → inline photo, can be anywhere in text
             # [photo: filename.jpg | My caption]  → inline photo with caption
             if body:
+                import re as _re
+
+                def render_photo_tag(fname, caption):
+                    """Turn a [photo:...] reference into HTML. Returns HTML string."""
+                    fname = fname.strip()
+                    caption = caption.strip() if caption else ''
+                    photo_path = next(
+                        (p for p in thumb_map if os.path.basename(p).lower() == fname.lower()),
+                        None
+                    )
+                    if not photo_path:
+                        print(f"  ⚠️  Blog photo not found: {fname!r}")
+                        return '<p style="color:rgba(201,169,110,0.4);font-size:11px;font-style:italic;">[Photo not found: ' + _eh(fname) + ']</p>'
+                    th     = thumb_map.get(photo_path, photo_path)
+                    web    = web_map.get(photo_path, photo_path)
+                    pi     = path_info.get(photo_path, {})
+                    rem    = pi.get('remarks', '').strip()
+                    sv     = pi.get('state',   '').strip()
+                    cv     = pi.get('city',    '').strip()
+                    da     = pi.get('date_added', '').strip()
+                    cats_p = meta_by_path.get(photo_path, {}).get('categories', [])
+                    cap_html = (
+                        '<div class="story-inline-caption">' + _eh(caption) + '</div>'
+                        if caption else ''
+                    )
+                    return (
+                        '<div class="story-inline-photo">'
+                        '<div class="grid" style="display:block;background:none;padding:0;">'
+                        '<div class="grid-item"'
+                        ' data-photo="'      + _ea(photo_path)       + '"'
+                        ' data-state="'      + _ea(sv)               + '"'
+                        ' data-city="'       + _ea(cv)               + '"'
+                        ' data-remarks="'    + _ea(rem)              + '"'
+                        ' data-cats="'       + _ea(','.join(cats_p)) + '"'
+                        ' data-date-added="' + _ea(da)               + '"'
+                        ' onclick="openImgModal(this)">'
+                        '<div class="grid-item-photo" style="padding-bottom:0;height:auto;">'
+                        '<img src="' + _ea(th) + '" data-full="' + _ea(web) + '"'
+                        ' loading="lazy" decoding="async"'
+                        ' alt="' + _ea(caption or rem or cv) + '"'
+                        ' style="width:100%;height:auto;object-fit:contain;display:block;position:static;">'
+                        '<div class="grid-item-overlay"></div>'
+                        '</div></div></div>'
+                        + cap_html +
+                        '</div>'
+                    )
+
+                def render_text_chunk(text):
+                    """Render a text chunk that may contain [photo:...] tags anywhere."""
+                    # Split on [photo:...] tags — they can be inline in the text
+                    PHOTO_RE = _re.compile(r'\[photo:\s*([^\]|]+?)(?:\s*\|\s*([^\]]*))?\]', _re.IGNORECASE)
+                    parts = []
+                    last = 0
+                    for m in PHOTO_RE.finditer(text):
+                        before = text[last:m.start()].strip()
+                        if before:
+                            parts.append('<p>' + _eh(before).replace('\n', '<br>') + '</p>')
+                        parts.append(render_photo_tag(m.group(1), m.group(2)))
+                        last = m.end()
+                    after = text[last:].strip()
+                    if after:
+                        parts.append('<p>' + _eh(after).replace('\n', '<br>') + '</p>')
+                    return ''.join(parts)
+
                 paras = [p.strip() for p in body.split('\n\n') if p.strip()]
                 body_parts = []
                 for para in paras:
                     if para.startswith('##'):
                         body_parts.append('<h2>' + _eh(para.lstrip('#').strip()) + '</h2>')
-                    elif para.startswith('[photo:') and para.endswith(']'):
-                        inner   = para[7:-1].strip()
-                        parts   = inner.split('|', 1)
-                        fname   = parts[0].strip()
-                        caption = parts[1].strip() if len(parts) > 1 else ''
-                        # Find photo by filename match in thumb_map
-                        photo_path = next(
-                            (p for p in thumb_map if os.path.basename(p).lower() == fname.lower()),
-                            None
-                        )
-                        if photo_path:
-                            th     = thumb_map.get(photo_path, photo_path)
-                            web    = web_map.get(photo_path, photo_path)
-                            pi     = path_info.get(photo_path, {})
-                            rem    = pi.get('remarks',    '').strip()
-                            sv     = pi.get('state',      '').strip()
-                            cv     = pi.get('city',       '').strip()
-                            da     = pi.get('date_added', '').strip()
-                            cats_p = meta_by_path.get(photo_path, {}).get('categories', [])
-                            cap_html = (
-                                '<div class="story-inline-caption">' + _eh(caption) + '</div>'
-                                if caption else ''
-                            )
-                            body_parts.append(
-                                '<div class="story-inline-photo">'
-                                '<div class="grid-item"'
-                                ' data-photo="'      + _ea(photo_path)        + '"'
-                                ' data-state="'      + _ea(sv)                + '"'
-                                ' data-city="'       + _ea(cv)                + '"'
-                                ' data-remarks="'    + _ea(rem)               + '"'
-                                ' data-cats="'       + _ea(','.join(cats_p))  + '"'
-                                ' data-date-added="' + _ea(da)                + '"'
-                                ' onclick="openImgModal(this)">'
-                                '<div class="grid-item-photo">'
-                                '<img src="' + _ea(th) + '" data-full="' + _ea(web) + '"'
-                                ' loading="lazy" decoding="async"'
-                                ' alt="' + _ea(caption or rem or cv) + '"'
-                                ' style="width:100%;height:100%;object-fit:cover;display:block;">'
-                                '<div class="grid-item-overlay"></div>'
-                                '</div></div>'
-                                + cap_html +
-                                '</div>'
-                            )
-                        else:
-                            body_parts.append(
-                                '<p style="color:rgba(201,169,110,0.4);font-size:11px;'
-                                'font-style:italic;">[Photo not found: ' + _eh(fname) + ']</p>'
-                            )
                     else:
-                        body_parts.append('<p>' + _eh(para).replace('\n', '<br>') + '</p>')
+                        body_parts.append(render_text_chunk(para))
                 body_html = ''.join(body_parts)
+
             else:
                 body_html = '<p style="color:rgba(255,255,255,0.25);font-style:italic;">No write-up yet. Add a \\"body\\" field to this post in blog_posts.json.</p>'
 
