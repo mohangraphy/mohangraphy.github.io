@@ -2428,94 +2428,6 @@ footer {
 }
 .new-photo-tag { font-family: 'Montserrat', sans-serif; font-size: 7px; letter-spacing: 2px; color: var(--gold); opacity: 0.8; border: 1px solid rgba(201,169,110,0.3); padding: 3px 7px; }
 
-/* ── SLIDESHOW BUTTON ── */
-.slideshow-btn {
-  display: inline-flex; align-items: center; gap: 7px;
-  background: none; border: 1px solid rgba(201,169,110,0.45);
-  color: var(--gold); cursor: pointer;
-  padding: 0 16px; height: 34px;
-  font-family: 'Montserrat', sans-serif;
-  font-size: 8px; font-weight: 600; letter-spacing: 3px; text-transform: uppercase;
-  transition: background .2s, color .2s, border-color .2s;
-  white-space: nowrap; flex-shrink: 0;
-  margin-top: 8px;
-}
-.slideshow-btn:hover { background: rgba(201,169,110,0.12); border-color: var(--gold); }
-
-/* ── FULLSCREEN SLIDESHOW OVERLAY ── */
-#slideshow-overlay {
-  display: none; position: fixed; inset: 0; z-index: 9200;
-  background: #000;
-  flex-direction: column; align-items: stretch; justify-content: stretch;
-}
-#slideshow-overlay.open { display: flex; }
-#slideshow-photo-wrap {
-  flex: 1; display: flex; align-items: center; justify-content: center;
-  position: relative; overflow: hidden;
-}
-#slideshow-img {
-  max-width: 100%; max-height: 100%;
-  object-fit: contain; display: block;
-  user-select: none; -webkit-user-drag: none;
-  transition: opacity 0.6s ease;
-}
-#slideshow-img.fade-out { opacity: 0; }
-#slideshow-bar {
-  position: absolute; bottom: 0; left: 0; right: 0;
-  padding: 14px 20px;
-  background: linear-gradient(to top, rgba(0,0,0,0.8) 0%, transparent 100%);
-  display: flex; align-items: center; justify-content: space-between;
-  gap: 12px; flex-wrap: wrap;
-}
-#slideshow-counter {
-  font-family: 'Montserrat', sans-serif;
-  font-size: 9px; letter-spacing: 3px;
-  color: rgba(255,255,255,0.4); text-transform: uppercase;
-}
-#slideshow-caption {
-  font-family: 'Montserrat', sans-serif;
-  font-size: 10px; letter-spacing: 1px;
-  color: rgba(255,255,255,0.75);
-  flex: 1; text-align: center;
-}
-#slideshow-close {
-  position: absolute; top: 12px; right: 12px; z-index: 9210;
-  background: rgba(0,0,0,0.5); border: 1px solid rgba(255,255,255,0.15);
-  cursor: pointer; color: rgba(255,255,255,0.6); font-size: 18px;
-  width: 38px; height: 38px; border-radius: 50%;
-  display: flex; align-items: center; justify-content: center;
-  transition: color .2s, border-color .2s;
-}
-#slideshow-close:hover { color: var(--gold); border-color: var(--gold); }
-#slideshow-prev, #slideshow-next {
-  position: absolute; top: 50%; transform: translateY(-50%);
-  background: rgba(0,0,0,0.4); border: none; cursor: pointer;
-  color: rgba(255,255,255,0.45); font-size: 26px;
-  width: 50px; height: 50px; border-radius: 50%;
-  display: flex; align-items: center; justify-content: center;
-  transition: color .2s, background .2s; z-index: 9205;
-}
-#slideshow-prev { left: 10px; }
-#slideshow-next { right: 10px; }
-#slideshow-prev:hover, #slideshow-next:hover { color: var(--gold); background: rgba(0,0,0,0.7); }
-#slideshow-progress {
-  position: absolute; bottom: 0; left: 0;
-  height: 2px; background: var(--gold);
-  transition: width 0.1s linear;
-  pointer-events: none;
-}
-#slideshow-pause-lbl {
-  position: absolute; top: 14px; left: 50%; transform: translateX(-50%);
-  font-family: 'Montserrat', sans-serif;
-  font-size: 8px; letter-spacing: 3px; text-transform: uppercase;
-  color: rgba(255,255,255,0.45);
-  background: rgba(0,0,0,0.55);
-  padding: 4px 14px;
-  opacity: 0; transition: opacity .3s;
-  pointer-events: none;
-}
-#slideshow-overlay.paused #slideshow-pause-lbl { opacity: 1; }
-
 """
 
     # ── BUILD GALLERY BLOCKS + SUB-PANELS ────────────────────────────────────
@@ -2581,12 +2493,8 @@ footer {
             gallery_blocks += (
                 '\n<div class="section-block" id="' + city_id + '">'
                 '\n  <div class="gal-header">'
-                '<div style="display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:8px;">'
-                '<div><div class="gal-title">' + city + '</div>'
-                '<div class="gal-sub">' + m_cat + ' · ' + (state_name + ' · ' if state_name else '') + str(len(city_paths)) + ' Photos</div></div>'
-                + (('<button class="slideshow-btn" onclick="startSlideshow(\'' + city_id + '\')" title="View as slideshow">'
-                    '&#9654;&nbsp; View Slideshow</button>') if city_paths else '')
-                + '</div>'
+                '<div class="gal-title">' + city + '</div>'
+                '<div class="gal-sub">' + m_cat + ' · ' + (state_name + ' · ' if state_name else '') + str(len(city_paths)) + ' Photos</div>'
                 '</div>'
                 + ('\n  <div class="grid">' + imgs + '</div>' if city_paths else '\n  <div class="wip-message">Work in progress</div>')
                 + '\n</div>'
@@ -2663,12 +2571,8 @@ footer {
                 gallery_blocks += (
                     '\n<div class="section-block" id="' + city_id + '">'
                     '\n  <div class="gal-header">'
-                    '<div style="display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:8px;">'
-                    '<div><div class="gal-title">' + city + '</div>'
-                    '<div class="gal-sub">' + m_cat + ' · ' + country + ' · ' + str(len(city_paths)) + ' Photos</div></div>'
-                    + (('<button class="slideshow-btn" onclick="startSlideshow(\'' + city_id + '\')" title="View as slideshow">'
-                        '&#9654;&nbsp; View Slideshow</button>') if city_paths else '')
-                    + '</div>'
+                    '<div class="gal-title">' + city + '</div>'
+                    '<div class="gal-sub">' + m_cat + ' · ' + country + ' · ' + str(len(city_paths)) + ' Photos</div>'
                     '</div>'
                     + ('\n  <div class="grid">' + imgs + '</div>' if city_paths else '\n  <div class="wip-message">Work in progress</div>')
                     + '\n</div>'
@@ -2970,18 +2874,11 @@ function showNewPhotos(){
   var existing = document.getElementById('gallery-new-photos');
   if(existing) existing.remove();
 
-  /* Step 4: build tags HTML for each photo — show only the most specific tag(s),
-     removing any parent category that has a more-specific child present.
-     E.g. if "People & Culture/Street" is present, drop bare "People & Culture". */
+  /* Step 4: build tags HTML for each photo */
   var gridHTML = uniqueItems.map(function(item){
     var cats = (item.getAttribute('data-cats') || '').split(',').map(function(s){ return s.trim(); }).filter(Boolean);
-    /* Filter: keep a tag only if no other tag in the set starts with it + "/" */
-    var filtered = cats.filter(function(cat){
-      return !cats.some(function(other){ return other !== cat && other.indexOf(cat + '/') === 0; });
-    });
-    var displayCats = filtered.length ? filtered : cats;
-    var tagsHTML = displayCats.length
-      ? '<div class="new-photo-tags">' + displayCats.map(function(cat){
+    var tagsHTML = cats.length
+      ? '<div class="new-photo-tags">' + cats.map(function(cat){
           return '<span class="new-photo-tag">' + cat.replace(/\//g,' / ').toUpperCase() + '</span>';
         }).join('') + '</div>'
       : '';
@@ -2993,12 +2890,8 @@ function showNewPhotos(){
   block.id = 'gallery-new-photos';
   block.className = 'section-block visible';
   block.style.cssText = 'padding-top:calc(var(--hdr) + 32px);';
-  block.innerHTML = '<div class="gal-header">'
-    + '<div style="display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:8px;">'
-    + '<div><div class="gal-title">Recently Added</div>'
+  block.innerHTML = '<div class="gal-header"><div class="gal-title">Recently Added</div>'
     + '<div class="gal-sub">' + uniqueItems.length + ' Photo' + (uniqueItems.length > 1 ? 's' : '') + ' · Last ' + NEW_DAYS + ' days</div></div>'
-    + '<button class="slideshow-btn" onclick="startSlideshow(\'gallery-new-photos\')" title="View as slideshow">&#9654;&nbsp; View Slideshow</button>'
-    + '</div></div>'
     + '<div class="grid">' + gridHTML + '</div>';
   galContainer.prepend(block);
   window.scrollTo(0, 0);
@@ -3547,14 +3440,6 @@ function submitContact(){
 
 /* ── Keyboard shortcuts ── */
 document.addEventListener('keydown', function(e){
-  /* Slideshow gets priority over all other shortcuts */
-  if(typeof ssOverlay !== 'undefined' && ssOverlay && ssOverlay.classList.contains('open')){
-    if(e.key==='Escape')      { closeSlideshow(); return; }
-    if(e.key==='ArrowRight')  { ssStep(1); return; }
-    if(e.key==='ArrowLeft')   { ssStep(-1); return; }
-    if(e.key===' ')           { e.preventDefault(); ssPauseToggle(); return; }
-    return;
-  }
   if(e.key==='Escape'){
     if(rqModal.classList.contains('open')){ closeRqModal(); return; }
     if(imgModal.classList.contains('open')){ closeImgModal(); return; }
@@ -3591,128 +3476,6 @@ async function subscribeVisitor(){
     } else { msg.textContent='Something went wrong. Please try again.'; }
   } catch(err){ msg.textContent='Connection error. Please try again.'; }
 }
-
-/* ══════════════════════════════════════════════════════
-   SLIDESHOW ENGINE
-   ══════════════════════════════════════════════════════ */
-var ssImages  = [];
-var ssIdx     = 0;
-var ssTimer   = null;
-var ssDur     = 4500;
-var ssOverlay = document.getElementById('slideshow-overlay');
-var ssImg     = document.getElementById('slideshow-img');
-var ssCounter = document.getElementById('slideshow-counter');
-var ssCaption = document.getElementById('slideshow-caption');
-var ssProgress= document.getElementById('slideshow-progress');
-var ssPaused  = false;
-
-function startSlideshow(blockId){
-  var block = document.getElementById(blockId);
-  if(!block) return;
-  var items = Array.from(block.querySelectorAll('.grid-item'));
-  if(!items.length) return;
-  ssImages = items.map(function(item){
-    var imgEl = item.querySelector('.grid-item-photo img');
-    var full  = (imgEl && imgEl.getAttribute('data-full')) || (imgEl && imgEl.src) || '';
-    var thumb = (imgEl && imgEl.src) || '';
-    var rem   = item.getAttribute('data-remarks') || '';
-    var city  = item.getAttribute('data-city')    || '';
-    var cap   = [rem, city].filter(Boolean).join('  ·  ');
-    return {thumb:thumb, full:full, caption:cap};
-  });
-  ssIdx = 0; ssPaused = false;
-  if(ssOverlay){ ssOverlay.classList.remove('paused'); ssOverlay.classList.add('open'); }
-  document.body.style.overflow = 'hidden';
-  ssShowSlide(0);
-  ssSchedule();
-}
-
-function ssShowSlide(idx){
-  if(!ssImages.length) return;
-  idx = (idx + ssImages.length) % ssImages.length;
-  ssIdx = idx;
-  var entry = ssImages[idx];
-  if(ssImg) ssImg.classList.add('fade-out');
-  setTimeout(function(){
-    if(entry.thumb && ssImg) ssImg.src = entry.thumb;
-    if(entry.full && entry.full !== entry.thumb){
-      var hi = new Image();
-      var capturedIdx = idx;
-      hi.onload = function(){ if(ssIdx===capturedIdx && ssImg) ssImg.src = entry.full; };
-      hi.src = entry.full;
-    }
-    if(ssImg) ssImg.classList.remove('fade-out');
-  }, 350);
-  if(ssCounter) ssCounter.textContent = (idx+1) + ' / ' + ssImages.length;
-  if(ssCaption) ssCaption.textContent = entry.caption || '';
-  ssResetProgress();
-}
-
-function ssResetProgress(){
-  if(!ssProgress) return;
-  ssProgress.style.transition = 'none';
-  ssProgress.style.width = '0%';
-  setTimeout(function(){
-    if(!ssPaused){
-      ssProgress.style.transition = 'width ' + ssDur + 'ms linear';
-      ssProgress.style.width = '100%';
-    }
-  }, 40);
-}
-
-function ssSchedule(){
-  clearTimeout(ssTimer);
-  if(!ssPaused){
-    ssTimer = setTimeout(function(){
-      ssShowSlide(ssIdx + 1);
-      ssSchedule();
-    }, ssDur);
-  }
-}
-
-function ssPauseToggle(){
-  ssPaused = !ssPaused;
-  if(ssOverlay) ssOverlay.classList.toggle('paused', ssPaused);
-  if(ssPaused){
-    clearTimeout(ssTimer);
-    if(ssProgress) ssProgress.style.transition = 'none';
-  } else {
-    ssResetProgress();
-    ssSchedule();
-  }
-}
-
-function ssStep(dir){
-  clearTimeout(ssTimer);
-  ssShowSlide(ssIdx + dir);
-  if(!ssPaused) ssSchedule();
-}
-
-function closeSlideshow(){
-  clearTimeout(ssTimer);
-  if(ssOverlay) ssOverlay.classList.remove('open','paused');
-  document.body.style.overflow = '';
-  if(ssImg) ssImg.src = '';
-  ssPaused = false;
-}
-
-/* Click on the photo area (not nav buttons) → pause/resume */
-(function(){
-  var wrap = document.getElementById('slideshow-photo-wrap');
-  if(!wrap) return;
-  wrap.addEventListener('click', function(e){
-    if(e.target.closest('#slideshow-prev') || e.target.closest('#slideshow-next') || e.target.closest('#slideshow-close')) return;
-    ssPauseToggle();
-  });
-  var ssTsX = null;
-  wrap.addEventListener('touchstart', function(e){ ssTsX = e.touches[0].clientX; },{passive:true});
-  wrap.addEventListener('touchend', function(e){
-    if(ssTsX===null) return;
-    var dx = e.changedTouches[0].clientX - ssTsX;
-    if(Math.abs(dx) > 44) ssStep(dx < 0 ? 1 : -1);
-    ssTsX = null;
-  },{passive:true});
-})();
 
 goHome();
 """
@@ -4349,23 +4112,6 @@ goHome();
         '        <button class="btn-gold" onclick="saveAdminTags()">Save</button>\n'
         '      </div>\n'
         '    </div>\n'
-        '  </div>\n'
-        '</div>\n\n'
-
-        # ── SLIDESHOW OVERLAY ────────────────────────────────────────────────
-        '<div id="slideshow-overlay">\n'
-        '  <div id="slideshow-photo-wrap">\n'
-        '    <img id="slideshow-img" src="" alt="" draggable="false">\n'
-        '    <button id="slideshow-prev" onclick="ssStep(-1)" aria-label="Previous">&#10094;</button>\n'
-        '    <button id="slideshow-next" onclick="ssStep(1)" aria-label="Next">&#10095;</button>\n'
-        '    <button id="slideshow-close" onclick="closeSlideshow()" aria-label="Close">&#10005;</button>\n'
-        '    <div id="slideshow-bar">\n'
-        '      <span id="slideshow-counter"></span>\n'
-        '      <span id="slideshow-caption"></span>\n'
-        '      <span style="font-family:Montserrat,sans-serif;font-size:8px;letter-spacing:2px;color:rgba(255,255,255,0.3);text-transform:uppercase;">Click photo to pause</span>\n'
-        '    </div>\n'
-        '    <div id="slideshow-pause-lbl">PAUSED</div>\n'
-        '    <div id="slideshow-progress"></div>\n'
         '  </div>\n'
         '</div>\n\n'
 
