@@ -3546,17 +3546,7 @@ goHome();
                     ' onclick="showStoryGallery(\'' + _ea(pid) + "','" + _ea(place_tag) + "')"
                     + '">\u25b6\u00a0 View Photos from ' + _eh(place) + '</button>'
                 )
-            for cat_name in cats_link:
-                # Always use openCategory for cats with subs, showGallery for flat ones
-                if MANUAL_STRUCTURE.get(cat_name):
-                    js_call = "hideAll();openCategory('" + _ea(cat_name) + "')"
-                else:
-                    js_call = "hideAll();showGallery('direct-" + _ea(cat_name) + "')"
-                cta_html += (
-                    '<button class="story-cta-btn-ghost"'
-                    ' onclick="' + js_call + '">'
-                    + '\u25b6\u00a0 ' + _eh(cat_name) + ' Collection</button>'
-                )
+            # Collections link buttons removed — only show View Photos button
 
             # ── Body paragraphs ────────────────────────────────────────────
             # \n\n = paragraph break, \n = line break within paragraph
@@ -3689,13 +3679,17 @@ goHome();
         + "function showStoriesIndex(){\n"
         + "  hideAll();\n"
         + "  var pg=document.getElementById('page-stories');\n"
-        + "  if(pg){pg.classList.add('visible');window.scrollTo(0,0);}\n"
+        + "  if(pg){pg.classList.add('visible');pg.scrollTop=0;window.scrollTo(0,0);}\n"
         + "  setActiveTab('stories');\n"
         + "}\n"
         + "function showStoryPost(id){\n"
         + "  hideAll();\n"
         + "  var pg=document.getElementById(id);\n"
-        + "  if(pg){pg.classList.add('visible');window.scrollTo(0,0);}\n"
+        + "  if(pg){\n"
+        + "    pg.classList.add('visible');\n"
+        + "    pg.scrollTop=0;\n"  
+        + "    window.scrollTo(0,0);\n"
+        + "  }\n"
         + "  setActiveTab('stories');\n"
         + "}\n"
         + "function closeStoryPost(){\n"
