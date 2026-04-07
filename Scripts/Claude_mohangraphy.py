@@ -112,11 +112,20 @@ def deduplicate_by_path(raw_data):
             seen[path] = info
     return list(seen.values())
 
-def scan_folder_for_photos(folder_path):
+def scan_folder_for_photos(folder_path, exclude_blog=True):
+    """Scan folder recursively for photos. Skips Photos/Blog/ by default."""
     paths = []
     if not os.path.isdir(folder_path):
         return paths
-    for root, _, files in os.walk(folder_path):
+    blog_abs = os.path.abspath(BLOG_PHOTOS_DIR)
+    for root, dirs, files in os.walk(folder_path):
+        # Skip the Blog folder entirely
+        if exclude_blog and os.path.abspath(root).startswith(blog_abs):
+            dirs[:] = []
+            continue
+        # Also prevent walking INTO Blog if it appears as a subdir
+        if exclude_blog:
+            dirs[:] = [d for d in dirs if os.path.abspath(os.path.join(root, d)) != blog_abs]
         for f in sorted(files):
             if f.lower().endswith(('.jpg', '.jpeg', '.png', '.webp')):
                 rel = os.path.relpath(os.path.join(root, f), ROOT_DIR)
@@ -244,6 +253,9 @@ def build_maps(unique_entries):
 
     for info in unique_entries:
         path    = info.get('path', '')
+        # Skip blog-only photos — they are not part of Collections
+        if path.startswith('Photos/Blog/') or path.startswith('Photos\\Blog\\'):
+            continue
         tags    = info.get('categories', [])
         place   = info.get('place', '').strip()
         remarks = info.get('remarks', '').strip()
@@ -462,7 +474,7 @@ def generate_html():
 
     # Generate / verify thumbnails + 2048px web copies
     # Blog photos are processed for thumbs but never appear in Collections
-    blog_only_paths = scan_folder_for_photos(BLOG_PHOTOS_DIR)
+    blog_only_paths = scan_folder_for_photos(BLOG_PHOTOS_DIR, exclude_blog=False)
     print(f"  📁 Blog folder: {BLOG_PHOTOS_DIR}")
     if blog_only_paths:
         print(f"  📝 Blog-only photos found: {len(blog_only_paths)}")

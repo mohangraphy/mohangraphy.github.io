@@ -87,9 +87,18 @@ def save_data(data):
     with open(DATA_FILE, 'w', encoding='utf-8') as f:
         json.dump(data, f, indent=4, ensure_ascii=False)
 
+BLOG_DIR = os.path.join(ROOT_DIR, "Photos/Blog")   # excluded from tagging
+
 def scan_photos():
+    """Scan Photos/ for tagging — skips Photos/Blog/ entirely."""
     files = []
-    for root, _, names in os.walk(PHOTOS_DIR):
+    blog_abs = os.path.abspath(BLOG_DIR)
+    for root, dirs, names in os.walk(PHOTOS_DIR):
+        # Skip Blog folder
+        if os.path.abspath(root).startswith(blog_abs):
+            dirs[:] = []
+            continue
+        dirs[:] = [d for d in dirs if os.path.abspath(os.path.join(root, d)) != blog_abs]
         for n in sorted(names):
             if n.lower().endswith(('.jpg', '.jpeg', '.png', '.webp')):
                 files.append(os.path.join(root, n))
