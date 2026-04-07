@@ -1,1435 +1,1367 @@
 {
-    "f13c17bca544b65e8d0527b6ec452736": {
-        "path": "Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4733-35.jpg",
-        "filename": "2026-0127-Megamalai-NCM-4733-35.jpg",
-        "categories": [
-            "Nature/Landscapes",
-            "Places/National"
-        ],
-        "state": "Tamil Nadu",
-        "city": "Megamalai",
-        "country": "",
-        "remarks": "Sunrise - Valley View",
-        "date_added": "2026-03-06"
-    },
-    "3497fa3ff118f72e119237f29070a6dd": {
-        "path": "Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4736-38.jpg",
-        "filename": "2026-0127-Megamalai-NCM-4736-38.jpg",
-        "categories": [
-            "Nature/Landscapes",
-            "Places/National"
-        ],
-        "state": "Tamil Nadu",
-        "city": "Megamalai",
-        "country": "",
-        "remarks": "Sunrise - Valley View",
-        "date_added": "2026-03-06"
-    },
-    "2ed6d6e8261c8ac62dd69b09d42d306f": {
-        "path": "Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4915-17.jpg",
-        "filename": "2026-0127-Megamalai-NCM-4915-17.jpg",
-        "categories": [
-            "Nature/Landscapes",
-            "Places/National"
-        ],
-        "state": "Tamil Nadu",
-        "city": "Megamalai",
-        "country": "",
-        "remarks": "Highways Village",
-        "date_added": "2026-03-06"
-    },
-    "de7df5737132b3ccd4cd082a7dabbc5b": {
-        "path": "Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4955.jpg",
-        "filename": "2026-0127-Megamalai-NCM-4955.jpg",
-        "categories": [
-            "Nature/Landscapes",
-            "Places/National"
-        ],
-        "state": "Tamil Nadu",
-        "city": "Megamalai",
-        "country": "",
-        "remarks": "Enroute to Munnar",
-        "date_added": "2026-03-06"
-    },
-    "38fb418c5cb26d593acef9c54427b2c7": {
-        "path": "Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4897.jpg",
-        "filename": "2026-0127-Megamalai-NCM-4897.jpg",
-        "categories": [
-            "Nature/Landscapes",
-            "Places/National"
-        ],
-        "state": "Tamil Nadu",
-        "city": "Megamalai",
-        "country": "",
-        "remarks": "Tea Gardens",
-        "date_added": "2026-03-06"
-    },
-    "53f96b3b13a40dfefb45ac524ad11035": {
-        "path": "Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4921-23.jpg",
-        "filename": "2026-0127-Megamalai-NCM-4921-23.jpg",
-        "categories": [
-            "Nature/Landscapes",
-            "Places/National"
-        ],
-        "state": "Tamil Nadu",
-        "city": "Megamalai",
-        "country": "",
-        "remarks": "Highways Village",
-        "date_added": "2026-03-06"
-    },
-    "639257179e8baecf76928ad6410bf43e": {
-        "path": "Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4715-17.jpg",
-        "filename": "2026-0127-Megamalai-NCM-4715-17.jpg",
-        "categories": [
-            "Nature/Landscapes",
-            "Places/National"
-        ],
-        "state": "Tamil Nadu",
-        "city": "Megamalai",
-        "country": "",
-        "remarks": "Sunrise - Valley View",
-        "date_added": "2026-03-06"
-    },
-    "778aee4a3eab8334020e32a49b79878e": {
-        "path": "Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4655.jpg",
-        "filename": "2026-0127-Megamalai-NCM-4655.jpg",
-        "categories": [
-            "Nature/Landscapes",
-            "Places/National"
-        ],
-        "state": "Tamil Nadu",
-        "city": "Megamalai",
-        "country": "",
-        "remarks": "Sunrise - Valley View",
-        "date_added": "2026-03-06"
-    },
-    "308a52d1deed6f48ed8e638319f0c04f": {
-        "path": "Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4675.jpg",
-        "filename": "2026-0127-Megamalai-NCM-4675.jpg",
-        "categories": [
-            "Nature/Landscapes",
-            "Places/National"
-        ],
-        "state": "Tamil Nadu",
-        "city": "Megamalai",
-        "country": "",
-        "remarks": "Sunrise - Valley View",
-        "date_added": "2026-03-06"
-    },
-    "9dfea9e3a14fd561b172d591c9a491ce": {
-        "path": "Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4649.jpg",
-        "filename": "2026-0127-Megamalai-NCM-4649.jpg",
-        "categories": [
-            "Nature/Landscapes",
-            "Places/National"
-        ],
-        "state": "Tamil Nadu",
-        "city": "Megamalai",
-        "country": "",
-        "remarks": "Sunrise - Valley View",
-        "date_added": "2026-03-06"
-    },
-    "5fade2d4eed79b1a580ac7da812d47e6": {
-        "path": "Photos/Architecture/2024-01-Badami-JPG/2024-01-Badami-Day0-NCM_6002.jpg",
-        "filename": "2024-01-Badami-Day0-NCM_6002.jpg",
-        "categories": [
-            "Places/National",
-            "Architecture"
-        ],
-        "state": "Karnataka",
-        "city": "Badami",
-        "country": "",
-        "remarks": "Malegitti Shivalaya Temple, 6th-8th century CE,",
-        "date_added": "2024-01-14"
-    },
-    "0bb8f9f085b4666f1676830f65c34c23": {
-        "path": "Photos/Architecture/2024-01-Badami-JPG/2024-01-Badami-Day0-NCM_6121.jpg",
-        "filename": "2024-01-Badami-Day0-NCM_6121.jpg",
-        "categories": [
-            "Places/National",
-            "Architecture"
-        ],
-        "state": "Karnataka",
-        "city": "Badami",
-        "country": "",
-        "remarks": "",
-        "date_added": "2024-01-14"
-    },
-    "4e7e91c4de407850650611cfb5fb7e24": {
-        "path": "Photos/Architecture/2024-01-Badami-JPG/2024-01-Badami-Day0-NCM_6142.jpg",
-        "filename": "2024-01-Badami-Day0-NCM_6142.jpg",
-        "categories": [
-            "Places/National",
-            "Architecture"
-        ],
-        "state": "Karnataka",
-        "city": "Badami",
-        "country": "",
-        "remarks": "Rock-cut temples",
-        "date_added": "2024-01-14"
-    },
-    "59a41a3c6c8d85696fb421b88fbe61d3": {
-        "path": "Photos/Architecture/2024-01-Badami-JPG/2024-01-Badami-Day1-NCM_6264.jpg",
-        "filename": "2024-01-Badami-Day1-NCM_6264.jpg",
-        "categories": [
-            "Places/National",
-            "Architecture"
-        ],
-        "state": "Karnataka",
-        "city": "Pattadhakal",
-        "country": "",
-        "remarks": "",
-        "date_added": "2024-01-14"
-    },
-    "e0b09b37aedef3e1fe5299bc9154a521": {
-        "path": "Photos/Architecture/2024-01-Badami-JPG/2024-01-Badami-Day1-NCM_6334.jpg",
-        "filename": "2024-01-Badami-Day1-NCM_6334.jpg",
-        "categories": [
-            "Places/National",
-            "Architecture"
-        ],
-        "state": "Karnataka",
-        "city": "Pattadhakal",
-        "country": "",
-        "remarks": "",
-        "date_added": "2024-01-14"
-    },
-    "c2b131277cc0e3498daf300f70ab49ff": {
-        "path": "Photos/Architecture/2024-01-Badami-JPG/2024-01-Badami-Day1-NCM_6413.jpg",
-        "filename": "2024-01-Badami-Day1-NCM_6413.jpg",
-        "categories": [
-            "Places/National",
-            "Architecture"
-        ],
-        "state": "Karnataka",
-        "city": "Pattadhakal",
-        "country": "",
-        "remarks": "",
-        "date_added": "2024-01-14"
-    },
-    "987953d7eb2e785313dba12c2735ddba": {
-        "path": "Photos/Architecture/2024-01-Badami-JPG/2024-01-Badami-Day1-NCM_6545.jpg",
-        "filename": "2024-01-Badami-Day1-NCM_6545.jpg",
-        "categories": [
-            "Places/National",
-            "Architecture"
-        ],
-        "state": "Karnataka",
-        "city": "Aihole",
-        "country": "",
-        "remarks": "Ravana Phadi Cave Temple, 6th-century,  Chalukya dynasty",
-        "date_added": "2024-01-14"
-    },
-    "5829723857cfc810ca74b24f3beb8d34": {
-        "path": "Photos/Architecture/2024-01-Badami-JPG/2024-01-Badami-Day1-NCM_6596.jpg",
-        "filename": "2024-01-Badami-Day1-NCM_6596.jpg",
-        "categories": [
-            "Places/National",
-            "Architecture"
-        ],
-        "state": "Karnataka",
-        "city": "Aihole",
-        "country": "",
-        "remarks": "Ravana Phadi Cave Temple, 6th-century,  Chalukya dynasty",
-        "date_added": "2024-01-14"
-    },
-    "50d520a0f347b5fb19e1a5e5ee080814": {
-        "path": "Photos/Architecture/2024-01-Badami-JPG/2024-01-Badami-Day2-NCM_6825.jpg",
-        "filename": "2024-01-Badami-Day2-NCM_6825.jpg",
-        "categories": [
-            "Places/National",
-            "Architecture"
-        ],
-        "state": "Karnataka",
-        "city": "Badami",
-        "country": "",
-        "remarks": "Malegitti Temple",
-        "date_added": "2024-01-14"
-    },
-    "e3422044f57308efc1bf7e26d0bd4f19": {
-        "path": "Photos/Architecture/2024-01-Badami-JPG/2024-01-Badami-Day2-NCM_6863.jpg",
-        "filename": "2024-01-Badami-Day2-NCM_6863.jpg",
-        "categories": [
-            "Places/National",
-            "Architecture"
-        ],
-        "state": "Karnataka",
-        "city": "Badami",
-        "country": "",
-        "remarks": "",
-        "date_added": "2024-01-14"
-    },
-    "a932caf195a5da1efc78d41bcd65ca93": {
-        "path": "Photos/Architecture/2024-01-Badami-JPG/2024-01-Badami-Day2-NCM_6882.jpg",
-        "filename": "2024-01-Badami-Day2-NCM_6882.jpg",
-        "categories": [
-            "Places/National",
-            "Architecture"
-        ],
-        "state": "Karnataka",
-        "city": "Badami",
-        "country": "",
-        "remarks": "",
-        "date_added": "2024-01-14"
-    },
-    "63a39fe4650ac6ab98333c1a579cf1b6": {
-        "path": "Photos/Birds/Munnar Birds/2026-0127-MunnarBirds-NCM-5352.JPG",
-        "filename": "2026-0127-MunnarBirds-NCM-5352.JPG",
-        "categories": [
-            "Nature/Birds",
-            "Places/National"
-        ],
-        "state": "Kerala",
-        "city": "Munnar",
-        "country": "",
-        "remarks": "Red Whiskered Bulbul",
-        "date_added": "2026-01-30"
-    },
-    "d07548449449486c0590dc67af544d35": {
-        "path": "Photos/Birds/Munnar Birds/2026-0127-MunnarBirds-NCM-5397.JPG",
-        "filename": "2026-0127-MunnarBirds-NCM-5397.JPG",
-        "categories": [
-            "Nature/Birds",
-            "Places/National"
-        ],
-        "state": "Kerala",
-        "city": "Munnar",
-        "country": "",
-        "remarks": "Indian White-Eye",
-        "date_added": "2026-01-30"
-    },
-    "810c55e05f5409078443dc0c9a600b9d": {
-        "path": "Photos/Birds/Munnar Birds/2026-0127-MunnarBirds-NCM-5437.JPG",
-        "filename": "2026-0127-MunnarBirds-NCM-5437.JPG",
-        "categories": [
-            "Nature/Birds",
-            "Places/National"
-        ],
-        "state": "Kerala",
-        "city": "Munnar",
-        "country": "",
-        "remarks": "Little Spider Hunter",
-        "date_added": "2026-01-30"
-    },
-    "e3ab6dec954400bcc2e6f21d916c859d": {
-        "path": "Photos/Birds/Munnar Birds/2026-0127-MunnarBirds-NCM-5534.JPG",
-        "filename": "2026-0127-MunnarBirds-NCM-5534.JPG",
-        "categories": [
-            "Nature/Birds",
-            "Places/National"
-        ],
-        "state": "Kerala",
-        "city": "Munnar",
-        "country": "",
-        "remarks": "Grey-headed Canary-flycatcher",
-        "date_added": "2026-01-30"
-    },
-    "4c0f824df57ed895aa935bb1e1735bed": {
-        "path": "Photos/Birds/Munnar Birds/2026-0127-MunnarBirds-NCM-5778.JPG",
-        "filename": "2026-0127-MunnarBirds-NCM-5778.JPG",
-        "categories": [
-            "Nature/Birds",
-            "Places/National"
-        ],
-        "state": "Kerala",
-        "city": "Munnar",
-        "country": "",
-        "remarks": "Vernal Hanging Parrot",
-        "date_added": "2026-01-30"
-    },
-    "8a4006ae77e654fce2fba809f9496754": {
-        "path": "Photos/Birds/Munnar Birds/2026-0127-MunnarBirds-NCM-5870.JPG",
-        "filename": "2026-0127-MunnarBirds-NCM-5870.JPG",
-        "categories": [
-            "Nature/Birds",
-            "Places/National"
-        ],
-        "state": "Kerala",
-        "city": "Munnar",
-        "country": "",
-        "remarks": "Indian White-Eye",
-        "date_added": "2026-01-30"
-    },
-    "be37b5fdfb62280353390b495f1a2b03": {
-        "path": "Photos/Birds/Munnar Birds/2026-0127-MunnarBirds-NCM-5899.JPG",
-        "filename": "2026-0127-MunnarBirds-NCM-5899.JPG",
-        "categories": [
-            "Nature/Birds",
-            "Places/National"
-        ],
-        "state": "Kerala",
-        "city": "Munnar",
-        "country": "",
-        "remarks": "White-cheeked Barbet",
-        "date_added": "2026-01-30"
-    },
-    "a09e8bb97e828eb1ef45f1e386b03ba6": {
-        "path": "Photos/Birds/Munnar Birds/2026-0127-MunnarBirds-NCM-5929.JPG",
-        "filename": "2026-0127-MunnarBirds-NCM-5929.JPG",
-        "categories": [
-            "Nature/Birds",
-            "Places/National"
-        ],
-        "state": "Kerala",
-        "city": "Munnar",
-        "country": "",
-        "remarks": "Vernal Hanging Parrot",
-        "date_added": "2026-01-30"
-    },
-    "7dfb776e0fa08cc4e45b249bf2466b59": {
-        "path": "Photos/Birds/Munnar Birds/2026-0127-MunnarBirds-NCM-6103.JPG",
-        "filename": "2026-0127-MunnarBirds-NCM-6103.JPG",
-        "categories": [
-            "Nature/Wildlife",
-            "Places/National"
-        ],
-        "state": "Kerala",
-        "city": "Munnar",
-        "country": "",
-        "remarks": "Malabar Giant Squirrel",
-        "date_added": "2026-01-30"
-    },
-    "a108d1bc266f2fdbf8eb147bf81dc665": {
-        "path": "Photos/Birds/Munnar Birds/2026-0127-MunnarBirds-NCM-6182.JPG",
-        "filename": "2026-0127-MunnarBirds-NCM-6182.JPG",
-        "categories": [
-            "Nature/Birds",
-            "Places/National"
-        ],
-        "state": "Kerala",
-        "city": "Munnar",
-        "country": "",
-        "remarks": "Malabar Flameback Woodpecker",
-        "date_added": "2026-01-30"
-    },
-    "c3a05b98a694149825bf36a6472781eb": {
-        "path": "Photos/Birds/Munnar Birds/2026-0127-MunnarBirds-NCM-6276.JPG",
-        "filename": "2026-0127-MunnarBirds-NCM-6276.JPG",
-        "categories": [
-            "Nature/Birds",
-            "Places/National"
-        ],
-        "state": "Kerala",
-        "city": "Munnar",
-        "country": "",
-        "remarks": "Malabar Flameback Woodpecker",
-        "date_added": "2026-01-30"
-    },
-    "5b41965dbd2c6aea1a904845dc5c342f": {
-        "path": "Photos/Birds/Munnar Birds/2026-0127-MunnarBirds-NCM-6379.JPG",
-        "filename": "2026-0127-MunnarBirds-NCM-6379.JPG",
-        "categories": [
-            "Nature/Birds",
-            "Places/National"
-        ],
-        "state": "Kerala",
-        "city": "Munnar",
-        "country": "",
-        "remarks": "Black-throated Munia",
-        "date_added": "2026-01-30"
-    },
-    "3105a17d43168c7196dba299d2c8a5f4": {
-        "path": "Photos/Birds/Munnar Birds/2026-0127-MunnarBirds-NCM-6507.JPG",
-        "filename": "2026-0127-MunnarBirds-NCM-6507.JPG",
-        "categories": [
-            "Nature/Birds",
-            "Places/National"
-        ],
-        "state": "Kerala",
-        "city": "Munnar",
-        "country": "",
-        "remarks": "Jerdan's Leafbird",
-        "date_added": "2026-01-30"
-    },
-    "38ea3ddf86b6f4bca28547948298073e": {
-        "path": "Photos/Birds/Munnar Birds/2026-0127-MunnarBirds-NCM-6571.JPG",
-        "filename": "2026-0127-MunnarBirds-NCM-6571.JPG",
-        "categories": [
-            "Nature/Birds",
-            "Places/National"
-        ],
-        "state": "Kerala",
-        "city": "Munnar",
-        "country": "",
-        "remarks": "Brown-cheeked Fulvetta",
-        "date_added": "2026-01-30"
-    },
-    "3e3639cd29e9aa0531fb6b8348c4328a": {
-        "path": "Photos/Places/International/2025-0714-Calgary-NCM_6749.jpg",
-        "filename": "2025-0714-Calgary-NCM_6749.jpg",
-        "categories": [
-            "Places/International"
-        ],
-        "state": "",
-        "city": "Banff/Alberta",
-        "country": "Canada",
-        "remarks": "",
-        "date_added": "2026-03-03"
-    },
-    "d0714f42b7e36287e4618fbcb104d7fa": {
-        "path": "Photos/Megamalai/2026-0306-Megamalai-NCM-7879-81.jpg",
-        "filename": "2026-0306-Megamalai-NCM-7879-81.jpg",
-        "categories": [
-            "Nature/Landscapes",
-            "Places/National"
-        ],
-        "state": "Tamil Nadu",
-        "city": "Megamalai",
-        "country": "",
-        "remarks": "Sunrise - Valley View",
-        "date_added": "2026-03-06"
-    },
-    "98cf6c1434aae1ba9bcaeea50847e551": {
-        "path": "Photos/Megamalai/2026-0305-Megamalai-NCM-7807.jpg",
-        "filename": "2026-0305-Megamalai-NCM-7807.jpg",
-        "categories": [
-            "Nature/Landscapes",
-            "Places/National"
-        ],
-        "state": "Tamil Nadu",
-        "city": "Megamalai",
-        "country": "",
-        "remarks": "Tea Gardens",
-        "date_added": "2026-03-06"
-    },
-    "f4d75c5f8a01d2dd422f87c196d21f1c": {
-        "path": "Photos/Megamalai/2026-0305-Megamalai-NCM-7720.jpg",
-        "filename": "2026-0305-Megamalai-NCM-7720.jpg",
-        "categories": [
-            "Nature/Landscapes",
-            "Places/National"
-        ],
-        "state": "Tamil Nadu",
-        "city": "Megamalai",
-        "country": "",
-        "remarks": "Tea Gardens",
-        "date_added": "2026-03-06"
-    },
-    "5d680f0a6167c52f71fdd34bb2764a50": {
-        "path": "Photos/Thekkady/2026-0306-Thekkady-NCM-8176.JPG",
-        "filename": "2026-0306-Thekkady-NCM-8176.JPG",
-        "categories": [
-            "Nature/Flora",
-            "Places/National"
-        ],
-        "state": "Maharashtra",
-        "city": "Tadoba",
-        "country": "",
-        "remarks": "Bamboo Blues",
-        "date_added": "2026-03-26"
-    },
-    "b3b1e41bbaa721c95d3f53cdeac39931": {
-        "path": "Photos/Thekkady/2026-0306-Thekkady-NCM-8274.JPG",
-        "filename": "2026-0306-Thekkady-NCM-8274.JPG",
-        "categories": [
-            "Nature/Birds",
-            "Places/National"
-        ],
-        "state": "Kerala",
-        "city": "Thekkady",
-        "country": "",
-        "remarks": "Common Kingfisher",
-        "date_added": "2026-03-06"
-    },
-    "51e8d1612e97298c07b25cadab1ed4ed": {
-        "path": "Photos/Madurai/2026-0307-Madurai-NCM-8468.jpg",
-        "filename": "2026-0307-Madurai-NCM-8468.jpg",
-        "categories": [
-            "Places/National",
-            "Architecture"
-        ],
-        "state": "Tamil Nadu",
-        "city": "Madurai",
-        "country": "",
-        "remarks": "Azagar Kovil (Temple)",
-        "date_added": "2026-03-07"
-    },
-    "87210a773897d600c8b9a174e37fa58a": {
-        "path": "Photos/Madurai/2026-0308-Madurai-NCM-8622-24.jpg",
-        "filename": "2026-0308-Madurai-NCM-8622-24.jpg",
-        "categories": [
-            "Places/National",
-            "Architecture"
-        ],
-        "state": "Tamil Nadu",
-        "city": "Madurai",
-        "country": "",
-        "remarks": "Thirumalai Nayakar Mahal",
-        "date_added": "2026-03-07"
-    },
-    "a4311e6b9530e51122b56bac8eafc48f": {
-        "path": "Photos/Madurai/2026-0308-Madurai-NCM-8651-53.jpg",
-        "filename": "2026-0308-Madurai-NCM-8651-53.jpg",
-        "categories": [
-            "Places/National",
-            "Architecture"
-        ],
-        "state": "Tamil Nadu",
-        "city": "Madurai",
-        "country": "",
-        "remarks": "Thirumalai Nayakar Mahal",
-        "date_added": "2026-03-07"
-    },
-    "441bd8fe24b66bb0e9c212a2092590a9": {
-        "path": "Photos/Greece/DSC_3181.jpg",
-        "filename": "DSC_3181.jpg",
-        "categories": [
-            "Places/International",
-            "Architecture"
-        ],
-        "state": "",
-        "city": "Santorini",
-        "country": "Greece",
-        "remarks": "Church",
-        "date_added": "2018-10-14"
-    },
-    "c450e95e294a029edab5ae189cf8102e": {
-        "path": "Photos/Greece/DSC_3521-Pano.jpg",
-        "filename": "DSC_3521-Pano.jpg",
-        "categories": [
-            "Nature/Landscapes",
-            "Places/International"
-        ],
-        "state": "",
-        "city": "Santorini",
-        "country": "Greece",
-        "remarks": "",
-        "date_added": "2018-10-14"
-    },
-    "cbadd9f89956c06eaee31515d9557bdf": {
-        "path": "Photos/Greece/DSC_3543.jpg",
-        "filename": "DSC_3543.jpg",
-        "categories": [
-            "Nature/Landscapes",
-            "Places/International"
-        ],
-        "state": "",
-        "city": "Santorini",
-        "country": "Greece",
-        "remarks": "2018-10",
-        "date_added": "2018-10-14"
-    },
-    "ab1189a92bed95b1c27142e21a340be9": {
-        "path": "Photos/Greece/DSC_3600.jpg",
-        "filename": "DSC_3600.jpg",
-        "categories": [
-            "Nature/Landscapes",
-            "Places/International"
-        ],
-        "state": "",
-        "city": "Santorini",
-        "country": "Greece",
-        "remarks": "Sunset at Santorini",
-        "date_added": "2018-10-14"
-    },
-    "31c934380fef999d4464198061ef643c": {
-        "path": "Photos/Greece/DSC_3601.jpg",
-        "filename": "DSC_3601.jpg",
-        "categories": [
-            "Nature/Landscapes",
-            "Places/International"
-        ],
-        "state": "",
-        "city": "Santorini",
-        "country": "Greece",
-        "remarks": "Sunset at Santorini",
-        "date_added": "2018-10-14"
-    },
-    "bdc0e92cd1130caf3a8fca7e04f73889": {
-        "path": "Photos/Greece/DSC_3663.jpg",
-        "filename": "DSC_3663.jpg",
-        "categories": [
-            "Nature/Landscapes",
-            "Places/International"
-        ],
-        "state": "",
-        "city": "Santorini",
-        "country": "Greece",
-        "remarks": "Sunset at Santorini",
-        "date_added": "2018-10-14"
-    },
-    "e311d6743be81e7c86cf46e884d83d53": {
-        "path": "Photos/Greece/DSC_3747.jpg",
-        "filename": "DSC_3747.jpg",
-        "categories": [
-            "Places/International",
-            "Architecture"
-        ],
-        "state": "",
-        "city": "Delphi",
-        "country": "Greece",
-        "remarks": "",
-        "date_added": "2018-10-15"
-    },
-    "f5a069c6e0d12531290bca98f59bf7ba": {
-        "path": "Photos/Greece/DSC_3962-Pano.jpg",
-        "filename": "DSC_3962-Pano.jpg",
-        "categories": [
-            "Places/International",
-            "Architecture"
-        ],
-        "state": "",
-        "city": "Delphi",
-        "country": "Greece",
-        "remarks": "Amphitheater",
-        "date_added": "2018-10-15"
-    },
-    "29149d9fc58b95ca813c543a61f98e27": {
-        "path": "Photos/Greece/DSC_3962-PanoBW.jpg",
-        "filename": "DSC_3962-PanoBW.jpg",
-        "categories": [
-            "Places/International",
-            "Architecture"
-        ],
-        "state": "",
-        "city": "Delphi",
-        "country": "Greece",
-        "remarks": "Amphitheater",
-        "date_added": "2018-10-15"
-    },
-    "f4627820152a6bf896cf31e862dfa00c": {
-        "path": "Photos/Greece/DSC_4094_01.jpg",
-        "filename": "DSC_4094_01.jpg",
-        "categories": [
-            "Nature/Landscapes",
-            "Places/International"
-        ],
-        "state": "",
-        "city": "Hydra",
-        "country": "Greece",
-        "remarks": "Ferry Ride",
-        "date_added": "2018-10-15"
-    },
-    "9b45e7c5202528165d86c29c7f16b35c": {
-        "path": "Photos/Greece/DSC_4215.jpg",
-        "filename": "DSC_4215.jpg",
-        "categories": [
-            "Places/International",
-            "Architecture"
-        ],
-        "state": "",
-        "city": "Hydra",
-        "country": "Greece",
-        "remarks": "Church",
-        "date_added": "2018-10-16"
-    },
-    "274c1609ab91773a32fe925c938964f8": {
-        "path": "Photos/Greece/DSC_4235.jpg",
-        "filename": "DSC_4235.jpg",
-        "categories": [
-            "Places/International",
-            "Architecture"
-        ],
-        "state": "",
-        "city": "Hydra",
-        "country": "Greece",
-        "remarks": "Church",
-        "date_added": "2018-10-16"
-    },
-    "554390a4ce4f7316766f6c7e81824219": {
-        "path": "Photos/Tadoba/2026-0324-Tadoba-NCM-8714.JPG",
-        "filename": "2026-0324-Tadoba-NCM-8714.JPG",
-        "categories": [
-            "Places/National",
-            "Architecture"
-        ],
-        "state": "Maharashtra",
-        "city": "Aurangabad",
-        "country": "",
-        "remarks": "Biwi Ka Maqbara",
-        "date_added": "2026-03-24"
-    },
-    "1c56b426b42fe38865fe5cdab1321185": {
-        "path": "Photos/Tadoba/2026-0324-Tadoba-NCM-8736.JPG",
-        "filename": "2026-0324-Tadoba-NCM-8736.JPG",
-        "categories": [
-            "Places/National",
-            "Architecture"
-        ],
-        "state": "Maharashtra",
-        "city": "Aurangabad",
-        "country": "",
-        "remarks": "Biwi Ka Maqbara",
-        "date_added": "2026-03-25"
-    },
-    "d94f1f3abc75f189f009cf3e11513db1": {
-        "path": "Photos/Tadoba/2026-0324-Tadoba-NCM-8822.JPG",
-        "filename": "2026-0324-Tadoba-NCM-8822.JPG",
-        "categories": [
-            "Places/National",
-            "Architecture"
-        ],
-        "state": "Maharashtra",
-        "city": "Aurangabad",
-        "country": "",
-        "remarks": "Biwi Ka Maqbara",
-        "date_added": "2026-03-25"
-    },
-    "882ba745aaf4f2dcc6fb22aaf32f2c97": {
-        "path": "Photos/Tadoba/2026-0324-Tadoba-NCM-8873.JPG",
-        "filename": "2026-0324-Tadoba-NCM-8873.JPG",
-        "categories": [
-            "Places/National",
-            "Architecture"
-        ],
-        "state": "Maharashtra",
-        "city": "Aurangabad",
-        "country": "",
-        "remarks": "Biwi Ka Maqbara",
-        "date_added": "2026-03-25"
-    },
-    "db64c1e483f1299b7abab3884c5b6966": {
-        "path": "Photos/Tadoba/2026-0324-Tadoba-NCM-8893.JPG",
-        "filename": "2026-0324-Tadoba-NCM-8893.JPG",
-        "categories": [
-            "Places/National",
-            "Architecture"
-        ],
-        "state": "Maharashtra",
-        "city": "Aurangabad",
-        "country": "",
-        "remarks": "Biwi Ka Maqbara",
-        "date_added": "2026-03-25"
-    },
-    "31d45b602ee61a5ac89164e1d30704e5": {
-        "path": "Photos/Tadoba/2026-0324-Tadoba-NCM-9088.JPG",
-        "filename": "2026-0324-Tadoba-NCM-9088.JPG",
-        "categories": [
-            "Places/National",
-            "People & Culture",
-            "People & Culture/Street"
-        ],
-        "state": "Maharashtra",
-        "city": "Tadoba",
-        "country": "",
-        "remarks": "Roadside View",
-        "date_added": "2026-03-26"
-    },
-    "eb6db378b12fd0c5e4a55625dd9f857a": {
-        "path": "Photos/Tadoba/2026-0324-Tadoba-NCM-9197.JPG",
-        "filename": "2026-0324-Tadoba-NCM-9197.JPG",
-        "categories": [
-            "Places/National",
-            "People & Culture",
-            "People & Culture/Street"
-        ],
-        "state": "Maharashtra",
-        "city": "Tadoba",
-        "country": "",
-        "remarks": "Bike to Work",
-        "date_added": "2026-03-26"
-    },
-    "d6822b37aa70306c717f8951bc030498": {
-        "path": "Photos/Tadoba/2026-0324-Tadoba-NCM-9318.JPG",
-        "filename": "2026-0324-Tadoba-NCM-9318.JPG",
-        "categories": [
-            "Nature/Wildlife",
-            "Places/National"
-        ],
-        "state": "Maharashtra",
-        "city": "Tadoba",
-        "country": "",
-        "remarks": "Indian Gaur (Bison)",
-        "date_added": "2026-03-26"
-    },
-    "feb13310277810f9894be1f2ab0fda50": {
-        "path": "Photos/Tadoba/2026-0324-Tadoba-NCM-9333.JPG",
-        "filename": "2026-0324-Tadoba-NCM-9333.JPG",
-        "categories": [
-            "Nature/Birds",
-            "Places/National"
-        ],
-        "state": "Maharashtra",
-        "city": "Tadoba",
-        "country": "",
-        "remarks": "Oriental Honey Buzzard",
-        "date_added": "2026-03-26"
-    },
-    "df57d9f59d27abbe45970c329140b5af": {
-        "path": "Photos/Tadoba/2026-0324-Tadoba-NCM-9463.JPG",
-        "filename": "2026-0324-Tadoba-NCM-9463.JPG",
-        "categories": [
-            "Nature/Wildlife",
-            "Places/National"
-        ],
-        "state": "Maharashtra",
-        "city": "Tadoba",
-        "country": "",
-        "remarks": "Tiger @ Mamla Gate",
-        "date_added": "2026-03-26"
-    },
-    "cb3173fac0537c30de17ba5759922738": {
-        "path": "Photos/Tadoba/2026-0324-Tadoba-NCM-9481.JPG",
-        "filename": "2026-0324-Tadoba-NCM-9481.JPG",
-        "categories": [
-            "Nature/Wildlife",
-            "Places/National"
-        ],
-        "state": "Maharashtra",
-        "city": "Tadoba",
-        "country": "",
-        "remarks": "Tiger @ Mamla Gate",
-        "date_added": "2026-03-26"
-    },
-    "dd41352600cf8e202caccaabac20af2a": {
-        "path": "Photos/Tadoba/2026-0324-Tadoba-NCM-9512.JPG",
-        "filename": "2026-0324-Tadoba-NCM-9512.JPG",
-        "categories": [
-            "Nature/Wildlife",
-            "Places/National"
-        ],
-        "state": "Maharashtra",
-        "city": "Tadoba",
-        "country": "",
-        "remarks": "Tiger @ Mamla Gate",
-        "date_added": "2026-03-26"
-    },
-    "3f9cb7d6ef8e547ddb09e18ec513cb0e": {
-        "path": "Photos/Tadoba/2026-0324-Tadoba-NCM-9729.JPG",
-        "filename": "2026-0324-Tadoba-NCM-9729.JPG",
-        "categories": [
-            "Places/National",
-            "People & Culture",
-            "People & Culture/Street"
-        ],
-        "state": "Maharashtra",
-        "city": "Tadoba",
-        "country": "",
-        "remarks": "Safari",
-        "date_added": "2026-03-26"
-    },
-    "e1e83f36e3fe9d2ed93d020bdea2a965": {
-        "path": "Photos/Tadoba/2026-0324-Tadoba-NCM-9774.JPG",
-        "filename": "2026-0324-Tadoba-NCM-9774.JPG",
-        "categories": [
-            "Nature/Birds",
-            "Places/National"
-        ],
-        "state": "Maharashtra",
-        "city": "Tadoba",
-        "country": "",
-        "remarks": "Changeable Hawk-Eagle",
-        "date_added": "2026-03-26"
-    },
-    "ddde37b355509b6cbe583add64639191": {
-        "path": "Photos/Tadoba/2026-0324-Tadoba-NCM-9800.JPG",
-        "filename": "2026-0324-Tadoba-NCM-9800.JPG",
-        "categories": [
-            "Places/National",
-            "Nature/Flora",
-            "People & Culture/Street"
-        ],
-        "state": "Maharashtra",
-        "city": "Tadoba",
-        "country": "",
-        "remarks": "Colour Contrast",
-        "date_added": "2026-03-26"
-    },
-    "4258ca8f9b5dbdbfaf7b16db856e8542": {
-        "path": "Photos/Tadoba/2026-0324-Tadoba-NCM-9845.JPG",
-        "filename": "2026-0324-Tadoba-NCM-9845.JPG",
-        "categories": [
-            "Nature/Birds",
-            "Places/National"
-        ],
-        "state": "Maharashtra",
-        "city": "Tadoba",
-        "country": "",
-        "remarks": "Mottled Wood Eagle",
-        "date_added": "2026-03-26"
-    },
-    "c1151c447cd386b3f13c9ddad780bd73": {
-        "path": "Photos/Tadoba/2026-0324-Tadoba-NCM-9959.JPG",
-        "filename": "2026-0324-Tadoba-NCM-9959.JPG",
-        "categories": [
-            "Places/National",
-            "Nature/Landscapes",
-            "People & Culture",
-            "People & Culture/Street"
-        ],
-        "state": "Maharashtra",
-        "city": "Tadoba",
-        "country": "",
-        "remarks": "Tunnel @ Igatpuri",
-        "date_added": "2026-03-28"
-    },
-    "48d4a1edf0bc2ee9c4b0edbaa4136530": {
-        "path": "Photos/Tadoba/2026-0324-Tadoba-NCM-9966.JPG",
-        "filename": "2026-0324-Tadoba-NCM-9966.JPG",
-        "categories": [
-            "Places/National",
-            "Nature/Landscapes",
-            "People & Culture",
-            "People & Culture/Street"
-        ],
-        "state": "Maharashtra",
-        "city": "Tadoba",
-        "country": "",
-        "remarks": "Tunnel @ Igatpuri",
-        "date_added": "2026-03-28"
-    },
-    "580a06ce750328d51e9c95040c11cf9f": {
-        "path": "Photos/Canada/2025-0711-Calgary-NCM_5163_Original.jpg",
-        "filename": "2025-0711-Calgary-NCM_5163_Original.jpg",
-        "categories": [
-            "Nature/Landscapes",
-            "Places/International"
-        ],
-        "state": "",
-        "city": "Calgary/Alberta",
-        "country": "Canada",
-        "remarks": "Enroute to Horseshoe Canyon",
-        "date_added": "2025-07-11"
-    },
-    "0faa062da593713fef25a2a1d6d06587": {
-        "path": "Photos/Canada/2025-0711-Calgary-NCM_5165_Original.jpg",
-        "filename": "2025-0711-Calgary-NCM_5165_Original.jpg",
-        "categories": [
-            "Nature/Landscapes",
-            "Places/International"
-        ],
-        "state": "",
-        "city": "Calgary/Alberta",
-        "country": "Canada",
-        "remarks": "Enroute to Horseshoe Canyon",
-        "date_added": "2025-07-11"
-    },
-    "676b2340962367c0d8e9fb66397414d8": {
-        "path": "Photos/Canada/2025-0711-Calgary-NCM_5210_Original.jpg",
-        "filename": "2025-0711-Calgary-NCM_5210_Original.jpg",
-        "categories": [
-            "Nature/Landscapes",
-            "Places/International"
-        ],
-        "state": "",
-        "city": "Calgary/Alberta",
-        "country": "Canada",
-        "remarks": "Enroute to Horseshoe Canyon",
-        "date_added": "2025-07-11"
-    },
-    "18f4b0c4097a43f616260ad0137ff82b": {
-        "path": "Photos/Canada/2025-0711-Calgary-NCM_5283_Original.jpg",
-        "filename": "2025-0711-Calgary-NCM_5283_Original.jpg",
-        "categories": [
-            "Nature/Landscapes",
-            "Places/International"
-        ],
-        "state": "",
-        "city": "Calgary/Alberta",
-        "country": "Canada",
-        "remarks": "Enroute to Horseshoe Canyon",
-        "date_added": "2025-07-11"
-    },
-    "14a5421de76ab07754f918a5a6074b64": {
-        "path": "Photos/Canada/2025-0711-Calgary-NCM_5323_Original.jpg",
-        "filename": "2025-0711-Calgary-NCM_5323_Original.jpg",
-        "categories": [
-            "Nature/Landscapes",
-            "Places/International"
-        ],
-        "state": "",
-        "city": "Calgary/Alberta",
-        "country": "Canada",
-        "remarks": "Horseshoe Canyon",
-        "date_added": "2025-07-11"
-    },
-    "0ea73a72c3473d260c747d31a1fc77c0": {
-        "path": "Photos/Canada/2025-0711-Calgary-NCM_5326_Original.jpg",
-        "filename": "2025-0711-Calgary-NCM_5326_Original.jpg",
-        "categories": [
-            "Nature/Landscapes",
-            "Places/International"
-        ],
-        "state": "",
-        "city": "Calgary/Alberta",
-        "country": "Canada",
-        "remarks": "Horseshoe Canyon",
-        "date_added": "2025-07-11"
-    },
-    "df5141eef9b31cd04b6a426d7d7dc6dd": {
-        "path": "Photos/Canada/2025-0711-Calgary-NCM_5340_Original.jpg",
-        "filename": "2025-0711-Calgary-NCM_5340_Original.jpg",
-        "categories": [
-            "Nature/Landscapes",
-            "Places/International"
-        ],
-        "state": "",
-        "city": "Calgary/Alberta",
-        "country": "Canada",
-        "remarks": "Horseshoe Canyon",
-        "date_added": "2025-07-11"
-    },
-    "3b257e23b53f3f47388aa3a8709d21bc": {
-        "path": "Photos/Canada/2025-0711-Calgary-NCM_5348_Original.jpg",
-        "filename": "2025-0711-Calgary-NCM_5348_Original.jpg",
-        "categories": [
-            "Places/International",
-            "People & Culture"
-        ],
-        "state": "",
-        "city": "Calgary/Alberta",
-        "country": "Canada",
-        "remarks": "Horseshoe Canyon",
-        "date_added": "2025-07-11"
-    },
-    "945dea4a86ba35cc878e025d8a96257b": {
-        "path": "Photos/Canada/2025-0711-Calgary-NCM_5351_Original.jpg",
-        "filename": "2025-0711-Calgary-NCM_5351_Original.jpg",
-        "categories": [
-            "Nature/Landscapes",
-            "Places/International"
-        ],
-        "state": "",
-        "city": "Calgary/Alberta",
-        "country": "Canada",
-        "remarks": "Horseshoe Canyon",
-        "date_added": "2025-07-11"
-    },
-    "0737837e74a0a73dd6a66cda9379f253": {
-        "path": "Photos/Canada/2025-0711-Calgary-NCM_5352_Original.jpg",
-        "filename": "2025-0711-Calgary-NCM_5352_Original.jpg",
-        "categories": [
-            "Nature/Landscapes",
-            "Places/International"
-        ],
-        "state": "",
-        "city": "Calgary/Alberta",
-        "country": "Canada",
-        "remarks": "Horseshoe Canyon",
-        "date_added": "2025-07-11"
-    },
-    "7ae5c7ec4de0caf08354e31a3240d356": {
-        "path": "Photos/Canada/2025-0711-Calgary-NCM_5476_Original.jpg",
-        "filename": "2025-0711-Calgary-NCM_5476_Original.jpg",
-        "categories": [
-            "Nature/Landscapes",
-            "Places/International"
-        ],
-        "state": "",
-        "city": "Calgary/Alberta",
-        "country": "Canada",
-        "remarks": "Enroute - Horseshoe Canyon",
-        "date_added": "2025-07-11"
-    },
-    "410a53abac8224f14777d2dee809d8af": {
-        "path": "Photos/Canada/2025-0711-Calgary-NCM_5479_Original.jpg",
-        "filename": "2025-0711-Calgary-NCM_5479_Original.jpg",
-        "categories": [
-            "Nature/Landscapes",
-            "Places/International"
-        ],
-        "state": "",
-        "city": "Calgary/Alberta",
-        "country": "Canada",
-        "remarks": "Enroute - Horseshoe Canyon",
-        "date_added": "2025-07-11"
-    },
-    "e16d4e14c69c43974ed40bdd0001bcee": {
-        "path": "Photos/Canada/2025-0711-Calgary-NCM_5487_Original.jpg",
-        "filename": "2025-0711-Calgary-NCM_5487_Original.jpg",
-        "categories": [
-            "Nature/Landscapes",
-            "Places/International"
-        ],
-        "state": "",
-        "city": "Calgary/Alberta",
-        "country": "Canada",
-        "remarks": "Enroute - Horseshoe Canyon",
-        "date_added": "2025-07-11"
-    },
-    "bf6560c9b0d3b4b203ddfa574e4fec15": {
-        "path": "Photos/Canada/2025-0712-Calgary-NCM_5604_Original.jpg",
-        "filename": "2025-0712-Calgary-NCM_5604_Original.jpg",
-        "categories": [
-            "Nature/Landscapes",
-            "Places/International"
-        ],
-        "state": "",
-        "city": "Calgary/Alberta",
-        "country": "Canada",
-        "remarks": "Moraine Lake",
-        "date_added": "2025-07-12"
-    },
-    "0ceba0ba3b307d1a2170434b43654dd5": {
-        "path": "Photos/Canada/2025-0712-Calgary-NCM_5676_Original.jpg",
-        "filename": "2025-0712-Calgary-NCM_5676_Original.jpg",
-        "categories": [
-            "Nature/Landscapes",
-            "Places/International"
-        ],
-        "state": "",
-        "city": "Calgary/Alberta",
-        "country": "Canada",
-        "remarks": "Lake Louise",
-        "date_added": "2025-07-12"
-    },
-    "9ac5c72d69e4e8d20a35b2d5dd99f2f7": {
-        "path": "Photos/Canada/2025-0712-Calgary-NCM_5739_Original.jpg",
-        "filename": "2025-0712-Calgary-NCM_5739_Original.jpg",
-        "categories": [
-            "Nature/Landscapes",
-            "Places/International"
-        ],
-        "state": "",
-        "city": "Calgary/Alberta",
-        "country": "Canada",
-        "remarks": "Lake Louise",
-        "date_added": "2025-07-12"
-    },
-    "944b8ab1926852e899d6810ba47aaf3e": {
-        "path": "Photos/Canada/2025-0712-Calgary-NCM_5785_Original.jpg",
-        "filename": "2025-0712-Calgary-NCM_5785_Original.jpg",
-        "categories": [
-            "Nature/Landscapes",
-            "Places/International"
-        ],
-        "state": "",
-        "city": "Calgary/Alberta",
-        "country": "Canada",
-        "remarks": "Camrose",
-        "date_added": "2025-07-12"
-    },
-    "f5753e55aa3d0d61706b22f4df5f5b6b": {
-        "path": "Photos/Canada/2025-0712-Calgary-NCM_5842_Original.jpg",
-        "filename": "2025-0712-Calgary-NCM_5842_Original.jpg",
-        "categories": [
-            "Nature/Wildlife",
-            "Places/International"
-        ],
-        "state": "",
-        "city": "Calgary/Alberta",
-        "country": "Canada",
-        "remarks": "Columbian Ground Squirrel",
-        "date_added": "2025-07-12"
-    },
-    "ea8965de3e6fc5a7acd4d76ceeec0aab": {
-        "path": "Photos/Canada/2025-0712-Calgary-NCM_5846_Original.jpg",
-        "filename": "2025-0712-Calgary-NCM_5846_Original.jpg",
-        "categories": [
-            "Nature/Wildlife",
-            "Places/International"
-        ],
-        "state": "",
-        "city": "Calgary/Alberta",
-        "country": "Canada",
-        "remarks": "Columbian Ground Squirrel",
-        "date_added": "2025-07-12"
-    },
-    "4985175f53422534b2f64276e5ab127c": {
-        "path": "Photos/Canada/2025-0712-Calgary-NCM_5862_Original.jpg",
-        "filename": "2025-0712-Calgary-NCM_5862_Original.jpg",
-        "categories": [
-            "Nature/Landscapes",
-            "Places/International"
-        ],
-        "state": "",
-        "city": "Calgary/Alberta",
-        "country": "Canada",
-        "remarks": "Camrose Golf Course",
-        "date_added": "2025-07-12"
-    },
-    "c2850abbcf43f2383f00956d85a714ad": {
-        "path": "Photos/Canada/2025-0712-Calgary-NCM_5930_Original.jpg",
-        "filename": "2025-0712-Calgary-NCM_5930_Original.jpg",
-        "categories": [
-            "Nature/Landscapes",
-            "Places/International"
-        ],
-        "state": "",
-        "city": "Calgary/Alberta",
-        "country": "Canada",
-        "remarks": "Camrose Golf Course",
-        "date_added": "2025-07-12"
-    },
-    "6543db5ad36c5ef42d072a94bfa37a84": {
-        "path": "Photos/Canada/2025-0712-Calgary-NCM_5965_Original.jpg",
-        "filename": "2025-0712-Calgary-NCM_5965_Original.jpg",
-        "categories": [
-            "Places/International",
-            "People & Culture",
-            "People & Culture/Street"
-        ],
-        "state": "",
-        "city": "Banff/Alberta",
-        "country": "Canada",
-        "remarks": "Pink Bloom",
-        "date_added": "2025-07-12"
-    },
-    "f8d9a3aaa71c2186b081167a63e2b27a": {
-        "path": "Photos/Canada/2025-0712-Calgary-NCM_5986_Original.jpg",
-        "filename": "2025-0712-Calgary-NCM_5986_Original.jpg",
-        "categories": [
-            "Places/International",
-            "People & Culture",
-            "People & Culture/Street"
-        ],
-        "state": "",
-        "city": "Banff/Alberta",
-        "country": "Canada",
-        "remarks": "Street View",
-        "date_added": "2025-07-12"
-    },
-    "e3d140b4d6e7bb4df669228e80e5faa8": {
-        "path": "Photos/Tadoba/2026-0324-Tadoba-NCM-8706.JPG",
-        "filename": "2026-0324-Tadoba-NCM-8706.JPG",
-        "categories": [
-            "Places/National",
-            "Architecture"
-        ],
-        "state": "Maharashtra",
-        "city": "Aurangabad",
-        "country": "",
-        "remarks": "Biwi Ka Maqbara",
-        "date_added": "2026-03-26"
-    },
-    "683c104a2f09e8e9219c916a2296fe31": {
-        "path": "Photos/Tadoba/Edit-2026-0326-Tadoba-VCM-IMG-4456.jpg",
-        "filename": "Edit-2026-0326-Tadoba-VCM-IMG-4456.jpg",
-        "categories": [
-            "Places/National",
-            "Architecture"
-        ],
-        "state": "Maharashtra",
-        "city": "Aurangabad",
-        "country": "",
-        "remarks": "Biwi Ka Maqbara",
-        "date_added": "2026-03-28"
-    },
-    "c8b576ba34ff186fb33702cf50842dc5": {
-        "path": "Photos/Tadoba/edit-2026-0324-Tadoba-IMG-9115.jpg",
-        "filename": "edit-2026-0324-Tadoba-IMG-9115.jpg",
-        "categories": [
-            "Places/National",
-            "People & Culture",
-            "People & Culture/Street"
-        ],
-        "state": "Maharashtra",
-        "city": "Aurangabad",
-        "country": "",
-        "remarks": "Highway Art - ME-2 - Samruddhi Mahamarg",
-        "date_added": "2026-03-28"
-    },
-    "755d79ca35a41acd4ebce481abe66d06": {
-        "path": "Photos/Tadoba/edit-2026-0324-Tadoba-IMG-9120.jpg",
-        "filename": "edit-2026-0324-Tadoba-IMG-9120.jpg",
-        "categories": [
-            "Places/National",
-            "People & Culture",
-            "People & Culture/Street"
-        ],
-        "state": "Maharashtra",
-        "city": "Aurangabad",
-        "country": "",
-        "remarks": "Highway Art - ME-2 - Samruddhi Mahamarg",
-        "date_added": "2026-03-28"
-    },
-    "3a029f2f5cc13fd885326914da97d988": {
-        "path": "Photos/Tadoba/edit-2026-0326-Tadoba-VCM-IMG-4481.jpg",
-        "filename": "edit-2026-0326-Tadoba-VCM-IMG-4481.jpg",
-        "categories": [
-            "Places/National",
-            "People & Culture",
-            "People & Culture/Street"
-        ],
-        "state": "Maharashtra",
-        "city": "Tadoba",
-        "country": "",
-        "remarks": "Karwa Safari",
-        "date_added": "2026-03-28"
-    },
-    "684b3621bab1d440534265d3ed24acb0": {
-        "path": "Photos/Tadoba/edit-2026-0326-Tadoba-VCM-IMG-4497.jpg",
-        "filename": "edit-2026-0326-Tadoba-VCM-IMG-4497.jpg",
-        "categories": [
-            "Places/National",
-            "People & Culture/Street"
-        ],
-        "state": "Maharashtra",
-        "city": "Tadoba",
-        "country": "",
-        "remarks": "Pond @ Karwa",
-        "date_added": "2026-03-28"
-    },
-    "8fdeab04df12323d8f6c415661271767": {
-        "path": "Photos/Blog/edit-IMG_4915.jpg",
-        "filename": "edit-IMG_4915.jpg",
-        "categories": [
-            "Places/National",
-            "People & Culture",
-            "People & Culture/Street"
-        ],
-        "state": "Maharashtra",
-        "city": "Tadoba",
-        "country": "",
-        "remarks": "Dewada Safari Gate",
-        "date_added": "2026-03-28"
-    },
-    "d317921c69dddfaed511577a7f2a22f4": {
-        "path": "Photos/Blog/2026-0324-Tadoba-IMG-9115.jpg",
-        "filename": "2026-0324-Tadoba-IMG-9115.jpg",
-        "categories": [
-            "Places/National",
-            "Nature/Landscapes"
-        ],
-        "state": "Maharashtra",
-        "city": "Tadoba",
-        "country": "",
-        "remarks": "Highway Art - ME2",
-        "date_added": "2026-03-06"
-    },
-    "5f6d33e2f457118059e34d1663c5b949": {
-        "path": "Photos/Blog/2026-0324-Tadoba-IMG-9120.jpg",
-        "filename": "2026-0324-Tadoba-IMG-9120.jpg",
-        "categories": [
-            "Places/National",
-            "Nature/Landscapes"
-        ],
-        "state": "Maharashtra",
-        "city": "Tadoba",
-        "country": "",
-        "remarks": "Highway Art - ME2",
-        "date_added": "2026-03-06"
-    },
-    "2489c0ccd02e87cac5f771f7b62aefc3": {
-        "path": "Photos/Blog/2026-0324-Tadoba-NCM-8706.JPG",
-        "filename": "2026-0324-Tadoba-NCM-8706.JPG",
-        "categories": [
-            "Places/National",
-            "Nature/Landscapes"
-        ],
-        "state": "Maharashtra",
-        "city": "Aurangabad",
-        "country": "",
-        "remarks": "Biwi Ka Maqbara",
-        "date_added": "2026-03-06"
-    },
-    "29f7b37233207a35b111259152aaa1d1": {
-        "path": "Photos/Blog/edit-2026-0326-Tadoba-VCM-IMG-4481.jpg",
-        "filename": "edit-2026-0326-Tadoba-VCM-IMG-4481.jpg",
-        "categories": [
-            "Places/National",
-            "Architecture",
-            "People & Culture",
-            "People & Culture/Street"
-        ],
-        "state": "Maharashtra",
-        "city": "Tadoba",
-        "country": "",
-        "remarks": "Safari @ Karwa",
-        "date_added": "2026-03-28"
-    },
-    "071e00ba1d5a95c98403358f0a752b90": {
-        "path": "Photos/Blog/edit-2026-0326-Tadoba-VCM-IMG-4497.jpg",
-        "filename": "edit-2026-0326-Tadoba-VCM-IMG-4497.jpg",
-        "categories": [
-            "Places/National",
-            "People & Culture",
-            "People & Culture/Street"
-        ],
-        "state": "Maharashtra",
-        "city": "Tadoba",
-        "country": "",
-        "remarks": "Pond @ Karwa",
-        "date_added": "2026-03-28"
-    }
+  "f13c17bca544b65e8d0527b6ec452736": {
+    "path": "Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4733-35.jpg",
+    "filename": "2026-0127-Megamalai-NCM-4733-35.jpg",
+    "categories": [
+      "Nature/Landscapes",
+      "Places/National"
+    ],
+    "state": "Tamil Nadu",
+    "city": "Megamalai",
+    "country": "",
+    "remarks": "Sunrise - Valley View",
+    "date_added": "2026-03-06"
+  },
+  "3497fa3ff118f72e119237f29070a6dd": {
+    "path": "Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4736-38.jpg",
+    "filename": "2026-0127-Megamalai-NCM-4736-38.jpg",
+    "categories": [
+      "Nature/Landscapes",
+      "Places/National"
+    ],
+    "state": "Tamil Nadu",
+    "city": "Megamalai",
+    "country": "",
+    "remarks": "Sunrise - Valley View",
+    "date_added": "2026-03-06"
+  },
+  "2ed6d6e8261c8ac62dd69b09d42d306f": {
+    "path": "Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4915-17.jpg",
+    "filename": "2026-0127-Megamalai-NCM-4915-17.jpg",
+    "categories": [
+      "Nature/Landscapes",
+      "Places/National"
+    ],
+    "state": "Tamil Nadu",
+    "city": "Megamalai",
+    "country": "",
+    "remarks": "Highways Village",
+    "date_added": "2026-03-06"
+  },
+  "de7df5737132b3ccd4cd082a7dabbc5b": {
+    "path": "Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4955.jpg",
+    "filename": "2026-0127-Megamalai-NCM-4955.jpg",
+    "categories": [
+      "Nature/Landscapes",
+      "Places/National"
+    ],
+    "state": "Tamil Nadu",
+    "city": "Megamalai",
+    "country": "",
+    "remarks": "Enroute to Munnar",
+    "date_added": "2026-03-06"
+  },
+  "38fb418c5cb26d593acef9c54427b2c7": {
+    "path": "Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4897.jpg",
+    "filename": "2026-0127-Megamalai-NCM-4897.jpg",
+    "categories": [
+      "Nature/Landscapes",
+      "Places/National"
+    ],
+    "state": "Tamil Nadu",
+    "city": "Megamalai",
+    "country": "",
+    "remarks": "Tea Gardens",
+    "date_added": "2026-03-06"
+  },
+  "53f96b3b13a40dfefb45ac524ad11035": {
+    "path": "Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4921-23.jpg",
+    "filename": "2026-0127-Megamalai-NCM-4921-23.jpg",
+    "categories": [
+      "Nature/Landscapes",
+      "Places/National"
+    ],
+    "state": "Tamil Nadu",
+    "city": "Megamalai",
+    "country": "",
+    "remarks": "Highways Village",
+    "date_added": "2026-03-06"
+  },
+  "639257179e8baecf76928ad6410bf43e": {
+    "path": "Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4715-17.jpg",
+    "filename": "2026-0127-Megamalai-NCM-4715-17.jpg",
+    "categories": [
+      "Nature/Landscapes",
+      "Places/National"
+    ],
+    "state": "Tamil Nadu",
+    "city": "Megamalai",
+    "country": "",
+    "remarks": "Sunrise - Valley View",
+    "date_added": "2026-03-06"
+  },
+  "778aee4a3eab8334020e32a49b79878e": {
+    "path": "Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4655.jpg",
+    "filename": "2026-0127-Megamalai-NCM-4655.jpg",
+    "categories": [
+      "Nature/Landscapes",
+      "Places/National"
+    ],
+    "state": "Tamil Nadu",
+    "city": "Megamalai",
+    "country": "",
+    "remarks": "Sunrise - Valley View",
+    "date_added": "2026-03-06"
+  },
+  "308a52d1deed6f48ed8e638319f0c04f": {
+    "path": "Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4675.jpg",
+    "filename": "2026-0127-Megamalai-NCM-4675.jpg",
+    "categories": [
+      "Nature/Landscapes",
+      "Places/National"
+    ],
+    "state": "Tamil Nadu",
+    "city": "Megamalai",
+    "country": "",
+    "remarks": "Sunrise - Valley View",
+    "date_added": "2026-03-06"
+  },
+  "9dfea9e3a14fd561b172d591c9a491ce": {
+    "path": "Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4649.jpg",
+    "filename": "2026-0127-Megamalai-NCM-4649.jpg",
+    "categories": [
+      "Nature/Landscapes",
+      "Places/National"
+    ],
+    "state": "Tamil Nadu",
+    "city": "Megamalai",
+    "country": "",
+    "remarks": "Sunrise - Valley View",
+    "date_added": "2026-03-06"
+  },
+  "5fade2d4eed79b1a580ac7da812d47e6": {
+    "path": "Photos/Architecture/2024-01-Badami-JPG/2024-01-Badami-Day0-NCM_6002.jpg",
+    "filename": "2024-01-Badami-Day0-NCM_6002.jpg",
+    "categories": [
+      "Places/National",
+      "Architecture"
+    ],
+    "state": "Karnataka",
+    "city": "Badami",
+    "country": "",
+    "remarks": "Malegitti Shivalaya Temple, 6th-8th century CE,",
+    "date_added": "2024-01-14"
+  },
+  "0bb8f9f085b4666f1676830f65c34c23": {
+    "path": "Photos/Architecture/2024-01-Badami-JPG/2024-01-Badami-Day0-NCM_6121.jpg",
+    "filename": "2024-01-Badami-Day0-NCM_6121.jpg",
+    "categories": [
+      "Places/National",
+      "Architecture"
+    ],
+    "state": "Karnataka",
+    "city": "Badami",
+    "country": "",
+    "remarks": "",
+    "date_added": "2024-01-14"
+  },
+  "4e7e91c4de407850650611cfb5fb7e24": {
+    "path": "Photos/Architecture/2024-01-Badami-JPG/2024-01-Badami-Day0-NCM_6142.jpg",
+    "filename": "2024-01-Badami-Day0-NCM_6142.jpg",
+    "categories": [
+      "Places/National",
+      "Architecture"
+    ],
+    "state": "Karnataka",
+    "city": "Badami",
+    "country": "",
+    "remarks": "Rock-cut temples",
+    "date_added": "2024-01-14"
+  },
+  "59a41a3c6c8d85696fb421b88fbe61d3": {
+    "path": "Photos/Architecture/2024-01-Badami-JPG/2024-01-Badami-Day1-NCM_6264.jpg",
+    "filename": "2024-01-Badami-Day1-NCM_6264.jpg",
+    "categories": [
+      "Places/National",
+      "Architecture"
+    ],
+    "state": "Karnataka",
+    "city": "Pattadhakal",
+    "country": "",
+    "remarks": "",
+    "date_added": "2024-01-14"
+  },
+  "e0b09b37aedef3e1fe5299bc9154a521": {
+    "path": "Photos/Architecture/2024-01-Badami-JPG/2024-01-Badami-Day1-NCM_6334.jpg",
+    "filename": "2024-01-Badami-Day1-NCM_6334.jpg",
+    "categories": [
+      "Places/National",
+      "Architecture"
+    ],
+    "state": "Karnataka",
+    "city": "Pattadhakal",
+    "country": "",
+    "remarks": "",
+    "date_added": "2024-01-14"
+  },
+  "c2b131277cc0e3498daf300f70ab49ff": {
+    "path": "Photos/Architecture/2024-01-Badami-JPG/2024-01-Badami-Day1-NCM_6413.jpg",
+    "filename": "2024-01-Badami-Day1-NCM_6413.jpg",
+    "categories": [
+      "Places/National",
+      "Architecture"
+    ],
+    "state": "Karnataka",
+    "city": "Pattadhakal",
+    "country": "",
+    "remarks": "",
+    "date_added": "2024-01-14"
+  },
+  "987953d7eb2e785313dba12c2735ddba": {
+    "path": "Photos/Architecture/2024-01-Badami-JPG/2024-01-Badami-Day1-NCM_6545.jpg",
+    "filename": "2024-01-Badami-Day1-NCM_6545.jpg",
+    "categories": [
+      "Places/National",
+      "Architecture"
+    ],
+    "state": "Karnataka",
+    "city": "Aihole",
+    "country": "",
+    "remarks": "Ravana Phadi Cave Temple, 6th-century,  Chalukya dynasty",
+    "date_added": "2024-01-14"
+  },
+  "5829723857cfc810ca74b24f3beb8d34": {
+    "path": "Photos/Architecture/2024-01-Badami-JPG/2024-01-Badami-Day1-NCM_6596.jpg",
+    "filename": "2024-01-Badami-Day1-NCM_6596.jpg",
+    "categories": [
+      "Places/National",
+      "Architecture"
+    ],
+    "state": "Karnataka",
+    "city": "Aihole",
+    "country": "",
+    "remarks": "Ravana Phadi Cave Temple, 6th-century,  Chalukya dynasty",
+    "date_added": "2024-01-14"
+  },
+  "50d520a0f347b5fb19e1a5e5ee080814": {
+    "path": "Photos/Architecture/2024-01-Badami-JPG/2024-01-Badami-Day2-NCM_6825.jpg",
+    "filename": "2024-01-Badami-Day2-NCM_6825.jpg",
+    "categories": [
+      "Places/National",
+      "Architecture"
+    ],
+    "state": "Karnataka",
+    "city": "Badami",
+    "country": "",
+    "remarks": "Malegitti Temple",
+    "date_added": "2024-01-14"
+  },
+  "e3422044f57308efc1bf7e26d0bd4f19": {
+    "path": "Photos/Architecture/2024-01-Badami-JPG/2024-01-Badami-Day2-NCM_6863.jpg",
+    "filename": "2024-01-Badami-Day2-NCM_6863.jpg",
+    "categories": [
+      "Places/National",
+      "Architecture"
+    ],
+    "state": "Karnataka",
+    "city": "Badami",
+    "country": "",
+    "remarks": "",
+    "date_added": "2024-01-14"
+  },
+  "a932caf195a5da1efc78d41bcd65ca93": {
+    "path": "Photos/Architecture/2024-01-Badami-JPG/2024-01-Badami-Day2-NCM_6882.jpg",
+    "filename": "2024-01-Badami-Day2-NCM_6882.jpg",
+    "categories": [
+      "Places/National",
+      "Architecture"
+    ],
+    "state": "Karnataka",
+    "city": "Badami",
+    "country": "",
+    "remarks": "",
+    "date_added": "2024-01-14"
+  },
+  "63a39fe4650ac6ab98333c1a579cf1b6": {
+    "path": "Photos/Birds/Munnar Birds/2026-0127-MunnarBirds-NCM-5352.JPG",
+    "filename": "2026-0127-MunnarBirds-NCM-5352.JPG",
+    "categories": [
+      "Nature/Birds",
+      "Places/National"
+    ],
+    "state": "Kerala",
+    "city": "Munnar",
+    "country": "",
+    "remarks": "Red Whiskered Bulbul",
+    "date_added": "2026-01-30"
+  },
+  "d07548449449486c0590dc67af544d35": {
+    "path": "Photos/Birds/Munnar Birds/2026-0127-MunnarBirds-NCM-5397.JPG",
+    "filename": "2026-0127-MunnarBirds-NCM-5397.JPG",
+    "categories": [
+      "Nature/Birds",
+      "Places/National"
+    ],
+    "state": "Kerala",
+    "city": "Munnar",
+    "country": "",
+    "remarks": "Indian White-Eye",
+    "date_added": "2026-01-30"
+  },
+  "810c55e05f5409078443dc0c9a600b9d": {
+    "path": "Photos/Birds/Munnar Birds/2026-0127-MunnarBirds-NCM-5437.JPG",
+    "filename": "2026-0127-MunnarBirds-NCM-5437.JPG",
+    "categories": [
+      "Nature/Birds",
+      "Places/National"
+    ],
+    "state": "Kerala",
+    "city": "Munnar",
+    "country": "",
+    "remarks": "Little Spider Hunter",
+    "date_added": "2026-01-30"
+  },
+  "e3ab6dec954400bcc2e6f21d916c859d": {
+    "path": "Photos/Birds/Munnar Birds/2026-0127-MunnarBirds-NCM-5534.JPG",
+    "filename": "2026-0127-MunnarBirds-NCM-5534.JPG",
+    "categories": [
+      "Nature/Birds",
+      "Places/National"
+    ],
+    "state": "Kerala",
+    "city": "Munnar",
+    "country": "",
+    "remarks": "Grey-headed Canary-flycatcher",
+    "date_added": "2026-01-30"
+  },
+  "4c0f824df57ed895aa935bb1e1735bed": {
+    "path": "Photos/Birds/Munnar Birds/2026-0127-MunnarBirds-NCM-5778.JPG",
+    "filename": "2026-0127-MunnarBirds-NCM-5778.JPG",
+    "categories": [
+      "Nature/Birds",
+      "Places/National"
+    ],
+    "state": "Kerala",
+    "city": "Munnar",
+    "country": "",
+    "remarks": "Vernal Hanging Parrot",
+    "date_added": "2026-01-30"
+  },
+  "8a4006ae77e654fce2fba809f9496754": {
+    "path": "Photos/Birds/Munnar Birds/2026-0127-MunnarBirds-NCM-5870.JPG",
+    "filename": "2026-0127-MunnarBirds-NCM-5870.JPG",
+    "categories": [
+      "Nature/Birds",
+      "Places/National"
+    ],
+    "state": "Kerala",
+    "city": "Munnar",
+    "country": "",
+    "remarks": "Indian White-Eye",
+    "date_added": "2026-01-30"
+  },
+  "be37b5fdfb62280353390b495f1a2b03": {
+    "path": "Photos/Birds/Munnar Birds/2026-0127-MunnarBirds-NCM-5899.JPG",
+    "filename": "2026-0127-MunnarBirds-NCM-5899.JPG",
+    "categories": [
+      "Nature/Birds",
+      "Places/National"
+    ],
+    "state": "Kerala",
+    "city": "Munnar",
+    "country": "",
+    "remarks": "White-cheeked Barbet",
+    "date_added": "2026-01-30"
+  },
+  "a09e8bb97e828eb1ef45f1e386b03ba6": {
+    "path": "Photos/Birds/Munnar Birds/2026-0127-MunnarBirds-NCM-5929.JPG",
+    "filename": "2026-0127-MunnarBirds-NCM-5929.JPG",
+    "categories": [
+      "Nature/Birds",
+      "Places/National"
+    ],
+    "state": "Kerala",
+    "city": "Munnar",
+    "country": "",
+    "remarks": "Vernal Hanging Parrot",
+    "date_added": "2026-01-30"
+  },
+  "7dfb776e0fa08cc4e45b249bf2466b59": {
+    "path": "Photos/Birds/Munnar Birds/2026-0127-MunnarBirds-NCM-6103.JPG",
+    "filename": "2026-0127-MunnarBirds-NCM-6103.JPG",
+    "categories": [
+      "Nature/Wildlife",
+      "Places/National"
+    ],
+    "state": "Kerala",
+    "city": "Munnar",
+    "country": "",
+    "remarks": "Malabar Giant Squirrel",
+    "date_added": "2026-01-30"
+  },
+  "a108d1bc266f2fdbf8eb147bf81dc665": {
+    "path": "Photos/Birds/Munnar Birds/2026-0127-MunnarBirds-NCM-6182.JPG",
+    "filename": "2026-0127-MunnarBirds-NCM-6182.JPG",
+    "categories": [
+      "Nature/Birds",
+      "Places/National"
+    ],
+    "state": "Kerala",
+    "city": "Munnar",
+    "country": "",
+    "remarks": "Malabar Flameback Woodpecker",
+    "date_added": "2026-01-30"
+  },
+  "c3a05b98a694149825bf36a6472781eb": {
+    "path": "Photos/Birds/Munnar Birds/2026-0127-MunnarBirds-NCM-6276.JPG",
+    "filename": "2026-0127-MunnarBirds-NCM-6276.JPG",
+    "categories": [
+      "Nature/Birds",
+      "Places/National"
+    ],
+    "state": "Kerala",
+    "city": "Munnar",
+    "country": "",
+    "remarks": "Malabar Flameback Woodpecker",
+    "date_added": "2026-01-30"
+  },
+  "5b41965dbd2c6aea1a904845dc5c342f": {
+    "path": "Photos/Birds/Munnar Birds/2026-0127-MunnarBirds-NCM-6379.JPG",
+    "filename": "2026-0127-MunnarBirds-NCM-6379.JPG",
+    "categories": [
+      "Nature/Birds",
+      "Places/National"
+    ],
+    "state": "Kerala",
+    "city": "Munnar",
+    "country": "",
+    "remarks": "Black-throated Munia",
+    "date_added": "2026-01-30"
+  },
+  "3105a17d43168c7196dba299d2c8a5f4": {
+    "path": "Photos/Birds/Munnar Birds/2026-0127-MunnarBirds-NCM-6507.JPG",
+    "filename": "2026-0127-MunnarBirds-NCM-6507.JPG",
+    "categories": [
+      "Nature/Birds",
+      "Places/National"
+    ],
+    "state": "Kerala",
+    "city": "Munnar",
+    "country": "",
+    "remarks": "Jerdan's Leafbird",
+    "date_added": "2026-01-30"
+  },
+  "38ea3ddf86b6f4bca28547948298073e": {
+    "path": "Photos/Birds/Munnar Birds/2026-0127-MunnarBirds-NCM-6571.JPG",
+    "filename": "2026-0127-MunnarBirds-NCM-6571.JPG",
+    "categories": [
+      "Nature/Birds",
+      "Places/National"
+    ],
+    "state": "Kerala",
+    "city": "Munnar",
+    "country": "",
+    "remarks": "Brown-cheeked Fulvetta",
+    "date_added": "2026-01-30"
+  },
+  "3e3639cd29e9aa0531fb6b8348c4328a": {
+    "path": "Photos/Places/International/2025-0714-Calgary-NCM_6749.jpg",
+    "filename": "2025-0714-Calgary-NCM_6749.jpg",
+    "categories": [
+      "Places/International"
+    ],
+    "state": "",
+    "city": "Banff/Alberta",
+    "country": "Canada",
+    "remarks": "",
+    "date_added": "2026-03-03"
+  },
+  "d0714f42b7e36287e4618fbcb104d7fa": {
+    "path": "Photos/Megamalai/2026-0306-Megamalai-NCM-7879-81.jpg",
+    "filename": "2026-0306-Megamalai-NCM-7879-81.jpg",
+    "categories": [
+      "Nature/Landscapes",
+      "Places/National"
+    ],
+    "state": "Tamil Nadu",
+    "city": "Megamalai",
+    "country": "",
+    "remarks": "Sunrise - Valley View",
+    "date_added": "2026-03-06"
+  },
+  "98cf6c1434aae1ba9bcaeea50847e551": {
+    "path": "Photos/Megamalai/2026-0305-Megamalai-NCM-7807.jpg",
+    "filename": "2026-0305-Megamalai-NCM-7807.jpg",
+    "categories": [
+      "Nature/Landscapes",
+      "Places/National"
+    ],
+    "state": "Tamil Nadu",
+    "city": "Megamalai",
+    "country": "",
+    "remarks": "Tea Gardens",
+    "date_added": "2026-03-06"
+  },
+  "f4d75c5f8a01d2dd422f87c196d21f1c": {
+    "path": "Photos/Megamalai/2026-0305-Megamalai-NCM-7720.jpg",
+    "filename": "2026-0305-Megamalai-NCM-7720.jpg",
+    "categories": [
+      "Nature/Landscapes",
+      "Places/National"
+    ],
+    "state": "Tamil Nadu",
+    "city": "Megamalai",
+    "country": "",
+    "remarks": "Tea Gardens",
+    "date_added": "2026-03-06"
+  },
+  "5d680f0a6167c52f71fdd34bb2764a50": {
+    "path": "Photos/Thekkady/2026-0306-Thekkady-NCM-8176.JPG",
+    "filename": "2026-0306-Thekkady-NCM-8176.JPG",
+    "categories": [
+      "Nature/Flora",
+      "Places/National"
+    ],
+    "state": "Maharashtra",
+    "city": "Tadoba",
+    "country": "",
+    "remarks": "Bamboo Blues",
+    "date_added": "2026-03-26"
+  },
+  "b3b1e41bbaa721c95d3f53cdeac39931": {
+    "path": "Photos/Thekkady/2026-0306-Thekkady-NCM-8274.JPG",
+    "filename": "2026-0306-Thekkady-NCM-8274.JPG",
+    "categories": [
+      "Nature/Birds",
+      "Places/National"
+    ],
+    "state": "Kerala",
+    "city": "Thekkady",
+    "country": "",
+    "remarks": "Common Kingfisher",
+    "date_added": "2026-03-06"
+  },
+  "51e8d1612e97298c07b25cadab1ed4ed": {
+    "path": "Photos/Madurai/2026-0307-Madurai-NCM-8468.jpg",
+    "filename": "2026-0307-Madurai-NCM-8468.jpg",
+    "categories": [
+      "Places/National",
+      "Architecture"
+    ],
+    "state": "Tamil Nadu",
+    "city": "Madurai",
+    "country": "",
+    "remarks": "Azagar Kovil (Temple)",
+    "date_added": "2026-03-07"
+  },
+  "87210a773897d600c8b9a174e37fa58a": {
+    "path": "Photos/Madurai/2026-0308-Madurai-NCM-8622-24.jpg",
+    "filename": "2026-0308-Madurai-NCM-8622-24.jpg",
+    "categories": [
+      "Places/National",
+      "Architecture"
+    ],
+    "state": "Tamil Nadu",
+    "city": "Madurai",
+    "country": "",
+    "remarks": "Thirumalai Nayakar Mahal",
+    "date_added": "2026-03-07"
+  },
+  "a4311e6b9530e51122b56bac8eafc48f": {
+    "path": "Photos/Madurai/2026-0308-Madurai-NCM-8651-53.jpg",
+    "filename": "2026-0308-Madurai-NCM-8651-53.jpg",
+    "categories": [
+      "Places/National",
+      "Architecture"
+    ],
+    "state": "Tamil Nadu",
+    "city": "Madurai",
+    "country": "",
+    "remarks": "Thirumalai Nayakar Mahal",
+    "date_added": "2026-03-07"
+  },
+  "441bd8fe24b66bb0e9c212a2092590a9": {
+    "path": "Photos/Greece/DSC_3181.jpg",
+    "filename": "DSC_3181.jpg",
+    "categories": [
+      "Places/International",
+      "Architecture"
+    ],
+    "state": "",
+    "city": "Santorini",
+    "country": "Greece",
+    "remarks": "Church",
+    "date_added": "2018-10-14"
+  },
+  "c450e95e294a029edab5ae189cf8102e": {
+    "path": "Photos/Greece/DSC_3521-Pano.jpg",
+    "filename": "DSC_3521-Pano.jpg",
+    "categories": [
+      "Nature/Landscapes",
+      "Places/International"
+    ],
+    "state": "",
+    "city": "Santorini",
+    "country": "Greece",
+    "remarks": "",
+    "date_added": "2018-10-14"
+  },
+  "cbadd9f89956c06eaee31515d9557bdf": {
+    "path": "Photos/Greece/DSC_3543.jpg",
+    "filename": "DSC_3543.jpg",
+    "categories": [
+      "Nature/Landscapes",
+      "Places/International"
+    ],
+    "state": "",
+    "city": "Santorini",
+    "country": "Greece",
+    "remarks": "2018-10",
+    "date_added": "2018-10-14"
+  },
+  "ab1189a92bed95b1c27142e21a340be9": {
+    "path": "Photos/Greece/DSC_3600.jpg",
+    "filename": "DSC_3600.jpg",
+    "categories": [
+      "Nature/Landscapes",
+      "Places/International"
+    ],
+    "state": "",
+    "city": "Santorini",
+    "country": "Greece",
+    "remarks": "Sunset at Santorini",
+    "date_added": "2018-10-14"
+  },
+  "31c934380fef999d4464198061ef643c": {
+    "path": "Photos/Greece/DSC_3601.jpg",
+    "filename": "DSC_3601.jpg",
+    "categories": [
+      "Nature/Landscapes",
+      "Places/International"
+    ],
+    "state": "",
+    "city": "Santorini",
+    "country": "Greece",
+    "remarks": "Sunset at Santorini",
+    "date_added": "2018-10-14"
+  },
+  "bdc0e92cd1130caf3a8fca7e04f73889": {
+    "path": "Photos/Greece/DSC_3663.jpg",
+    "filename": "DSC_3663.jpg",
+    "categories": [
+      "Nature/Landscapes",
+      "Places/International"
+    ],
+    "state": "",
+    "city": "Santorini",
+    "country": "Greece",
+    "remarks": "Sunset at Santorini",
+    "date_added": "2018-10-14"
+  },
+  "e311d6743be81e7c86cf46e884d83d53": {
+    "path": "Photos/Greece/DSC_3747.jpg",
+    "filename": "DSC_3747.jpg",
+    "categories": [
+      "Places/International",
+      "Architecture"
+    ],
+    "state": "",
+    "city": "Delphi",
+    "country": "Greece",
+    "remarks": "",
+    "date_added": "2018-10-15"
+  },
+  "f5a069c6e0d12531290bca98f59bf7ba": {
+    "path": "Photos/Greece/DSC_3962-Pano.jpg",
+    "filename": "DSC_3962-Pano.jpg",
+    "categories": [
+      "Places/International",
+      "Architecture"
+    ],
+    "state": "",
+    "city": "Delphi",
+    "country": "Greece",
+    "remarks": "Amphitheater",
+    "date_added": "2018-10-15"
+  },
+  "29149d9fc58b95ca813c543a61f98e27": {
+    "path": "Photos/Greece/DSC_3962-PanoBW.jpg",
+    "filename": "DSC_3962-PanoBW.jpg",
+    "categories": [
+      "Places/International",
+      "Architecture"
+    ],
+    "state": "",
+    "city": "Delphi",
+    "country": "Greece",
+    "remarks": "Amphitheater",
+    "date_added": "2018-10-15"
+  },
+  "f4627820152a6bf896cf31e862dfa00c": {
+    "path": "Photos/Greece/DSC_4094_01.jpg",
+    "filename": "DSC_4094_01.jpg",
+    "categories": [
+      "Nature/Landscapes",
+      "Places/International"
+    ],
+    "state": "",
+    "city": "Hydra",
+    "country": "Greece",
+    "remarks": "Ferry Ride",
+    "date_added": "2018-10-15"
+  },
+  "9b45e7c5202528165d86c29c7f16b35c": {
+    "path": "Photos/Greece/DSC_4215.jpg",
+    "filename": "DSC_4215.jpg",
+    "categories": [
+      "Places/International",
+      "Architecture"
+    ],
+    "state": "",
+    "city": "Hydra",
+    "country": "Greece",
+    "remarks": "Church",
+    "date_added": "2018-10-16"
+  },
+  "274c1609ab91773a32fe925c938964f8": {
+    "path": "Photos/Greece/DSC_4235.jpg",
+    "filename": "DSC_4235.jpg",
+    "categories": [
+      "Places/International",
+      "Architecture"
+    ],
+    "state": "",
+    "city": "Hydra",
+    "country": "Greece",
+    "remarks": "Church",
+    "date_added": "2018-10-16"
+  },
+  "554390a4ce4f7316766f6c7e81824219": {
+    "path": "Photos/Tadoba/2026-0324-Tadoba-NCM-8714.JPG",
+    "filename": "2026-0324-Tadoba-NCM-8714.JPG",
+    "categories": [
+      "Places/National",
+      "Architecture"
+    ],
+    "state": "Maharashtra",
+    "city": "Aurangabad",
+    "country": "",
+    "remarks": "Biwi Ka Maqbara",
+    "date_added": "2026-03-24"
+  },
+  "1c56b426b42fe38865fe5cdab1321185": {
+    "path": "Photos/Tadoba/2026-0324-Tadoba-NCM-8736.JPG",
+    "filename": "2026-0324-Tadoba-NCM-8736.JPG",
+    "categories": [
+      "Places/National",
+      "Architecture"
+    ],
+    "state": "Maharashtra",
+    "city": "Aurangabad",
+    "country": "",
+    "remarks": "Biwi Ka Maqbara",
+    "date_added": "2026-03-25"
+  },
+  "d94f1f3abc75f189f009cf3e11513db1": {
+    "path": "Photos/Tadoba/2026-0324-Tadoba-NCM-8822.JPG",
+    "filename": "2026-0324-Tadoba-NCM-8822.JPG",
+    "categories": [
+      "Places/National",
+      "Architecture"
+    ],
+    "state": "Maharashtra",
+    "city": "Aurangabad",
+    "country": "",
+    "remarks": "Biwi Ka Maqbara",
+    "date_added": "2026-03-25"
+  },
+  "882ba745aaf4f2dcc6fb22aaf32f2c97": {
+    "path": "Photos/Tadoba/2026-0324-Tadoba-NCM-8873.JPG",
+    "filename": "2026-0324-Tadoba-NCM-8873.JPG",
+    "categories": [
+      "Places/National",
+      "Architecture"
+    ],
+    "state": "Maharashtra",
+    "city": "Aurangabad",
+    "country": "",
+    "remarks": "Biwi Ka Maqbara",
+    "date_added": "2026-03-25"
+  },
+  "db64c1e483f1299b7abab3884c5b6966": {
+    "path": "Photos/Tadoba/2026-0324-Tadoba-NCM-8893.JPG",
+    "filename": "2026-0324-Tadoba-NCM-8893.JPG",
+    "categories": [
+      "Places/National",
+      "Architecture"
+    ],
+    "state": "Maharashtra",
+    "city": "Aurangabad",
+    "country": "",
+    "remarks": "Biwi Ka Maqbara",
+    "date_added": "2026-03-25"
+  },
+  "31d45b602ee61a5ac89164e1d30704e5": {
+    "path": "Photos/Tadoba/2026-0324-Tadoba-NCM-9088.JPG",
+    "filename": "2026-0324-Tadoba-NCM-9088.JPG",
+    "categories": [
+      "Places/National",
+      "People & Culture",
+      "People & Culture/Street"
+    ],
+    "state": "Maharashtra",
+    "city": "Tadoba",
+    "country": "",
+    "remarks": "Roadside View",
+    "date_added": "2026-03-26"
+  },
+  "eb6db378b12fd0c5e4a55625dd9f857a": {
+    "path": "Photos/Tadoba/2026-0324-Tadoba-NCM-9197.JPG",
+    "filename": "2026-0324-Tadoba-NCM-9197.JPG",
+    "categories": [
+      "Places/National",
+      "People & Culture",
+      "People & Culture/Street"
+    ],
+    "state": "Maharashtra",
+    "city": "Tadoba",
+    "country": "",
+    "remarks": "Bike to Work",
+    "date_added": "2026-03-26"
+  },
+  "d6822b37aa70306c717f8951bc030498": {
+    "path": "Photos/Tadoba/2026-0324-Tadoba-NCM-9318.JPG",
+    "filename": "2026-0324-Tadoba-NCM-9318.JPG",
+    "categories": [
+      "Nature/Wildlife",
+      "Places/National"
+    ],
+    "state": "Maharashtra",
+    "city": "Tadoba",
+    "country": "",
+    "remarks": "Indian Gaur (Bison)",
+    "date_added": "2026-03-26"
+  },
+  "feb13310277810f9894be1f2ab0fda50": {
+    "path": "Photos/Tadoba/2026-0324-Tadoba-NCM-9333.JPG",
+    "filename": "2026-0324-Tadoba-NCM-9333.JPG",
+    "categories": [
+      "Nature/Birds",
+      "Places/National"
+    ],
+    "state": "Maharashtra",
+    "city": "Tadoba",
+    "country": "",
+    "remarks": "Oriental Honey Buzzard",
+    "date_added": "2026-03-26"
+  },
+  "df57d9f59d27abbe45970c329140b5af": {
+    "path": "Photos/Tadoba/2026-0324-Tadoba-NCM-9463.JPG",
+    "filename": "2026-0324-Tadoba-NCM-9463.JPG",
+    "categories": [
+      "Nature/Wildlife",
+      "Places/National"
+    ],
+    "state": "Maharashtra",
+    "city": "Tadoba",
+    "country": "",
+    "remarks": "Tiger @ Mamla Gate",
+    "date_added": "2026-03-26"
+  },
+  "cb3173fac0537c30de17ba5759922738": {
+    "path": "Photos/Tadoba/2026-0324-Tadoba-NCM-9481.JPG",
+    "filename": "2026-0324-Tadoba-NCM-9481.JPG",
+    "categories": [
+      "Nature/Wildlife",
+      "Places/National"
+    ],
+    "state": "Maharashtra",
+    "city": "Tadoba",
+    "country": "",
+    "remarks": "Tiger @ Mamla Gate",
+    "date_added": "2026-03-26"
+  },
+  "dd41352600cf8e202caccaabac20af2a": {
+    "path": "Photos/Tadoba/2026-0324-Tadoba-NCM-9512.JPG",
+    "filename": "2026-0324-Tadoba-NCM-9512.JPG",
+    "categories": [
+      "Nature/Wildlife",
+      "Places/National"
+    ],
+    "state": "Maharashtra",
+    "city": "Tadoba",
+    "country": "",
+    "remarks": "Tiger @ Mamla Gate",
+    "date_added": "2026-03-26"
+  },
+  "3f9cb7d6ef8e547ddb09e18ec513cb0e": {
+    "path": "Photos/Tadoba/2026-0324-Tadoba-NCM-9729.JPG",
+    "filename": "2026-0324-Tadoba-NCM-9729.JPG",
+    "categories": [
+      "Places/National",
+      "People & Culture",
+      "People & Culture/Street"
+    ],
+    "state": "Maharashtra",
+    "city": "Tadoba",
+    "country": "",
+    "remarks": "Safari",
+    "date_added": "2026-03-26"
+  },
+  "e1e83f36e3fe9d2ed93d020bdea2a965": {
+    "path": "Photos/Tadoba/2026-0324-Tadoba-NCM-9774.JPG",
+    "filename": "2026-0324-Tadoba-NCM-9774.JPG",
+    "categories": [
+      "Nature/Birds",
+      "Places/National"
+    ],
+    "state": "Maharashtra",
+    "city": "Tadoba",
+    "country": "",
+    "remarks": "Changeable Hawk-Eagle",
+    "date_added": "2026-03-26"
+  },
+  "ddde37b355509b6cbe583add64639191": {
+    "path": "Photos/Tadoba/2026-0324-Tadoba-NCM-9800.JPG",
+    "filename": "2026-0324-Tadoba-NCM-9800.JPG",
+    "categories": [
+      "Places/National",
+      "Nature/Flora",
+      "People & Culture/Street"
+    ],
+    "state": "Maharashtra",
+    "city": "Tadoba",
+    "country": "",
+    "remarks": "Colour Contrast",
+    "date_added": "2026-03-26"
+  },
+  "4258ca8f9b5dbdbfaf7b16db856e8542": {
+    "path": "Photos/Tadoba/2026-0324-Tadoba-NCM-9845.JPG",
+    "filename": "2026-0324-Tadoba-NCM-9845.JPG",
+    "categories": [
+      "Nature/Birds",
+      "Places/National"
+    ],
+    "state": "Maharashtra",
+    "city": "Tadoba",
+    "country": "",
+    "remarks": "Mottled Wood Eagle",
+    "date_added": "2026-03-26"
+  },
+  "c1151c447cd386b3f13c9ddad780bd73": {
+    "path": "Photos/Tadoba/2026-0324-Tadoba-NCM-9959.JPG",
+    "filename": "2026-0324-Tadoba-NCM-9959.JPG",
+    "categories": [
+      "Places/National",
+      "Nature/Landscapes",
+      "People & Culture",
+      "People & Culture/Street"
+    ],
+    "state": "Maharashtra",
+    "city": "Tadoba",
+    "country": "",
+    "remarks": "Tunnel @ Igatpuri",
+    "date_added": "2026-03-28"
+  },
+  "48d4a1edf0bc2ee9c4b0edbaa4136530": {
+    "path": "Photos/Tadoba/2026-0324-Tadoba-NCM-9966.JPG",
+    "filename": "2026-0324-Tadoba-NCM-9966.JPG",
+    "categories": [
+      "Places/National",
+      "Nature/Landscapes",
+      "People & Culture",
+      "People & Culture/Street"
+    ],
+    "state": "Maharashtra",
+    "city": "Tadoba",
+    "country": "",
+    "remarks": "Tunnel @ Igatpuri",
+    "date_added": "2026-03-28"
+  },
+  "580a06ce750328d51e9c95040c11cf9f": {
+    "path": "Photos/Canada/2025-0711-Calgary-NCM_5163_Original.jpg",
+    "filename": "2025-0711-Calgary-NCM_5163_Original.jpg",
+    "categories": [
+      "Nature/Landscapes",
+      "Places/International"
+    ],
+    "state": "",
+    "city": "Calgary/Alberta",
+    "country": "Canada",
+    "remarks": "Enroute to Horseshoe Canyon",
+    "date_added": "2025-07-11"
+  },
+  "0faa062da593713fef25a2a1d6d06587": {
+    "path": "Photos/Canada/2025-0711-Calgary-NCM_5165_Original.jpg",
+    "filename": "2025-0711-Calgary-NCM_5165_Original.jpg",
+    "categories": [
+      "Nature/Landscapes",
+      "Places/International"
+    ],
+    "state": "",
+    "city": "Calgary/Alberta",
+    "country": "Canada",
+    "remarks": "Enroute to Horseshoe Canyon",
+    "date_added": "2025-07-11"
+  },
+  "676b2340962367c0d8e9fb66397414d8": {
+    "path": "Photos/Canada/2025-0711-Calgary-NCM_5210_Original.jpg",
+    "filename": "2025-0711-Calgary-NCM_5210_Original.jpg",
+    "categories": [
+      "Nature/Landscapes",
+      "Places/International"
+    ],
+    "state": "",
+    "city": "Calgary/Alberta",
+    "country": "Canada",
+    "remarks": "Enroute to Horseshoe Canyon",
+    "date_added": "2025-07-11"
+  },
+  "18f4b0c4097a43f616260ad0137ff82b": {
+    "path": "Photos/Canada/2025-0711-Calgary-NCM_5283_Original.jpg",
+    "filename": "2025-0711-Calgary-NCM_5283_Original.jpg",
+    "categories": [
+      "Nature/Landscapes",
+      "Places/International"
+    ],
+    "state": "",
+    "city": "Calgary/Alberta",
+    "country": "Canada",
+    "remarks": "Enroute to Horseshoe Canyon",
+    "date_added": "2025-07-11"
+  },
+  "14a5421de76ab07754f918a5a6074b64": {
+    "path": "Photos/Canada/2025-0711-Calgary-NCM_5323_Original.jpg",
+    "filename": "2025-0711-Calgary-NCM_5323_Original.jpg",
+    "categories": [
+      "Nature/Landscapes",
+      "Places/International"
+    ],
+    "state": "",
+    "city": "Calgary/Alberta",
+    "country": "Canada",
+    "remarks": "Horseshoe Canyon",
+    "date_added": "2025-07-11"
+  },
+  "0ea73a72c3473d260c747d31a1fc77c0": {
+    "path": "Photos/Canada/2025-0711-Calgary-NCM_5326_Original.jpg",
+    "filename": "2025-0711-Calgary-NCM_5326_Original.jpg",
+    "categories": [
+      "Nature/Landscapes",
+      "Places/International"
+    ],
+    "state": "",
+    "city": "Calgary/Alberta",
+    "country": "Canada",
+    "remarks": "Horseshoe Canyon",
+    "date_added": "2025-07-11"
+  },
+  "df5141eef9b31cd04b6a426d7d7dc6dd": {
+    "path": "Photos/Canada/2025-0711-Calgary-NCM_5340_Original.jpg",
+    "filename": "2025-0711-Calgary-NCM_5340_Original.jpg",
+    "categories": [
+      "Nature/Landscapes",
+      "Places/International"
+    ],
+    "state": "",
+    "city": "Calgary/Alberta",
+    "country": "Canada",
+    "remarks": "Horseshoe Canyon",
+    "date_added": "2025-07-11"
+  },
+  "3b257e23b53f3f47388aa3a8709d21bc": {
+    "path": "Photos/Canada/2025-0711-Calgary-NCM_5348_Original.jpg",
+    "filename": "2025-0711-Calgary-NCM_5348_Original.jpg",
+    "categories": [
+      "Places/International",
+      "People & Culture"
+    ],
+    "state": "",
+    "city": "Calgary/Alberta",
+    "country": "Canada",
+    "remarks": "Horseshoe Canyon",
+    "date_added": "2025-07-11"
+  },
+  "945dea4a86ba35cc878e025d8a96257b": {
+    "path": "Photos/Canada/2025-0711-Calgary-NCM_5351_Original.jpg",
+    "filename": "2025-0711-Calgary-NCM_5351_Original.jpg",
+    "categories": [
+      "Nature/Landscapes",
+      "Places/International"
+    ],
+    "state": "",
+    "city": "Calgary/Alberta",
+    "country": "Canada",
+    "remarks": "Horseshoe Canyon",
+    "date_added": "2025-07-11"
+  },
+  "0737837e74a0a73dd6a66cda9379f253": {
+    "path": "Photos/Canada/2025-0711-Calgary-NCM_5352_Original.jpg",
+    "filename": "2025-0711-Calgary-NCM_5352_Original.jpg",
+    "categories": [
+      "Nature/Landscapes",
+      "Places/International"
+    ],
+    "state": "",
+    "city": "Calgary/Alberta",
+    "country": "Canada",
+    "remarks": "Horseshoe Canyon",
+    "date_added": "2025-07-11"
+  },
+  "7ae5c7ec4de0caf08354e31a3240d356": {
+    "path": "Photos/Canada/2025-0711-Calgary-NCM_5476_Original.jpg",
+    "filename": "2025-0711-Calgary-NCM_5476_Original.jpg",
+    "categories": [
+      "Nature/Landscapes",
+      "Places/International"
+    ],
+    "state": "",
+    "city": "Calgary/Alberta",
+    "country": "Canada",
+    "remarks": "Enroute - Horseshoe Canyon",
+    "date_added": "2025-07-11"
+  },
+  "410a53abac8224f14777d2dee809d8af": {
+    "path": "Photos/Canada/2025-0711-Calgary-NCM_5479_Original.jpg",
+    "filename": "2025-0711-Calgary-NCM_5479_Original.jpg",
+    "categories": [
+      "Nature/Landscapes",
+      "Places/International"
+    ],
+    "state": "",
+    "city": "Calgary/Alberta",
+    "country": "Canada",
+    "remarks": "Enroute - Horseshoe Canyon",
+    "date_added": "2025-07-11"
+  },
+  "e16d4e14c69c43974ed40bdd0001bcee": {
+    "path": "Photos/Canada/2025-0711-Calgary-NCM_5487_Original.jpg",
+    "filename": "2025-0711-Calgary-NCM_5487_Original.jpg",
+    "categories": [
+      "Nature/Landscapes",
+      "Places/International"
+    ],
+    "state": "",
+    "city": "Calgary/Alberta",
+    "country": "Canada",
+    "remarks": "Enroute - Horseshoe Canyon",
+    "date_added": "2025-07-11"
+  },
+  "bf6560c9b0d3b4b203ddfa574e4fec15": {
+    "path": "Photos/Canada/2025-0712-Calgary-NCM_5604_Original.jpg",
+    "filename": "2025-0712-Calgary-NCM_5604_Original.jpg",
+    "categories": [
+      "Nature/Landscapes",
+      "Places/International"
+    ],
+    "state": "",
+    "city": "Calgary/Alberta",
+    "country": "Canada",
+    "remarks": "Moraine Lake",
+    "date_added": "2025-07-12"
+  },
+  "0ceba0ba3b307d1a2170434b43654dd5": {
+    "path": "Photos/Canada/2025-0712-Calgary-NCM_5676_Original.jpg",
+    "filename": "2025-0712-Calgary-NCM_5676_Original.jpg",
+    "categories": [
+      "Nature/Landscapes",
+      "Places/International"
+    ],
+    "state": "",
+    "city": "Calgary/Alberta",
+    "country": "Canada",
+    "remarks": "Lake Louise",
+    "date_added": "2025-07-12"
+  },
+  "9ac5c72d69e4e8d20a35b2d5dd99f2f7": {
+    "path": "Photos/Canada/2025-0712-Calgary-NCM_5739_Original.jpg",
+    "filename": "2025-0712-Calgary-NCM_5739_Original.jpg",
+    "categories": [
+      "Nature/Landscapes",
+      "Places/International"
+    ],
+    "state": "",
+    "city": "Calgary/Alberta",
+    "country": "Canada",
+    "remarks": "Lake Louise",
+    "date_added": "2025-07-12"
+  },
+  "944b8ab1926852e899d6810ba47aaf3e": {
+    "path": "Photos/Canada/2025-0712-Calgary-NCM_5785_Original.jpg",
+    "filename": "2025-0712-Calgary-NCM_5785_Original.jpg",
+    "categories": [
+      "Nature/Landscapes",
+      "Places/International"
+    ],
+    "state": "",
+    "city": "Calgary/Alberta",
+    "country": "Canada",
+    "remarks": "Camrose",
+    "date_added": "2025-07-12"
+  },
+  "f5753e55aa3d0d61706b22f4df5f5b6b": {
+    "path": "Photos/Canada/2025-0712-Calgary-NCM_5842_Original.jpg",
+    "filename": "2025-0712-Calgary-NCM_5842_Original.jpg",
+    "categories": [
+      "Nature/Wildlife",
+      "Places/International"
+    ],
+    "state": "",
+    "city": "Calgary/Alberta",
+    "country": "Canada",
+    "remarks": "Columbian Ground Squirrel",
+    "date_added": "2025-07-12"
+  },
+  "ea8965de3e6fc5a7acd4d76ceeec0aab": {
+    "path": "Photos/Canada/2025-0712-Calgary-NCM_5846_Original.jpg",
+    "filename": "2025-0712-Calgary-NCM_5846_Original.jpg",
+    "categories": [
+      "Nature/Wildlife",
+      "Places/International"
+    ],
+    "state": "",
+    "city": "Calgary/Alberta",
+    "country": "Canada",
+    "remarks": "Columbian Ground Squirrel",
+    "date_added": "2025-07-12"
+  },
+  "4985175f53422534b2f64276e5ab127c": {
+    "path": "Photos/Canada/2025-0712-Calgary-NCM_5862_Original.jpg",
+    "filename": "2025-0712-Calgary-NCM_5862_Original.jpg",
+    "categories": [
+      "Nature/Landscapes",
+      "Places/International"
+    ],
+    "state": "",
+    "city": "Calgary/Alberta",
+    "country": "Canada",
+    "remarks": "Camrose Golf Course",
+    "date_added": "2025-07-12"
+  },
+  "c2850abbcf43f2383f00956d85a714ad": {
+    "path": "Photos/Canada/2025-0712-Calgary-NCM_5930_Original.jpg",
+    "filename": "2025-0712-Calgary-NCM_5930_Original.jpg",
+    "categories": [
+      "Nature/Landscapes",
+      "Places/International"
+    ],
+    "state": "",
+    "city": "Calgary/Alberta",
+    "country": "Canada",
+    "remarks": "Camrose Golf Course",
+    "date_added": "2025-07-12"
+  },
+  "6543db5ad36c5ef42d072a94bfa37a84": {
+    "path": "Photos/Canada/2025-0712-Calgary-NCM_5965_Original.jpg",
+    "filename": "2025-0712-Calgary-NCM_5965_Original.jpg",
+    "categories": [
+      "Places/International",
+      "People & Culture",
+      "People & Culture/Street"
+    ],
+    "state": "",
+    "city": "Banff/Alberta",
+    "country": "Canada",
+    "remarks": "Pink Bloom",
+    "date_added": "2025-07-12"
+  },
+  "f8d9a3aaa71c2186b081167a63e2b27a": {
+    "path": "Photos/Canada/2025-0712-Calgary-NCM_5986_Original.jpg",
+    "filename": "2025-0712-Calgary-NCM_5986_Original.jpg",
+    "categories": [
+      "Places/International",
+      "People & Culture",
+      "People & Culture/Street"
+    ],
+    "state": "",
+    "city": "Banff/Alberta",
+    "country": "Canada",
+    "remarks": "Street View",
+    "date_added": "2025-07-12"
+  },
+  "e3d140b4d6e7bb4df669228e80e5faa8": {
+    "path": "Photos/Tadoba/2026-0324-Tadoba-NCM-8706.JPG",
+    "filename": "2026-0324-Tadoba-NCM-8706.JPG",
+    "categories": [
+      "Places/National",
+      "Architecture"
+    ],
+    "state": "Maharashtra",
+    "city": "Aurangabad",
+    "country": "",
+    "remarks": "Biwi Ka Maqbara",
+    "date_added": "2026-03-26"
+  },
+  "8fdeab04df12323d8f6c415661271767": {
+    "path": "Photos/Blog/edit-IMG_4915.jpg",
+    "filename": "edit-IMG_4915.jpg",
+    "categories": [
+      "Places/National",
+      "People & Culture",
+      "People & Culture/Street"
+    ],
+    "state": "Maharashtra",
+    "city": "Tadoba",
+    "country": "",
+    "remarks": "Dewada Safari Gate",
+    "date_added": "2026-03-28"
+  },
+  "d317921c69dddfaed511577a7f2a22f4": {
+    "path": "Photos/Blog/2026-0324-Tadoba-IMG-9115.jpg",
+    "filename": "2026-0324-Tadoba-IMG-9115.jpg",
+    "categories": [
+      "Places/National",
+      "Nature/Landscapes"
+    ],
+    "state": "Maharashtra",
+    "city": "Tadoba",
+    "country": "",
+    "remarks": "Highway Art - ME2",
+    "date_added": "2026-03-06"
+  },
+  "5f6d33e2f457118059e34d1663c5b949": {
+    "path": "Photos/Blog/2026-0324-Tadoba-IMG-9120.jpg",
+    "filename": "2026-0324-Tadoba-IMG-9120.jpg",
+    "categories": [
+      "Places/National",
+      "Nature/Landscapes"
+    ],
+    "state": "Maharashtra",
+    "city": "Tadoba",
+    "country": "",
+    "remarks": "Highway Art - ME2",
+    "date_added": "2026-03-06"
+  },
+  "2489c0ccd02e87cac5f771f7b62aefc3": {
+    "path": "Photos/Blog/2026-0324-Tadoba-NCM-8706.JPG",
+    "filename": "2026-0324-Tadoba-NCM-8706.JPG",
+    "categories": [
+      "Places/National",
+      "Nature/Landscapes"
+    ],
+    "state": "Maharashtra",
+    "city": "Aurangabad",
+    "country": "",
+    "remarks": "Biwi Ka Maqbara",
+    "date_added": "2026-03-06"
+  },
+  "29f7b37233207a35b111259152aaa1d1": {
+    "path": "Photos/Blog/edit-2026-0326-Tadoba-VCM-IMG-4481.jpg",
+    "filename": "edit-2026-0326-Tadoba-VCM-IMG-4481.jpg",
+    "categories": [
+      "Places/National",
+      "Architecture",
+      "People & Culture",
+      "People & Culture/Street"
+    ],
+    "state": "Maharashtra",
+    "city": "Tadoba",
+    "country": "",
+    "remarks": "Safari @ Karwa",
+    "date_added": "2026-03-28"
+  },
+  "071e00ba1d5a95c98403358f0a752b90": {
+    "path": "Photos/Blog/edit-2026-0326-Tadoba-VCM-IMG-4497.jpg",
+    "filename": "edit-2026-0326-Tadoba-VCM-IMG-4497.jpg",
+    "categories": [
+      "Places/National",
+      "People & Culture",
+      "People & Culture/Street"
+    ],
+    "state": "Maharashtra",
+    "city": "Tadoba",
+    "country": "",
+    "remarks": "Pond @ Karwa",
+    "date_added": "2026-03-28"
+  }
 }
