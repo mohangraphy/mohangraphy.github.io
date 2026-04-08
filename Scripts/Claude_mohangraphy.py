@@ -3587,11 +3587,11 @@ async function subscribeVisitor(){
       body: JSON.stringify({name: name.trim()||null, email: email.trim().toLowerCase()})
     });
     if(res.status===201||res.status===200){
-      msg.textContent='✓ Subscribed! You’ll be notified when new photos arrive.';
+      msg.textContent='✓ Subscribed! You\'ll be notified when new photos arrive.';
       document.getElementById('sub-name').value='';
       document.getElementById('sub-email').value='';
     } else if(res.status===409){
-      msg.textContent='You’re already subscribed — thank you!';
+      msg.textContent='You\'re already subscribed — thank you!';
     } else { msg.textContent='Something went wrong. Please try again.'; }
   } catch(err){ msg.textContent='Connection error. Please try again.'; }
 }
