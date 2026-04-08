@@ -2910,7 +2910,7 @@ NAV_PANELS.forEach(function(id){
 /* ── scrollToCollections: scroll down to tile-nav from hero ── */
 /* ── Recently Added: mark new photos + show banner ── */
 var NEW_DAYS = 14;
-var _newPhotosMarked = false;   /* run only once */
+var _newPhotosMarked = false;
 
 function markNewPhotos(){
   if(_newPhotosMarked) return;
@@ -2924,12 +2924,12 @@ function markNewPhotos(){
     if(!da) return;
     var diffDays = (now - new Date(da)) / (1000 * 60 * 60 * 24);
     if(diffDays <= NEW_DAYS && diffDays >= 0){
-      if(!item.querySelector('.new-badge')){
+      var photoDiv = item.querySelector('.grid-item-photo');
+      if(photoDiv && !photoDiv.querySelector('.new-badge')){
         var badge = document.createElement('div');
         badge.className = 'new-badge';
         badge.textContent = 'NEW';
-        var photo = item.querySelector('.grid-item-photo');
-        if(photo) photo.appendChild(badge);
+        photoDiv.appendChild(badge);
       }
       if(!seenPaths[path]){
         seenPaths[path] = true;
@@ -2950,7 +2950,6 @@ function showNewPhotos(){
   var now = new Date();
   var seenPaths = {};
   var uniqueItems = [];
-  /* Only scan static section-blocks, never the dynamically created one */
   document.querySelectorAll('.section-block:not(#gallery-new-photos) .grid-item[data-date-added]').forEach(function(item){
     var da   = item.getAttribute('data-date-added');
     var path = item.getAttribute('data-photo') || '';
@@ -3030,17 +3029,17 @@ function scrollToCollections(){
 (function(){
   var thumbs = """ + slides_json + """;
   var hero   = document.getElementById('hero');
-  if (!thumbs.length) return;
+  if (!thumbs.length || !hero) return;
   var caption = hero.querySelector('.hero-caption');
   var imgs = thumbs.map(function(src, i){
     var img = document.createElement('img');
     img.src=src; img.className='slide';
     img.loading= i===0 ? 'eager' : 'lazy';
     img.decoding='async'; img.alt='';
-    /* Insert before caption so slides go behind text */
     hero.insertBefore(img, caption);
     return img;
   });
+  if(!imgs.length) return;
   var cur=0; imgs[0].classList.add('active');
   setInterval(function(){
     imgs[cur].classList.remove('active');
@@ -3603,7 +3602,7 @@ async function subscribeVisitor(){
 var ssImages  = [];
 var ssIdx     = 0;
 var ssTimer   = null;
-var ssFadeTimer = null;   /* cancel in-flight fade on rapid step */
+var ssFadeTimer = null;
 var ssDur     = 4500;
 var ssPaused  = false;
 
@@ -3733,7 +3732,9 @@ document.addEventListener('DOMContentLoaded', function(){
   },{passive:true});
 });
 
-goHome();
+document.addEventListener('DOMContentLoaded', function(){
+  try { goHome(); } catch(e) { console.error('goHome failed:', e); }
+});
 """
 
 
