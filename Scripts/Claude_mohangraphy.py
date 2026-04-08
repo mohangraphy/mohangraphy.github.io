@@ -2973,16 +2973,19 @@ function showNewPhotos(){
   var existing = document.getElementById('gallery-new-photos');
   if(existing) existing.remove();
 
-  /* Step 4: build tags HTML for each photo — show only the most specific tag(s),
-     removing any parent category that has a more-specific child present.
-     E.g. if "People & Culture/Street" is present, drop bare "People & Culture". */
+  /* Step 4: build tags HTML — show only the most specific CONTENT category.
+     Strip location tags (Places/...) entirely — they are not content categories.
+     Then drop any parent if a more-specific child is present:
+     e.g. "People & Culture" is dropped when "People & Culture/Street" is present. */
   var gridHTML = uniqueItems.map(function(item){
     var cats = (item.getAttribute('data-cats') || '').split(',').map(function(s){ return s.trim(); }).filter(Boolean);
-    /* Filter: keep a tag only if no other tag in the set starts with it + "/" */
-    var filtered = cats.filter(function(cat){
-      return !cats.some(function(other){ return other !== cat && other.indexOf(cat + '/') === 0; });
+    /* Remove all Places/ tags — these are location classifiers, not content categories */
+    var contentCats = cats.filter(function(cat){ return cat.indexOf('Places/') !== 0 && cat !== 'Places'; });
+    /* Drop parent tags when a more-specific child exists */
+    var filtered = contentCats.filter(function(cat){
+      return !contentCats.some(function(other){ return other !== cat && other.indexOf(cat + '/') === 0; });
     });
-    var displayCats = filtered.length ? filtered : cats;
+    var displayCats = filtered.length ? filtered : (contentCats.length ? contentCats : cats);
     var tagsHTML = displayCats.length
       ? '<div class="new-photo-tags">' + displayCats.map(function(cat){
           return '<span class="new-photo-tag">' + cat.replace(/\//g,' / ').toUpperCase() + '</span>';
@@ -3587,11 +3590,11 @@ async function subscribeVisitor(){
       body: JSON.stringify({name: name.trim()||null, email: email.trim().toLowerCase()})
     });
     if(res.status===201||res.status===200){
-      msg.textContent='✓ Subscribed! You\'ll be notified when new photos arrive.';
+      msg.textContent="✓ Subscribed! You'll be notified when new photos arrive.";
       document.getElementById('sub-name').value='';
       document.getElementById('sub-email').value='';
     } else if(res.status===409){
-      msg.textContent='You\'re already subscribed — thank you!';
+      msg.textContent="You're already subscribed — thank you!";
     } else { msg.textContent='Something went wrong. Please try again.'; }
   } catch(err){ msg.textContent='Connection error. Please try again.'; }
 }
