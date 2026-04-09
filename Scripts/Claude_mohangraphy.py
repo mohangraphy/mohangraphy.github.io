@@ -2,6 +2,7 @@ import os
 import json
 import random
 import subprocess
+from urllib.parse import quote as _url_quote
 
 # ── CONFIGURATION ─────────────────────────────────────────────────────────────
 ROOT_DIR         = "/Users/ncm/Pictures/Mohangraphy"
@@ -34,11 +35,19 @@ CAT_TAG_MAP = {
     "Landscape": {
         "Nature/Landscapes", "Nature/Landscape", "Nature/Landscape/Mountains",
         "Nature/Mountains", "Nature/Sunsets and Sunrises", "Nature/Sunsets",
+        # Common Curator.py variants:
+        "Landscape", "Landscapes", "Nature/Landscape/Glacier",
+        "Nature/Landscape/Lakes", "Nature/Landscape/Waterfalls",
+        "Nature/Landscape/Forests", "Nature/Landscape/Canada",
+        "Nature/Landscape/Panorama", "Nature/Panorama",
     },
     "Flora & Fauna": {
         "Nature/Wildlife", "Nature/Birds", "Nature/Flora",
         "Nature/Flowers", "Flowers", "Birds", "Nature/Flowers",
         "Flora & Fauna",    # top-level tag used when all three apply
+        # Common variants:
+        "Wildlife", "Nature/Animals", "Nature/Wildlife/Canada",
+        "Nature/Birds/Canada",
     },
     "Architecture": {
         "Architecture",
@@ -194,8 +203,8 @@ def thumb_img(rel_path, web_rel_path, alt=""):
       • lazy-loads + async-decodes
     """
     return (
-        '<img src="' + rel_path + '" '
-        'data-full="' + web_rel_path + '" '
+        '<img src="' + _url_quote(rel_path,safe="/") + '" '
+        'data-full="' + _url_quote(web_rel_path,safe="/") + '" '
         'loading="lazy" decoding="async" '
         'alt="' + alt + '" '
         'style="width:100%;height:100%;object-fit:cover;display:block;">'
@@ -235,6 +244,16 @@ def build_maps(unique_entries):
     path_info_map = {}
 
     # Known single-word place→(state, city) mapping for backward compatibility
+    # Map province names → country (for overseas photos where country field is blank)
+    KNOWN_COUNTRIES = {
+        'alberta': 'Canada', 'british columbia': 'Canada', 'ontario': 'Canada',
+        'quebec': 'Canada', 'manitoba': 'Canada', 'saskatchewan': 'Canada',
+        'nova scotia': 'Canada', 'new brunswick': 'Canada',
+        'banff': 'Canada', 'jasper': 'Canada', 'lake louise': 'Canada',
+        'yoho': 'Canada', 'vancouver': 'Canada', 'victoria': 'Canada',
+        'toronto': 'Canada', 'ottawa': 'Canada', 'montreal': 'Canada',
+    }
+
     KNOWN_STATES = {
         'megamalai':   ('Tamil Nadu', 'Megamalai'),
         'munnar':      ('Kerala',     'Munnar'),
@@ -247,8 +266,22 @@ def build_maps(unique_entries):
         'thekkady':    ('Kerala',     'Thekkady'),
         'madurai':     ('Tamil Nadu', 'Madurai'),
         'aihole':      ('Karnataka',  'Aihole'),
-        'banff':       ('Alberta',    'Banff'),
-        'tadoba':      ('Maharashtra','Tadoba'),
+        'banff':         ('Alberta',          'Banff'),
+        'jasper':        ('Alberta',          'Jasper'),
+        'jasper np':     ('Alberta',          'Jasper'),
+        'jaspernp':      ('Alberta',          'Jasper'),
+        'athabasca':     ('Alberta',          'Jasper'),
+        'lake louise':   ('Alberta',          'Lake Louise'),
+        'yoho':          ('British Columbia', 'Yoho'),
+        'vancouver':     ('British Columbia', 'Vancouver'),
+        'victoria':      ('British Columbia', 'Victoria'),
+        'kelowna':       ('British Columbia', 'Kelowna'),
+        'toronto':       ('Ontario',          'Toronto'),
+        'ottawa':        ('Ontario',          'Ottawa'),
+        'niagara':       ('Ontario',          'Niagara'),
+        'montreal':      ('Quebec',           'Montreal'),
+        'quebec':        ('Quebec',           'Quebec City'),
+        'tadoba':        ('Maharashtra',      'Tadoba'),
     }
 
     for info in unique_entries:
@@ -306,15 +339,46 @@ def build_maps(unique_entries):
             if 'Places/International' in raw_tag:
                 is_international = True
 
-        # If no content category tag found, skip location assignment
-        # (photo will still appear if found by folder scan)
+        # Warn about photos whose tags don't map to any content category
+        if tags and not content_cats:
+            print(f"  ⚠️  No content category for: {os.path.basename(path)}")
+            print(f"     Tags: {tags}")
+            print(f"     → Will try path-based fallback")
+
+        # If no content category tag found, try inferring from file path
         if not content_cats:
-            continue
+            path_lower = path.lower().replace('\\', '/')
+            if any(k in path_lower for k in ['/landscape', '/landscapes', '/mountain', '/sunset', '/glacier', '/panorama']):
+                content_cats.add('Landscape')
+            elif any(k in path_lower for k in ['/wildlife', '/birds', '/flora', '/flowers', '/fauna']):
+                content_cats.add('Flora & Fauna')
+            elif '/architecture' in path_lower:
+                content_cats.add('Architecture')
+            elif any(k in path_lower for k in ['/people', '/portrait', '/street', '/culture']):
+                content_cats.add('People & Culture')
+            if not content_cats:
+                continue  # still nothing — skip
 
         # Determine location bucket
+        # Auto-detect international: if city/state resolves to a known country,
+        # treat as international even if Places/International tag was not set.
+        if not is_international and not is_national:
+            auto_country = KNOWN_COUNTRIES.get((city or state).lower().strip(), '')
+            if auto_country:
+                is_international = True
+                country = auto_country
+
         if is_international:
-            intl_country = country if country else state
-            intl_city    = city    if city    else state
+            # Resolve country: use explicit field, or look up from KNOWN_COUNTRIES
+            resolved_country = country
+            if not resolved_country and city:
+                resolved_country = KNOWN_COUNTRIES.get(city.lower().strip(), '')
+            if not resolved_country and state:
+                resolved_country = KNOWN_COUNTRIES.get(state.lower().strip(), '')
+            if not resolved_country:
+                resolved_country = state  # last resort fallback
+            intl_country = resolved_country
+            intl_city    = city if city else state
             if intl_country and intl_city:
                 for cat in content_cats:
                     m = cat_city_map[cat]['Overseas']
@@ -342,6 +406,20 @@ def build_maps(unique_entries):
                     m[effective_city].setdefault(state, [])
                     if path not in m[effective_city][state]:
                         m[effective_city][state].append(path)
+
+    # ── DIAGNOSTIC: print Canada/overseas photo summary ──────────────────────
+    overseas_total = 0
+    for cat in cat_city_map:
+        for country, cities in cat_city_map[cat]['Overseas'].items():
+            for city2, paths2 in cities.items():
+                overseas_total += len(paths2)
+                if country == 'Canada':
+                    print(f"  📷 {cat}/Canada/{city2}: {len(paths2)} photo(s)")
+    if overseas_total == 0:
+        print("  ⚠️  WARNING: No overseas photos found. Check that your Canada photos have:")
+        print("     1. A content tag: Nature/Landscapes, Nature/Landscape, Nature/Wildlife, etc.")
+        print("     2. Either Places/International tag OR place/city matching a known Canadian city")
+    # ── END DIAGNOSTIC ────────────────────────────────────────────────────────
 
     return cat_city_map, all_paths, path_info_map
 
@@ -1484,98 +1562,6 @@ header {
   font-size: clamp(14px, 2.5vw, 20px);
   color: rgba(255,255,255,0.1); text-transform: uppercase; letter-spacing: 6px;
 }
-/* ── SLIDESHOW BUTTON ─────────────────────────────────────────────────── */
-.slideshow-btn {
-  display: inline-flex; align-items: center; gap: 8px;
-  background: none;
-  border: 1px solid rgba(201,169,110,0.5);
-  color: var(--gold);
-  cursor: pointer;
-  padding: 0 18px; height: 34px;
-  font-family: 'Montserrat', sans-serif;
-  font-size: 9px; font-weight: 600; letter-spacing: 3px; text-transform: uppercase;
-  transition: background .2s, border-color .2s;
-  white-space: nowrap; flex-shrink: 0;
-}
-.slideshow-btn:hover { background: rgba(201,169,110,0.1); border-color: var(--gold); }
-.slideshow-btn svg { flex-shrink: 0; }
-
-/* ── FULLSCREEN SLIDESHOW OVERLAY ─────────────────────────────────────── */
-#ss-overlay {
-  display: none; position: fixed; inset: 0; z-index: 9800;
-  background: #000; flex-direction: column;
-}
-#ss-overlay.open { display: flex; }
-
-#ss-img-wrap {
-  flex: 1 1 0; position: relative; overflow: hidden;
-  display: flex; align-items: center; justify-content: center;
-  cursor: pointer;
-}
-#ss-img {
-  max-width: 100%; max-height: 100%;
-  object-fit: contain; display: block;
-  user-select: none; -webkit-user-drag: none;
-  opacity: 1; transition: opacity 0.5s ease;
-}
-#ss-img.ss-fade { opacity: 0; }
-
-#ss-bar {
-  flex-shrink: 0; height: 52px;
-  background: rgba(0,0,0,0.85);
-  border-top: 1px solid rgba(201,169,110,0.12);
-  display: flex; align-items: center;
-  padding: 0 16px; gap: 14px;
-}
-#ss-counter {
-  font-family: 'Montserrat', sans-serif;
-  font-size: 9px; letter-spacing: 3px; color: rgba(255,255,255,0.35);
-  text-transform: uppercase; white-space: nowrap;
-}
-#ss-caption {
-  flex: 1; text-align: center;
-  font-family: 'Montserrat', sans-serif;
-  font-size: 11px; letter-spacing: 1px; color: rgba(255,255,255,0.65);
-  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
-}
-#ss-hint {
-  font-family: 'Montserrat', sans-serif;
-  font-size: 8px; letter-spacing: 2px; color: rgba(255,255,255,0.25);
-  text-transform: uppercase; white-space: nowrap;
-}
-#ss-progress {
-  position: absolute; bottom: 0; left: 0; height: 2px;
-  background: var(--gold); width: 0%;
-  transition: width linear;
-}
-.ss-nav-btn {
-  position: absolute; top: 50%; transform: translateY(-50%);
-  background: rgba(0,0,0,0.35); border: none; cursor: pointer;
-  color: rgba(255,255,255,0.5); font-size: 28px;
-  width: 52px; height: 52px; border-radius: 50%;
-  display: flex; align-items: center; justify-content: center;
-  transition: color .2s, background .2s; z-index: 1;
-}
-.ss-nav-btn:hover { color: var(--gold); background: rgba(0,0,0,0.6); }
-#ss-prev { left: 10px; }
-#ss-next { right: 10px; }
-#ss-close {
-  position: absolute; top: 12px; right: 14px; z-index: 9801;
-  background: rgba(0,0,0,0.5); border: 1px solid rgba(255,255,255,0.15);
-  cursor: pointer; color: rgba(255,255,255,0.6); font-size: 18px;
-  width: 38px; height: 38px; border-radius: 50%;
-  display: flex; align-items: center; justify-content: center;
-  transition: color .2s, border-color .2s;
-}
-#ss-close:hover { color: var(--gold); border-color: var(--gold); }
-#ss-pause-lbl {
-  position: absolute; top: 14px; left: 50%; transform: translateX(-50%);
-  font-family: 'Montserrat', sans-serif; font-size: 8px; letter-spacing: 3px;
-  text-transform: uppercase; color: rgba(255,255,255,0.4);
-  background: rgba(0,0,0,0.55); padding: 4px 14px;
-  pointer-events: none; opacity: 0; transition: opacity .3s;
-}
-#ss-overlay.ss-paused #ss-pause-lbl { opacity: 1; }
 
 /* Toast notification */
 #toast {
@@ -2542,7 +2528,7 @@ footer {
 
             india_city_cards += (
                 '\n<div class="cat-card" onclick="showGallery(\'' + city_id + '\')">'
-                + ('<img class="cat-card-img" src="' + city_cover + '" loading="lazy" decoding="async" alt="">'
+                + ('<img class="cat-card-img" src="' + _url_quote(city_cover,safe="/") + '" loading="lazy" decoding="async" alt="">'
                    if city_cover else '<div class="cat-card-placeholder"><span>Coming<br>Soon</span></div>')
                 + '<div class="cat-card-bar">'
                 '<div class="cat-card-name">' + city + '</div>'
@@ -2576,22 +2562,17 @@ footer {
                     ' data-date-added="' + da             + '"'
                     ' onclick="openImgModal(this)">'
                     '<div class="grid-item-photo">'
-                    '<img src="' + th + '" data-full="' + web + '" loading="lazy" decoding="async" alt="' + rem + '"'
+                    '<img src="' + _url_quote(th,safe="/") + '" data-full="' + _url_quote(web,safe="/") + '" loading="lazy" decoding="async" alt=""'
                     ' style="width:100%;height:100%;object-fit:cover;display:block;">'
                     '<div class="grid-item-overlay"></div>'
                     + overlay_html +
                     '</div></div>'
                 )
-            _ss_btn = ('<button class="slideshow-btn" onclick="startSlideshow(\'' + city_id + '\')">'
-                       '<svg width="11" height="11" viewBox="0 0 11 11" fill="none"><polygon points="1,0.5 10.5,5.5 1,10.5" fill="currentColor"/></svg>'
-                       'View Slideshow</button>') if city_paths else ''
             gallery_blocks += (
                 '\n<div class="section-block" id="' + city_id + '">'
                 '\n  <div class="gal-header">'
-                '<div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;">'
-                '<div><div class="gal-title">' + city + '</div>'
+                '<div class="gal-title">' + city + '</div>'
                 '<div class="gal-sub">' + m_cat + ' · ' + (state_name + ' · ' if state_name else '') + str(len(city_paths)) + ' Photos</div>'
-                '</div>' + _ss_btn + '</div>'
                 '</div>'
                 + ('\n  <div class="grid">' + imgs + '</div>' if city_paths else '\n  <div class="wip-message">Work in progress</div>')
                 + '\n</div>'
@@ -2607,7 +2588,7 @@ footer {
 
             overseas_country_cards += (
                 '\n<div class="cat-card" onclick="showGallery(\'' + ctry_id + '\')">'
-                + ('<img class="cat-card-img" src="' + ctry_cover + '" loading="lazy" decoding="async" alt="">'
+                + ('<img class="cat-card-img" src="' + _url_quote(ctry_cover,safe="/") + '" loading="lazy" decoding="async" alt="">'
                    if ctry_cover else '<div class="cat-card-placeholder"><span>Coming<br>Soon</span></div>')
                 + '<div class="cat-card-bar">'
                 '<div class="cat-card-name">' + country + '</div>'
@@ -2659,22 +2640,17 @@ footer {
                         ' data-date-added="' + da             + '"'
                         ' onclick="openImgModal(this)">'
                         '<div class="grid-item-photo">'
-                        '<img src="' + th + '" data-full="' + web + '" loading="lazy" decoding="async" alt="' + rem + '"'
+                        '<img src="' + _url_quote(th,safe="/") + '" data-full="' + _url_quote(web,safe="/") + '" loading="lazy" decoding="async" alt=""'
                         ' style="width:100%;height:100%;object-fit:cover;display:block;">'
                         '<div class="grid-item-overlay"></div>'
                         + overlay_html +
                         '</div></div>'
                     )
-                _ss_btn2 = ('<button class="slideshow-btn" onclick="startSlideshow(\'' + city_id + '\')">'
-                            '<svg width="11" height="11" viewBox="0 0 11 11" fill="none"><polygon points="1,0.5 10.5,5.5 1,10.5" fill="currentColor"/></svg>'
-                            'View Slideshow</button>') if city_paths else ''
                 gallery_blocks += (
                     '\n<div class="section-block" id="' + city_id + '">'
                     '\n  <div class="gal-header">'
-                    '<div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;">'
-                    '<div><div class="gal-title">' + city + '</div>'
+                    '<div class="gal-title">' + city + '</div>'
                     '<div class="gal-sub">' + m_cat + ' · ' + country + ' · ' + str(len(city_paths)) + ' Photos</div>'
-                    '</div>' + _ss_btn2 + '</div>'
                     '</div>'
                     + ('\n  <div class="grid">' + imgs + '</div>' if city_paths else '\n  <div class="wip-message">Work in progress</div>')
                     + '\n</div>'
@@ -2781,7 +2757,6 @@ function hideAll(){
     var el = document.getElementById(id); if(el) el.remove();
   });
   setActiveTab(null);
-  markNewPhotos();
 }
 
 function setActiveTab(which){
@@ -2918,7 +2893,10 @@ NAV_PANELS.forEach(function(id){
 /* ── Recently Added: mark new photos + show banner ── */
 var NEW_DAYS = 14;
 
+var _newPhotosMarked = false;
 function markNewPhotos(){
+  if(_newPhotosMarked) return;
+  _newPhotosMarked = true;
   var now = new Date();
   var seenPaths = {};
   var uniqueCount = 0;
@@ -2928,11 +2906,12 @@ function markNewPhotos(){
     if(!da) return;
     var diffDays = (now - new Date(da)) / (1000 * 60 * 60 * 24);
     if(diffDays <= NEW_DAYS && diffDays >= 0){
-      if(!item.querySelector('.new-badge')){
+      var photoDiv = item.querySelector('.grid-item-photo');
+      if(photoDiv && !photoDiv.querySelector('.new-badge')){
         var badge = document.createElement('div');
         badge.className = 'new-badge';
         badge.textContent = 'NEW';
-        item.querySelector('.grid-item-photo').appendChild(badge);
+        photoDiv.appendChild(badge);
       }
       if(!seenPaths[path]){
         seenPaths[path] = true;
@@ -2976,11 +2955,19 @@ function showNewPhotos(){
   var existing = document.getElementById('gallery-new-photos');
   if(existing) existing.remove();
 
-  /* Step 4: build tags HTML for each photo */
+  /* Step 4: build tags — strip Places/ location tags, keep only content category.
+     Drop parent when more-specific child present (e.g. show only People & Culture/Street). */
   var gridHTML = uniqueItems.map(function(item){
     var cats = (item.getAttribute('data-cats') || '').split(',').map(function(s){ return s.trim(); }).filter(Boolean);
-    var tagsHTML = cats.length
-      ? '<div class="new-photo-tags">' + cats.map(function(cat){
+    /* Remove Places/ tags — location classifiers, not content categories */
+    var contentCats = cats.filter(function(cat){ return cat.indexOf('Places') !== 0; });
+    /* Drop parent tag when more-specific child present */
+    var filtered = contentCats.filter(function(cat){
+      return !contentCats.some(function(other){ return other !== cat && other.indexOf(cat+'/') === 0; });
+    });
+    var displayCats = filtered.length ? filtered : (contentCats.length ? contentCats : cats);
+    var tagsHTML = displayCats.length
+      ? '<div class="new-photo-tags">' + displayCats.map(function(cat){
           return '<span class="new-photo-tag">' + cat.replace(/\//g,' / ').toUpperCase() + '</span>';
         }).join('') + '</div>'
       : '';
@@ -2992,14 +2979,8 @@ function showNewPhotos(){
   block.id = 'gallery-new-photos';
   block.className = 'section-block visible';
   block.style.cssText = 'padding-top:calc(var(--hdr) + 32px);';
-  block.innerHTML = '<div class="gal-header">'
-    + '<div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;">'
-    + '<div><div class="gal-title">Recently Added</div>'
+  block.innerHTML = '<div class="gal-header"><div class="gal-title">Recently Added</div>'
     + '<div class="gal-sub">' + uniqueItems.length + ' Photo' + (uniqueItems.length > 1 ? 's' : '') + ' · Last ' + NEW_DAYS + ' days</div></div>'
-    + '<button class="slideshow-btn" onclick="startSlideshow(\x27gallery-new-photos\x27)">'
-    + '<svg width="11" height="11" viewBox="0 0 11 11" fill="none"><polygon points="1,0.5 10.5,5.5 1,10.5" fill="currentColor"/></svg>'
-    + 'View Slideshow</button>'
-    + '</div></div>'
     + '<div class="grid">' + gridHTML + '</div>';
   galContainer.prepend(block);
   window.scrollTo(0, 0);
@@ -3585,159 +3566,7 @@ async function subscribeVisitor(){
   } catch(err){ msg.textContent='Connection error. Please try again.'; }
 }
 
-/* ══════════════════════════════════════════════════════
-   SLIDESHOW ENGINE
-   Photo duration: 4.5s — long enough to absorb each image.
-   Click photo to pause/resume. Arrows or swipe to step.
-   Esc to close.
-   ══════════════════════════════════════════════════════ */
-var _ssPhotos  = [];   /* [{thumb, full, caption}] */
-var _ssIdx     = 0;
-var _ssTimer   = null;
-var _ssFade    = null;
-var _ssDur     = 3000; /* ms per slide */
-var _ssPaused  = false;
-
-function startSlideshow(blockId){
-  var block = document.getElementById(blockId);
-  if(!block) return;
-  var items = Array.from(block.querySelectorAll('.grid-item'));
-  if(!items.length){ showToast && showToast('No photos to show.'); return; }
-
-  _ssPhotos = items.map(function(item){
-    var img  = item.querySelector('.grid-item-photo img');
-    var full = img ? (img.getAttribute('data-full') || img.src) : '';
-    var th   = img ? img.src : '';
-    var rem  = item.getAttribute('data-remarks') || '';
-    var city = item.getAttribute('data-city')    || '';
-    var cap  = [rem, city].filter(Boolean).join('  ·  ');
-    return { thumb: th, full: full, caption: cap };
-  });
-
-  _ssIdx    = 0;
-  _ssPaused = false;
-  var ov = document.getElementById('ss-overlay');
-  if(ov){ ov.classList.remove('ss-paused'); ov.classList.add('open'); }
-  document.body.style.overflow = 'hidden';
-  _ssShow(0);
-  _ssSchedule();
-}
-
-function _ssShow(idx){
-  if(!_ssPhotos.length) return;
-  idx = (idx + _ssPhotos.length) % _ssPhotos.length;
-  _ssIdx = idx;
-  var entry = _ssPhotos[idx];
-
-  /* Fade out */
-  var img = document.getElementById('ss-img');
-  if(img) img.classList.add('ss-fade');
-  clearTimeout(_ssFade);
-  _ssFade = setTimeout(function(){
-    var img2 = document.getElementById('ss-img');
-    if(!img2) return;
-    /* Show thumb immediately, upgrade to full in background */
-    if(entry.thumb) img2.src = entry.thumb;
-    img2.classList.remove('ss-fade');
-    if(entry.full && entry.full !== entry.thumb){
-      var hi = new Image();
-      var cap = idx;
-      hi.onload = function(){
-        if(_ssIdx === cap){ var i3=document.getElementById('ss-img'); if(i3) i3.src=entry.full; }
-      };
-      hi.src = entry.full;
-    }
-  }, 300);
-
-  /* Update counter and caption */
-  var ctr = document.getElementById('ss-counter');
-  if(ctr) ctr.textContent = (idx+1) + ' / ' + _ssPhotos.length;
-  var cap = document.getElementById('ss-caption');
-  if(cap) cap.textContent = entry.caption;
-
-  /* Animate progress bar */
-  var pr = document.getElementById('ss-progress');
-  if(pr){
-    pr.style.transition = 'none';
-    pr.style.width = '0%';
-    setTimeout(function(){
-      var pr2 = document.getElementById('ss-progress');
-      if(pr2 && !_ssPaused){
-        pr2.style.transition = 'width ' + _ssDur + 'ms linear';
-        pr2.style.width = '100%';
-      }
-    }, 50);
-  }
-}
-
-function _ssSchedule(){
-  clearTimeout(_ssTimer);
-  if(!_ssPaused && _ssIdx < _ssPhotos.length - 1){
-    _ssTimer = setTimeout(function(){ _ssShow(_ssIdx+1); _ssSchedule(); }, _ssDur);
-  }
-}
-
-function ssPrev(){ clearTimeout(_ssTimer); _ssShow(_ssIdx-1); if(!_ssPaused) _ssSchedule(); }
-function ssNext(){ clearTimeout(_ssTimer); _ssShow(_ssIdx+1); if(!_ssPaused) _ssSchedule(); }
-
-function ssPauseToggle(){
-  _ssPaused = !_ssPaused;
-  var ov = document.getElementById('ss-overlay');
-  if(ov) ov.classList.toggle('ss-paused', _ssPaused);
-  var pr = document.getElementById('ss-progress');
-  if(_ssPaused){
-    clearTimeout(_ssTimer);
-    if(pr) pr.style.transition = 'none';
-  } else {
-    /* Resume progress bar from current position */
-    var cur = pr ? parseFloat(pr.style.width)||0 : 0;
-    var remain = _ssDur * (1 - cur/100);
-    if(pr){ pr.style.transition = 'width '+remain+'ms linear'; pr.style.width='100%'; }
-    clearTimeout(_ssTimer);
-    if(_ssIdx < _ssPhotos.length - 1){ _ssTimer = setTimeout(function(){ _ssShow(_ssIdx+1); _ssSchedule(); }, remain); }
-  }
-}
-
-function ssClose(){
-  clearTimeout(_ssTimer); clearTimeout(_ssFade);
-  var ov = document.getElementById('ss-overlay');
-  if(ov){ ov.classList.remove('open','ss-paused'); }
-  var img = document.getElementById('ss-img');
-  if(img) img.src = '';
-  document.body.style.overflow = '';
-  _ssPaused = false;
-}
-
-/* Click photo = pause/resume */
-document.addEventListener('DOMContentLoaded', function(){
-  var wrap = document.getElementById('ss-img-wrap');
-  if(!wrap) return;
-  wrap.addEventListener('click', function(e){
-    if(e.target.closest('#ss-prev')||e.target.closest('#ss-next')||e.target.closest('#ss-close')) return;
-    ssPauseToggle();
-  });
-  /* Touch swipe */
-  var tsx = null;
-  wrap.addEventListener('touchstart', function(e){ tsx = e.touches[0].clientX; },{passive:true});
-  wrap.addEventListener('touchend',   function(e){
-    if(tsx===null) return;
-    var dx = e.changedTouches[0].clientX - tsx; tsx = null;
-    if(Math.abs(dx) > 44){ dx<0 ? ssNext() : ssPrev(); }
-  },{passive:true});
-});
-
-/* Keyboard: Esc / arrows / space while slideshow is open */
-document.addEventListener('keydown', function(e){
-  var ov = document.getElementById('ss-overlay');
-  if(!ov || !ov.classList.contains('open')) return;
-  if(e.key==='Escape')     { ssClose();        e.preventDefault(); return; }
-  if(e.key==='ArrowRight') { ssNext();         e.preventDefault(); return; }
-  if(e.key==='ArrowLeft')  { ssPrev();         e.preventDefault(); return; }
-  if(e.key===' ')          { ssPauseToggle();  e.preventDefault(); return; }
-});
-
-
-goHome();
+document.addEventListener('DOMContentLoaded', function(){ goHome(); });
 """
 
 
@@ -4425,23 +4254,7 @@ goHome();
         '  </div>\n'
         '</footer>\n\n'
 
-        '<!-- SLIDESHOW OVERLAY -->\n'
-        '<div id="ss-overlay" role="dialog" aria-modal="true">\n'
-        '  <div id="ss-img-wrap">\n'
-        '    <img id="ss-img" src="" alt="">\n'
-        '    <button class="ss-nav-btn" id="ss-prev" onclick="ssPrev()" aria-label="Previous">&#8249;</button>\n'
-        '    <button class="ss-nav-btn" id="ss-next" onclick="ssNext()" aria-label="Next">&#8250;</button>\n'
-        '    <button id="ss-close" onclick="ssClose()" aria-label="Close">&#x2715;</button>\n'
-        '    <div id="ss-pause-lbl">PAUSED</div>\n'
-        '  </div>\n'
-        '  <div id="ss-bar">\n'
-        '    <span id="ss-counter"></span>\n'
-        '    <span id="ss-caption"></span>\n'
-        '    <span id="ss-hint">Tap photo to pause</span>\n'
-        '    <div id="ss-progress"></div>\n'
-        '  </div>\n'
-        '</div>\n\n'
-        + '<script>' + js + '</script>\n'
+        '<script>' + js + '</script>\n'
         '</body>\n'
         '</html>'
     )
