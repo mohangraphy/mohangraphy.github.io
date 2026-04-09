@@ -337,6 +337,14 @@ def build_maps(unique_entries):
             continue
 
         # Determine location bucket
+        # Auto-detect international: if city/state resolves to a known country,
+        # treat as international even if Places/International tag was not set.
+        if not is_international and not is_national:
+            auto_country = KNOWN_COUNTRIES.get((city or state).lower().strip(), '')
+            if auto_country:
+                is_international = True
+                country = auto_country
+
         if is_international:
             # Resolve country: use explicit field, or look up from KNOWN_COUNTRIES
             resolved_country = country
