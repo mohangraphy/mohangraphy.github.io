@@ -2996,7 +2996,7 @@ function showNewPhotos(){
     + '<div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;">'
     + '<div><div class="gal-title">Recently Added</div>'
     + '<div class="gal-sub">' + uniqueItems.length + ' Photo' + (uniqueItems.length > 1 ? 's' : '') + ' · Last ' + NEW_DAYS + ' days</div></div>'
-    + '<button class="slideshow-btn" onclick="startSlideshow(\'gallery-new-photos\')">'  
+    + '<button class="slideshow-btn" onclick="startSlideshow(\x27gallery-new-photos\x27)">'
     + '<svg width="11" height="11" viewBox="0 0 11 11" fill="none"><polygon points="1,0.5 10.5,5.5 1,10.5" fill="currentColor"/></svg>'
     + 'View Slideshow</button>'
     + '</div></div>'
