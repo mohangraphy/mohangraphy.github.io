@@ -2,6 +2,7 @@ import os
 import json
 import random
 import subprocess
+from urllib.parse import quote as _url_quote
 
 # ── CONFIGURATION ─────────────────────────────────────────────────────────────
 ROOT_DIR         = "/Users/ncm/Pictures/Mohangraphy"
@@ -194,8 +195,8 @@ def thumb_img(rel_path, web_rel_path, alt=""):
       • lazy-loads + async-decodes
     """
     return (
-        '<img src="' + rel_path + '" '
-        'data-full="' + web_rel_path + '" '
+        '<img src="' + _url_quote(rel_path,safe="/") + '" '
+        'data-full="' + _url_quote(web_rel_path,safe="/") + '" '
         'loading="lazy" decoding="async" '
         'alt="' + alt + '" '
         'style="width:100%;height:100%;object-fit:cover;display:block;">'
@@ -247,8 +248,22 @@ def build_maps(unique_entries):
         'thekkady':    ('Kerala',     'Thekkady'),
         'madurai':     ('Tamil Nadu', 'Madurai'),
         'aihole':      ('Karnataka',  'Aihole'),
-        'banff':       ('Alberta',    'Banff'),
-        'tadoba':      ('Maharashtra','Tadoba'),
+        'banff':         ('Alberta',          'Banff'),
+        'jasper':        ('Alberta',          'Jasper'),
+        'jasper np':     ('Alberta',          'Jasper'),
+        'jaspernp':      ('Alberta',          'Jasper'),
+        'athabasca':     ('Alberta',          'Jasper'),
+        'lake louise':   ('Alberta',          'Lake Louise'),
+        'yoho':          ('British Columbia', 'Yoho'),
+        'vancouver':     ('British Columbia', 'Vancouver'),
+        'victoria':      ('British Columbia', 'Victoria'),
+        'kelowna':       ('British Columbia', 'Kelowna'),
+        'toronto':       ('Ontario',          'Toronto'),
+        'ottawa':        ('Ontario',          'Ottawa'),
+        'niagara':       ('Ontario',          'Niagara'),
+        'montreal':      ('Quebec',           'Montreal'),
+        'quebec':        ('Quebec',           'Quebec City'),
+        'tadoba':        ('Maharashtra',      'Tadoba'),
     }
 
     for info in unique_entries:
@@ -2450,7 +2465,7 @@ footer {
 
             india_city_cards += (
                 '\n<div class="cat-card" onclick="showGallery(\'' + city_id + '\')">'
-                + ('<img class="cat-card-img" src="' + city_cover + '" loading="lazy" decoding="async" alt="">'
+                + ('<img class="cat-card-img" src="' + _url_quote(city_cover,safe="/") + '" loading="lazy" decoding="async" alt="">'
                    if city_cover else '<div class="cat-card-placeholder"><span>Coming<br>Soon</span></div>')
                 + '<div class="cat-card-bar">'
                 '<div class="cat-card-name">' + city + '</div>'
@@ -2484,7 +2499,7 @@ footer {
                     ' data-date-added="' + da             + '"'
                     ' onclick="openImgModal(this)">'
                     '<div class="grid-item-photo">'
-                    '<img src="' + th + '" data-full="' + web + '" loading="lazy" decoding="async" alt="' + rem + '"'
+                    '<img src="' + _url_quote(th,safe="/") + '" data-full="' + _url_quote(web,safe="/") + '" loading="lazy" decoding="async" alt=""'
                     ' style="width:100%;height:100%;object-fit:cover;display:block;">'
                     '<div class="grid-item-overlay"></div>'
                     + overlay_html +
@@ -2510,7 +2525,7 @@ footer {
 
             overseas_country_cards += (
                 '\n<div class="cat-card" onclick="showGallery(\'' + ctry_id + '\')">'
-                + ('<img class="cat-card-img" src="' + ctry_cover + '" loading="lazy" decoding="async" alt="">'
+                + ('<img class="cat-card-img" src="' + _url_quote(ctry_cover,safe="/") + '" loading="lazy" decoding="async" alt="">'
                    if ctry_cover else '<div class="cat-card-placeholder"><span>Coming<br>Soon</span></div>')
                 + '<div class="cat-card-bar">'
                 '<div class="cat-card-name">' + country + '</div>'
@@ -2562,7 +2577,7 @@ footer {
                         ' data-date-added="' + da             + '"'
                         ' onclick="openImgModal(this)">'
                         '<div class="grid-item-photo">'
-                        '<img src="' + th + '" data-full="' + web + '" loading="lazy" decoding="async" alt="' + rem + '"'
+                        '<img src="' + _url_quote(th,safe="/") + '" data-full="' + _url_quote(web,safe="/") + '" loading="lazy" decoding="async" alt=""'
                         ' style="width:100%;height:100%;object-fit:cover;display:block;">'
                         '<div class="grid-item-overlay"></div>'
                         + overlay_html +
@@ -2679,7 +2694,6 @@ function hideAll(){
     var el = document.getElementById(id); if(el) el.remove();
   });
   setActiveTab(null);
-  markNewPhotos();
 }
 
 function setActiveTab(which){
@@ -2816,7 +2830,10 @@ NAV_PANELS.forEach(function(id){
 /* ── Recently Added: mark new photos + show banner ── */
 var NEW_DAYS = 14;
 
+var _newPhotosMarked = false;
 function markNewPhotos(){
+  if(_newPhotosMarked) return;
+  _newPhotosMarked = true;
   var now = new Date();
   var seenPaths = {};
   var uniqueCount = 0;
@@ -2826,11 +2843,12 @@ function markNewPhotos(){
     if(!da) return;
     var diffDays = (now - new Date(da)) / (1000 * 60 * 60 * 24);
     if(diffDays <= NEW_DAYS && diffDays >= 0){
-      if(!item.querySelector('.new-badge')){
+      var photoDiv = item.querySelector('.grid-item-photo');
+      if(photoDiv && !photoDiv.querySelector('.new-badge')){
         var badge = document.createElement('div');
         badge.className = 'new-badge';
         badge.textContent = 'NEW';
-        item.querySelector('.grid-item-photo').appendChild(badge);
+        photoDiv.appendChild(badge);
       }
       if(!seenPaths[path]){
         seenPaths[path] = true;
@@ -2874,11 +2892,19 @@ function showNewPhotos(){
   var existing = document.getElementById('gallery-new-photos');
   if(existing) existing.remove();
 
-  /* Step 4: build tags HTML for each photo */
+  /* Step 4: build tags — strip Places/ location tags, keep only content category.
+     Drop parent when more-specific child present (e.g. show only People & Culture/Street). */
   var gridHTML = uniqueItems.map(function(item){
     var cats = (item.getAttribute('data-cats') || '').split(',').map(function(s){ return s.trim(); }).filter(Boolean);
-    var tagsHTML = cats.length
-      ? '<div class="new-photo-tags">' + cats.map(function(cat){
+    /* Remove Places/ tags — location classifiers, not content categories */
+    var contentCats = cats.filter(function(cat){ return cat.indexOf('Places') !== 0; });
+    /* Drop parent tag when more-specific child present */
+    var filtered = contentCats.filter(function(cat){
+      return !contentCats.some(function(other){ return other !== cat && other.indexOf(cat+'/') === 0; });
+    });
+    var displayCats = filtered.length ? filtered : (contentCats.length ? contentCats : cats);
+    var tagsHTML = displayCats.length
+      ? '<div class="new-photo-tags">' + displayCats.map(function(cat){
           return '<span class="new-photo-tag">' + cat.replace(/\//g,' / ').toUpperCase() + '</span>';
         }).join('') + '</div>'
       : '';
@@ -3477,7 +3503,7 @@ async function subscribeVisitor(){
   } catch(err){ msg.textContent='Connection error. Please try again.'; }
 }
 
-goHome();
+document.addEventListener('DOMContentLoaded', function(){ goHome(); });
 """
 
 
