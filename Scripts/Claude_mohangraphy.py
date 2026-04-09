@@ -35,11 +35,19 @@ CAT_TAG_MAP = {
     "Landscape": {
         "Nature/Landscapes", "Nature/Landscape", "Nature/Landscape/Mountains",
         "Nature/Mountains", "Nature/Sunsets and Sunrises", "Nature/Sunsets",
+        # Common Curator.py variants:
+        "Landscape", "Landscapes", "Nature/Landscape/Glacier",
+        "Nature/Landscape/Lakes", "Nature/Landscape/Waterfalls",
+        "Nature/Landscape/Forests", "Nature/Landscape/Canada",
+        "Nature/Landscape/Panorama", "Nature/Panorama",
     },
     "Flora & Fauna": {
         "Nature/Wildlife", "Nature/Birds", "Nature/Flora",
         "Nature/Flowers", "Flowers", "Birds", "Nature/Flowers",
         "Flora & Fauna",    # top-level tag used when all three apply
+        # Common variants:
+        "Wildlife", "Nature/Animals", "Nature/Wildlife/Canada",
+        "Nature/Birds/Canada",
     },
     "Architecture": {
         "Architecture",
@@ -331,10 +339,25 @@ def build_maps(unique_entries):
             if 'Places/International' in raw_tag:
                 is_international = True
 
-        # If no content category tag found, skip location assignment
-        # (photo will still appear if found by folder scan)
+        # Warn about photos whose tags don't map to any content category
+        if tags and not content_cats:
+            print(f"  ⚠️  No content category for: {os.path.basename(path)}")
+            print(f"     Tags: {tags}")
+            print(f"     → Will try path-based fallback")
+
+        # If no content category tag found, try inferring from file path
         if not content_cats:
-            continue
+            path_lower = path.lower().replace('\\', '/')
+            if any(k in path_lower for k in ['/landscape', '/landscapes', '/mountain', '/sunset', '/glacier', '/panorama']):
+                content_cats.add('Landscape')
+            elif any(k in path_lower for k in ['/wildlife', '/birds', '/flora', '/flowers', '/fauna']):
+                content_cats.add('Flora & Fauna')
+            elif '/architecture' in path_lower:
+                content_cats.add('Architecture')
+            elif any(k in path_lower for k in ['/people', '/portrait', '/street', '/culture']):
+                content_cats.add('People & Culture')
+            if not content_cats:
+                continue  # still nothing — skip
 
         # Determine location bucket
         # Auto-detect international: if city/state resolves to a known country,
@@ -383,6 +406,20 @@ def build_maps(unique_entries):
                     m[effective_city].setdefault(state, [])
                     if path not in m[effective_city][state]:
                         m[effective_city][state].append(path)
+
+    # ── DIAGNOSTIC: print Canada/overseas photo summary ──────────────────────
+    overseas_total = 0
+    for cat in cat_city_map:
+        for country, cities in cat_city_map[cat]['Overseas'].items():
+            for city2, paths2 in cities.items():
+                overseas_total += len(paths2)
+                if country == 'Canada':
+                    print(f"  📷 {cat}/Canada/{city2}: {len(paths2)} photo(s)")
+    if overseas_total == 0:
+        print("  ⚠️  WARNING: No overseas photos found. Check that your Canada photos have:")
+        print("     1. A content tag: Nature/Landscapes, Nature/Landscape, Nature/Wildlife, etc.")
+        print("     2. Either Places/International tag OR place/city matching a known Canadian city")
+    # ── END DIAGNOSTIC ────────────────────────────────────────────────────────
 
     return cat_city_map, all_paths, path_info_map
 
