@@ -236,6 +236,16 @@ def build_maps(unique_entries):
     path_info_map = {}
 
     # Known single-word place→(state, city) mapping for backward compatibility
+    # Map province names → country (for overseas photos where country field is blank)
+    KNOWN_COUNTRIES = {
+        'alberta': 'Canada', 'british columbia': 'Canada', 'ontario': 'Canada',
+        'quebec': 'Canada', 'manitoba': 'Canada', 'saskatchewan': 'Canada',
+        'nova scotia': 'Canada', 'new brunswick': 'Canada',
+        'banff': 'Canada', 'jasper': 'Canada', 'lake louise': 'Canada',
+        'yoho': 'Canada', 'vancouver': 'Canada', 'victoria': 'Canada',
+        'toronto': 'Canada', 'ottawa': 'Canada', 'montreal': 'Canada',
+    }
+
     KNOWN_STATES = {
         'megamalai':   ('Tamil Nadu', 'Megamalai'),
         'munnar':      ('Kerala',     'Munnar'),
@@ -328,8 +338,16 @@ def build_maps(unique_entries):
 
         # Determine location bucket
         if is_international:
-            intl_country = country if country else state
-            intl_city    = city    if city    else state
+            # Resolve country: use explicit field, or look up from KNOWN_COUNTRIES
+            resolved_country = country
+            if not resolved_country and city:
+                resolved_country = KNOWN_COUNTRIES.get(city.lower().strip(), '')
+            if not resolved_country and state:
+                resolved_country = KNOWN_COUNTRIES.get(state.lower().strip(), '')
+            if not resolved_country:
+                resolved_country = state  # last resort fallback
+            intl_country = resolved_country
+            intl_city    = city if city else state
             if intl_country and intl_city:
                 for cat in content_cats:
                     m = cat_city_map[cat]['Overseas']
