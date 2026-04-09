@@ -1563,6 +1563,99 @@ header {
   color: rgba(255,255,255,0.1); text-transform: uppercase; letter-spacing: 6px;
 }
 
+/* ── SLIDESHOW BUTTON ─────────────────────────────────────────────────── */
+.slideshow-btn {
+  display: inline-flex; align-items: center; gap: 8px;
+  background: none;
+  border: 1px solid rgba(201,169,110,0.5);
+  color: var(--gold);
+  cursor: pointer;
+  padding: 0 18px; height: 34px;
+  font-family: 'Montserrat', sans-serif;
+  font-size: 9px; font-weight: 600; letter-spacing: 3px; text-transform: uppercase;
+  transition: background .2s, border-color .2s;
+  white-space: nowrap; flex-shrink: 0;
+}
+.slideshow-btn:hover { background: rgba(201,169,110,0.1); border-color: var(--gold); }
+.slideshow-btn svg { flex-shrink: 0; }
+
+/* ── FULLSCREEN SLIDESHOW OVERLAY ─────────────────────────────────────── */
+#ss-overlay {
+  display: none; position: fixed; inset: 0; z-index: 9800;
+  background: #000; flex-direction: column;
+}
+#ss-overlay.open { display: flex; }
+
+#ss-img-wrap {
+  flex: 1 1 0; position: relative; overflow: hidden;
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer;
+}
+#ss-img {
+  max-width: 100%; max-height: 100%;
+  object-fit: contain; display: block;
+  user-select: none; -webkit-user-drag: none;
+  opacity: 1; transition: opacity 0.5s ease;
+}
+#ss-img.ss-fade { opacity: 0; }
+
+#ss-bar {
+  flex-shrink: 0; height: 52px;
+  background: rgba(0,0,0,0.85);
+  border-top: 1px solid rgba(201,169,110,0.12);
+  display: flex; align-items: center;
+  padding: 0 16px; gap: 14px;
+}
+#ss-counter {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 9px; letter-spacing: 3px; color: rgba(255,255,255,0.35);
+  text-transform: uppercase; white-space: nowrap;
+}
+#ss-caption {
+  flex: 1; text-align: center;
+  font-family: 'Montserrat', sans-serif;
+  font-size: 11px; letter-spacing: 1px; color: rgba(255,255,255,0.65);
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+#ss-hint {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 8px; letter-spacing: 2px; color: rgba(255,255,255,0.25);
+  text-transform: uppercase; white-space: nowrap;
+}
+#ss-progress {
+  position: absolute; bottom: 0; left: 0; height: 2px;
+  background: var(--gold); width: 0%;
+  transition: width linear;
+}
+.ss-nav-btn {
+  position: absolute; top: 50%; transform: translateY(-50%);
+  background: rgba(0,0,0,0.35); border: none; cursor: pointer;
+  color: rgba(255,255,255,0.5); font-size: 28px;
+  width: 52px; height: 52px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  transition: color .2s, background .2s; z-index: 1;
+}
+.ss-nav-btn:hover { color: var(--gold); background: rgba(0,0,0,0.6); }
+#ss-prev { left: 10px; }
+#ss-next { right: 10px; }
+#ss-close {
+  position: absolute; top: 12px; right: 14px; z-index: 9801;
+  background: rgba(0,0,0,0.5); border: 1px solid rgba(255,255,255,0.15);
+  cursor: pointer; color: rgba(255,255,255,0.6); font-size: 18px;
+  width: 38px; height: 38px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  transition: color .2s, border-color .2s;
+}
+#ss-close:hover { color: var(--gold); border-color: var(--gold); }
+#ss-pause-lbl {
+  position: absolute; top: 14px; left: 50%; transform: translateX(-50%);
+  font-family: 'Montserrat', sans-serif; font-size: 8px; letter-spacing: 3px;
+  text-transform: uppercase; color: rgba(255,255,255,0.4);
+  background: rgba(0,0,0,0.55); padding: 4px 14px;
+  pointer-events: none; opacity: 0; transition: opacity .3s;
+}
+#ss-overlay.ss-paused #ss-pause-lbl { opacity: 1; }
+
 /* Toast notification */
 #toast {
   position: fixed; bottom: 80px; left: 50%; transform: translateX(-50%);
@@ -2568,11 +2661,16 @@ footer {
                     + overlay_html +
                     '</div></div>'
                 )
+            _ss_btn = ('<button class="slideshow-btn" onclick="startSlideshow(\'' + city_id + '\')">'
+                       '<svg width="11" height="11" viewBox="0 0 11 11" fill="none"><polygon points="1,0.5 10.5,5.5 1,10.5" fill="currentColor"/></svg>'
+                       'View Slideshow</button>') if city_paths else ''
             gallery_blocks += (
                 '\n<div class="section-block" id="' + city_id + '">'
                 '\n  <div class="gal-header">'
-                '<div class="gal-title">' + city + '</div>'
+                '<div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;">'
+                '<div><div class="gal-title">' + city + '</div>'
                 '<div class="gal-sub">' + m_cat + ' · ' + (state_name + ' · ' if state_name else '') + str(len(city_paths)) + ' Photos</div>'
+                '</div>' + _ss_btn + '</div>'
                 '</div>'
                 + ('\n  <div class="grid">' + imgs + '</div>' if city_paths else '\n  <div class="wip-message">Work in progress</div>')
                 + '\n</div>'
@@ -2646,11 +2744,16 @@ footer {
                         + overlay_html +
                         '</div></div>'
                     )
+                _ss_btn2 = ('<button class="slideshow-btn" onclick="startSlideshow(\'' + city_id + '\')">'
+                            '<svg width="11" height="11" viewBox="0 0 11 11" fill="none"><polygon points="1,0.5 10.5,5.5 1,10.5" fill="currentColor"/></svg>'
+                            'View Slideshow</button>') if city_paths else ''
                 gallery_blocks += (
                     '\n<div class="section-block" id="' + city_id + '">'
                     '\n  <div class="gal-header">'
-                    '<div class="gal-title">' + city + '</div>'
+                    '<div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;">'
+                    '<div><div class="gal-title">' + city + '</div>'
                     '<div class="gal-sub">' + m_cat + ' · ' + country + ' · ' + str(len(city_paths)) + ' Photos</div>'
+                    '</div>' + _ss_btn2 + '</div>'
                     '</div>'
                     + ('\n  <div class="grid">' + imgs + '</div>' if city_paths else '\n  <div class="wip-message">Work in progress</div>')
                     + '\n</div>'
@@ -2979,8 +3082,14 @@ function showNewPhotos(){
   block.id = 'gallery-new-photos';
   block.className = 'section-block visible';
   block.style.cssText = 'padding-top:calc(var(--hdr) + 32px);';
-  block.innerHTML = '<div class="gal-header"><div class="gal-title">Recently Added</div>'
+  block.innerHTML = '<div class="gal-header">'
+    + '<div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;">'
+    + '<div><div class="gal-title">Recently Added</div>'
     + '<div class="gal-sub">' + uniqueItems.length + ' Photo' + (uniqueItems.length > 1 ? 's' : '') + ' · Last ' + NEW_DAYS + ' days</div></div>'
+    + '<button class="slideshow-btn" onclick="startSlideshow(\x27gallery-new-photos\x27)">'
+    + '<svg width="11" height="11" viewBox="0 0 11 11" fill="none"><polygon points="1,0.5 10.5,5.5 1,10.5" fill="currentColor"/></svg>'
+    + 'View Slideshow</button>'
+    + '</div></div>'
     + '<div class="grid">' + gridHTML + '</div>';
   galContainer.prepend(block);
   window.scrollTo(0, 0);
@@ -3565,6 +3674,157 @@ async function subscribeVisitor(){
     } else { msg.textContent='Something went wrong. Please try again.'; }
   } catch(err){ msg.textContent='Connection error. Please try again.'; }
 }
+
+/* ══════════════════════════════════════════════════════
+   SLIDESHOW ENGINE
+   Photo duration: 3s per slide.
+   Click photo to pause/resume. Arrows or swipe to step.
+   Esc to close.
+   ══════════════════════════════════════════════════════ */
+var _ssPhotos  = [];   /* [{thumb, full, caption}] */
+var _ssIdx     = 0;
+var _ssTimer   = null;
+var _ssFade    = null;
+var _ssDur     = 3000; /* ms per slide */
+var _ssPaused  = false;
+
+function startSlideshow(blockId){
+  var block = document.getElementById(blockId);
+  if(!block) return;
+  var items = Array.from(block.querySelectorAll('.grid-item'));
+  if(!items.length){ showToast && showToast('No photos to show.'); return; }
+
+  _ssPhotos = items.map(function(item){
+    var img  = item.querySelector('.grid-item-photo img');
+    var full = img ? (img.getAttribute('data-full') || img.src) : '';
+    var th   = img ? img.src : '';
+    var rem  = item.getAttribute('data-remarks') || '';
+    var city = item.getAttribute('data-city')    || '';
+    var cap  = [rem, city].filter(Boolean).join('  ·  ');
+    return { thumb: th, full: full, caption: cap };
+  });
+
+  _ssIdx    = 0;
+  _ssPaused = false;
+  var ov = document.getElementById('ss-overlay');
+  if(ov){ ov.classList.remove('ss-paused'); ov.classList.add('open'); }
+  document.body.style.overflow = 'hidden';
+  _ssShow(0);
+  _ssSchedule();
+}
+
+function _ssShow(idx){
+  if(!_ssPhotos.length) return;
+  idx = (idx + _ssPhotos.length) % _ssPhotos.length;
+  _ssIdx = idx;
+  var entry = _ssPhotos[idx];
+
+  /* Fade out */
+  var img = document.getElementById('ss-img');
+  if(img) img.classList.add('ss-fade');
+  clearTimeout(_ssFade);
+  _ssFade = setTimeout(function(){
+    var img2 = document.getElementById('ss-img');
+    if(!img2) return;
+    /* Show thumb immediately, upgrade to full in background */
+    if(entry.thumb) img2.src = entry.thumb;
+    img2.classList.remove('ss-fade');
+    if(entry.full && entry.full !== entry.thumb){
+      var hi = new Image();
+      var cap = idx;
+      hi.onload = function(){
+        if(_ssIdx === cap){ var i3=document.getElementById('ss-img'); if(i3) i3.src=entry.full; }
+      };
+      hi.src = entry.full;
+    }
+  }, 300);
+
+  /* Update counter and caption */
+  var ctr = document.getElementById('ss-counter');
+  if(ctr) ctr.textContent = (idx+1) + ' / ' + _ssPhotos.length;
+  var cap = document.getElementById('ss-caption');
+  if(cap) cap.textContent = entry.caption;
+
+  /* Animate progress bar */
+  var pr = document.getElementById('ss-progress');
+  if(pr){
+    pr.style.transition = 'none';
+    pr.style.width = '0%';
+    setTimeout(function(){
+      var pr2 = document.getElementById('ss-progress');
+      if(pr2 && !_ssPaused){
+        pr2.style.transition = 'width ' + _ssDur + 'ms linear';
+        pr2.style.width = '100%';
+      }
+    }, 50);
+  }
+}
+
+function _ssSchedule(){
+  clearTimeout(_ssTimer);
+  if(!_ssPaused && _ssIdx < _ssPhotos.length - 1){
+    _ssTimer = setTimeout(function(){ _ssShow(_ssIdx+1); _ssSchedule(); }, _ssDur);
+  }
+}
+
+function ssPrev(){ clearTimeout(_ssTimer); _ssShow(_ssIdx-1); if(!_ssPaused) _ssSchedule(); }
+function ssNext(){ clearTimeout(_ssTimer); _ssShow(_ssIdx+1); if(!_ssPaused) _ssSchedule(); }
+
+function ssPauseToggle(){
+  _ssPaused = !_ssPaused;
+  var ov = document.getElementById('ss-overlay');
+  if(ov) ov.classList.toggle('ss-paused', _ssPaused);
+  var pr = document.getElementById('ss-progress');
+  if(_ssPaused){
+    clearTimeout(_ssTimer);
+    if(pr) pr.style.transition = 'none';
+  } else {
+    /* Resume progress bar from current position */
+    var cur = pr ? parseFloat(pr.style.width)||0 : 0;
+    var remain = _ssDur * (1 - cur/100);
+    if(pr){ pr.style.transition = 'width '+remain+'ms linear'; pr.style.width='100%'; }
+    clearTimeout(_ssTimer);
+    if(_ssIdx < _ssPhotos.length - 1){ _ssTimer = setTimeout(function(){ _ssShow(_ssIdx+1); _ssSchedule(); }, remain); }
+  }
+}
+
+function ssClose(){
+  clearTimeout(_ssTimer); clearTimeout(_ssFade);
+  var ov = document.getElementById('ss-overlay');
+  if(ov){ ov.classList.remove('open','ss-paused'); }
+  var img = document.getElementById('ss-img');
+  if(img) img.src = '';
+  document.body.style.overflow = '';
+  _ssPaused = false;
+}
+
+/* Click photo = pause/resume */
+document.addEventListener('DOMContentLoaded', function(){
+  var wrap = document.getElementById('ss-img-wrap');
+  if(!wrap) return;
+  wrap.addEventListener('click', function(e){
+    if(e.target.closest('#ss-prev')||e.target.closest('#ss-next')||e.target.closest('#ss-close')) return;
+    ssPauseToggle();
+  });
+  /* Touch swipe */
+  var tsx = null;
+  wrap.addEventListener('touchstart', function(e){ tsx = e.touches[0].clientX; },{passive:true});
+  wrap.addEventListener('touchend',   function(e){
+    if(tsx===null) return;
+    var dx = e.changedTouches[0].clientX - tsx; tsx = null;
+    if(Math.abs(dx) > 44){ dx<0 ? ssNext() : ssPrev(); }
+  },{passive:true});
+});
+
+/* Keyboard: Esc / arrows / space while slideshow is open */
+document.addEventListener('keydown', function(e){
+  var ov = document.getElementById('ss-overlay');
+  if(!ov || !ov.classList.contains('open')) return;
+  if(e.key==='Escape')     { ssClose();        e.preventDefault(); return; }
+  if(e.key==='ArrowRight') { ssNext();         e.preventDefault(); return; }
+  if(e.key==='ArrowLeft')  { ssPrev();         e.preventDefault(); return; }
+  if(e.key===' ')          { ssPauseToggle();  e.preventDefault(); return; }
+});
 
 document.addEventListener('DOMContentLoaded', function(){ goHome(); });
 """
@@ -4253,6 +4513,23 @@ document.addEventListener('DOMContentLoaded', function(){ goHome(); });
         '    <div class="footer-copy">&copy; ' + photographer + ' &middot; All rights reserved &middot; Mohangraphy<span id="visit-count"></span></div>\n'
         '  </div>\n'
         '</footer>\n\n'
+
+        '<!-- SLIDESHOW OVERLAY -->\n'
+        '<div id="ss-overlay" role="dialog" aria-modal="true">\n'
+        '  <div id="ss-img-wrap">\n'
+        '    <img id="ss-img" src="" alt="">\n'
+        '    <button class="ss-nav-btn" id="ss-prev" onclick="ssPrev()" aria-label="Previous">&#8249;</button>\n'
+        '    <button class="ss-nav-btn" id="ss-next" onclick="ssNext()" aria-label="Next">&#8250;</button>\n'
+        '    <button id="ss-close" onclick="ssClose()" aria-label="Close">&#x2715;</button>\n'
+        '    <div id="ss-pause-lbl">PAUSED</div>\n'
+        '  </div>\n'
+        '  <div id="ss-bar">\n'
+        '    <span id="ss-counter"></span>\n'
+        '    <span id="ss-caption"></span>\n'
+        '    <span id="ss-hint">Tap photo to pause</span>\n'
+        '    <div id="ss-progress"></div>\n'
+        '  </div>\n'
+        '</div>\n\n'
 
         '<script>' + js + '</script>\n'
         '</body>\n'
