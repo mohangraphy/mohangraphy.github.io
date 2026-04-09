@@ -2992,8 +2992,14 @@ function showNewPhotos(){
   block.id = 'gallery-new-photos';
   block.className = 'section-block visible';
   block.style.cssText = 'padding-top:calc(var(--hdr) + 32px);';
-  block.innerHTML = '<div class="gal-header"><div class="gal-title">Recently Added</div>'
+  block.innerHTML = '<div class="gal-header">'
+    + '<div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;">'
+    + '<div><div class="gal-title">Recently Added</div>'
     + '<div class="gal-sub">' + uniqueItems.length + ' Photo' + (uniqueItems.length > 1 ? 's' : '') + ' · Last ' + NEW_DAYS + ' days</div></div>'
+    + '<button class="slideshow-btn" onclick="startSlideshow(\'gallery-new-photos\')">'  
+    + '<svg width="11" height="11" viewBox="0 0 11 11" fill="none"><polygon points="1,0.5 10.5,5.5 1,10.5" fill="currentColor"/></svg>'
+    + 'View Slideshow</button>'
+    + '</div></div>'
     + '<div class="grid">' + gridHTML + '</div>';
   galContainer.prepend(block);
   window.scrollTo(0, 0);
@@ -3589,7 +3595,7 @@ var _ssPhotos  = [];   /* [{thumb, full, caption}] */
 var _ssIdx     = 0;
 var _ssTimer   = null;
 var _ssFade    = null;
-var _ssDur     = 4500; /* ms per slide */
+var _ssDur     = 3000; /* ms per slide */
 var _ssPaused  = false;
 
 function startSlideshow(blockId){
@@ -3666,7 +3672,7 @@ function _ssShow(idx){
 
 function _ssSchedule(){
   clearTimeout(_ssTimer);
-  if(!_ssPaused){
+  if(!_ssPaused && _ssIdx < _ssPhotos.length - 1){
     _ssTimer = setTimeout(function(){ _ssShow(_ssIdx+1); _ssSchedule(); }, _ssDur);
   }
 }
@@ -3688,7 +3694,7 @@ function ssPauseToggle(){
     var remain = _ssDur * (1 - cur/100);
     if(pr){ pr.style.transition = 'width '+remain+'ms linear'; pr.style.width='100%'; }
     clearTimeout(_ssTimer);
-    _ssTimer = setTimeout(function(){ _ssShow(_ssIdx+1); _ssSchedule(); }, remain);
+    if(_ssIdx < _ssPhotos.length - 1){ _ssTimer = setTimeout(function(){ _ssShow(_ssIdx+1); _ssSchedule(); }, remain); }
   }
 }
 
