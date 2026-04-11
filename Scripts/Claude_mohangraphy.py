@@ -3241,12 +3241,22 @@ function markNewPhotos(){
       }
     }
   });
-  /* Update banner label — button is already in DOM (rendered by Python) if there
-     are recent photos. Just set the text so the JS-counted figure is accurate. */
-  var label = document.getElementById('new-photos-label');
-  if(label && uniqueCount > 0){
-    label.textContent = uniqueCount + (uniqueCount === 1 ? ' photo' : ' photos')
-      + ' recently added — click to view';
+  /* Always update the banner label with the correct message */
+  var label  = document.getElementById('new-photos-label');
+  var banner = document.getElementById('new-photos-banner');
+  if(label){
+    if(uniqueCount > 0){
+      label.textContent = uniqueCount + (uniqueCount === 1 ? ' photo' : ' photos')
+        + ' recently added — click to view';
+    } else {
+      label.textContent = 'No photos added in the past ' + NEW_DAYS + ' days';
+      /* Tone down the button when there is nothing new */
+      if(banner){
+        banner.style.opacity = '0.45';
+        banner.style.cursor  = 'default';
+        banner.onclick = null;
+      }
+    }
   }
 }
 
@@ -4238,16 +4248,12 @@ document.addEventListener('keydown', function(e){
         '    </svg>\n'
         '    <span>Explore</span>\n'
         '  </button>\n'
-        + (
-            '  <button id="new-photos-banner" onclick="showNewPhotos()" aria-label="View recently added photos">\n'
-            '    <svg width="10" height="10" viewBox="0 0 10 10" fill="none" style="flex-shrink:0">'
-            '<circle cx="5" cy="5" r="4" stroke="currentColor" stroke-width="1.2"/>'
-            '<circle cx="5" cy="5" r="1.5" fill="currentColor"/></svg>\n'
-            '    <span id="new-photos-label"></span>\n'
-            '  </button>\n'
-            if _ra_count > 0 else
-            '  <!-- no recently added photos -->\n'
-        )
+        + '  <button id="new-photos-banner" onclick="showNewPhotos()" aria-label="View recently added photos">\n'
+        '    <svg width="10" height="10" viewBox="0 0 10 10" fill="none" style="flex-shrink:0">'
+        '<circle cx="5" cy="5" r="4" stroke="currentColor" stroke-width="1.2"/>'
+        '<circle cx="5" cy="5" r="1.5" fill="currentColor"/></svg>\n'
+        '    <span id="new-photos-label">Checking for new photos\u2026</span>\n'
+        '  </button>\n'
         + '</div>\n\n'
 
         # ── MAIN MENU ────────────────────────────────────────────────────────
@@ -4732,7 +4738,7 @@ def notify_subscribers(new_photo_count=0):
     # ── Fetch subscribers (name + email) ──────────────────────────────────────
     try:
         req = urllib.request.Request(
-            supa_url + '/rest/v1/subscribers?select=name,email&unsubscribed=eq.false',
+            supa_url + '/rest/v1/subscribers?select=name,email',
             headers={
                 'apikey':        supa_key,
                 'Authorization': 'Bearer ' + supa_key,

@@ -188,12 +188,22 @@ function markNewPhotos(){
       }
     }
   });
-  /* Update banner label — button is already in DOM (rendered by Python) if there
-     are recent photos. Just set the text so the JS-counted figure is accurate. */
-  var label = document.getElementById('new-photos-label');
-  if(label && uniqueCount > 0){
-    label.textContent = uniqueCount + (uniqueCount === 1 ? ' photo' : ' photos')
-      + ' recently added — click to view';
+  /* Always update the banner label with the correct message */
+  var label  = document.getElementById('new-photos-label');
+  var banner = document.getElementById('new-photos-banner');
+  if(label){
+    if(uniqueCount > 0){
+      label.textContent = uniqueCount + (uniqueCount === 1 ? ' photo' : ' photos')
+        + ' recently added — click to view';
+    } else {
+      label.textContent = 'No photos added in the past ' + NEW_DAYS + ' days';
+      /* Tone down the button when there is nothing new */
+      if(banner){
+        banner.style.opacity = '0.45';
+        banner.style.cursor  = 'default';
+        banner.onclick = null;
+      }
+    }
   }
 }
 
