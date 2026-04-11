@@ -197,20 +197,24 @@ function markNewPhotos(){
 }
 
 function showNewPhotos(){
-  /* Collect unique photos by path — one entry per photo regardless of categories */
-  var now = new Date();
+  /* Collect all unique photos sorted by date_added descending.
+     Falls back to all grid items if none have a date_added value. */
   var seenPaths = {};
-  var uniqueItems = [];
-  document.querySelectorAll('.section-block:not(#gallery-new-photos) .grid-item[data-date-added]').forEach(function(item){
-    var da   = item.getAttribute('data-date-added');
+  var datedItems = [];
+  var allItems   = [];
+  document.querySelectorAll('.section-block:not(#gallery-new-photos) .grid-item').forEach(function(item){
     var path = item.getAttribute('data-photo') || '';
-    if(!da) return;
-    var diffDays = (now - new Date(da)) / (1000 * 60 * 60 * 24);
-    if(diffDays <= NEW_DAYS && diffDays >= 0 && !seenPaths[path]){
-      seenPaths[path] = true;
-      uniqueItems.push(item);
-    }
+    if(seenPaths[path]) return;
+    seenPaths[path] = true;
+    var da = item.getAttribute('data-date-added') || '';
+    if(da){ datedItems.push({item:item, da:da}); }
+    allItems.push(item);
   });
+  /* Sort dated items newest first */
+  datedItems.sort(function(a,b){ return b.da > a.da ? 1 : -1; });
+  var uniqueItems = datedItems.length
+    ? datedItems.map(function(x){ return x.item; })
+    : allItems;
   if(!uniqueItems.length) return;
 
   /* Step 1: run hideAll FIRST — clears all panels */
@@ -251,7 +255,7 @@ function showNewPhotos(){
   block.innerHTML = '<div class="gal-header">'
     + '<div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;">'
     + '<div><div class="gal-title">Recently Added</div>'
-    + '<div class="gal-sub">' + uniqueItems.length + ' Photo' + (uniqueItems.length > 1 ? 's' : '') + ' · Last ' + NEW_DAYS + ' days</div></div>'
+    + '<div class="gal-sub">' + uniqueItems.length + ' Photo' + (uniqueItems.length > 1 ? 's' : '') + (datedItems.length ? ' · Most Recent First' : '') + '</div></div>'
     + '<button class="slideshow-btn" onclick="startSlideshow(\x27gallery-new-photos\x27)">'
     + '<svg width="11" height="11" viewBox="0 0 11 11" fill="none"><polygon points="1,0.5 10.5,5.5 1,10.5" fill="currentColor"/></svg>'
     + 'View Slideshow</button>'
@@ -507,7 +511,7 @@ imgModalImg.addEventListener('contextmenu',function(e){
 
 /* Long-press on mobile → watermark toast */
 var imLpTimer=null;
-imgModalImg.addEventListener('touchstart',function(){imLpTimer=setTimeout(function(){showToast('Contact ncmohan.photos@gmail.com for a licensed copy.');},800);},{passive:true});
+imgModalImg.addEventListener('touchstart',function(){imLpTimer=setTimeout(function(){showToast('Contact info@mohangraphy.com for a licensed copy.');},800);},{passive:true});
 imgModalImg.addEventListener('touchend',function(){clearTimeout(imLpTimer);},{passive:true});
 imgModalImg.addEventListener('touchmove',function(){clearTimeout(imLpTimer);},{passive:true});
 

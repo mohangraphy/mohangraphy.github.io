@@ -541,7 +541,7 @@ def generate_html():
     c_legal    = C.get('legal',      {})
 
     # Site-wide values with safe fallbacks
-    contact_email    = site.get('contact_email',    'ncmohan.photos@gmail.com')
+    contact_email    = site.get('contact_email',    'info@mohangraphy.com')
     photographer     = site.get('photographer_name','N C Mohan')
     site_description = site.get('description',      'Fine art photography by N C Mohan. Landscapes, architecture, wildlife, and more.')
     supabase_url     = site.get('supabase_url',     'https://xjcpryfgodgqqtbblklg.supabase.co')
@@ -2825,6 +2825,32 @@ footer {
             '\n</div>'
         )
 
+    # ── RECENTLY ADDED card — always visible in main collections grid ────────────
+    # Pick a cover from recently-added photos; fallback to any photo
+    import datetime as _dt
+    _now = _dt.datetime.now()
+    _recent_paths = sorted(
+        [p for p, pi in path_info.items()
+         if pi.get('date_added','') and
+         (_now - _dt.datetime.fromisoformat(pi['date_added'])).days <= 90],
+        key=lambda p: path_info[p].get('date_added',''),
+        reverse=True
+    )
+    _ra_cover_raw = _recent_paths[0] if _recent_paths else (all_paths[0] if all_paths else '')
+    _ra_cover     = thumb_map.get(_ra_cover_raw, _ra_cover_raw)
+    _ra_total     = len(all_paths)
+    cat_tiles_html += (
+        '\n<div class="cat-card" onclick="showNewPhotos()" role="button" tabindex="0"'
+        ' onkeypress="if(event.key===\'Enter\') this.click()">'
+        + ('<img class="cat-card-img" src="' + _ra_cover + '" loading="lazy" decoding="async" alt="">'
+           if _ra_cover else '<div class="cat-card-placeholder"><span>Coming<br>Soon</span></div>')
+        + '<div class="cat-card-bar">'
+        '<div class="cat-card-name">Recently Added</div>'
+        '<div class="cat-card-count">' + str(_ra_total) + ' Photos</div>'
+        '</div>'
+        '\n</div>'
+    )
+
     nav_drawer_rows = ''  # legacy — not used with new header dropdown
 
     # ── BUILD TRAVEL STORIES HTML ─────────────────────────────────────────────
@@ -3234,20 +3260,24 @@ function markNewPhotos(){
 }
 
 function showNewPhotos(){
-  /* Collect unique photos by path — one entry per photo regardless of categories */
-  var now = new Date();
+  /* Collect all unique photos sorted by date_added descending.
+     Falls back to all grid items if none have a date_added value. */
   var seenPaths = {};
-  var uniqueItems = [];
-  document.querySelectorAll('.section-block:not(#gallery-new-photos) .grid-item[data-date-added]').forEach(function(item){
-    var da   = item.getAttribute('data-date-added');
+  var datedItems = [];
+  var allItems   = [];
+  document.querySelectorAll('.section-block:not(#gallery-new-photos) .grid-item').forEach(function(item){
     var path = item.getAttribute('data-photo') || '';
-    if(!da) return;
-    var diffDays = (now - new Date(da)) / (1000 * 60 * 60 * 24);
-    if(diffDays <= NEW_DAYS && diffDays >= 0 && !seenPaths[path]){
-      seenPaths[path] = true;
-      uniqueItems.push(item);
-    }
+    if(seenPaths[path]) return;
+    seenPaths[path] = true;
+    var da = item.getAttribute('data-date-added') || '';
+    if(da){ datedItems.push({item:item, da:da}); }
+    allItems.push(item);
   });
+  /* Sort dated items newest first */
+  datedItems.sort(function(a,b){ return b.da > a.da ? 1 : -1; });
+  var uniqueItems = datedItems.length
+    ? datedItems.map(function(x){ return x.item; })
+    : allItems;
   if(!uniqueItems.length) return;
 
   /* Step 1: run hideAll FIRST — clears all panels */
@@ -3288,7 +3318,7 @@ function showNewPhotos(){
   block.innerHTML = '<div class="gal-header">'
     + '<div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;">'
     + '<div><div class="gal-title">Recently Added</div>'
-    + '<div class="gal-sub">' + uniqueItems.length + ' Photo' + (uniqueItems.length > 1 ? 's' : '') + ' · Last ' + NEW_DAYS + ' days</div></div>'
+    + '<div class="gal-sub">' + uniqueItems.length + ' Photo' + (uniqueItems.length > 1 ? 's' : '') + (datedItems.length ? ' · Most Recent First' : '') + '</div></div>'
     + '<button class="slideshow-btn" onclick="startSlideshow(\x27gallery-new-photos\x27)">'
     + '<svg width="11" height="11" viewBox="0 0 11 11" fill="none"><polygon points="1,0.5 10.5,5.5 1,10.5" fill="currentColor"/></svg>'
     + 'View Slideshow</button>'
@@ -3544,7 +3574,7 @@ imgModalImg.addEventListener('contextmenu',function(e){
 
 /* Long-press on mobile → watermark toast */
 var imLpTimer=null;
-imgModalImg.addEventListener('touchstart',function(){imLpTimer=setTimeout(function(){showToast('Contact ncmohan.photos@gmail.com for a licensed copy.');},800);},{passive:true});
+imgModalImg.addEventListener('touchstart',function(){imLpTimer=setTimeout(function(){showToast('Contact info@mohangraphy.com for a licensed copy.');},800);},{passive:true});
 imgModalImg.addEventListener('touchend',function(){clearTimeout(imLpTimer);},{passive:true});
 imgModalImg.addEventListener('touchmove',function(){clearTimeout(imLpTimer);},{passive:true});
 
