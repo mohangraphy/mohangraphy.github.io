@@ -1563,13 +1563,11 @@ header {
   color: rgba(255,255,255,0.1); text-transform: uppercase; letter-spacing: 6px;
 }
 
-/* ── SLIDESHOW BUTTON ─────────────────────────────────────────────────── */
+/* ── SLIDESHOW BUTTON ── */
 .slideshow-btn {
   display: inline-flex; align-items: center; gap: 8px;
-  background: none;
-  border: 1px solid rgba(201,169,110,0.5);
-  color: var(--gold);
-  cursor: pointer;
+  background: none; border: 1px solid rgba(201,169,110,0.5);
+  color: var(--gold); cursor: pointer;
   padding: 0 18px; height: 34px;
   font-family: 'Montserrat', sans-serif;
   font-size: 9px; font-weight: 600; letter-spacing: 3px; text-transform: uppercase;
@@ -1577,15 +1575,13 @@ header {
   white-space: nowrap; flex-shrink: 0;
 }
 .slideshow-btn:hover { background: rgba(201,169,110,0.1); border-color: var(--gold); }
-.slideshow-btn svg { flex-shrink: 0; }
 
-/* ── FULLSCREEN SLIDESHOW OVERLAY ─────────────────────────────────────── */
+/* ── FULLSCREEN SLIDESHOW OVERLAY ── */
 #ss-overlay {
   display: none; position: fixed; inset: 0; z-index: 9800;
   background: #000; flex-direction: column;
 }
 #ss-overlay.open { display: flex; }
-
 #ss-img-wrap {
   flex: 1 1 0; position: relative; overflow: hidden;
   display: flex; align-items: center; justify-content: center;
@@ -1598,7 +1594,6 @@ header {
   opacity: 1; transition: opacity 0.5s ease;
 }
 #ss-img.ss-fade { opacity: 0; }
-
 #ss-bar {
   flex-shrink: 0; height: 52px;
   background: rgba(0,0,0,0.85);
@@ -2661,8 +2656,9 @@ footer {
                     + overlay_html +
                     '</div></div>'
                 )
-            _ss_btn = ('<button class="slideshow-btn" onclick="startSlideshow(\'' + city_id + '\')">'
-                       '<svg width="11" height="11" viewBox="0 0 11 11" fill="none"><polygon points="1,0.5 10.5,5.5 1,10.5" fill="currentColor"/></svg>'
+            _ss_btn = ('<button class="slideshow-btn" onclick="startSlideshow(\'' + city_id + '\')">' +
+                       '<svg width="11" height="11" viewBox="0 0 11 11" fill="none">' +
+                       '<polygon points="1,0.5 10.5,5.5 1,10.5" fill="currentColor"/></svg>' +
                        'View Slideshow</button>') if city_paths else ''
             gallery_blocks += (
                 '\n<div class="section-block" id="' + city_id + '">'
@@ -2744,8 +2740,9 @@ footer {
                         + overlay_html +
                         '</div></div>'
                     )
-                _ss_btn2 = ('<button class="slideshow-btn" onclick="startSlideshow(\'' + city_id + '\')">'
-                            '<svg width="11" height="11" viewBox="0 0 11 11" fill="none"><polygon points="1,0.5 10.5,5.5 1,10.5" fill="currentColor"/></svg>'
+                _ss_btn2 = ('<button class="slideshow-btn" onclick="startSlideshow(\'' + city_id + '\')">' +
+                            '<svg width="11" height="11" viewBox="0 0 11 11" fill="none">' +
+                            '<polygon points="1,0.5 10.5,5.5 1,10.5" fill="currentColor"/></svg>' +
                             'View Slideshow</button>') if city_paths else ''
                 gallery_blocks += (
                     '\n<div class="section-block" id="' + city_id + '">'
@@ -2830,9 +2827,215 @@ footer {
 
     nav_drawer_rows = ''  # legacy — not used with new header dropdown
 
-    # ── JAVASCRIPT ────────────────────────────────────────────────────────────
-    slides_json = json.dumps(hero_thumb_paths)
-    js = """
+    # ── BUILD TRAVEL STORIES HTML ─────────────────────────────────────────────
+    import html as _htmlmod, json as _jsonmod
+
+    def _ea(s):
+        return _htmlmod.escape(str(s), quote=True)
+
+    def _eh(s):
+        return _htmlmod.escape(str(s))
+
+    def build_blog_html(posts, path_info, thumb_map, web_map, meta_by_path):
+        """
+        Simple blog:
+          - Index page  : list of titles as clickable links + date + one-line summary
+          - Post page   : title, date, full body text (pasted in), then photo CTA buttons
+          blog_posts.json fields used:
+            id, title, dates_visited, place, country, summary, body, place_tag,
+            collections_links
+        """
+        if not posts:
+            empty = (
+                '<div class="stories-empty">'
+                '<div class="stories-empty-title">No Stories Yet</div>'
+                '<div class="stories-empty-sub">Add posts to blog_posts.json and redeploy</div>'
+                '</div>'
+            )
+            return empty, ""
+
+        index_rows = ""
+        post_pages = ""
+
+        for post in posts:
+            pid       = "story-" + _ea(post.get("id", ""))
+            title     = _eh(post.get("title",  post.get("place", "Untitled")))
+            dates     = _eh(post.get("dates_visited", ""))
+            place     = post.get("place", "")
+            country   = post.get("country", "")
+            summary   = _eh(post.get("summary", ""))
+            body      = post.get("body", "")          # free-text write-up, newlines = paragraphs
+            place_tag = post.get("place_tag", place)
+            cats_link = post.get("collections_links", [])
+
+            loc_parts = [x for x in [place, country] if x]
+            loc_str   = " \u00b7 ".join(loc_parts)
+
+            # ── Index row ──────────────────────────────────────────────────
+            index_rows += (
+                '<div class="blog-row" onclick="showStoryPost(\'' + _ea(pid) + '\')">'
+                '<div class="blog-row-main">'
+                '<div class="blog-row-title">' + title + '</div>'
+                + ('<div class="blog-row-summary">' + summary + '</div>' if post.get("summary") else '')
+                + '</div>'
+                '<div class="blog-row-meta">'
+                + ('<span class="blog-row-loc">' + _eh(loc_str) + '</span>' if loc_str else '')
+                + ('<span class="blog-row-date">' + dates + '</span>' if post.get("dates_visited") else '')
+                + '<span class="blog-row-arrow">\u203a</span>'
+                '</div>'
+                '</div>\n'
+            )
+
+            # ── CTA buttons at end of post ─────────────────────────────────
+            place_lower = place_tag.lower().strip()
+            place_photos = [
+                p for p, pi in path_info.items()
+                if place_lower and place_lower in (
+                    pi.get("city","").lower().strip(),
+                    pi.get("state","").lower().strip(),
+                    pi.get("place","").lower().strip()
+                )
+            ]
+
+            cta_html = ""
+            if place_photos:
+                cta_html += (
+                    '<button class="story-cta-btn"'
+                    ' onclick="showStoryGallery(\'' + _ea(pid) + "','" + _ea(place_tag) + "')"
+                    + '">\u25b6\u00a0 View Photos from ' + _eh(place) + '</button>'
+                )
+            # Collections link buttons removed — only show View Photos button
+
+            # ── Body paragraphs ────────────────────────────────────────────
+            # \n\n = paragraph break, \n = line break within paragraph
+            # ## Heading text        → bold sub-heading
+            # [photo: filename.jpg]  → inline photo, can be anywhere in text
+            # [photo: filename.jpg | My caption]  → inline photo with caption
+            if body:
+                import re as _re
+
+                def render_photo_tag(fname, caption):
+                    """Turn a [photo:...] reference into HTML. Returns HTML string."""
+                    fname = fname.strip()
+                    caption = caption.strip() if caption else ''
+                    photo_path = next(
+                        (p for p in thumb_map if os.path.basename(p).lower() == fname.lower()),
+                        None
+                    )
+                    if not photo_path:
+                        print(f"  ⚠️  Blog photo not found: {fname!r}")
+                        return '<p style="color:rgba(201,169,110,0.4);font-size:11px;font-style:italic;">[Photo not found: ' + _eh(fname) + ']</p>'
+                    th     = thumb_map.get(photo_path, photo_path)
+                    web    = web_map.get(photo_path, photo_path)
+                    pi     = path_info.get(photo_path, {})
+                    rem    = pi.get('remarks', '').strip()
+                    sv     = pi.get('state',   '').strip()
+                    cv     = pi.get('city',    '').strip()
+                    da     = pi.get('date_added', '').strip()
+                    cats_p = meta_by_path.get(photo_path, {}).get('categories', [])
+                    cap_html = (
+                        '<div class="story-inline-caption">' + _eh(caption) + '</div>'
+                        if caption else ''
+                    )
+                    return (
+                        '<div class="story-inline-photo">'
+                        '<div class="grid" style="display:block;background:none;padding:0;">'
+                        '<div class="grid-item"'
+                        ' data-photo="'      + _ea(photo_path)       + '"'
+                        ' data-state="'      + _ea(sv)               + '"'
+                        ' data-city="'       + _ea(cv)               + '"'
+                        ' data-remarks="'    + _ea(rem)              + '"'
+                        ' data-cats="'       + _ea(','.join(cats_p)) + '"'
+                        ' data-date-added="' + _ea(da)               + '"'
+                        ' onclick="openImgModal(this)">'
+                        '<div class="grid-item-photo" style="padding-bottom:0;height:auto;">'
+                        '<img src="' + _ea(th) + '" data-full="' + _ea(web) + '"'
+                        ' loading="lazy" decoding="async"'
+                        ' alt="' + _ea(caption or rem or cv) + '"'
+                        ' style="width:100%;height:auto;object-fit:contain;display:block;position:static;">'
+                        '<div class="grid-item-overlay"></div>'
+                        '</div></div></div>'
+                        + cap_html +
+                        '</div>'
+                    )
+
+                def render_text_chunk(text):
+                    """Render a text chunk that may contain [photo:...] tags anywhere."""
+                    # Split on [photo:...] tags — they can be inline in the text
+                    PHOTO_RE = _re.compile(r'\[photo:\s*([^\]|]+?)(?:\s*\|\s*([^\]]*))?\]', _re.IGNORECASE)
+                    parts = []
+                    last = 0
+                    for m in PHOTO_RE.finditer(text):
+                        before = text[last:m.start()].strip()
+                        if before:
+                            parts.append('<p>' + _eh(before).replace('\n', '<br>') + '</p>')
+                        parts.append(render_photo_tag(m.group(1), m.group(2)))
+                        last = m.end()
+                    after = text[last:].strip()
+                    if after:
+                        parts.append('<p>' + _eh(after).replace('\n', '<br>') + '</p>')
+                    return ''.join(parts)
+
+                paras = [p.strip() for p in body.split('\n\n') if p.strip()]
+                body_parts = []
+                for para in paras:
+                    if para.startswith('##'):
+                        body_parts.append('<h2>' + _eh(para.lstrip('#').strip()) + '</h2>')
+                    else:
+                        body_parts.append(render_text_chunk(para))
+                body_html = ''.join(body_parts)
+
+            else:
+                body_html = '<p style="color:rgba(255,255,255,0.25);font-style:italic;">No write-up yet. Add a \\"body\\" field to this post in blog_posts.json.</p>'
+
+            # ── Assemble post page ─────────────────────────────────────────
+            post_pages += (
+                '<div id="' + _ea(pid) + '" class="story-post">\n'
+                '<div class="story-post-inner">\n'
+                '<button class="story-post-back" onclick="closeStoryPost()">'
+                '\u2039 Travel Stories</button>\n'
+                + ('<div class="blog-post-loc">' + _eh(loc_str) + '</div>\n' if loc_str else '')
+                + '<div class="story-post-title">' + title + '</div>\n'
+                + ('<div class="story-post-dates">' + dates + '</div>\n' if post.get("dates_visited") else '')
+                + '<div class="story-post-divider"></div>\n'
+                + '<div class="story-body">' + body_html + '</div>\n'
+                + ('<div class="story-post-divider"></div>\n'
+                   '<div class="story-cta-row">' + cta_html + '</div>\n'
+                   if cta_html else '')
+                + '</div>\n</div>\n\n'
+            )
+
+        index_html = (
+            '<div class="blog-list">' + index_rows + '</div>'
+        )
+        return index_html, post_pages
+
+
+    stories_index_html, story_post_pages = build_blog_html(
+        blog_posts, path_info, thumb_map, web_map, meta_by_path
+    )
+
+    # ── BLOG PHOTO MAP (needed for config) ────────────────────────────────────
+    # Serialize photo paths per post for the JS gallery function
+    _blog_photo_map = {}
+    for _bp in blog_posts:
+        _bpid  = _bp.get("id", "")
+        _bptag = _bp.get("place_tag", _bp.get("place", "")).lower().strip()
+        _bpaths = []
+        for _pp, _pi in path_info.items():
+            _c = _pi.get("city",  "").lower().strip()
+            _s = _pi.get("state", "").lower().strip()
+            _n = _pi.get("place", "").lower().strip()
+            if _bptag and _bptag in (_c, _s, _n):
+                _bpaths.append(_pp)
+        if _bpid:
+            _blog_photo_map["story-" + _bpid] = _bpaths
+    # _blog_photo_map goes directly into _mohan_config below — no separate JSON needed
+
+    # ── JAVASCRIPT FILE ──────────────────────────────────────────────────────────
+    # Pure JS in r-string — no Python interpolation, no escape issues.
+    # Python data injected via window.MOHAN_CONFIG in the HTML config block.
+    _MOHAN_JS = r"""
 /* ══════════════════════════════════════════════════════
    NAVIGATION — single source of truth
    ══════════════════════════════════════════════════════ */
@@ -3071,7 +3274,7 @@ function showNewPhotos(){
     var displayCats = filtered.length ? filtered : (contentCats.length ? contentCats : cats);
     var tagsHTML = displayCats.length
       ? '<div class="new-photo-tags">' + displayCats.map(function(cat){
-          return '<span class="new-photo-tag">' + cat.replace(/\//g,' / ').toUpperCase() + '</span>';
+          return '<span class="new-photo-tag">' + cat.replace(/[/]/g,' / ').toUpperCase() + '</span>';
         }).join('') + '</div>'
       : '';
     return '<div class="new-photo-wrap">' + item.outerHTML + tagsHTML + '</div>';
@@ -3115,7 +3318,7 @@ function scrollToCollections(){
 
 /* ── Hero slideshow ── */
 (function(){
-  var thumbs = """ + slides_json + """;
+  var thumbs = window.MOHAN_CONFIG.heroThumbs;
   var hero   = document.getElementById('hero');
   if (!thumbs.length) return;
   var caption = hero.querySelector('.hero-caption');
@@ -3391,7 +3594,7 @@ function rqSubmit(){
   var photo=rqPhotoKey?rqPhotoKey.split('/').pop().replace(/[.][^.]+$/,''):'(see image)';
   var subject=encodeURIComponent('Print Quote Request — '+rqSelectedSize);
   var bodyStr='Name: '+name+'\\nEmail: '+email+'\\n\\nPhoto: '+photo+'\\nPrint size: '+rqSelectedSize+'\\n\\nPlease send me a quote.';
-  window.location.href='mailto:""" + contact_email + """?subject='+subject+'&body='+encodeURIComponent(bodyStr);
+  window.location.href='mailto:'+window.MOHAN_CONFIG.contactEmail+'?subject='+subject+'&body='+encodeURIComponent(bodyStr);
   closeRqModal(); closeImgModal();
   showToast('Quote request sent!');
 }
@@ -3399,8 +3602,8 @@ function rqSubmit(){
 /* ══════════════════════════════════════════════════════
    LIKES — Supabase + localStorage
    ══════════════════════════════════════════════════════ */
-var SUPA_URL  = '""" + supabase_url + """';
-var SUPA_KEY  = '""" + supabase_key + """';
+var SUPA_URL  = window.MOHAN_CONFIG.supaUrl;
+var SUPA_KEY  = window.MOHAN_CONFIG.supaKey;
 var localLikes = JSON.parse(localStorage.getItem('mohan_likes2') || '{}');
 
 function getPhotoKey(item){ return item.getAttribute('data-photo')||''; }
@@ -3517,15 +3720,10 @@ function ctxBuy(){  var t=ctxTarget; hideCtxMenu(); if(t){ openImgModal(t); setT
    ADMIN TAG EDITOR
    ══════════════════════════════════════════════════════ */
 var ADMIN_UNLOCKED = false;
-var ADMIN_PASS     = '""" + admin_password + """';
+var ADMIN_PASS     = window.MOHAN_CONFIG.adminPass;
 var adminItems     = [];
 var adminLastSaved = {state:'', city:'', cats:[]};
-var CATEGORIES     = """ + json.dumps(sorted([
-    "Nature/Landscapes","Nature/Wildlife","Nature/Birds","Nature/Flora",
-    "Places/National","Places/International",
-    "Architecture",
-    "People & Culture"
-])) + """;
+var CATEGORIES     = window.MOHAN_CONFIG.categories;
 
 function ctxAdminEdit(){
   var target=ctxTarget; hideCtxMenu(); if(!target) return;
@@ -3633,7 +3831,7 @@ function submitContact(){
   var msg=(document.getElementById('cf-msg')||{}).value||'';
   if(!name.trim()||!email.trim()||!msg.trim()){ showToast('Please fill all required fields.'); return; }
   var body=encodeURIComponent('Name: '+name+'\\nEmail: '+email+'\\n\\n'+msg);
-  window.location.href='mailto:""" + contact_email + """?subject='+encodeURIComponent(subject)+'&body='+body;
+  window.location.href='mailto:'+window.MOHAN_CONFIG.contactEmail+'?subject='+encodeURIComponent(subject)+'&body='+body;
 }
 
 /* ── Keyboard shortcuts ── */
@@ -3675,35 +3873,92 @@ async function subscribeVisitor(){
   } catch(err){ msg.textContent='Connection error. Please try again.'; }
 }
 
-/* ══════════════════════════════════════════════════════
-   SLIDESHOW ENGINE
-   Photo duration: 3s per slide.
-   Click photo to pause/resume. Arrows or swipe to step.
-   Esc to close.
-   ══════════════════════════════════════════════════════ */
-var _ssPhotos  = [];   /* [{thumb, full, caption}] */
-var _ssIdx     = 0;
-var _ssTimer   = null;
-var _ssFade    = null;
-var _ssDur     = 3000; /* ms per slide */
-var _ssPaused  = false;
+document.addEventListener('DOMContentLoaded', function(){ goHome(); });
+
+/* TRAVEL STORIES — navigation */
+var BLOG_PHOTO_MAP = window.MOHAN_CONFIG.blogPhotoMap;
+
+function showStoriesIndex(){
+  hideAll();
+  var pg=document.getElementById('page-stories');
+  if(pg){pg.classList.add('visible');pg.scrollTop=0;window.scrollTo(0,0);}
+  setActiveTab('stories');
+}
+function showStoryPost(id){
+  hideAll();
+  var pg=document.getElementById(id);
+  if(pg){
+    pg.classList.add('visible');
+    pg.scrollTop=0;
+    window.scrollTo(0,0);
+  }
+  setActiveTab('stories');
+}
+function closeStoryPost(){
+  document.querySelectorAll('.story-post.visible').forEach(function(p){p.classList.remove('visible');});
+  showStoriesIndex();
+}
+function showStoryGallery(postId,placeTag){
+  var paths=BLOG_PHOTO_MAP[postId]||[];
+  if(!paths.length){showToast('No photos tagged yet.');return;}
+  hideAll();
+  var gc=document.getElementById('gallery-container');
+  if(gc)gc.classList.add('visible');
+  var old=document.getElementById('gallery-story-temp');
+  if(old)old.remove();
+  var pset={};
+  paths.forEach(function(p){pset[p]=true;});
+  var all=Array.from(document.querySelectorAll('.grid-item[data-photo]'));
+  var matched=[],seen={};
+  all.forEach(function(item){
+    var p=item.getAttribute('data-photo');
+    if(pset[p]&&!seen[p]){seen[p]=true;matched.push(item.outerHTML);}
+  });
+  var blk=document.createElement('div');
+  blk.id='gallery-story-temp';
+  blk.className='section-block visible';
+  blk.style.cssText='padding-top:calc(var(--hdr)+32px);';
+  blk.innerHTML='<div class="gal-header">'
+    +'<div class="gal-title">'+placeTag+'</div>'
+    +'<div class="gal-sub">'+matched.length+' Photo'
+    +(matched.length!==1?'s':'')+' from '+placeTag+'</div>'
+    +'</div>'
+    +'<div class="grid">'+matched.join('')+'</div>'
+    +'<div style="padding:20px clamp(14px,4vw,44px)">'
+    +'<button id="story-back-btn" class="story-cta-btn-ghost" style="cursor:pointer">'
+    +'&#8249; Back to Story</button></div>';
+  gc.prepend(blk);
+  var backBtn=document.getElementById('story-back-btn');
+  if(backBtn){backBtn.addEventListener('click',function(){showStoryPost(postId);});}
+  setActiveTab('stories');
+  window.scrollTo(0,0);
+}
+
+
+/* ═══════════════════════════════════════════════════════
+   SLIDESHOW ENGINE  —  3 s per slide, stops at last photo
+   Click to pause · arrows/swipe to step · Esc to close
+   ═══════════════════════════════════════════════════════ */
+var _ssPhotos = [];
+var _ssIdx    = 0;
+var _ssTimer  = null;
+var _ssFade   = null;
+var _ssDur    = 3000;
+var _ssPaused = false;
 
 function startSlideshow(blockId){
   var block = document.getElementById(blockId);
   if(!block) return;
   var items = Array.from(block.querySelectorAll('.grid-item'));
-  if(!items.length){ showToast && showToast('No photos to show.'); return; }
-
+  if(!items.length){ if(typeof showToast!=='undefined') showToast('No photos to show.'); return; }
   _ssPhotos = items.map(function(item){
     var img  = item.querySelector('.grid-item-photo img');
     var full = img ? (img.getAttribute('data-full') || img.src) : '';
     var th   = img ? img.src : '';
     var rem  = item.getAttribute('data-remarks') || '';
-    var city = item.getAttribute('data-city')    || '';
-    var cap  = [rem, city].filter(Boolean).join('  ·  ');
-    return { thumb: th, full: full, caption: cap };
+    var city = item.getAttribute('data-city') || '';
+    return { thumb: th, full: full, caption: [rem,city].filter(Boolean).join('  ·  ') };
   });
-
   _ssIdx    = 0;
   _ssPaused = false;
   var ov = document.getElementById('ss-overlay');
@@ -3718,34 +3973,27 @@ function _ssShow(idx){
   idx = (idx + _ssPhotos.length) % _ssPhotos.length;
   _ssIdx = idx;
   var entry = _ssPhotos[idx];
-
-  /* Fade out */
   var img = document.getElementById('ss-img');
   if(img) img.classList.add('ss-fade');
   clearTimeout(_ssFade);
   _ssFade = setTimeout(function(){
     var img2 = document.getElementById('ss-img');
     if(!img2) return;
-    /* Show thumb immediately, upgrade to full in background */
     if(entry.thumb) img2.src = entry.thumb;
     img2.classList.remove('ss-fade');
     if(entry.full && entry.full !== entry.thumb){
       var hi = new Image();
       var cap = idx;
       hi.onload = function(){
-        if(_ssIdx === cap){ var i3=document.getElementById('ss-img'); if(i3) i3.src=entry.full; }
+        if(_ssIdx === cap){ var i3 = document.getElementById('ss-img'); if(i3) i3.src = entry.full; }
       };
       hi.src = entry.full;
     }
   }, 300);
-
-  /* Update counter and caption */
   var ctr = document.getElementById('ss-counter');
   if(ctr) ctr.textContent = (idx+1) + ' / ' + _ssPhotos.length;
   var cap = document.getElementById('ss-caption');
   if(cap) cap.textContent = entry.caption;
-
-  /* Animate progress bar */
   var pr = document.getElementById('ss-progress');
   if(pr){
     pr.style.transition = 'none';
@@ -3763,12 +4011,12 @@ function _ssShow(idx){
 function _ssSchedule(){
   clearTimeout(_ssTimer);
   if(!_ssPaused && _ssIdx < _ssPhotos.length - 1){
-    _ssTimer = setTimeout(function(){ _ssShow(_ssIdx+1); _ssSchedule(); }, _ssDur);
+    _ssTimer = setTimeout(function(){ _ssShow(_ssIdx + 1); _ssSchedule(); }, _ssDur);
   }
 }
 
-function ssPrev(){ clearTimeout(_ssTimer); _ssShow(_ssIdx-1); if(!_ssPaused) _ssSchedule(); }
-function ssNext(){ clearTimeout(_ssTimer); _ssShow(_ssIdx+1); if(!_ssPaused) _ssSchedule(); }
+function ssPrev(){ clearTimeout(_ssTimer); _ssShow(_ssIdx - 1); if(!_ssPaused) _ssSchedule(); }
+function ssNext(){ clearTimeout(_ssTimer); _ssShow(_ssIdx + 1); if(!_ssPaused) _ssSchedule(); }
 
 function ssPauseToggle(){
   _ssPaused = !_ssPaused;
@@ -3779,323 +4027,71 @@ function ssPauseToggle(){
     clearTimeout(_ssTimer);
     if(pr) pr.style.transition = 'none';
   } else {
-    /* Resume progress bar from current position */
-    var cur = pr ? parseFloat(pr.style.width)||0 : 0;
-    var remain = _ssDur * (1 - cur/100);
-    if(pr){ pr.style.transition = 'width '+remain+'ms linear'; pr.style.width='100%'; }
+    var cur = pr ? parseFloat(pr.style.width) || 0 : 0;
+    var remain = _ssDur * (1 - cur / 100);
+    if(pr){ pr.style.transition = 'width '+remain+'ms linear'; pr.style.width = '100%'; }
     clearTimeout(_ssTimer);
-    if(_ssIdx < _ssPhotos.length - 1){ _ssTimer = setTimeout(function(){ _ssShow(_ssIdx+1); _ssSchedule(); }, remain); }
+    if(_ssIdx < _ssPhotos.length - 1){
+      _ssTimer = setTimeout(function(){ _ssShow(_ssIdx + 1); _ssSchedule(); }, remain);
+    }
   }
 }
 
 function ssClose(){
   clearTimeout(_ssTimer); clearTimeout(_ssFade);
   var ov = document.getElementById('ss-overlay');
-  if(ov){ ov.classList.remove('open','ss-paused'); }
+  if(ov) ov.classList.remove('open','ss-paused');
   var img = document.getElementById('ss-img');
   if(img) img.src = '';
   document.body.style.overflow = '';
   _ssPaused = false;
 }
 
-/* Click photo = pause/resume */
 document.addEventListener('DOMContentLoaded', function(){
   var wrap = document.getElementById('ss-img-wrap');
   if(!wrap) return;
   wrap.addEventListener('click', function(e){
-    if(e.target.closest('#ss-prev')||e.target.closest('#ss-next')||e.target.closest('#ss-close')) return;
+    if(e.target.closest('#ss-prev') || e.target.closest('#ss-next') || e.target.closest('#ss-close')) return;
     ssPauseToggle();
   });
-  /* Touch swipe */
   var tsx = null;
-  wrap.addEventListener('touchstart', function(e){ tsx = e.touches[0].clientX; },{passive:true});
-  wrap.addEventListener('touchend',   function(e){
-    if(tsx===null) return;
+  wrap.addEventListener('touchstart', function(e){ tsx = e.touches[0].clientX; }, {passive:true});
+  wrap.addEventListener('touchend', function(e){
+    if(tsx === null) return;
     var dx = e.changedTouches[0].clientX - tsx; tsx = null;
-    if(Math.abs(dx) > 44){ dx<0 ? ssNext() : ssPrev(); }
-  },{passive:true});
+    if(Math.abs(dx) > 44){ dx < 0 ? ssNext() : ssPrev(); }
+  }, {passive:true});
 });
 
-/* Keyboard: Esc / arrows / space while slideshow is open */
 document.addEventListener('keydown', function(e){
   var ov = document.getElementById('ss-overlay');
   if(!ov || !ov.classList.contains('open')) return;
-  if(e.key==='Escape')     { ssClose();        e.preventDefault(); return; }
-  if(e.key==='ArrowRight') { ssNext();         e.preventDefault(); return; }
-  if(e.key==='ArrowLeft')  { ssPrev();         e.preventDefault(); return; }
-  if(e.key===' ')          { ssPauseToggle();  e.preventDefault(); return; }
+  if(e.key === 'Escape')      { ssClose();       e.preventDefault(); return; }
+  if(e.key === 'ArrowRight')  { ssNext();        e.preventDefault(); return; }
+  if(e.key === 'ArrowLeft')   { ssPrev();        e.preventDefault(); return; }
+  if(e.key === ' ')           { ssPauseToggle(); e.preventDefault(); return; }
 });
 
-document.addEventListener('DOMContentLoaded', function(){ goHome(); });
 """
 
-
-    # ── BUILD TRAVEL STORIES HTML ─────────────────────────────────────────────
-    import html as _htmlmod, json as _jsonmod
-
-    def _ea(s):
-        return _htmlmod.escape(str(s), quote=True)
-
-    def _eh(s):
-        return _htmlmod.escape(str(s))
-
-    def build_blog_html(posts, path_info, thumb_map, web_map, meta_by_path):
-        """
-        Simple blog:
-          - Index page  : list of titles as clickable links + date + one-line summary
-          - Post page   : title, date, full body text (pasted in), then photo CTA buttons
-          blog_posts.json fields used:
-            id, title, dates_visited, place, country, summary, body, place_tag,
-            collections_links
-        """
-        if not posts:
-            empty = (
-                '<div class="stories-empty">'
-                '<div class="stories-empty-title">No Stories Yet</div>'
-                '<div class="stories-empty-sub">Add posts to blog_posts.json and redeploy</div>'
-                '</div>'
-            )
-            return empty, ""
-
-        index_rows = ""
-        post_pages = ""
-
-        for post in posts:
-            pid       = "story-" + _ea(post.get("id", ""))
-            title     = _eh(post.get("title",  post.get("place", "Untitled")))
-            dates     = _eh(post.get("dates_visited", ""))
-            place     = post.get("place", "")
-            country   = post.get("country", "")
-            summary   = _eh(post.get("summary", ""))
-            body      = post.get("body", "")          # free-text write-up, newlines = paragraphs
-            place_tag = post.get("place_tag", place)
-            cats_link = post.get("collections_links", [])
-
-            loc_parts = [x for x in [place, country] if x]
-            loc_str   = " \u00b7 ".join(loc_parts)
-
-            # ── Index row ──────────────────────────────────────────────────
-            index_rows += (
-                '<div class="blog-row" onclick="showStoryPost(\'' + _ea(pid) + '\')">'
-                '<div class="blog-row-main">'
-                '<div class="blog-row-title">' + title + '</div>'
-                + ('<div class="blog-row-summary">' + summary + '</div>' if post.get("summary") else '')
-                + '</div>'
-                '<div class="blog-row-meta">'
-                + ('<span class="blog-row-loc">' + _eh(loc_str) + '</span>' if loc_str else '')
-                + ('<span class="blog-row-date">' + dates + '</span>' if post.get("dates_visited") else '')
-                + '<span class="blog-row-arrow">\u203a</span>'
-                '</div>'
-                '</div>\n'
-            )
-
-            # ── CTA buttons at end of post ─────────────────────────────────
-            place_lower = place_tag.lower().strip()
-            place_photos = [
-                p for p, pi in path_info.items()
-                if place_lower and place_lower in (
-                    pi.get("city","").lower().strip(),
-                    pi.get("state","").lower().strip(),
-                    pi.get("place","").lower().strip()
-                )
-            ]
-
-            cta_html = ""
-            if place_photos:
-                cta_html += (
-                    '<button class="story-cta-btn"'
-                    ' onclick="showStoryGallery(\'' + _ea(pid) + "','" + _ea(place_tag) + "')"
-                    + '">\u25b6\u00a0 View Photos from ' + _eh(place) + '</button>'
-                )
-            # Collections link buttons removed — only show View Photos button
-
-            # ── Body paragraphs ────────────────────────────────────────────
-            # \n\n = paragraph break, \n = line break within paragraph
-            # ## Heading text        → bold sub-heading
-            # [photo: filename.jpg]  → inline photo, can be anywhere in text
-            # [photo: filename.jpg | My caption]  → inline photo with caption
-            if body:
-                import re as _re
-
-                def render_photo_tag(fname, caption):
-                    """Turn a [photo:...] reference into HTML. Returns HTML string."""
-                    fname = fname.strip()
-                    caption = caption.strip() if caption else ''
-                    photo_path = next(
-                        (p for p in thumb_map if os.path.basename(p).lower() == fname.lower()),
-                        None
-                    )
-                    if not photo_path:
-                        print(f"  ⚠️  Blog photo not found: {fname!r}")
-                        return '<p style="color:rgba(201,169,110,0.4);font-size:11px;font-style:italic;">[Photo not found: ' + _eh(fname) + ']</p>'
-                    th     = thumb_map.get(photo_path, photo_path)
-                    web    = web_map.get(photo_path, photo_path)
-                    pi     = path_info.get(photo_path, {})
-                    rem    = pi.get('remarks', '').strip()
-                    sv     = pi.get('state',   '').strip()
-                    cv     = pi.get('city',    '').strip()
-                    da     = pi.get('date_added', '').strip()
-                    cats_p = meta_by_path.get(photo_path, {}).get('categories', [])
-                    cap_html = (
-                        '<div class="story-inline-caption">' + _eh(caption) + '</div>'
-                        if caption else ''
-                    )
-                    return (
-                        '<div class="story-inline-photo">'
-                        '<div class="grid" style="display:block;background:none;padding:0;">'
-                        '<div class="grid-item"'
-                        ' data-photo="'      + _ea(photo_path)       + '"'
-                        ' data-state="'      + _ea(sv)               + '"'
-                        ' data-city="'       + _ea(cv)               + '"'
-                        ' data-remarks="'    + _ea(rem)              + '"'
-                        ' data-cats="'       + _ea(','.join(cats_p)) + '"'
-                        ' data-date-added="' + _ea(da)               + '"'
-                        ' onclick="openImgModal(this)">'
-                        '<div class="grid-item-photo" style="padding-bottom:0;height:auto;">'
-                        '<img src="' + _ea(th) + '" data-full="' + _ea(web) + '"'
-                        ' loading="lazy" decoding="async"'
-                        ' alt="' + _ea(caption or rem or cv) + '"'
-                        ' style="width:100%;height:auto;object-fit:contain;display:block;position:static;">'
-                        '<div class="grid-item-overlay"></div>'
-                        '</div></div></div>'
-                        + cap_html +
-                        '</div>'
-                    )
-
-                def render_text_chunk(text):
-                    """Render a text chunk that may contain [photo:...] tags anywhere."""
-                    # Split on [photo:...] tags — they can be inline in the text
-                    PHOTO_RE = _re.compile(r'\[photo:\s*([^\]|]+?)(?:\s*\|\s*([^\]]*))?\]', _re.IGNORECASE)
-                    parts = []
-                    last = 0
-                    for m in PHOTO_RE.finditer(text):
-                        before = text[last:m.start()].strip()
-                        if before:
-                            parts.append('<p>' + _eh(before).replace('\n', '<br>') + '</p>')
-                        parts.append(render_photo_tag(m.group(1), m.group(2)))
-                        last = m.end()
-                    after = text[last:].strip()
-                    if after:
-                        parts.append('<p>' + _eh(after).replace('\n', '<br>') + '</p>')
-                    return ''.join(parts)
-
-                paras = [p.strip() for p in body.split('\n\n') if p.strip()]
-                body_parts = []
-                for para in paras:
-                    if para.startswith('##'):
-                        body_parts.append('<h2>' + _eh(para.lstrip('#').strip()) + '</h2>')
-                    else:
-                        body_parts.append(render_text_chunk(para))
-                body_html = ''.join(body_parts)
-
-            else:
-                body_html = '<p style="color:rgba(255,255,255,0.25);font-style:italic;">No write-up yet. Add a \\"body\\" field to this post in blog_posts.json.</p>'
-
-            # ── Assemble post page ─────────────────────────────────────────
-            post_pages += (
-                '<div id="' + _ea(pid) + '" class="story-post">\n'
-                '<div class="story-post-inner">\n'
-                '<button class="story-post-back" onclick="closeStoryPost()">'
-                '\u2039 Travel Stories</button>\n'
-                + ('<div class="blog-post-loc">' + _eh(loc_str) + '</div>\n' if loc_str else '')
-                + '<div class="story-post-title">' + title + '</div>\n'
-                + ('<div class="story-post-dates">' + dates + '</div>\n' if post.get("dates_visited") else '')
-                + '<div class="story-post-divider"></div>\n'
-                + '<div class="story-body">' + body_html + '</div>\n'
-                + ('<div class="story-post-divider"></div>\n'
-                   '<div class="story-cta-row">' + cta_html + '</div>\n'
-                   if cta_html else '')
-                + '</div>\n</div>\n\n'
-            )
-
-        index_html = (
-            '<div class="blog-list">' + index_rows + '</div>'
-        )
-        return index_html, post_pages
-
-
-    stories_index_html, story_post_pages = build_blog_html(
-        blog_posts, path_info, thumb_map, web_map, meta_by_path
-    )
-
-    # Serialize photo paths per post for the JS gallery function
-    _blog_photo_map = {}
-    for _bp in blog_posts:
-        _bpid  = _bp.get("id", "")
-        _bptag = _bp.get("place_tag", _bp.get("place", "")).lower().strip()
-        _bpaths = []
-        for _pp, _pi in path_info.items():
-            _c = _pi.get("city",  "").lower().strip()
-            _s = _pi.get("state", "").lower().strip()
-            _n = _pi.get("place", "").lower().strip()
-            if _bptag and _bptag in (_c, _s, _n):
-                _bpaths.append(_pp)
-        if _bpid:
-            _blog_photo_map["story-" + _bpid] = _bpaths
-    _blog_photo_map_js = _jsonmod.dumps(_blog_photo_map)
-
-    js += (
-        "\n/* TRAVEL STORIES — navigation */\n"
-        + "var BLOG_PHOTO_MAP = " + _blog_photo_map_js + ";\n"
-        + "function showStoriesIndex(){\n"
-        + "  hideAll();\n"
-        + "  var pg=document.getElementById('page-stories');\n"
-        + "  if(pg){pg.classList.add('visible');pg.scrollTop=0;window.scrollTo(0,0);}\n"
-        + "  setActiveTab('stories');\n"
-        + "}\n"
-        + "function showStoryPost(id){\n"
-        + "  hideAll();\n"
-        + "  var pg=document.getElementById(id);\n"
-        + "  if(pg){\n"
-        + "    pg.classList.add('visible');\n"
-        + "    pg.scrollTop=0;\n"  
-        + "    window.scrollTo(0,0);\n"
-        + "  }\n"
-        + "  setActiveTab('stories');\n"
-        + "}\n"
-        + "function closeStoryPost(){\n"
-        + "  document.querySelectorAll('.story-post.visible')"
-        + ".forEach(function(p){p.classList.remove('visible');});\n"
-        + "  showStoriesIndex();\n"
-        + "}\n"
-        + "function showStoryGallery(postId,placeTag){\n"
-        + "  var paths=BLOG_PHOTO_MAP[postId]||[];\n"
-        + "  if(!paths.length){showToast('No photos tagged yet.');return;}\n"
-        + "  hideAll();\n"
-        + "  var gc=document.getElementById('gallery-container');\n"
-        + "  if(gc)gc.classList.add('visible');\n"
-        + "  var old=document.getElementById('gallery-story-temp');\n"
-        + "  if(old)old.remove();\n"
-        + "  var pset={};\n"
-        + "  paths.forEach(function(p){pset[p]=true;});\n"
-        + "  var all=Array.from(document.querySelectorAll('.grid-item[data-photo]'));\n"
-        + "  var matched=[],seen={};\n"
-        + "  all.forEach(function(item){\n"
-        + "    var p=item.getAttribute('data-photo');\n"
-        + "    if(pset[p]&&!seen[p]){seen[p]=true;matched.push(item.outerHTML);}\n"
-        + "  });\n"
-        + "  var blk=document.createElement('div');\n"
-        + "  blk.id='gallery-story-temp';\n"
-        + "  blk.className='section-block visible';\n"
-        + "  blk.style.cssText='padding-top:calc(var(--hdr)+32px);';\n"
-        + "  blk.innerHTML='<div class=\"gal-header\">'"
-        + "+'<div class=\"gal-title\">'+placeTag+'</div>'"
-        + "+'<div class=\"gal-sub\">'+matched.length+' Photo'"
-        + "+(matched.length!==1?'s':'')+' from '+placeTag+'</div>'"
-        + "+'</div>'"
-        + "+'<div class=\"grid\">'+matched.join('')+'</div>'"
-        + "+'<div style=\"padding:20px clamp(14px,4vw,44px)\">'"
-        + "+'<button id=\"story-back-btn\" class=\"story-cta-btn-ghost\" style=\"cursor:pointer\">'"
-        + "+'&#8249; Back to Story</button></div>';\n"
-        + "  gc.prepend(blk);\n"
-        + "  var backBtn=document.getElementById('story-back-btn');\n"
-        + "  if(backBtn){backBtn.addEventListener('click',function(){showStoryPost(postId);});}\n"
-        + "  setActiveTab('stories');\n"
-        + "  window.scrollTo(0,0);\n"
-        + "}\n"
-    )
-
     # ── ASSEMBLE HTML ─────────────────────────────────────────────────────────
+    # Build MOHAN_CONFIG — all Python data passed to JS via JSON, zero interpolation
+    categories_list = sorted([
+        "Nature/Landscapes","Nature/Wildlife","Nature/Birds","Nature/Flora",
+        "Places/National","Places/International",
+        "Architecture","People & Culture"
+    ])
+    _mohan_config = {
+        "heroThumbs":   hero_thumb_paths,
+        "supaUrl":      supabase_url,
+        "supaKey":      supabase_key,
+        "adminPass":    admin_password,
+        "contactEmail": contact_email,
+        "categories":   categories_list,
+        "blogPhotoMap": _blog_photo_map,
+    }
+    _config_json = json.dumps(_mohan_config)
+
     # Pre-build about body HTML (avoids inline ternary in string concat)
     about_paras = render_paragraphs(c_about.get('paragraphs', ['[ Add your story in content.json ]']))
     if has_about_photo:
@@ -4531,7 +4527,8 @@ document.addEventListener('DOMContentLoaded', function(){ goHome(); });
         '  </div>\n'
         '</div>\n\n'
 
-        '<script>' + js + '</script>\n'
+        '<script>\nwindow.MOHAN_CONFIG=' + _config_json + ';\n</script>\n'
+        '<script src="mohangraphy.js"></script>\n'
         '</body>\n'
         '</html>'
     )
@@ -4545,6 +4542,11 @@ document.addEventListener('DOMContentLoaded', function(){ goHome(); });
     out_path = os.path.join(ROOT_DIR, "index.html")
     with open(out_path, "w", encoding="utf-8") as f:
         f.write(html)
+
+    js_out_path = os.path.join(ROOT_DIR, "mohangraphy.js")
+    with open(js_out_path, "w", encoding="utf-8") as f:
+        f.write(_MOHAN_JS)
+    print(f"  ✅ mohangraphy.js written → {js_out_path}")
 
     print("=" * 55)
     print("BUILD COMPLETE")
