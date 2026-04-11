@@ -1754,7 +1754,7 @@ header {
 
 /* ── PLACES FILTER PILLS ── */
 .places-filters {
-  display: flex; gap: 8px;
+  display: flex; gap: 8px; flex-wrap: wrap;
   padding: clamp(14px,2.5vw,28px) clamp(14px,4vw,44px) 0;
 }
 .places-pill {
@@ -2140,33 +2140,36 @@ footer {
   z-index: 3;
 }
 
-/* ── Recently Added banner ── */
+/* ── Recently Added notification button ── */
 #new-photos-banner {
-  display: none;
   position: absolute;
-  bottom: 32px;
+  bottom: clamp(28px, 5vh, 56px);
   left: 50%;
   transform: translateX(-50%);
   z-index: 3;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
   white-space: nowrap;
-  text-align: center;
-  padding: 10px 28px;
+  padding: 12px 28px;
   font-family: 'Montserrat', sans-serif;
-  font-size: 9px; letter-spacing: 4px; text-transform: uppercase;
-  background: rgba(0,0,0,0.55);
-  border: 1px solid rgba(201,169,110,0.45);
+  font-size: 9px; letter-spacing: 3px; text-transform: uppercase;
+  background: rgba(0,0,0,0.6);
+  border: 1px solid rgba(201,169,110,0.5);
   color: var(--gold);
   cursor: pointer;
-  animation: bannerPulse 2.5s ease-in-out infinite;
-  transition: background .2s, border-color .2s;
-  backdrop-filter: blur(4px);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  animation: bannerPulse 3s ease-in-out infinite;
+  transition: background .25s, border-color .25s, color .25s;
 }
 #new-photos-banner:hover {
-  background: rgba(201,169,110,0.15);
+  background: rgba(201,169,110,0.12);
   border-color: var(--gold);
+  color: #fff;
 }
 @keyframes bannerPulse {
-  0%, 100% { opacity: 0.75; }
+  0%, 100% { opacity: 0.7; }
   50%       { opacity: 1; }
 }
 
@@ -2825,31 +2828,18 @@ footer {
             '\n</div>'
         )
 
-    # ── RECENTLY ADDED card — always visible in main collections grid ────────────
-    # Pick a cover from recently-added photos; fallback to any photo
+    # ── RECENTLY ADDED — compute 14-day window for the hero banner ───────────────
     import datetime as _dt
     _now = _dt.datetime.now()
+    _RECENT_DAYS = 14
     _recent_paths = sorted(
         [p for p, pi in path_info.items()
          if pi.get('date_added','') and
-         (_now - _dt.datetime.fromisoformat(pi['date_added'])).days <= 90],
+         (_now - _dt.datetime.fromisoformat(pi['date_added'])).days <= _RECENT_DAYS],
         key=lambda p: path_info[p].get('date_added',''),
         reverse=True
     )
-    _ra_cover_raw = _recent_paths[0] if _recent_paths else (all_paths[0] if all_paths else '')
-    _ra_cover     = thumb_map.get(_ra_cover_raw, _ra_cover_raw)
-    _ra_total     = len(all_paths)
-    cat_tiles_html += (
-        '\n<div class="cat-card" onclick="showNewPhotos()" role="button" tabindex="0"'
-        ' onkeypress="if(event.key===\'Enter\') this.click()">'
-        + ('<img class="cat-card-img" src="' + _ra_cover + '" loading="lazy" decoding="async" alt="">'
-           if _ra_cover else '<div class="cat-card-placeholder"><span>Coming<br>Soon</span></div>')
-        + '<div class="cat-card-bar">'
-        '<div class="cat-card-name">Recently Added</div>'
-        '<div class="cat-card-count">' + str(_ra_total) + ' Photos</div>'
-        '</div>'
-        '\n</div>'
-    )
+    _ra_count = len(_recent_paths)  # only photos within 14 days
 
     nav_drawer_rows = ''  # legacy — not used with new header dropdown
 
@@ -3251,34 +3241,39 @@ function markNewPhotos(){
       }
     }
   });
-  var banner = document.getElementById('new-photos-banner');
-  var label  = document.getElementById('new-photos-label');
-  if(banner && uniqueCount > 0){
-    label.textContent = uniqueCount + ' photo' + (uniqueCount > 1 ? 's' : '') + ' added recently — view ' + (uniqueCount > 1 ? 'them' : 'it');
-    banner.style.display = 'block';
+  /* Update banner label — button is already in DOM (rendered by Python) if there
+     are recent photos. Just set the text so the JS-counted figure is accurate. */
+  var label = document.getElementById('new-photos-label');
+  if(label && uniqueCount > 0){
+    label.textContent = uniqueCount + (uniqueCount === 1 ? ' photo' : ' photos')
+      + ' recently added — click to view';
   }
 }
 
 function showNewPhotos(){
-  /* Collect all unique photos sorted by date_added descending.
-     Falls back to all grid items if none have a date_added value. */
+  /* Collect ONLY photos added within the last NEW_DAYS days, sorted newest first.
+     This is the correct intent — Recently Added is not "all photos". */
+  var now = new Date();
   var seenPaths = {};
-  var datedItems = [];
-  var allItems   = [];
-  document.querySelectorAll('.section-block:not(#gallery-new-photos) .grid-item').forEach(function(item){
+  var recentItems = [];
+  document.querySelectorAll('.section-block:not(#gallery-new-photos) .grid-item[data-date-added]').forEach(function(item){
     var path = item.getAttribute('data-photo') || '';
     if(seenPaths[path]) return;
-    seenPaths[path] = true;
     var da = item.getAttribute('data-date-added') || '';
-    if(da){ datedItems.push({item:item, da:da}); }
-    allItems.push(item);
+    if(!da) return;
+    var diffDays = (now - new Date(da)) / (1000 * 60 * 60 * 24);
+    if(diffDays >= 0 && diffDays <= NEW_DAYS){
+      seenPaths[path] = true;
+      recentItems.push({item: item, da: da});
+    }
   });
-  /* Sort dated items newest first */
-  datedItems.sort(function(a,b){ return b.da > a.da ? 1 : -1; });
-  var uniqueItems = datedItems.length
-    ? datedItems.map(function(x){ return x.item; })
-    : allItems;
-  if(!uniqueItems.length) return;
+  /* Sort newest first */
+  recentItems.sort(function(a, b){ return b.da > a.da ? 1 : -1; });
+  var uniqueItems = recentItems.map(function(x){ return x.item; });
+  if(!uniqueItems.length){
+    showToast('No photos added in the last ' + NEW_DAYS + ' days.');
+    return;
+  }
 
   /* Step 1: run hideAll FIRST — clears all panels */
   hideAll();
@@ -3318,7 +3313,7 @@ function showNewPhotos(){
   block.innerHTML = '<div class="gal-header">'
     + '<div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;">'
     + '<div><div class="gal-title">Recently Added</div>'
-    + '<div class="gal-sub">' + uniqueItems.length + ' Photo' + (uniqueItems.length > 1 ? 's' : '') + (datedItems.length ? ' · Most Recent First' : '') + '</div></div>'
+    + '<div class="gal-sub">' + uniqueItems.length + ' Photo' + (uniqueItems.length > 1 ? 's' : '') + ' · Added in the last ' + NEW_DAYS + ' days · Most Recent First</div></div>'
     + '<button class="slideshow-btn" onclick="startSlideshow(\x27gallery-new-photos\x27)">'
     + '<svg width="11" height="11" viewBox="0 0 11 11" fill="none"><polygon points="1,0.5 10.5,5.5 1,10.5" fill="currentColor"/></svg>'
     + 'View Slideshow</button>'
@@ -4243,8 +4238,17 @@ document.addEventListener('keydown', function(e){
         '    </svg>\n'
         '    <span>Explore</span>\n'
         '  </button>\n'
-        '  <div id="new-photos-banner" onclick="showNewPhotos()">&#10022; <span id="new-photos-label"></span></div>\n'
-        '</div>\n\n'
+        + (
+            '  <button id="new-photos-banner" onclick="showNewPhotos()" aria-label="View recently added photos">\n'
+            '    <svg width="10" height="10" viewBox="0 0 10 10" fill="none" style="flex-shrink:0">'
+            '<circle cx="5" cy="5" r="4" stroke="currentColor" stroke-width="1.2"/>'
+            '<circle cx="5" cy="5" r="1.5" fill="currentColor"/></svg>\n'
+            '    <span id="new-photos-label"></span>\n'
+            '  </button>\n'
+            if _ra_count > 0 else
+            '  <!-- no recently added photos -->\n'
+        )
+        + '</div>\n\n'
 
         # ── MAIN MENU ────────────────────────────────────────────────────────
         '<div id="tile-nav">\n'
@@ -4686,6 +4690,240 @@ def git_deploy():
     print("─" * 55)
 
 
+def notify_subscribers(new_photo_count=0):
+    """
+    After a successful deploy, notify all subscribers that new photos have been added.
+
+    How it works:
+      1. Reads Supabase credentials from content.json (same source as the site build).
+      2. Fetches all subscriber names + emails from the `subscribers` table.
+      3. Calls the Supabase Edge Function `notify-new-photos` which handles the
+         actual email dispatch via Resend, sending a personalised branded email
+         matching the Mohangraphy dark/gold design.
+
+    Edge Function contract (POST to /functions/v1/notify-new-photos):
+      Body JSON: { "subscribers": [{"name": "...", "email": "..."},...],
+                   "new_photo_count": N, "site_url": "https://www.mohangraphy.com" }
+
+    If the Edge Function is not deployed yet this step prints setup instructions
+    and exits gracefully — it will NOT block or error the build.
+
+    To deploy the Edge Function once:
+      supabase functions deploy notify-new-photos --project-ref <your-ref>
+    """
+    import urllib.request, json as _json
+
+    print()
+    print("─" * 55)
+    print("STEP 4 — NOTIFYING SUBSCRIBERS...")
+    print("─" * 55)
+
+    # ── Load credentials ──────────────────────────────────────────────────────
+    C = load_content()
+    site = C.get('site', {})
+    supa_url = site.get('supabase_url', '').strip().rstrip('/')
+    supa_key = site.get('supabase_anon_key', '').strip()
+
+    if not supa_url or supa_url == 'NONE' or not supa_key:
+        print("  ⚠️  Supabase not configured in content.json — skipping subscriber notifications.")
+        print("     Set 'supabase_url' and 'supabase_anon_key' under 'site' to enable this.")
+        return
+
+    # ── Fetch subscribers (name + email) ──────────────────────────────────────
+    try:
+        req = urllib.request.Request(
+            supa_url + '/rest/v1/subscribers?select=name,email&unsubscribed=eq.false',
+            headers={
+                'apikey':        supa_key,
+                'Authorization': 'Bearer ' + supa_key,
+                'Content-Type':  'application/json',
+            }
+        )
+        with urllib.request.urlopen(req, timeout=15) as resp:
+            rows = _json.loads(resp.read().decode())
+        subscribers = [
+            {'name': r.get('name') or '', 'email': r['email']}
+            for r in rows if r.get('email')
+        ]
+    except Exception as e:
+        print(f"  ❌ Could not fetch subscribers: {e}")
+        print("     Check your Supabase URL / anon key in content.json.")
+        return
+
+    if not subscribers:
+        print("  ℹ️  No subscribers found — nothing to notify.")
+        return
+
+    print(f"  📬 {len(subscribers)} subscriber(s) found.")
+
+    # ── Call Edge Function ────────────────────────────────────────────────────
+    payload = _json.dumps({
+        "subscribers":     subscribers,
+        "new_photo_count": new_photo_count,
+        "site_url":        "https://www.mohangraphy.com",
+    }).encode('utf-8')
+
+    try:
+        fn_req = urllib.request.Request(
+            supa_url + '/functions/v1/notify-new-photos',
+            data=payload,
+            method='POST',
+            headers={
+                'Authorization': 'Bearer ' + supa_key,
+                'Content-Type':  'application/json',
+            }
+        )
+        with urllib.request.urlopen(fn_req, timeout=30) as fn_resp:
+            status = fn_resp.status
+            body   = fn_resp.read().decode()
+
+        if status in (200, 201):
+            print(f"  ✅ Subscriber notifications dispatched to {len(subscribers)} address(es).")
+        else:
+            print(f"  ⚠️  Edge Function returned HTTP {status}: {body[:200]}")
+
+    except urllib.error.HTTPError as e:
+        if e.code == 404:
+            print("  ⚠️  Edge Function 'notify-new-photos' not found on Supabase.")
+            print()
+            print("  ── SETUP INSTRUCTIONS ───────────────────────────────────")
+            print("  1. Install Supabase CLI:  brew install supabase/tap/supabase")
+            print("  2. Login:                 supabase login")
+            print("  3. Create the function:   supabase functions new notify-new-photos")
+            print("  4. Replace the generated index.ts with the template below.")
+            print("  5. Deploy:                supabase functions deploy notify-new-photos")
+            print()
+            print("  ── EDGE FUNCTION TEMPLATE (index.ts) ────────────────────")
+            print(r"""
+  import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+
+  const RESEND_API_KEY = Deno.env.get("RESEND_API_KEY") ?? "";
+  const FROM_EMAIL     = "photos@mohangraphy.com";   // must be verified in Resend
+  const FROM_NAME      = "Mohangraphy";
+
+  serve(async (req) => {
+    const { subscribers, new_photo_count, site_url } = await req.json();
+
+    const subject = "New photos have been added — Mohangraphy";
+
+    for (const sub of subscribers) {
+      const greeting = sub.name ? `Hi ${sub.name},` : "Hi there,";
+      const photoWord = new_photo_count === 1 ? "photo has" : "photos have";
+
+      /* ── Branded email — dark background, gold type, matching mohangraphy.com ── */
+      const html = `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>New Photos — Mohangraphy</title>
+</head>
+<body style="margin:0;padding:0;background:#ffffff;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;">
+  <table width="100%" cellpadding="0" cellspacing="0" border="0" style="background:#ffffff;">
+    <tr>
+      <td align="center" style="padding:32px 16px;">
+        <table width="600" cellpadding="0" cellspacing="0" border="0"
+               style="max-width:600px;width:100%;background:#0a0a0a;">
+
+          <!-- Header: MOHANGRAPHY logotype -->
+          <tr>
+            <td style="padding:48px 48px 32px;text-align:left;">
+              <span style="font-family:Georgia,'Times New Roman',serif;
+                           font-size:28px;font-weight:400;letter-spacing:10px;
+                           text-transform:uppercase;color:#c9a96e;">
+                MOHANGRAPHY
+              </span>
+            </td>
+          </tr>
+
+          <!-- Body copy -->
+          <tr>
+            <td style="padding:0 48px 16px;">
+              <p style="margin:0;font-size:15px;line-height:1.7;color:#e0e0e0;
+                         font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;">
+                ${greeting}
+              </p>
+            </td>
+          </tr>
+          <tr>
+            <td style="padding:0 48px 36px;">
+              <p style="margin:0;font-size:15px;line-height:1.7;color:#e0e0e0;
+                         font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;">
+                New photos have just been added to the gallery. Come take a look!
+              </p>
+            </td>
+          </tr>
+
+          <!-- CTA button -->
+          <tr>
+            <td style="padding:0 48px 52px;">
+              <table cellpadding="0" cellspacing="0" border="0">
+                <tr>
+                  <td style="border:1px solid #c9a96e;">
+                    <a href="${site_url}"
+                       style="display:inline-block;padding:16px 36px;
+                              font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;
+                              font-size:11px;font-weight:600;letter-spacing:4px;
+                              text-transform:uppercase;color:#c9a96e;
+                              text-decoration:none;white-space:nowrap;">
+                      VIEW NEW PHOTOS
+                    </a>
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+
+          <!-- Footer -->
+          <tr>
+            <td style="padding:24px 48px 36px;
+                        border-top:1px solid rgba(201,169,110,0.15);">
+              <p style="margin:0;font-size:11px;line-height:1.7;
+                         color:rgba(255,255,255,0.3);
+                         font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;">
+                You received this because you subscribed at
+                <a href="${site_url}"
+                   style="color:#c9a96e;text-decoration:none;">mohangraphy.com</a>.
+              </p>
+            </td>
+          </tr>
+
+        </table>
+      </td>
+    </tr>
+  </table>
+</body>
+</html>`;
+
+      await fetch("https://api.resend.com/emails", {
+        method: "POST",
+        headers: {
+          "Authorization": `Bearer ${RESEND_API_KEY}`,
+          "Content-Type":  "application/json",
+        },
+        body: JSON.stringify({
+          from:    `${FROM_NAME} <${FROM_EMAIL}>`,
+          to:      sub.email,
+          subject: subject,
+          html:    html,
+        }),
+      });
+    }
+
+    return new Response(JSON.stringify({ sent: subscribers.length }), { status: 200 });
+  });""")
+            print()
+            print("  Set RESEND_API_KEY as a Supabase secret:")
+            print("    supabase secrets set RESEND_API_KEY=re_xxxxxxxxxxxx")
+            print("  ─────────────────────────────────────────────────────────")
+        else:
+            print(f"  ❌ Edge Function error HTTP {e.code}: {e.read().decode()[:200]}")
+    except Exception as e:
+        print(f"  ❌ Failed to call Edge Function: {e}")
+
+    print("─" * 55)
+
+
 if __name__ == "__main__":
     print("=" * 55)
     print("MOHANGRAPHY DEPLOY")
@@ -4699,3 +4937,19 @@ if __name__ == "__main__":
     print()
     print("Step 3 — Deploying to GitHub...")
     git_deploy()
+    print()
+    print("Step 4 — Notifying subscribers...")
+    # Count photos added in the last 14 days to pass to the notification
+    import datetime as _dt_main, json as _json_main
+    _raw = {}
+    if os.path.exists(DATA_FILE):
+        with open(DATA_FILE, 'r') as _f:
+            try: _raw = _json_main.load(_f)
+            except Exception: _raw = {}
+    _now_main = _dt_main.datetime.now()
+    _recent_count = sum(
+        1 for info in _raw.values()
+        if info.get('date_added','') and
+        (_now_main - _dt_main.datetime.fromisoformat(info['date_added'])).days <= 14
+    )
+    notify_subscribers(new_photo_count=_recent_count)

@@ -188,34 +188,39 @@ function markNewPhotos(){
       }
     }
   });
-  var banner = document.getElementById('new-photos-banner');
-  var label  = document.getElementById('new-photos-label');
-  if(banner && uniqueCount > 0){
-    label.textContent = uniqueCount + ' photo' + (uniqueCount > 1 ? 's' : '') + ' added recently — view ' + (uniqueCount > 1 ? 'them' : 'it');
-    banner.style.display = 'block';
+  /* Update banner label — button is already in DOM (rendered by Python) if there
+     are recent photos. Just set the text so the JS-counted figure is accurate. */
+  var label = document.getElementById('new-photos-label');
+  if(label && uniqueCount > 0){
+    label.textContent = uniqueCount + (uniqueCount === 1 ? ' photo' : ' photos')
+      + ' recently added — click to view';
   }
 }
 
 function showNewPhotos(){
-  /* Collect all unique photos sorted by date_added descending.
-     Falls back to all grid items if none have a date_added value. */
+  /* Collect ONLY photos added within the last NEW_DAYS days, sorted newest first.
+     This is the correct intent — Recently Added is not "all photos". */
+  var now = new Date();
   var seenPaths = {};
-  var datedItems = [];
-  var allItems   = [];
-  document.querySelectorAll('.section-block:not(#gallery-new-photos) .grid-item').forEach(function(item){
+  var recentItems = [];
+  document.querySelectorAll('.section-block:not(#gallery-new-photos) .grid-item[data-date-added]').forEach(function(item){
     var path = item.getAttribute('data-photo') || '';
     if(seenPaths[path]) return;
-    seenPaths[path] = true;
     var da = item.getAttribute('data-date-added') || '';
-    if(da){ datedItems.push({item:item, da:da}); }
-    allItems.push(item);
+    if(!da) return;
+    var diffDays = (now - new Date(da)) / (1000 * 60 * 60 * 24);
+    if(diffDays >= 0 && diffDays <= NEW_DAYS){
+      seenPaths[path] = true;
+      recentItems.push({item: item, da: da});
+    }
   });
-  /* Sort dated items newest first */
-  datedItems.sort(function(a,b){ return b.da > a.da ? 1 : -1; });
-  var uniqueItems = datedItems.length
-    ? datedItems.map(function(x){ return x.item; })
-    : allItems;
-  if(!uniqueItems.length) return;
+  /* Sort newest first */
+  recentItems.sort(function(a, b){ return b.da > a.da ? 1 : -1; });
+  var uniqueItems = recentItems.map(function(x){ return x.item; });
+  if(!uniqueItems.length){
+    showToast('No photos added in the last ' + NEW_DAYS + ' days.');
+    return;
+  }
 
   /* Step 1: run hideAll FIRST — clears all panels */
   hideAll();
@@ -255,7 +260,7 @@ function showNewPhotos(){
   block.innerHTML = '<div class="gal-header">'
     + '<div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;">'
     + '<div><div class="gal-title">Recently Added</div>'
-    + '<div class="gal-sub">' + uniqueItems.length + ' Photo' + (uniqueItems.length > 1 ? 's' : '') + (datedItems.length ? ' · Most Recent First' : '') + '</div></div>'
+    + '<div class="gal-sub">' + uniqueItems.length + ' Photo' + (uniqueItems.length > 1 ? 's' : '') + ' · Added in the last ' + NEW_DAYS + ' days · Most Recent First</div></div>'
     + '<button class="slideshow-btn" onclick="startSlideshow(\x27gallery-new-photos\x27)">'
     + '<svg width="11" height="11" viewBox="0 0 11 11" fill="none"><polygon points="1,0.5 10.5,5.5 1,10.5" fill="currentColor"/></svg>'
     + 'View Slideshow</button>'
