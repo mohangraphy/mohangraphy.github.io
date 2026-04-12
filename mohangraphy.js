@@ -616,7 +616,32 @@ function barLike(btn){
   localStorage.setItem('mohan_likes2',JSON.stringify(localLikes));
 }
 
-// Owner mode — visit mohangraphy.com?owner=yes once on each device
+/* ── Copy protection — intercept any text selection/copy on protected content ── */
+document.addEventListener('copy', function(e){
+  var sel = window.getSelection();
+  if(!sel || sel.isCollapsed) return;
+  var node = sel.anchorNode;
+  /* Walk up the DOM to see if the selected text is inside protected content */
+  var el = node && node.nodeType === 3 ? node.parentElement : node;
+  while(el && el !== document.body){
+    var cls = el.className || '';
+    if(typeof cls === 'string' && (
+        cls.indexOf('story-body') >= 0 ||
+        cls.indexOf('story-post-title') >= 0 ||
+        cls.indexOf('story-post-dates') >= 0 ||
+        cls.indexOf('info-page-body') >= 0
+    )){
+      e.preventDefault();
+      e.clipboardData && e.clipboardData.setData('text/plain',
+        '\u00a9 N C Mohan \u00b7 mohangraphy.com \u00b7 All rights reserved');
+      showToast('\u00a9 Content is copyright protected \u00b7 mohangraphy.com');
+      return;
+    }
+    el = el.parentElement;
+  }
+});
+
+// Owner mode — set automatically when admin unlocks, or manually via ?owner=yes
 if(new URLSearchParams(window.location.search).get('owner')==='yes'){
   localStorage.setItem('mohan_owner','yes');
   alert('Owner mode activated — your visits will not be counted!');
@@ -630,7 +655,7 @@ function initVisits(){
       .then(function(rows){
         var cur=rows&&rows[0]?parseInt(rows[0].count)||0:0;
         var el=document.getElementById('visit-count');
-        if(el&&cur>0) el.textContent=' · '+cur.toLocaleString()+' visits';
+        if(el&&cur>0) el.textContent=' \u00b7 '+cur.toLocaleString()+' visits';
       }).catch(function(){});
     return;
   }
@@ -641,7 +666,7 @@ function initVisits(){
       return supaRequest('POST','visits?on_conflict=id',{id:'total',count:next})
         .then(function(){
           var el=document.getElementById('visit-count');
-          if(el&&next>0) el.textContent=' · '+next.toLocaleString()+' visits';
+          if(el&&next>0) el.textContent=' \u00b7 '+next.toLocaleString()+' visits';
         });
     }).catch(function(){});
 }
@@ -753,6 +778,8 @@ function adminCheckPassword(){
   var pw=document.getElementById('admin-pw-input').value;
   if(pw!==ADMIN_PASS){ document.getElementById('admin-pw-error').style.display='block'; return; }
   ADMIN_UNLOCKED=true; document.body.classList.add('admin-unlocked');
+  /* Auto-set owner mode — admin visits should never count */
+  localStorage.setItem('mohan_owner','yes');
   document.getElementById('admin-pw-screen').style.display='none';
   document.getElementById('admin-edit-screen').style.display='block';
 }
