@@ -1273,7 +1273,7 @@
         "filename": "edit-IMG_4915.jpg",
         "categories": [
             "Places/National",
-              "People & Culture/Street"
+            "People & Culture/Street"
         ],
         "state": "Maharashtra",
         "city": "Tadoba",
@@ -1338,7 +1338,7 @@
         "filename": "edit-2026-0326-Tadoba-VCM-IMG-4497.jpg",
         "categories": [
             "Places/National",
-             "People & Culture/Street"
+            "People & Culture/Street"
         ],
         "state": "Maharashtra",
         "city": "Tadoba",
@@ -1440,7 +1440,7 @@
         "path": "Photos/Canada/2025-0713-Cinnamon_Black Bear-Calgary-NCM_6596.JPG",
         "filename": "2025-0713-Cinnamon_Black Bear-Calgary-NCM_6596.JPG",
         "categories": [
-           "Nature/Wildlife",
+            "Nature/Wildlife",
             "Places/International"
         ],
         "state": "",
@@ -1466,7 +1466,7 @@
         "path": "Photos/Canada/2025-0713-Icefields_Parkway-Calgary-NCM_6129.jpg",
         "filename": "2025-0713-Icefields_Parkway-Calgary-NCM_6129.jpg",
         "categories": [
-           "Nature/Landscapes",
+            "Nature/Landscapes",
             "Places/International"
         ],
         "state": "",
@@ -1526,5 +1526,70 @@
         "country": "Canada",
         "remarks": "Near Medicine Lake, Jasper NP",
         "date_added": "2025-07-12"
+    },
+    "1e71a555cc64b56b40d9703655e32e47": {
+        "path": "Photos/NewYork/2025-0727-NY-NCM_8731.jpg",
+        "filename": "2025-0727-NY-NCM_8731.jpg",
+        "categories": [
+            "Places/International",
+            "Nature/Landscapes"
+        ],
+        "state": "",
+        "city": "New York",
+        "country": "USA",
+        "remarks": "Hudson River",
+        "date_added": "2026-04-12"
+    },
+    "f5470e80af493e58bed127095ff94851": {
+        "path": "Photos/NewYork/2025-0727-NY-NCM_8740.jpg",
+        "filename": "2025-0727-NY-NCM_8740.jpg",
+        "categories": [
+            "Places/International",
+            "Nature/Landscapes"
+        ],
+        "state": "",
+        "city": "New York",
+        "country": "USA",
+        "remarks": "Hudson River",
+        "date_added": "2026-04-12"
+    },
+    "564eb1d012da9df25facb5694d134c30": {
+        "path": "Photos/NewYork/2025-0727-NY-NCM_8766.jpg",
+        "filename": "2025-0727-NY-NCM_8766.jpg",
+        "categories": [
+            "Places/International",
+            "Nature/Landscapes"
+        ],
+        "state": "",
+        "city": "New York",
+        "country": "USA",
+        "remarks": "Hudson River",
+        "date_added": "2026-04-12"
+    },
+    "c31a636de6ca0a32865ae53174af4ce7": {
+        "path": "Photos/NewYork/2025-0727-NY-NCM_8767.jpg",
+        "filename": "2025-0727-NY-NCM_8767.jpg",
+        "categories": [
+            "Places/International",
+            "Nature/Landscapes"
+        ],
+        "state": "",
+        "city": "New York",
+        "country": "USA",
+        "remarks": "Hudson River",
+        "date_added": "2026-04-12"
+    },
+    "0e6d096c0804968c16be46812447e364": {
+        "path": "Photos/NewYork/2025-0727-NY-NCM_8770.jpg",
+        "filename": "2025-0727-NY-NCM_8770.jpg",
+        "categories": [
+            "Places/International",
+            "Nature/Landscapes"
+        ],
+        "state": "",
+        "city": "New York",
+        "country": "USA",
+        "remarks": "Hudson River",
+        "date_added": "2026-04-12"
     }
 }
