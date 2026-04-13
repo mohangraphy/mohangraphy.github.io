@@ -2144,17 +2144,22 @@ footer {
 /* ── Recently Added notification button ── */
 #new-photos-banner {
   position: absolute;
-  bottom: clamp(28px, 5vh, 56px);
+  bottom: clamp(20px, 5vh, 56px);
   left: 50%;
   transform: translateX(-50%);
   z-index: 3;
   display: inline-flex;
   align-items: center;
-  gap: 10px;
-  white-space: nowrap;
-  padding: 12px 28px;
+  gap: 8px;
+  white-space: normal;
+  text-align: center;
+  width: max-content;
+  max-width: calc(100vw - 32px);
+  padding: 10px clamp(14px, 4vw, 28px);
   font-family: 'Montserrat', sans-serif;
-  font-size: 9px; letter-spacing: 3px; text-transform: uppercase;
+  font-size: clamp(8px, 2vw, 9px);
+  letter-spacing: clamp(1px, 0.5vw, 3px);
+  text-transform: uppercase;
   background: rgba(0,0,0,0.6);
   border: 1px solid rgba(201,169,110,0.5);
   color: var(--gold);
@@ -2164,6 +2169,7 @@ footer {
   animation: bannerPulse 3s ease-in-out infinite;
   transition: background .25s, border-color .25s, color .25s;
 }
+#new-photos-banner svg { flex-shrink: 0; }
 #new-photos-banner:hover {
   background: rgba(201,169,110,0.12);
   border-color: var(--gold);
@@ -2172,6 +2178,14 @@ footer {
 @keyframes bannerPulse {
   0%, 100% { opacity: 0.7; }
   50%       { opacity: 1; }
+}
+@media (max-width: 480px) {
+  #new-photos-banner {
+    font-size: 8px;
+    letter-spacing: 1.5px;
+    padding: 9px 14px;
+    gap: 6px;
+  }
 }
 
 /* ── PAGE TRANSITIONS ── */
