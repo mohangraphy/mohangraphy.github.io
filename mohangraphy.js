@@ -530,6 +530,51 @@ imgModalImg.addEventListener('touchstart',function(){imLpTimer=setTimeout(functi
 imgModalImg.addEventListener('touchend',function(){clearTimeout(imLpTimer);},{passive:true});
 imgModalImg.addEventListener('touchmove',function(){clearTimeout(imLpTimer);},{passive:true});
 
+/* ── Slideshow image — right-click → watermarked download ── */
+document.addEventListener('DOMContentLoaded', function(){
+  var ssImg = document.getElementById('slideshow-img');
+  if(!ssImg) return;
+  ssImg.addEventListener('contextmenu', function(e){
+    e.preventDefault();
+    var canvas = document.getElementById('lb-canvas');
+    canvas.width  = ssImg.naturalWidth  || ssImg.width  || 1200;
+    canvas.height = ssImg.naturalHeight || ssImg.height || 800;
+    var ctx = canvas.getContext('2d');
+    try{
+      ctx.drawImage(ssImg, 0, 0, canvas.width, canvas.height);
+      lbAddWatermark(ctx, canvas.width, canvas.height);
+      var a = document.createElement('a');
+      a.href = canvas.toDataURL('image/jpeg', 0.92);
+      a.download = 'mohangraphy-slideshow.jpg';
+      document.body.appendChild(a); a.click(); document.body.removeChild(a);
+    }catch(err){ showToast('Right-click save blocked. Contact for licensed copy.'); }
+  });
+  /* Long-press on slideshow (mobile) */
+  var ssLpTimer = null;
+  ssImg.addEventListener('touchstart', function(){ ssLpTimer = setTimeout(function(){ showToast('Contact info@mohangraphy.com for a licensed copy.'); }, 800); },{passive:true});
+  ssImg.addEventListener('touchend',  function(){ clearTimeout(ssLpTimer); },{passive:true});
+  ssImg.addEventListener('touchmove', function(){ clearTimeout(ssLpTimer); },{passive:true});
+});
+
+/* ── Story hero images — right-click → block + toast ──
+   Covers .story-card-hero and .story-post-hero (blog cover/header images).
+   These are not inside .grid-item so they need their own handler.
+   Uses event delegation on document so it works for dynamically added posts too. ── */
+document.addEventListener('contextmenu', function(e){
+  var heroImg = e.target.closest('.story-card-hero, .story-post-hero');
+  if(!heroImg) return;
+  e.preventDefault();
+  showToast('Right-click save blocked. Contact for licensed copy.');
+});
+document.addEventListener('touchstart', function(e){
+  var heroImg = e.target.closest('.story-card-hero, .story-post-hero');
+  if(!heroImg) return;
+  var _t = setTimeout(function(){ showToast('Contact info@mohangraphy.com for a licensed copy.'); }, 800);
+  var cancel = function(){ clearTimeout(_t); };
+  document.addEventListener('touchend',  cancel, {once:true, passive:true});
+  document.addEventListener('touchmove', cancel, {once:true, passive:true});
+},{passive:true});
+
 /* ══════════════════════════════════════════════════════
    REQUEST QUOTE MODAL
    ══════════════════════════════════════════════════════ */
