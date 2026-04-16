@@ -3679,7 +3679,7 @@ function rqSubmit(){
   if(!name.trim()||!email.trim()){ showToast('Please fill your name and email'); return; }
   var photo=rqPhotoKey?rqPhotoKey.split('/').pop().replace(/[.][^.]+$/,''):'(see image)';
   var subject=encodeURIComponent('Print Quote Request — '+rqSelectedSize);
-  var bodyStr='Name: '+name+'\\nEmail: '+email+'\\n\\nPhoto: '+photo+'\\nPrint size: '+rqSelectedSize+'\\n\\nPlease send me a quote.';
+  var bodyStr='Name: '+name+'\nEmail: '+email+'\n\nPhoto: '+photo+'\nPrint size: '+rqSelectedSize+'\n\nPlease send me a quote.';
   window.location.href='mailto:'+window.MOHAN_CONFIG.contactEmail+'?subject='+subject+'&body='+encodeURIComponent(bodyStr);
   closeRqModal(); closeImgModal();
   showToast('Quote request sent!');
@@ -3945,7 +3945,7 @@ function submitContact(){
   var subject=(document.getElementById('cf-subject')||{}).value||'';
   var msg=(document.getElementById('cf-msg')||{}).value||'';
   if(!name.trim()||!email.trim()||!msg.trim()){ showToast('Please fill all required fields.'); return; }
-  var body=encodeURIComponent('Name: '+name+'\\nEmail: '+email+'\\n\\n'+msg);
+  var body=encodeURIComponent('Name: '+name+'\nEmail: '+email+'\n\n'+msg);
   window.location.href='mailto:'+window.MOHAN_CONFIG.contactEmail+'?subject='+encodeURIComponent(subject)+'&body='+body;
 }
 
