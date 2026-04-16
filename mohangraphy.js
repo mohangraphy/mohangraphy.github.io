@@ -530,15 +530,16 @@ imgModalImg.addEventListener('touchstart',function(){imLpTimer=setTimeout(functi
 imgModalImg.addEventListener('touchend',function(){clearTimeout(imLpTimer);},{passive:true});
 imgModalImg.addEventListener('touchmove',function(){clearTimeout(imLpTimer);},{passive:true});
 
-/* ── Slideshow image — right-click → watermarked download ── */
+/* ── Slideshow image — right-click → watermarked download ──
+   NOTE: uses #ss-img (the correct ID in this script, not #slideshow-img). ── */
 document.addEventListener('DOMContentLoaded', function(){
-  var ssImg = document.getElementById('slideshow-img');
+  var ssImg = document.getElementById('ss-img');
   if(!ssImg) return;
   ssImg.addEventListener('contextmenu', function(e){
     e.preventDefault();
     var canvas = document.getElementById('lb-canvas');
-    canvas.width  = ssImg.naturalWidth  || ssImg.width  || 1200;
-    canvas.height = ssImg.naturalHeight || ssImg.height || 800;
+    canvas.width  = ssImg.naturalWidth  || ssImg.offsetWidth  || 1200;
+    canvas.height = ssImg.naturalHeight || ssImg.offsetHeight || 800;
     var ctx = canvas.getContext('2d');
     try{
       ctx.drawImage(ssImg, 0, 0, canvas.width, canvas.height);
@@ -549,31 +550,7 @@ document.addEventListener('DOMContentLoaded', function(){
       document.body.appendChild(a); a.click(); document.body.removeChild(a);
     }catch(err){ showToast('Right-click save blocked. Contact for licensed copy.'); }
   });
-  /* Long-press on slideshow (mobile) */
-  var ssLpTimer = null;
-  ssImg.addEventListener('touchstart', function(){ ssLpTimer = setTimeout(function(){ showToast('Contact info@mohangraphy.com for a licensed copy.'); }, 800); },{passive:true});
-  ssImg.addEventListener('touchend',  function(){ clearTimeout(ssLpTimer); },{passive:true});
-  ssImg.addEventListener('touchmove', function(){ clearTimeout(ssLpTimer); },{passive:true});
 });
-
-/* ── Story hero images — right-click → block + toast ──
-   Covers .story-card-hero and .story-post-hero (blog cover/header images).
-   These are not inside .grid-item so they need their own handler.
-   Uses event delegation on document so it works for dynamically added posts too. ── */
-document.addEventListener('contextmenu', function(e){
-  var heroImg = e.target.closest('.story-card-hero, .story-post-hero');
-  if(!heroImg) return;
-  e.preventDefault();
-  showToast('Right-click save blocked. Contact for licensed copy.');
-});
-document.addEventListener('touchstart', function(e){
-  var heroImg = e.target.closest('.story-card-hero, .story-post-hero');
-  if(!heroImg) return;
-  var _t = setTimeout(function(){ showToast('Contact info@mohangraphy.com for a licensed copy.'); }, 800);
-  var cancel = function(){ clearTimeout(_t); };
-  document.addEventListener('touchend',  cancel, {once:true, passive:true});
-  document.addEventListener('touchmove', cancel, {once:true, passive:true});
-},{passive:true});
 
 /* ══════════════════════════════════════════════════════
    REQUEST QUOTE MODAL
@@ -752,8 +729,10 @@ function hideCtxMenu(){ ctxMenu.style.display='none'; ctxTarget=null; }
 
 document.addEventListener('click', function(e){ if(!e.target.closest('#ctx-menu')) hideCtxMenu(); });
 document.addEventListener('contextmenu', function(e){
+  /* Always block browser's native save menu on any image right-click */
+  if(e.target.tagName === 'IMG') e.preventDefault();
   var item=e.target.closest('.grid-item');
-  if(item){ e.preventDefault(); showCtxMenu(item,e.clientX,e.clientY); }
+  if(item){ showCtxMenu(item,e.clientX,e.clientY); }
   else hideCtxMenu();
 });
 
