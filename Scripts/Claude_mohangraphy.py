@@ -3946,7 +3946,10 @@ function submitContact(){
   var msg=(document.getElementById('cf-msg')||{}).value||'';
   if(!name.trim()||!email.trim()||!msg.trim()){ showToast('Please fill all required fields.'); return; }
   var body=encodeURIComponent('Name: '+name+'\nEmail: '+email+'\n\n'+msg);
-  window.location.href='mailto:'+window.MOHAN_CONFIG.contactEmail+'?subject='+encodeURIComponent(subject)+'&body='+body;
+  var mailto='mailto:'+window.MOHAN_CONFIG.contactEmail+'?subject='+encodeURIComponent(subject)+'&body='+body;
+  /* window.open works more reliably than window.location.href for mailto on desktop browsers */
+  var w=window.open(mailto,'_self');
+  if(!w){ window.location.href=mailto; }
 }
 
 /* ── Keyboard shortcuts ── */
@@ -4777,6 +4780,236 @@ def git_deploy():
 
 
 
+def notify_blog_subscribers(new_post_ids=None):
+    """
+    Call the Supabase Edge Function 'notify-blog-subscribers' after a deploy
+    that includes new blog posts.
+
+    new_post_ids : list of post id strings that are new in this deploy, e.g.
+                   ['megamalai-2026'].  If None or empty the function is skipped.
+
+    The Edge Function (deploy once via Supabase dashboard or CLI) does:
+      1. Read all rows from the 'subscribers' table
+      2. Send each subscriber a plain-text email via Resend (or any SMTP provider
+         you configure in the Edge Function env vars)
+      3. Returns JSON { notified: N }
+
+    Edge Function URL pattern:
+      https://<project-ref>.supabase.co/functions/v1/notify-blog-subscribers
+    """
+    import urllib.request, urllib.error
+
+    if not new_post_ids:
+        print("  ℹ️  No new blog posts flagged — subscriber notification skipped.")
+        print("     To notify subscribers, add post IDs to NEW_BLOG_POSTS at the top of this script.")
+        return
+
+    C = load_content()
+    site         = C.get('site', {})
+    supa_url     = site.get('supabase_url',     'https://xjcpryfgodgqqtbblklg.supabase.co')
+    supa_key     = site.get('supabase_anon_key', '')
+    site_name    = site.get('photographer_name', 'N C Mohan')
+
+    if not supa_url or not supa_key:
+        print("  ❌ Supabase URL or key missing — cannot notify subscribers.")
+        return
+
+    # Load the new posts from blog_posts.json to get titles/summaries
+    posts_by_id = {p.get('id',''): p for p in load_blog_posts()}
+    new_posts   = [posts_by_id[pid] for pid in new_post_ids if pid in posts_by_id]
+
+    if not new_posts:
+        print("  ⚠️  Post IDs not found in blog_posts.json — check NEW_BLOG_POSTS list.")
+        return
+
+    payload = json.dumps({
+        "posts": [
+            {
+                "id":      p.get("id", ""),
+                "title":   p.get("title", ""),
+                "summary": p.get("summary", ""),
+                "place":   p.get("place", ""),
+                "dates":   p.get("dates_visited", ""),
+            }
+            for p in new_posts
+        ],
+        "site_name":  site_name,
+        "site_url":   "https://www.mohangraphy.com",
+    }).encode("utf-8")
+
+    fn_url = supa_url.rstrip("/") + "/functions/v1/notify-blog-subscribers"
+    req = urllib.request.Request(
+        fn_url,
+        data    = payload,
+        method  = "POST",
+        headers = {
+            "Content-Type":  "application/json",
+            "Authorization": "Bearer " + supa_key,
+            "apikey":        supa_key,
+        }
+    )
+    try:
+        with urllib.request.urlopen(req, timeout=30) as resp:
+            result = json.loads(resp.read().decode())
+            notified = result.get("notified", "?")
+            print(f"  ✅ Subscriber notification sent — {notified} subscriber(s) emailed.")
+    except urllib.error.HTTPError as e:
+        body = e.read().decode()
+        if "not found" in body.lower() or e.code == 404:
+            print("  ⚠️  Edge Function 'notify-blog-subscribers' not deployed yet.")
+            print("       See EDGE_FUNCTION_SETUP.md (generated in Scripts/) for instructions.")
+        else:
+            print(f"  ❌ Edge Function error {e.code}: {body[:200]}")
+    except Exception as ex:
+        print(f"  ❌ Could not reach Edge Function: {ex}")
+
+
+# ── EDGE FUNCTION SETUP GUIDE ─────────────────────────────────────────────────
+def write_edge_function_guide():
+    """Write setup instructions + Edge Function source to Scripts/ once."""
+    scripts_dir = os.path.join(ROOT_DIR, "Scripts")
+    guide_path  = os.path.join(scripts_dir, "EDGE_FUNCTION_SETUP.md")
+    fn_path     = os.path.join(scripts_dir, "notify-blog-subscribers.ts")
+
+    guide = """# Subscriber Notification — One-time Setup
+
+## What this does
+When you deploy a new blog post and add its ID to NEW_BLOG_POSTS (in the main
+Python script), the build will call a Supabase Edge Function that emails every
+subscriber in your 'subscribers' table.
+
+## Step 1 — Create a Resend account (free tier: 3,000 emails/month)
+1. Go to https://resend.com and sign up
+2. Add & verify your sending domain (or use the sandbox for testing)
+3. Create an API key — copy it
+
+## Step 2 — Add the API key to Supabase secrets
+In your Supabase dashboard → Project Settings → Edge Functions → Secrets:
+  RESEND_API_KEY = re_xxxxxxxxxxxx   (your Resend key)
+  FROM_EMAIL     = updates@mohangraphy.com  (or any verified sender)
+
+## Step 3 — Deploy the Edge Function
+Install Supabase CLI if you haven't:
+  brew install supabase/tap/supabase
+
+Login and link to your project:
+  supabase login
+  supabase link --project-ref xjcpryfgodgqqtbblklg
+
+Deploy:
+  supabase functions deploy notify-blog-subscribers \\
+    --project-ref xjcpryfgodgqqtbblklg
+
+## Step 4 — Test it
+  curl -X POST \\
+    https://xjcpryfgodgqqtbblklg.supabase.co/functions/v1/notify-blog-subscribers \\
+    -H "Authorization: Bearer YOUR_ANON_KEY" \\
+    -H "Content-Type: application/json" \\
+    -d '{"posts":[{"title":"Test","summary":"Test post","place":"Bangalore","dates":"2026"}],"site_name":"N C Mohan","site_url":"https://www.mohangraphy.com"}'
+
+## Step 5 — Normal workflow going forward
+  1. Add your blog post to blog_posts.json
+  2. Add the post's "id" value to NEW_BLOG_POSTS in the Python script
+  3. Run the Python script — it builds, deploys, and notifies subscribers
+  4. Clear NEW_BLOG_POSTS back to [] after the run (so next run doesn't re-notify)
+"""
+
+    fn_ts = r"""// Supabase Edge Function: notify-blog-subscribers
+// File: supabase/functions/notify-blog-subscribers/index.ts
+// Deploy: supabase functions deploy notify-blog-subscribers
+
+import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+
+const RESEND_API_KEY = Deno.env.get("RESEND_API_KEY") ?? "";
+const FROM_EMAIL     = Deno.env.get("FROM_EMAIL") ?? "updates@mohangraphy.com";
+const SUPA_URL       = Deno.env.get("SUPABASE_URL") ?? "";
+const SUPA_KEY       = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? "";
+
+serve(async (req) => {
+  if (req.method !== "POST") {
+    return new Response("Method not allowed", { status: 405 });
+  }
+
+  let payload: any;
+  try { payload = await req.json(); }
+  catch { return new Response("Invalid JSON", { status: 400 }); }
+
+  const { posts = [], site_name = "N C Mohan", site_url = "https://www.mohangraphy.com" } = payload;
+  if (!posts.length) return new Response(JSON.stringify({ notified: 0 }), { status: 200 });
+
+  // Fetch all subscribers
+  const supabase = createClient(SUPA_URL, SUPA_KEY);
+  const { data: subscribers, error } = await supabase
+    .from("subscribers")
+    .select("name, email");
+
+  if (error) return new Response(JSON.stringify({ error: error.message }), { status: 500 });
+  if (!subscribers?.length) return new Response(JSON.stringify({ notified: 0 }), { status: 200 });
+
+  // Build email body
+  const postLines = posts.map((p: any) =>
+    `• ${p.title}${p.place ? " — " + p.place : ""}${p.dates ? " (" + p.dates + ")" : ""}\n  ${p.summary ?? ""}`
+  ).join("\n\n");
+
+  let notified = 0;
+  for (const sub of subscribers) {
+    const greeting = sub.name ? `Hi ${sub.name},` : "Hello,";
+    const text = `${greeting}
+
+${posts.length === 1 ? "A new travel story" : "New travel stories"} ${posts.length === 1 ? "has" : "have"} been added to ${site_name}'s photography site.
+
+${postLines}
+
+Read ${posts.length === 1 ? "it" : "them"} at: ${site_url}
+
+You are receiving this because you subscribed at ${site_url}.
+Reply to this email to unsubscribe.
+
+— ${site_name}
+`;
+
+    const res = await fetch("https://api.resend.com/emails", {
+      method: "POST",
+      headers: {
+        "Content-Type":  "application/json",
+        "Authorization": "Bearer " + RESEND_API_KEY,
+      },
+      body: JSON.stringify({
+        from:    `${site_name} <${FROM_EMAIL}>`,
+        to:      [sub.email],
+        subject: `New on Mohangraphy: ${posts.map((p: any) => p.title).join(", ")}`,
+        text,
+      }),
+    });
+
+    if (res.ok) notified++;
+    else console.error("Resend error for", sub.email, await res.text());
+  }
+
+  return new Response(JSON.stringify({ notified }), {
+    status: 200,
+    headers: { "Content-Type": "application/json" },
+  });
+});
+"""
+
+    os.makedirs(scripts_dir, exist_ok=True)
+    with open(guide_path, "w", encoding="utf-8") as f:
+        f.write(guide)
+    with open(fn_path, "w", encoding="utf-8") as f:
+        f.write(fn_ts)
+    print(f"  📄 Edge Function setup guide → {guide_path}")
+    print(f"  📄 Edge Function source      → {fn_path}")
+
+
+# ── NEW BLOG POSTS — set IDs here before each deploy, clear after ─────────────
+# Add the "id" value of every NEW post you've added to blog_posts.json.
+# The build will email all subscribers once, then clear this list manually.
+# Example: NEW_BLOG_POSTS = ['megamalai-2026']
+NEW_BLOG_POSTS = []
+
+
 if __name__ == "__main__":
     print("=" * 55)
     print("MOHANGRAPHY DEPLOY")
@@ -4790,4 +5023,8 @@ if __name__ == "__main__":
     print()
     print("Step 3 — Deploying to GitHub...")
     git_deploy()
+    print()
+    print("Step 4 — Notifying subscribers of new blog posts...")
+    write_edge_function_guide()
+    notify_blog_subscribers(NEW_BLOG_POSTS)
 

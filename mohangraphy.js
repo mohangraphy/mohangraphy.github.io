@@ -864,7 +864,10 @@ function submitContact(){
   var msg=(document.getElementById('cf-msg')||{}).value||'';
   if(!name.trim()||!email.trim()||!msg.trim()){ showToast('Please fill all required fields.'); return; }
   var body=encodeURIComponent('Name: '+name+'\nEmail: '+email+'\n\n'+msg);
-  window.location.href='mailto:'+window.MOHAN_CONFIG.contactEmail+'?subject='+encodeURIComponent(subject)+'&body='+body;
+  var mailto='mailto:'+window.MOHAN_CONFIG.contactEmail+'?subject='+encodeURIComponent(subject)+'&body='+body;
+  /* window.open works more reliably than window.location.href for mailto on desktop browsers */
+  var w=window.open(mailto,'_self');
+  if(!w){ window.location.href=mailto; }
 }
 
 /* ── Keyboard shortcuts ── */
