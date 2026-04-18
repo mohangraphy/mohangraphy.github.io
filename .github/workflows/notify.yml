@@ -1,20 +1,46 @@
-name: Notify Subscribers on New Photos
+name: Notify Subscribers
 
 on:
   push:
     branches: [main]
     paths:
       - 'Photos/**'
+      - 'Scripts/blog_posts.json'
 
 jobs:
   notify:
     runs-on: ubuntu-latest
+
     steps:
-      - name: Send email notifications
+      - name: Checkout repo
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+
+      # ── Detect what changed ───────────────────────────────────────────────
+      - name: Detect changes
+        id: changes
+        run: |
+          CHANGED=$(git diff --name-only HEAD~1 HEAD)
+          echo "$CHANGED"
+          if echo "$CHANGED" | grep -q '^Photos/'; then
+            echo "photos=true" >> $GITHUB_OUTPUT
+          else
+            echo "photos=false" >> $GITHUB_OUTPUT
+          fi
+          if echo "$CHANGED" | grep -q 'Scripts/blog_posts.json'; then
+            echo "blog=true" >> $GITHUB_OUTPUT
+          else
+            echo "blog=false" >> $GITHUB_OUTPUT
+          fi
+
+      # ── Fetch subscriber list (shared by both steps) ──────────────────────
+      - name: Fetch subscribers
+        id: subs
+        if: steps.changes.outputs.photos == 'true' || steps.changes.outputs.blog == 'true'
         run: |
           node -e "
           const https = require('https');
-
           const options = {
             hostname: 'xjcpryfgodgqqtbblklg.supabase.co',
             path: '/rest/v1/subscribers?select=email,name',
@@ -23,51 +49,171 @@ jobs:
               'Authorization': 'Bearer ' + process.env.SUPABASE_SERVICE_KEY
             }
           };
-
           https.get(options, res => {
             let data = '';
             res.on('data', chunk => data += chunk);
-            res.on('end', async () => {
+            res.on('end', () => {
               const subscribers = JSON.parse(data);
               console.log('Subscribers found:', subscribers.length);
-
-              for (const sub of subscribers) {
-                const body = JSON.stringify({
-                  from: 'Mohangraphy <photos@mohangraphy.com>',
-                  to: [sub.email],
-                  subject: 'New photos just added to Mohangraphy!',
-                  html: \`<div style='font-family:sans-serif;max-width:600px;margin:auto;background:#080808;color:#fff;padding:40px'>
-                    <h1 style='font-family:Georgia,serif;font-weight:300;letter-spacing:6px;text-transform:uppercase;color:#c9a96e'>Mohangraphy</h1>
-                    <p style='color:rgba(255,255,255,0.6)'>Hi \${sub.name || 'there'},</p>
-                    <p style='color:rgba(255,255,255,0.6)'>New photos have just been added to the gallery. Come take a look!</p>
-                    <a href='https://mohangraphy.com' style='display:inline-block;margin-top:20px;padding:12px 28px;background:none;color:#c9a96e;border:1px solid #c9a96e;text-decoration:none;font-family:sans-serif;font-size:12px;letter-spacing:3px;text-transform:uppercase'>View New Photos</a>
-                    <p style='color:rgba(255,255,255,0.2);font-size:11px;margin-top:40px'>You received this because you subscribed at mohangraphy.com</p>
-                  </div>\`
-                });
-
-                await new Promise((resolve, reject) => {
-                  const req = https.request({
-                    hostname: 'api.resend.com',
-                    path: '/emails',
-                    method: 'POST',
-                    headers: {
-                      'Authorization': 'Bearer ' + process.env.RESEND_API_KEY,
-                      'Content-Type': 'application/json',
-                      'Content-Length': Buffer.byteLength(body)
-                    }
-                  }, r => {
-                    let d = '';
-                    r.on('data', c => d += c);
-                    r.on('end', () => { console.log('Sent to', sub.email, d); resolve(); });
-                  });
-                  req.on('error', reject);
-                  req.write(body);
-                  req.end();
-                });
-              }
+              require('fs').writeFileSync('/tmp/subscribers.json', data);
             });
           });
           "
         env:
           SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
+
+      # ── NEW PHOTOS email ──────────────────────────────────────────────────
+      - name: Send new-photos notification
+        if: steps.changes.outputs.photos == 'true'
+        run: |
+          node -e "
+          const https   = require('https');
+          const fs      = require('fs');
+          const subscribers = JSON.parse(fs.readFileSync('/tmp/subscribers.json'));
+
+          async function sendEmail(sub) {
+            const body = JSON.stringify({
+              from:     'Mohangraphy <photos@mohangraphy.com>',
+              reply_to: 'info@mohangraphy.com',
+              to:       [sub.email],
+              subject:  'New photos just added to Mohangraphy!',
+              html: \`<div style='font-family:sans-serif;max-width:600px;margin:auto;background:#080808;color:#fff;padding:40px'>
+                <h1 style='font-family:Georgia,serif;font-weight:300;letter-spacing:6px;text-transform:uppercase;color:#c9a96e'>Mohangraphy</h1>
+                <p style='color:rgba(255,255,255,0.6)'>Hi \${sub.name || 'there'},</p>
+                <p style='color:rgba(255,255,255,0.6)'>New photos have just been added to the gallery. Come take a look!</p>
+                <a href='https://www.mohangraphy.com' style='display:inline-block;margin-top:20px;padding:12px 28px;background:none;color:#c9a96e;border:1px solid #c9a96e;text-decoration:none;font-family:sans-serif;font-size:12px;letter-spacing:3px;text-transform:uppercase'>View New Photos</a>
+                <p style='color:rgba(255,255,255,0.2);font-size:11px;margin-top:40px'>You received this because you subscribed at mohangraphy.com &nbsp;|&nbsp; <a href='https://www.mohangraphy.com?unsubscribe=\${encodeURIComponent(sub.email)}' style='color:rgba(255,255,255,0.2)'>Unsubscribe</a></p>
+              </div>\`
+            });
+            return new Promise((resolve, reject) => {
+              const req = https.request({
+                hostname: 'api.resend.com',
+                path:     '/emails',
+                method:   'POST',
+                headers:  {
+                  'Authorization':  'Bearer ' + process.env.RESEND_API_KEY,
+                  'Content-Type':   'application/json',
+                  'Content-Length': Buffer.byteLength(body)
+                }
+              }, r => {
+                let d = '';
+                r.on('data', c => d += c);
+                r.on('end', () => { console.log('Sent to', sub.email, d); resolve(); });
+              });
+              req.on('error', reject);
+              req.write(body);
+              req.end();
+            });
+          }
+
+          (async () => {
+            for (const sub of subscribers) await sendEmail(sub);
+            console.log('All new-photo emails sent.');
+          })();
+          "
+        env:
+          RESEND_API_KEY: ${{ secrets.RESEND_API_KEY }}
+
+      # ── NEW BLOG POST email ───────────────────────────────────────────────
+      - name: Identify new blog posts
+        id: newposts
+        if: steps.changes.outputs.blog == 'true'
+        run: |
+          node -e "
+          const fs       = require('fs');
+          const { execSync } = require('child_process');
+
+          // Get blog_posts.json as it was BEFORE this commit
+          let oldPosts = [];
+          try {
+            const oldJson = execSync('git show HEAD~1:Scripts/blog_posts.json').toString();
+            oldPosts = JSON.parse(oldJson);
+          } catch(e) {
+            // First commit containing blog_posts.json — all posts are new
+          }
+          const oldIds  = new Set(oldPosts.map(p => p.id));
+          const allPosts = JSON.parse(fs.readFileSync('Scripts/blog_posts.json'));
+          const newPosts = allPosts.filter(p => !oldIds.has(p.id));
+
+          if (!newPosts.length) {
+            console.log('No new blog posts (existing posts were edited).');
+            fs.writeFileSync('/tmp/new_blog_posts.json', '[]');
+          } else {
+            console.log('New posts:', newPosts.map(p => p.title).join(', '));
+            fs.writeFileSync('/tmp/new_blog_posts.json', JSON.stringify(newPosts));
+          }
+          "
+
+      - name: Send new-blog notification
+        if: steps.changes.outputs.blog == 'true'
+        run: |
+          node -e "
+          const https      = require('https');
+          const fs         = require('fs');
+          const subscribers = JSON.parse(fs.readFileSync('/tmp/subscribers.json'));
+          const newPosts    = JSON.parse(fs.readFileSync('/tmp/new_blog_posts.json'));
+
+          if (!newPosts.length) {
+            console.log('No new posts to notify about — skipping.');
+            process.exit(0);
+          }
+
+          function buildPostBlock(posts) {
+            return posts.map(p => {
+              const meta = [p.place, p.dates_visited].filter(Boolean).join(' · ');
+              return \`
+                <div style='border-left:2px solid #c9a96e;padding:12px 16px;margin:16px 0;background:rgba(201,169,110,0.05)'>
+                  <div style='font-family:Georgia,serif;font-size:18px;color:#fff;letter-spacing:1px'>\${p.title}</div>
+                  \${meta ? \`<div style='font-size:11px;color:#c9a96e;letter-spacing:2px;text-transform:uppercase;margin-top:4px'>\${meta}</div>\` : ''}
+                  \${p.summary ? \`<div style='font-size:13px;color:rgba(255,255,255,0.5);margin-top:8px'>\${p.summary}</div>\` : ''}
+                </div>\`;
+            }).join('');
+          }
+
+          const subject = newPosts.length === 1
+            ? \`New story on Mohangraphy: \${newPosts[0].title}\`
+            : \`\${newPosts.length} new travel stories on Mohangraphy\`;
+
+          async function sendEmail(sub) {
+            const body = JSON.stringify({
+              from:     'Mohangraphy <photos@mohangraphy.com>',
+              reply_to: 'info@mohangraphy.com',
+              to:       [sub.email],
+              subject,
+              html: \`<div style='font-family:sans-serif;max-width:600px;margin:auto;background:#080808;color:#fff;padding:40px'>
+                <h1 style='font-family:Georgia,serif;font-weight:300;letter-spacing:6px;text-transform:uppercase;color:#c9a96e'>Mohangraphy</h1>
+                <p style='color:rgba(255,255,255,0.6)'>Hi \${sub.name || 'there'},</p>
+                <p style='color:rgba(255,255,255,0.6)'>\${newPosts.length === 1 ? 'A new travel story has' : 'New travel stories have'} been added to the site:</p>
+                \${buildPostBlock(newPosts)}
+                <a href='https://www.mohangraphy.com' style='display:inline-block;margin-top:20px;padding:12px 28px;background:none;color:#c9a96e;border:1px solid #c9a96e;text-decoration:none;font-family:sans-serif;font-size:12px;letter-spacing:3px;text-transform:uppercase'>Read \${newPosts.length === 1 ? 'the Story' : 'the Stories'}</a>
+                <p style='color:rgba(255,255,255,0.2);font-size:11px;margin-top:40px'>You received this because you subscribed at mohangraphy.com &nbsp;|&nbsp; <a href='https://www.mohangraphy.com?unsubscribe=\${encodeURIComponent(sub.email)}' style='color:rgba(255,255,255,0.2)'>Unsubscribe</a></p>
+              </div>\`
+            });
+            return new Promise((resolve, reject) => {
+              const req = https.request({
+                hostname: 'api.resend.com',
+                path:     '/emails',
+                method:   'POST',
+                headers:  {
+                  'Authorization':  'Bearer ' + process.env.RESEND_API_KEY,
+                  'Content-Type':   'application/json',
+                  'Content-Length': Buffer.byteLength(body)
+                }
+              }, r => {
+                let d = '';
+                r.on('data', c => d += c);
+                r.on('end', () => { console.log('Sent to', sub.email, d); resolve(); });
+              });
+              req.on('error', reject);
+              req.write(body);
+              req.end();
+            });
+          }
+
+          (async () => {
+            for (const sub of subscribers) await sendEmail(sub);
+            console.log('All new-blog emails sent.');
+          })();
+          "
+        env:
           RESEND_API_KEY: ${{ secrets.RESEND_API_KEY }}

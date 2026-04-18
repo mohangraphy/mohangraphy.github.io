@@ -909,7 +909,83 @@ async function subscribeVisitor(){
   } catch(err){ msg.textContent='Connection error. Please try again.'; }
 }
 
-document.addEventListener('DOMContentLoaded', function(){ goHome(); });
+/* ── Unsubscribe handler ──
+   Triggered when site is loaded with ?unsubscribe=email in the URL.
+   Calls Supabase DELETE to remove the subscriber, then shows confirmation. ── */
+async function handleUnsubscribe(email) {
+  try {
+    var res = await fetch(
+      SUPA_URL + '/rest/v1/subscribers?email=eq.' + encodeURIComponent(email),
+      {
+        method: 'DELETE',
+        headers: {
+          'apikey':        SUPA_KEY,
+          'Authorization': 'Bearer ' + SUPA_KEY,
+          'Content-Type':  'application/json',
+        }
+      }
+    );
+    if (res.ok || res.status === 204) {
+      showUnsubscribePage(email, true);
+    } else {
+      showUnsubscribePage(email, false);
+    }
+  } catch(err) {
+    showUnsubscribePage(email, false);
+  }
+}
+
+function showUnsubscribePage(email, success) {
+  /* Hide everything and show a simple full-page confirmation */
+  hideAll();
+  var existing = document.getElementById('unsub-page');
+  if (existing) existing.remove();
+  var pg = document.createElement('div');
+  pg.id = 'unsub-page';
+  pg.style.cssText = (
+    'position:fixed;inset:0;background:var(--dark);z-index:9999;'
+    + 'display:flex;flex-direction:column;align-items:center;justify-content:center;'
+    + 'padding:40px;text-align:center;'
+  );
+  pg.innerHTML = success
+    ? '<div style="font-family:'Cormorant Garamond',serif;font-size:clamp(22px,4vw,42px);'
+      + 'letter-spacing:6px;text-transform:uppercase;color:#fff;margin-bottom:16px">'
+      + 'Unsubscribed</div>'
+      + '<div style="font-family:Montserrat,sans-serif;font-size:12px;letter-spacing:2px;'
+      + 'color:rgba(255,255,255,0.45);max-width:420px;line-height:1.8">'
+      + email + ' has been removed from the list.<br>'
+      + 'You will no longer receive notifications from Mohangraphy.</div>'
+      + '<button onclick="document.getElementById('unsub-page').remove();goHome();" '
+      + 'style="margin-top:32px;background:none;border:1px solid rgba(201,169,110,0.5);'
+      + 'color:#c9a96e;padding:0 28px;height:42px;font-family:Montserrat,sans-serif;'
+      + 'font-size:9px;letter-spacing:4px;text-transform:uppercase;cursor:pointer">'
+      + 'Back to Site</button>'
+    : '<div style="font-family:'Cormorant Garamond',serif;font-size:clamp(22px,4vw,42px);'
+      + 'letter-spacing:6px;text-transform:uppercase;color:#fff;margin-bottom:16px">'
+      + 'Something went wrong</div>'
+      + '<div style="font-family:Montserrat,sans-serif;font-size:12px;letter-spacing:2px;'
+      + 'color:rgba(255,255,255,0.45);max-width:420px;line-height:1.8">'
+      + 'Could not unsubscribe ' + email + '.<br>'
+      + 'Please email <a href="mailto:info@mohangraphy.com" '
+      + 'style="color:#c9a96e">info@mohangraphy.com</a> and we'll remove you manually.</div>'
+      + '<button onclick="document.getElementById('unsub-page').remove();goHome();" '
+      + 'style="margin-top:32px;background:none;border:1px solid rgba(201,169,110,0.5);'
+      + 'color:#c9a96e;padding:0 28px;height:42px;font-family:Montserrat,sans-serif;'
+      + 'font-size:9px;letter-spacing:4px;text-transform:uppercase;cursor:pointer">'
+      + 'Back to Site</button>';
+  document.body.appendChild(pg);
+}
+
+document.addEventListener('DOMContentLoaded', function(){
+  /* Check for ?unsubscribe=email in the URL on page load */
+  var params = new URLSearchParams(window.location.search);
+  var unsubEmail = params.get('unsubscribe');
+  if (unsubEmail) {
+    handleUnsubscribe(decodeURIComponent(unsubEmail));
+  } else {
+    goHome();
+  }
+});
 
 /* TRAVEL STORIES — navigation */
 var BLOG_PHOTO_MAP = window.MOHAN_CONFIG.blogPhotoMap;

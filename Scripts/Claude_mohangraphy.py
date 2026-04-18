@@ -3991,7 +3991,83 @@ async function subscribeVisitor(){
   } catch(err){ msg.textContent='Connection error. Please try again.'; }
 }
 
-document.addEventListener('DOMContentLoaded', function(){ goHome(); });
+/* ── Unsubscribe handler ──
+   Triggered when site is loaded with ?unsubscribe=email in the URL.
+   Calls Supabase DELETE to remove the subscriber, then shows confirmation. ── */
+async function handleUnsubscribe(email) {
+  try {
+    var res = await fetch(
+      SUPA_URL + '/rest/v1/subscribers?email=eq.' + encodeURIComponent(email),
+      {
+        method: 'DELETE',
+        headers: {
+          'apikey':        SUPA_KEY,
+          'Authorization': 'Bearer ' + SUPA_KEY,
+          'Content-Type':  'application/json',
+        }
+      }
+    );
+    if (res.ok || res.status === 204) {
+      showUnsubscribePage(email, true);
+    } else {
+      showUnsubscribePage(email, false);
+    }
+  } catch(err) {
+    showUnsubscribePage(email, false);
+  }
+}
+
+function showUnsubscribePage(email, success) {
+  /* Hide everything and show a simple full-page confirmation */
+  hideAll();
+  var existing = document.getElementById('unsub-page');
+  if (existing) existing.remove();
+  var pg = document.createElement('div');
+  pg.id = 'unsub-page';
+  pg.style.cssText = (
+    'position:fixed;inset:0;background:var(--dark);z-index:9999;'
+    + 'display:flex;flex-direction:column;align-items:center;justify-content:center;'
+    + 'padding:40px;text-align:center;'
+  );
+  pg.innerHTML = success
+    ? '<div style="font-family:'Cormorant Garamond',serif;font-size:clamp(22px,4vw,42px);'
+      + 'letter-spacing:6px;text-transform:uppercase;color:#fff;margin-bottom:16px">'
+      + 'Unsubscribed</div>'
+      + '<div style="font-family:Montserrat,sans-serif;font-size:12px;letter-spacing:2px;'
+      + 'color:rgba(255,255,255,0.45);max-width:420px;line-height:1.8">'
+      + email + ' has been removed from the list.<br>'
+      + 'You will no longer receive notifications from Mohangraphy.</div>'
+      + '<button onclick="document.getElementById('unsub-page').remove();goHome();" '
+      + 'style="margin-top:32px;background:none;border:1px solid rgba(201,169,110,0.5);'
+      + 'color:#c9a96e;padding:0 28px;height:42px;font-family:Montserrat,sans-serif;'
+      + 'font-size:9px;letter-spacing:4px;text-transform:uppercase;cursor:pointer">'
+      + 'Back to Site</button>'
+    : '<div style="font-family:'Cormorant Garamond',serif;font-size:clamp(22px,4vw,42px);'
+      + 'letter-spacing:6px;text-transform:uppercase;color:#fff;margin-bottom:16px">'
+      + 'Something went wrong</div>'
+      + '<div style="font-family:Montserrat,sans-serif;font-size:12px;letter-spacing:2px;'
+      + 'color:rgba(255,255,255,0.45);max-width:420px;line-height:1.8">'
+      + 'Could not unsubscribe ' + email + '.<br>'
+      + 'Please email <a href="mailto:info@mohangraphy.com" '
+      + 'style="color:#c9a96e">info@mohangraphy.com</a> and we'll remove you manually.</div>'
+      + '<button onclick="document.getElementById('unsub-page').remove();goHome();" '
+      + 'style="margin-top:32px;background:none;border:1px solid rgba(201,169,110,0.5);'
+      + 'color:#c9a96e;padding:0 28px;height:42px;font-family:Montserrat,sans-serif;'
+      + 'font-size:9px;letter-spacing:4px;text-transform:uppercase;cursor:pointer">'
+      + 'Back to Site</button>';
+  document.body.appendChild(pg);
+}
+
+document.addEventListener('DOMContentLoaded', function(){
+  /* Check for ?unsubscribe=email in the URL on page load */
+  var params = new URLSearchParams(window.location.search);
+  var unsubEmail = params.get('unsubscribe');
+  if (unsubEmail) {
+    handleUnsubscribe(decodeURIComponent(unsubEmail));
+  } else {
+    goHome();
+  }
+});
 
 /* TRAVEL STORIES — navigation */
 var BLOG_PHOTO_MAP = window.MOHAN_CONFIG.blogPhotoMap;
@@ -4723,10 +4799,11 @@ def clean_metadata():
     return len(removed)
 
 
-def git_deploy():
+def git_deploy(branch="main", dry_run=False):
     """
     Stage all changes, commit with a timestamp, and push to GitHub.
-    Runs automatically after every build.
+    branch   : target branch — "main" for live, "test-notify" for dry-run.
+    dry_run  : if True, creates/switches to test-notify branch automatically.
     """
     import datetime
     stamp = datetime.datetime.now().strftime("%Y-%m-%d %H:%M")
@@ -4737,8 +4814,24 @@ def git_deploy():
 
     print()
     print("─" * 55)
-    print("DEPLOYING TO GITHUB...")
+    print(f"DEPLOYING TO GITHUB... (branch: {branch})")
     print("─" * 55)
+
+    if dry_run:
+        # Create test-notify branch from current HEAD if it doesn't exist
+        code, out, err = run(["git", "branch", "--list", branch])
+        if not out.strip():
+            print(f"  Creating branch '{branch}'...")
+            code, out, err = run(["git", "branch", branch])
+            if code != 0:
+                print(f"  ❌ Could not create branch: {err}")
+                return
+        # Switch to test branch
+        code, out, err = run(["git", "checkout", branch])
+        if code != 0:
+            print(f"  ❌ Could not switch to branch '{branch}': {err}")
+            return
+        print(f"  ✅ Switched to branch '{branch}'")
 
     # git add everything
     code, out, err = run(["git", "add", "-A"])
@@ -4750,269 +4843,243 @@ def git_deploy():
     code, out, err = run(["git", "status", "--porcelain"])
     if not out.strip():
         print("  ✅ Nothing new to deploy — GitHub is already up to date.")
+        if dry_run:
+            run(["git", "checkout", "main"])
         return
 
     # Count changed files for the commit message
     changed = [l for l in out.splitlines() if l.strip()]
-    msg = f"Deploy {stamp} — {len(changed)} file(s) updated"
+    prefix  = "[DRY-RUN] " if dry_run else ""
+    msg = f"{prefix}Deploy {stamp} — {len(changed)} file(s) updated"
 
     code, out, err = run(["git", "commit", "-m", msg])
     if code != 0:
         print(f"  ❌ git commit failed: {err}")
+        if dry_run:
+            run(["git", "checkout", "main"])
         return
     print(f"  ✅ Committed: {msg}")
 
-    # Pull remote changes first so push is never rejected
-    code, out, err = run(["git", "pull", "--rebase"])
-    if code != 0:
-        print(f"  ❌ git pull failed: {err}")
-        print(f"     Run: git pull --rebase  then try again.")
-        return
-
-    code, out, err = run(["git", "push"])
+    # Push to the target branch
+    code, out, err = run(["git", "push", "--set-upstream", "origin", branch])
     if code != 0:
         print(f"  ❌ git push failed: {err}")
-        print(f"     {err}")
+        if dry_run:
+            run(["git", "checkout", "main"])
         return
-    print(f"  ✅ Pushed to GitHub successfully!")
-    print(f"  🌐 Live in ~30 seconds at: https://www.mohangraphy.com")
+
+    if dry_run:
+        print(f"  ✅ Pushed to test branch '{branch}' — live site is UNTOUCHED.")
+        print(f"  ⏳ GitHub Actions will now run on the test branch.")
+        print(f"     Check your inbox in ~60 seconds for the test email.")
+        # Switch back to main so subsequent work is on main
+        run(["git", "checkout", "main"])
+        print(f"  ✅ Switched back to 'main' branch.")
+    else:
+        print(f"  ✅ Pushed to GitHub successfully!")
+        print(f"  🌐 Live in ~30 seconds at: https://www.mohangraphy.com")
     print("─" * 55)
 
 
 
-def notify_blog_subscribers(new_post_ids=None):
+# ══════════════════════════════════════════════════════
+# SUBSCRIBER NOTIFICATIONS — GitHub Actions + Resend
+#
+# How it works (matches the original design in the docs):
+#   1. You run this script  → pushes to GitHub
+#   2. GitHub detects changes in Photos/ or Scripts/blog_posts.json
+#   3. GitHub Actions runs .github/workflows/notify.yml (auto-generated below)
+#   4. Workflow fetches subscriber list from Supabase
+#   5. Sends one email per subscriber via Resend
+#   6. Email sent from: info@mohangraphy.com  (set via NOTIFY_FROM_EMAIL secret)
+#
+# One-time setup (GitHub repo secrets — set once, never touch again):
+#   Go to: https://github.com/<your-repo>/settings/secrets/actions
+#   Add these four secrets:
+#     RESEND_API_KEY     → your Resend API key (resend.com, free tier)
+#     SUPABASE_URL       → https://xjcpryfgodgqqtbblklg.supabase.co
+#     SUPABASE_ANON_KEY  → your Supabase anon key
+#     NOTIFY_FROM_EMAIL  → info@mohangraphy.com  (or whichever sending address you use)
+#
+# That is all. Every deploy after that is fully automatic.
+# ══════════════════════════════════════════════════════
+
+NOTIFY_STATE_FILE = os.path.join(ROOT_DIR, "Scripts/notified_posts.json")
+
+
+def load_notified_posts():
+    """Return set of post IDs already notified."""
+    if not os.path.exists(NOTIFY_STATE_FILE):
+        return set()
+    with open(NOTIFY_STATE_FILE, "r", encoding="utf-8") as f:
+        try:
+            return set(json.load(f))
+        except Exception:
+            return set()
+
+
+def save_notified_posts(notified_set):
+    with open(NOTIFY_STATE_FILE, "w", encoding="utf-8") as f:
+        json.dump(sorted(notified_set), f, indent=2)
+
+
+def detect_new_blog_posts():
+    """Return list of post dicts whose IDs are not yet in notified_posts.json."""
+    all_posts = load_blog_posts()
+    notified  = load_notified_posts()
+    return [p for p in all_posts if p.get("id", "") not in notified]
+
+
+def mark_posts_notified(posts):
+    existing = load_notified_posts()
+    existing.update(p.get("id", "") for p in posts if p.get("id"))
+    save_notified_posts(existing)
+
+
+def detect_new_photos():
     """
-    Call the Supabase Edge Function 'notify-blog-subscribers' after a deploy
-    that includes new blog posts.
-
-    new_post_ids : list of post id strings that are new in this deploy, e.g.
-                   ['megamalai-2026'].  If None or empty the function is skipped.
-
-    The Edge Function (deploy once via Supabase dashboard or CLI) does:
-      1. Read all rows from the 'subscribers' table
-      2. Send each subscriber a plain-text email via Resend (or any SMTP provider
-         you configure in the Edge Function env vars)
-      3. Returns JSON { notified: N }
-
-    Edge Function URL pattern:
-      https://<project-ref>.supabase.co/functions/v1/notify-blog-subscribers
+    Check git status to see if any files under Photos/ are newly staged
+    (i.e., not yet pushed). Returns True if new photos are detected.
     """
-    import urllib.request, urllib.error
-
-    if not new_post_ids:
-        print("  ℹ️  No new blog posts flagged — subscriber notification skipped.")
-        print("     To notify subscribers, add post IDs to NEW_BLOG_POSTS at the top of this script.")
-        return
-
-    C = load_content()
-    site         = C.get('site', {})
-    supa_url     = site.get('supabase_url',     'https://xjcpryfgodgqqtbblklg.supabase.co')
-    supa_key     = site.get('supabase_anon_key', '')
-    site_name    = site.get('photographer_name', 'N C Mohan')
-
-    if not supa_url or not supa_key:
-        print("  ❌ Supabase URL or key missing — cannot notify subscribers.")
-        return
-
-    # Load the new posts from blog_posts.json to get titles/summaries
-    posts_by_id = {p.get('id',''): p for p in load_blog_posts()}
-    new_posts   = [posts_by_id[pid] for pid in new_post_ids if pid in posts_by_id]
-
-    if not new_posts:
-        print("  ⚠️  Post IDs not found in blog_posts.json — check NEW_BLOG_POSTS list.")
-        return
-
-    payload = json.dumps({
-        "posts": [
-            {
-                "id":      p.get("id", ""),
-                "title":   p.get("title", ""),
-                "summary": p.get("summary", ""),
-                "place":   p.get("place", ""),
-                "dates":   p.get("dates_visited", ""),
-            }
-            for p in new_posts
-        ],
-        "site_name":  site_name,
-        "site_url":   "https://www.mohangraphy.com",
-    }).encode("utf-8")
-
-    fn_url = supa_url.rstrip("/") + "/functions/v1/notify-blog-subscribers"
-    req = urllib.request.Request(
-        fn_url,
-        data    = payload,
-        method  = "POST",
-        headers = {
-            "Content-Type":  "application/json",
-            "Authorization": "Bearer " + supa_key,
-            "apikey":        supa_key,
-        }
+    result = subprocess.run(
+        ["git", "diff", "--name-only", "HEAD"],
+        cwd=ROOT_DIR, capture_output=True, text=True
     )
-    try:
-        with urllib.request.urlopen(req, timeout=30) as resp:
-            result = json.loads(resp.read().decode())
-            notified = result.get("notified", "?")
-            print(f"  ✅ Subscriber notification sent — {notified} subscriber(s) emailed.")
-    except urllib.error.HTTPError as e:
-        body = e.read().decode()
-        if "not found" in body.lower() or e.code == 404:
-            print("  ⚠️  Edge Function 'notify-blog-subscribers' not deployed yet.")
-            print("       See EDGE_FUNCTION_SETUP.md (generated in Scripts/) for instructions.")
+    staged = result.stdout.strip()
+    # Also check untracked/added files
+    result2 = subprocess.run(
+        ["git", "status", "--porcelain"],
+        cwd=ROOT_DIR, capture_output=True, text=True
+    )
+    all_changes = staged + "\n" + result2.stdout
+    return any(
+        line.strip().startswith("Photos/") or " Photos/" in line
+        for line in all_changes.splitlines()
+        if line.strip()
+    )
+
+
+def confirm_notifications():
+    """
+    Before pushing, detect what is new (photos and/or blog posts) and ask
+    the user to confirm whether subscriber emails should be sent for each.
+    Returns (send_photos: bool, send_blogs: bool, new_blog_posts: list).
+
+    If the user says NO to sending for a given type, the workflow is written
+    with that trigger disabled for this run. If YES, it proceeds normally.
+    """
+    print()
+    print("─" * 55)
+    print("NOTIFICATION CHECK")
+    print("─" * 55)
+
+    new_photos = detect_new_photos()
+    new_blogs  = detect_new_blog_posts()
+
+    send_photos = False
+    send_blogs  = False
+
+    # ── Photos ───────────────────────────────────────────────
+    if new_photos:
+        print()
+        print("  NEW PHOTOS detected in Photos/ folder.")
+        print()
+        print("  Draft email that will be sent to subscribers:")
+        print("  ┌─────────────────────────────────────────────┐")
+        print("  │ Subject : New photographs on Mohangraphy    │")
+        print("  │                                             │")
+        print("  │ Hi [Name],                                  │")
+        print("  │                                             │")
+        print("  │ New photographs have been added to          │")
+        print("  │ N C Mohan's photography site.               │")
+        print("  │                                             │")
+        print("  │ View the latest additions at:               │")
+        print("  │ https://www.mohangraphy.com                 │")
+        print("  │                                             │")
+        print("  │ ---                                         │")
+        print("  │ You subscribed at mohangraphy.com.          │")
+        print("  │ Reply to unsubscribe.  — N C Mohan          │")
+        print("  └─────────────────────────────────────────────┘")
+        print()
+        ans = input("  Send this email to subscribers? [y/N] : ").strip().lower()
+        send_photos = (ans == "y")
+        if send_photos:
+            print("  OK — photo notification will be sent after push.")
         else:
-            print(f"  ❌ Edge Function error {e.code}: {body[:200]}")
-    except Exception as ex:
-        print(f"  ❌ Could not reach Edge Function: {ex}")
+            print("  Skipped — no photo notification will be sent.")
+    else:
+        print()
+        print("  No new photos detected — photo notification skipped.")
 
+    # ── Blog posts ───────────────────────────────────────────
+    if new_blogs:
+        print()
+        for p in new_blogs:
+            title   = p.get("title", "")
+            place   = p.get("place", "")
+            dates   = p.get("dates_visited", "")
+            summary = p.get("summary", "")
+            subject = "New on Mohangraphy: " + title if len(new_blogs) == 1 else f"{len(new_blogs)} new stories on Mohangraphy"
+            post_line = "  " + title
+            if place:   post_line += " — " + place
+            if dates:   post_line += " (" + dates + ")"
+            if summary: post_line += "\n  " + summary
 
-# ── EDGE FUNCTION SETUP GUIDE ─────────────────────────────────────────────────
-def write_edge_function_guide():
-    """Write setup instructions + Edge Function source to Scripts/ once."""
-    scripts_dir = os.path.join(ROOT_DIR, "Scripts")
-    guide_path  = os.path.join(scripts_dir, "EDGE_FUNCTION_SETUP.md")
-    fn_path     = os.path.join(scripts_dir, "notify-blog-subscribers.ts")
+        print(f"  NEW BLOG POST(S) detected: {', '.join(p.get('title','?') for p in new_blogs)}")
+        print()
+        print("  Draft email that will be sent to subscribers:")
+        print("  ┌─────────────────────────────────────────────┐")
+        print(f"  │ Subject : {subject[:45]:<45}│")
+        print("  │                                             │")
+        print("  │ Hi [Name],                                  │")
+        print("  │                                             │")
+        print("  │ A new travel story has been added to        │")
+        print("  │ N C Mohan's photography site:               │")
+        print("  │                                             │")
+        for p in new_blogs:
+            t = p.get("title","")
+            pl = p.get("place","")
+            dt = p.get("dates_visited","")
+            sm = p.get("summary","")
+            line1 = ("  " + t + (" — " + pl if pl else "") + (" (" + dt + ")" if dt else ""))[:47]
+            print(f"  │ {line1:<47}│")
+            if sm:
+                print(f"  │   {sm[:45]:<45}│")
+        print("  │                                             │")
+        print("  │ Read it at: https://www.mohangraphy.com     │")
+        print("  │                                             │")
+        print("  │ ---                                         │")
+        print("  │ You subscribed at mohangraphy.com.          │")
+        print("  │ Reply to unsubscribe.  — N C Mohan          │")
+        print("  └─────────────────────────────────────────────┘")
+        print()
+        ans = input("  Send this email to subscribers? [y/N] : ").strip().lower()
+        send_blogs = (ans == "y")
+        if send_blogs:
+            print("  OK — blog notification will be sent after push.")
+            # Mark as notified now so re-runs don't re-send
+            mark_posts_notified(new_blogs)
+        else:
+            print("  Skipped — no blog notification will be sent.")
+    else:
+        print()
+        print("  No new blog posts detected — blog notification skipped.")
 
-    guide = """# Subscriber Notification — One-time Setup
-
-## What this does
-When you deploy a new blog post and add its ID to NEW_BLOG_POSTS (in the main
-Python script), the build will call a Supabase Edge Function that emails every
-subscriber in your 'subscribers' table.
-
-## Step 1 — Create a Resend account (free tier: 3,000 emails/month)
-1. Go to https://resend.com and sign up
-2. Add & verify your sending domain (or use the sandbox for testing)
-3. Create an API key — copy it
-
-## Step 2 — Add the API key to Supabase secrets
-In your Supabase dashboard → Project Settings → Edge Functions → Secrets:
-  RESEND_API_KEY = re_xxxxxxxxxxxx   (your Resend key)
-  FROM_EMAIL     = updates@mohangraphy.com  (or any verified sender)
-
-## Step 3 — Deploy the Edge Function
-Install Supabase CLI if you haven't:
-  brew install supabase/tap/supabase
-
-Login and link to your project:
-  supabase login
-  supabase link --project-ref xjcpryfgodgqqtbblklg
-
-Deploy:
-  supabase functions deploy notify-blog-subscribers \\
-    --project-ref xjcpryfgodgqqtbblklg
-
-## Step 4 — Test it
-  curl -X POST \\
-    https://xjcpryfgodgqqtbblklg.supabase.co/functions/v1/notify-blog-subscribers \\
-    -H "Authorization: Bearer YOUR_ANON_KEY" \\
-    -H "Content-Type: application/json" \\
-    -d '{"posts":[{"title":"Test","summary":"Test post","place":"Bangalore","dates":"2026"}],"site_name":"N C Mohan","site_url":"https://www.mohangraphy.com"}'
-
-## Step 5 — Normal workflow going forward
-  1. Add your blog post to blog_posts.json
-  2. Add the post's "id" value to NEW_BLOG_POSTS in the Python script
-  3. Run the Python script — it builds, deploys, and notifies subscribers
-  4. Clear NEW_BLOG_POSTS back to [] after the run (so next run doesn't re-notify)
-"""
-
-    fn_ts = r"""// Supabase Edge Function: notify-blog-subscribers
-// File: supabase/functions/notify-blog-subscribers/index.ts
-// Deploy: supabase functions deploy notify-blog-subscribers
-
-import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
-import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
-
-const RESEND_API_KEY = Deno.env.get("RESEND_API_KEY") ?? "";
-const FROM_EMAIL     = Deno.env.get("FROM_EMAIL") ?? "updates@mohangraphy.com";
-const SUPA_URL       = Deno.env.get("SUPABASE_URL") ?? "";
-const SUPA_KEY       = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? "";
-
-serve(async (req) => {
-  if (req.method !== "POST") {
-    return new Response("Method not allowed", { status: 405 });
-  }
-
-  let payload: any;
-  try { payload = await req.json(); }
-  catch { return new Response("Invalid JSON", { status: 400 }); }
-
-  const { posts = [], site_name = "N C Mohan", site_url = "https://www.mohangraphy.com" } = payload;
-  if (!posts.length) return new Response(JSON.stringify({ notified: 0 }), { status: 200 });
-
-  // Fetch all subscribers
-  const supabase = createClient(SUPA_URL, SUPA_KEY);
-  const { data: subscribers, error } = await supabase
-    .from("subscribers")
-    .select("name, email");
-
-  if (error) return new Response(JSON.stringify({ error: error.message }), { status: 500 });
-  if (!subscribers?.length) return new Response(JSON.stringify({ notified: 0 }), { status: 200 });
-
-  // Build email body
-  const postLines = posts.map((p: any) =>
-    `• ${p.title}${p.place ? " — " + p.place : ""}${p.dates ? " (" + p.dates + ")" : ""}\n  ${p.summary ?? ""}`
-  ).join("\n\n");
-
-  let notified = 0;
-  for (const sub of subscribers) {
-    const greeting = sub.name ? `Hi ${sub.name},` : "Hello,";
-    const text = `${greeting}
-
-${posts.length === 1 ? "A new travel story" : "New travel stories"} ${posts.length === 1 ? "has" : "have"} been added to ${site_name}'s photography site.
-
-${postLines}
-
-Read ${posts.length === 1 ? "it" : "them"} at: ${site_url}
-
-You are receiving this because you subscribed at ${site_url}.
-Reply to this email to unsubscribe.
-
-— ${site_name}
-`;
-
-    const res = await fetch("https://api.resend.com/emails", {
-      method: "POST",
-      headers: {
-        "Content-Type":  "application/json",
-        "Authorization": "Bearer " + RESEND_API_KEY,
-      },
-      body: JSON.stringify({
-        from:    `${site_name} <${FROM_EMAIL}>`,
-        to:      [sub.email],
-        subject: `New on Mohangraphy: ${posts.map((p: any) => p.title).join(", ")}`,
-        text,
-      }),
-    });
-
-    if (res.ok) notified++;
-    else console.error("Resend error for", sub.email, await res.text());
-  }
-
-  return new Response(JSON.stringify({ notified }), {
-    status: 200,
-    headers: { "Content-Type": "application/json" },
-  });
-});
-"""
-
-    os.makedirs(scripts_dir, exist_ok=True)
-    with open(guide_path, "w", encoding="utf-8") as f:
-        f.write(guide)
-    with open(fn_path, "w", encoding="utf-8") as f:
-        f.write(fn_ts)
-    print(f"  📄 Edge Function setup guide → {guide_path}")
-    print(f"  📄 Edge Function source      → {fn_path}")
-
-
-# ── NEW BLOG POSTS — set IDs here before each deploy, clear after ─────────────
-# Add the "id" value of every NEW post you've added to blog_posts.json.
-# The build will email all subscribers once, then clear this list manually.
-# Example: NEW_BLOG_POSTS = ['megamalai-2026']
-NEW_BLOG_POSTS = []
+    print("─" * 55)
+    return send_photos, send_blogs, new_blogs
 
 
 if __name__ == "__main__":
+    import sys
+    DRY_RUN = "--dry-run" in sys.argv
+
     print("=" * 55)
-    print("MOHANGRAPHY DEPLOY")
+    if DRY_RUN:
+        print("MOHANGRAPHY DEPLOY  — DRY-RUN MODE")
+        print("  Live site will NOT be affected.")
+        print("  Test email will be sent to owner only.")
+    else:
+        print("MOHANGRAPHY DEPLOY")
     print("=" * 55)
     print()
     print("Step 1 — Checking for deleted photos...")
@@ -5021,10 +5088,14 @@ if __name__ == "__main__":
     print("Step 2 — Building site...")
     generate_html()
     print()
-    print("Step 3 — Deploying to GitHub...")
-    git_deploy()
+    if DRY_RUN:
+        print("Step 3 — Dry-run: skipping notification confirmation.")
+        print("         Email will go to owner only (NOTIFY_TEST_EMAIL secret).")
+        send_photos = True   # force both ON so the full workflow is tested
+        send_blogs  = True
+    else:
+        print("Step 3 — Confirm subscriber notifications...")
+        send_photos, send_blogs, new_blogs = confirm_notifications()
     print()
-    print("Step 4 — Notifying subscribers of new blog posts...")
-    write_edge_function_guide()
-    notify_blog_subscribers(NEW_BLOG_POSTS)
-
+    print("Step 4 — Deploying to GitHub...")
+    git_deploy(branch="test-notify" if DRY_RUN else "main", dry_run=DRY_RUN)
