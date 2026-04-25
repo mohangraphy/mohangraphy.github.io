@@ -29,7 +29,7 @@ on:
       test_email:
         description: 'Email for test send'
         required: false
-        default: ''
+        default: 'info@mohangraphy.com'
 
       blog_post_title:
         description: 'Blog post title'
@@ -60,36 +60,22 @@ jobs:
           node-version: 20
 
       # ─────────────────────────────────────────────
-      # FETCH SUBSCRIBERS
+      # SEND NOTIFICATIONS (single script)
       # ─────────────────────────────────────────────
-      - name: Fetch subscribers
+      - name: Send notifications
         env:
+          GITHUB_EVENT_NAME: ${{ github.event_name }}
+          NOTIFICATION_TYPE: ${{ github.event.inputs.notification_type || 'photos' }}
+
+          RESEND_API_KEY: ${{ secrets.RESEND_API_KEY }}
           SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
-          TEST_ONLY: ${{ github.event.inputs.test_only }}
-          TEST_EMAIL: ${{ github.event.inputs.test_email }}
-        run: node Scripts/fetch-subscribers.js
 
-      # ─────────────────────────────────────────────
-      # PHOTO NOTIFICATION (AUTO PUSH)
-      # ─────────────────────────────────────────────
-      - name: Send photo notifications
-        if: github.event_name == 'push'
-        env:
-          RESEND_API_KEY: ${{ secrets.RESEND_API_KEY }}
-          TEST_ONLY: ${{ github.event.inputs.test_only }}
-          TEST_EMAIL: ${{ github.event.inputs.test_email }}
-        run: node Scripts/send-photos.js
-
-      # ─────────────────────────────────────────────
-      # BLOG NOTIFICATION (MANUAL)
-      # ─────────────────────────────────────────────
-      - name: Send blog notifications
-        if: github.event_name == 'workflow_dispatch' && github.event.inputs.notification_type == 'blog'
-        env:
-          RESEND_API_KEY: ${{ secrets.RESEND_API_KEY }}
           BLOG_TITLE: ${{ github.event.inputs.blog_post_title }}
           BLOG_PLACE: ${{ github.event.inputs.blog_post_place }}
           BLOG_SUMMARY: ${{ github.event.inputs.blog_post_summary }}
-          TEST_ONLY: ${{ github.event.inputs.test_only }}
-          TEST_EMAIL: ${{ github.event.inputs.test_email }}
-        run: node Scripts/send-blog.js
+
+          # 🔴 SAFETY: DEFAULT = TEST MODE
+          TEST_ONLY: ${{ github.event.inputs.test_only || 'true' }}
+          TEST_EMAIL: ${{ github.event.inputs.test_email || 'info@mohangraphy.com' }}
+
+        run: node Scripts/send.js
