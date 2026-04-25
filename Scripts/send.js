@@ -3,19 +3,19 @@
 const https = require('https');
 
 // -- Configuration --
-const NOTIFY     = process.env.NOTIFICATION_TYPE  || 'photos';
-const SUPA_KEY   = process.env.SUPABASE_SERVICE_KEY || '';
-const RESEND     = process.env.RESEND_API_KEY      || '';
-const TITLE      = process.env.BLOG_TITLE          || '';
-const PLACE      = process.env.BLOG_PLACE          || '';
-const SUMMARY    = process.env.BLOG_SUMMARY        || '';
-const TEST_ONLY  = String(process.env.TEST_ONLY) === 'true';
-const TEST_EMAIL = process.env.TEST_EMAIL          || '';
+const NOTIFY      = process.env.NOTIFICATION_TYPE  || 'photos';
+const SUPA_KEY    = process.env.SUPABASE_SERVICE_KEY || '';
+const RESEND      = process.env.RESEND_API_KEY      || '';
+const TITLE       = process.env.BLOG_TITLE          || '';
+const PLACE       = process.env.BLOG_PLACE          || '';
+const SUMMARY     = process.env.BLOG_SUMMARY         || '';
+const TEST_ONLY   = String(process.env.TEST_ONLY) === 'true';
+const TEST_EMAIL  = process.env.TEST_EMAIL          || '';
 
-const FROM       = 'Mohangraphy <photos@mohangraphy.com>';
-const REPLY_TO   = 'info@mohangraphy.com';
-const SITE_URL   = 'https://www.mohangraphy.com';
-const SUPA_HOST  = 'xjcpryfgodgqqtbblklg.supabase.co';
+const FROM        = 'Mohangraphy <photos@mohangraphy.com>';
+const REPLY_TO    = 'info@mohangraphy.com';
+const SITE_URL    = 'https://www.mohangraphy.com';
+const SUPA_HOST   = 'xjcpryfgodgqqtbblklg.supabase.co';
 
 // -- Helpers --
 function request(options, body) {
@@ -32,7 +32,6 @@ function request(options, body) {
 }
 
 async function fetchSubscribers() {
-  // FIREWALL: If testing, we don't even talk to the subscriber database.
   if (TEST_ONLY) {
     if (!TEST_EMAIL) throw new Error('TEST_ONLY is true but no TEST_EMAIL provided.');
     console.log('--- TEST MODE: Sending only to:', TEST_EMAIL);
@@ -77,23 +76,28 @@ function wrapHtml(name, contentHtml) {
     const subs = await fetchSubscribers();
     let subject = '';
     let content = '';
+    let targetUrl = SITE_URL;
 
     if (NOTIFY === 'blog') {
       if (!TITLE) throw new Error('Blog title is required.');
+      // Update: Explicitly route to travel-stories hash
+      targetUrl = `${SITE_URL}/index.html#travel-stories`; 
       subject = (TEST_ONLY ? '[TEST] ' : '') + 'New story on Mohangraphy: ' + TITLE;
       content = `
-        <p style="color:rgba(255,255,255,0.6)">A new travel story has been added:</p>
+        <p style="color:rgba(255,255,255,0.6)">A new travel story has been added to the site:</p>
         <div style="border-left:2px solid #c9a96e;padding:12px 16px;margin:16px 0;background:rgba(201,169,110,0.05)">
           <div style="font-family:Georgia,serif;font-size:18px;color:#fff">${TITLE}</div>
-          ${PLACE ? `<div style="font-size:11px;color:#c9a96e;text-transform:uppercase">${PLACE}</div>` : ''}
+          ${PLACE ? `<div style="font-size:11px;color:#c9a96e;text-transform:uppercase;letter-spacing:2px;margin-top:4px">${PLACE}</div>` : ''}
           ${SUMMARY ? `<div style="font-size:13px;color:rgba(255,255,255,0.5);margin-top:8px">${SUMMARY}</div>` : ''}
         </div>
-        <a href="${SITE_URL}" style="display:inline-block;margin-top:10px;padding:12px 24px;border:1px solid #c9a96e;color:#c9a96e;text-decoration:none;text-transform:uppercase;font-size:11px;">Read Story</a>`;
+        <a href="${targetUrl}" style="display:inline-block;margin-top:20px;padding:12px 28px;border:1px solid #c9a96e;color:#c9a96e;text-decoration:none;text-transform:uppercase;font-size:11px;letter-spacing:2px;">Read the Story</a>`;
     } else {
+      // Update: Explicitly route to recently-added hash
+      targetUrl = `${SITE_URL}/index.html#recently-added`;
       subject = (TEST_ONLY ? '[TEST] ' : '') + 'New photos added to Mohangraphy!';
       content = `
         <p style="color:rgba(255,255,255,0.6)">I've just uploaded new photos to the gallery.</p>
-        <a href="${SITE_URL}" style="display:inline-block;margin-top:10px;padding:12px 24px;border:1px solid #c9a96e;color:#c9a96e;text-decoration:none;text-transform:uppercase;font-size:11px;">View Gallery</a>`;
+        <a href="${targetUrl}" style="display:inline-block;margin-top:20px;padding:12px 28px;border:1px solid #c9a96e;color:#c9a96e;text-decoration:none;text-transform:uppercase;font-size:11px;letter-spacing:2px;">View New Photos</a>`;
     }
 
     for (const sub of subs) {
@@ -117,6 +121,7 @@ function wrapHtml(name, contentHtml) {
       }, body);
       console.log(`Sent to ${sub.email} - Status: ${res.status}`);
     }
+    console.log('All notifications processed.');
   } catch (err) {
     console.error('Fatal Error:', err.message);
     process.exit(1);
