@@ -4562,6 +4562,31 @@ document.addEventListener('keydown', function(e){
   if(e.key === ' ')           { ssPauseToggle(); e.preventDefault(); return; }
 });
 
+/* ══════════════════════════════════════════════════════
+   DEEP-LINKING (Master Script)
+   ══════════════════════════════════════════════════════ */
+window.addEventListener('load', function() {
+    const hash = window.location.hash;
+    
+    // 1. Handle Travel Stories (Blog)
+    if (hash === '#travel-stories') {
+        if (typeof showStoriesIndex === 'function') {
+            showStoriesIndex();
+            // Small delay to allow the DOM to render before scrolling
+            setTimeout(() => {
+                const el = document.getElementById('travel-stories');
+                if (el) el.scrollIntoView({ behavior: 'smooth' });
+            }, 300);
+        }
+    } 
+    
+    // 2. Handle Recently Added (Gallery)
+    else if (hash === '#recently-added') {
+        const el = document.getElementById('recently-added');
+        if (el) el.scrollIntoView({ behavior: 'smooth' });
+    }
+});# This is the end of your _MOHAN_JS string
+
 """
 
     # ── ASSEMBLE HTML ─────────────────────────────────────────────────────────
