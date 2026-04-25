@@ -108,7 +108,7 @@ function blogContent(title, place, summary) {
     : '';
 
   return ''
-    + '<p style="color:rgba(255,255,255,0.6)">A new travel story has been added to the site:</p>'
+    + '<p style="color:rgba(255,255,255,0.6)">A new travel story has been added to the site. Visit the Travel Stories section:</p>'
     + '<div style="border-left:2px solid #c9a96e;padding:12px 16px;margin:16px 0;background:rgba(201,169,110,0.05)">'
     + '<div style="font-family:Georgia,serif;font-size:18px;color:#fff">' + t + '</div>'
     + metaHtml
