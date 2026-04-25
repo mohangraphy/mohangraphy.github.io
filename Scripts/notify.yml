@@ -1,0 +1,84 @@
+name: Notify Subscribers
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'Photos/**'
+
+  workflow_dispatch:
+    inputs:
+      notification_type:
+        description: 'Type: blog or photos'
+        required: true
+        default: 'blog'
+
+      test_only:
+        description: 'true = send to test_email only'
+        required: false
+        default: 'false'
+
+      test_email:
+        description: 'Email for test send'
+        required: false
+        default: ''
+
+      blog_post_title:
+        description: 'Blog post title'
+        required: false
+        default: ''
+
+      blog_post_place:
+        description: 'Blog post place'
+        required: false
+        default: ''
+
+      blog_post_summary:
+        description: 'Blog post summary'
+        required: false
+        default: ''
+
+jobs:
+  notify:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      # ─────────────────────────────────────────────
+      # FETCH SUBSCRIBERS
+      # ─────────────────────────────────────────────
+      - name: Fetch subscribers
+        env:
+          SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
+          TEST_ONLY: ${{ github.event.inputs.test_only }}
+          TEST_EMAIL: ${{ github.event.inputs.test_email }}
+        run: node Scripts/fetch-subscribers.js
+
+      # ─────────────────────────────────────────────
+      # PHOTO NOTIFICATION (AUTO PUSH)
+      # ─────────────────────────────────────────────
+      - name: Send photo notifications
+        if: github.event_name == 'push'
+        env:
+          RESEND_API_KEY: ${{ secrets.RESEND_API_KEY }}
+        run: node Scripts/send-photos.js
+
+      # ─────────────────────────────────────────────
+      # BLOG NOTIFICATION (MANUAL)
+      # ─────────────────────────────────────────────
+      - name: Send blog notifications
+        if: github.event_name == 'workflow_dispatch'
+        env:
+          RESEND_API_KEY: ${{ secrets.RESEND_API_KEY }}
+          BLOG_TITLE: ${{ github.event.inputs.blog_post_title }}
+          BLOG_PLACE: ${{ github.event.inputs.blog_post_place }}
+          BLOG_SUMMARY: ${{ github.event.inputs.blog_post_summary }}
+          TEST_ONLY: ${{ github.event.inputs.test_only }}
+        run: node scripts/send-blog.js
