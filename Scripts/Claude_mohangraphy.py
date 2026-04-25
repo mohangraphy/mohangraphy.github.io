@@ -4566,25 +4566,40 @@ document.addEventListener('keydown', function(e){
    DEEP-LINKING (Master Script)
    ══════════════════════════════════════════════════════ */
 window.addEventListener('load', function() {
-    const hash = window.location.hash;
-    
-    // 1. Handle Travel Stories (Blog)
-    if (hash === '#travel-stories') {
-        if (typeof showStoriesIndex === 'function') {
-            showStoriesIndex();
-            // Small delay to allow the DOM to render before scrolling
-            setTimeout(() => {
-                const el = document.getElementById('travel-stories');
-                if (el) el.scrollIntoView({ behavior: 'smooth' });
-            }, 300);
+    // We wait 500ms to ensure the gallery/blog images have started loading 
+    // so the scroll position is accurate.
+    setTimeout(() => {
+        const hash = window.location.hash;
+        if (!hash) return;
+
+        let targetId = '';
+
+        // 1. Handle Travel Stories (Blog)
+        if (hash === '#travel-stories') {
+            if (typeof showStoriesIndex === 'function') showStoriesIndex();
+            targetId = 'travel-stories';
+        } 
+        // 2. Handle Recently Added (Gallery)
+        else if (hash === '#recently-added') {
+            if (typeof showNewPhotos === 'function') showNewPhotos();
+            targetId = 'new-photos-banner';
         }
-    } 
-    
-    // 2. Handle Recently Added (Gallery)
-    else if (hash === '#recently-added') {
-        const el = document.getElementById('recently-added');
-        if (el) el.scrollIntoView({ behavior: 'smooth' });
-    }
+
+        // 3. Precision Scroll Logic
+        if (targetId) {
+            const el = document.getElementById(targetId);
+            if (el) {
+                const headerOffset = 100; // Adjust this number to move the view up/down
+                const elementPosition = el.getBoundingClientRect().top + window.pageYOffset;
+                const offsetPosition = elementPosition - headerOffset;
+
+                window.scrollTo({
+                    top: offsetPosition,
+                    behavior: 'smooth'
+                });
+            }
+        }
+    }, 500); 
 });
 """
 
