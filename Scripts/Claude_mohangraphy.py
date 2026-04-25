@@ -4585,8 +4585,7 @@ window.addEventListener('load', function() {
         const el = document.getElementById('recently-added');
         if (el) el.scrollIntoView({ behavior: 'smooth' });
     }
-});# This is the end of your _MOHAN_JS string
-
+});
 """
 
     # ── ASSEMBLE HTML ─────────────────────────────────────────────────────────
