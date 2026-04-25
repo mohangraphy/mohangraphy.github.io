@@ -950,6 +950,8 @@ function openNotifyPanel(type) {
         sel.appendChild(opt);
       });
     }
+    /* ── Auto-navigate to Travel Stories page so user sees the blog ── */
+    if(typeof showStoriesIndex === 'function') showStoriesIndex();
   }
 
   /* ── Wire up correct send/confirm buttons ── */
@@ -960,21 +962,11 @@ function openNotifyPanel(type) {
 
   /* ── Store type on panel for other functions ── */
   var panel = document.getElementById('notify-panel');
-  if(panel) panel.setAttribute('data-notify-type', type);
-  notifySetStatus('', '');
-
-  /* ── Navigate to Travel Stories THEN open panel after delay ── */
-  if(type === 'blog') {
-    /* Navigate to Travel Stories so user can verify the post */
-    if(typeof showStoriesIndex === 'function') showStoriesIndex();
-    /* Open panel after delay so navigation is visible */
-    setTimeout(function() {
-      if(panel) panel.classList.add('open');
-    }, 800);
-  } else {
-    /* Photos: open immediately */
-    if(panel) panel.classList.add('open');
+  if(panel) {
+    panel.setAttribute('data-notify-type', type);
+    panel.classList.add('open');
   }
+  notifySetStatus('', '');
 }
 
 function closeNotifyPanel() {
@@ -1006,40 +998,25 @@ function notifyPhotosSend() {
 }
 
 function notifyOpenGitHub(opts) {
-  /* Build inputs payload */
-  var inputs = {
-    notification_type: opts.type || 'blog',
-    test_only:         opts.testOnly ? 'true' : 'false',
-    test_email:        opts.testOnly ? (window.MOHAN_CONFIG.contactEmail || '') : '',
-    blog_post_title:   (opts.post && opts.post.title)   || '',
-    blog_post_place:   (opts.post && opts.post.place)   || '',
-    blog_post_summary: (opts.post && opts.post.summary) || '',
-  };
-
-  notifySetStatus('Triggering workflow…', '');
-  notifySetBusy(true);
-
-  notifyCallAPI(inputs)
-    .then(function(result) {
-      notifySetStatus(result.msg, result.ok ? 'ok' : 'err');
-      if(!result.ok && !_GH_PAT) {
-        /* PAT not set — fall back to manual GitHub UI */
-        var url = 'https://github.com/' + _GH_REPO + '/actions/workflows/notify.yml';
-        window.open(url, '_blank');
-        var fallback = [
-          'PAT not configured — GitHub Actions opened manually.',
-          '',
-          'Set notification_type : ' + inputs.notification_type,
-          inputs.notification_type === 'blog' ? 'blog_post_title : ' + inputs.blog_post_title : '(no blog fields needed)',
-          'test_only : ' + inputs.test_only,
-          inputs.test_only === 'true' ? 'test_email : ' + inputs.test_email : '',
-          '',
-          'To automate: add "github_pat": "ghp_xxxx" to content.json',
-        ].filter(Boolean).join('\n');
-        notifySetStatus(fallback, '');
-      }
-    })
-    .finally(function() { notifySetBusy(false); });
+  var url = 'https://github.com/mohangraphy/mohangraphy.github.io/actions/workflows/notify.yml';
+  window.open(url, '_blank');
+  var lines = [
+    'GitHub Actions page opened in a new tab.',
+    '',
+    '1. Click "Run workflow" dropdown (right side)',
+    '2. Fill in:',
+  ];
+  if(opts.type === 'blog' && opts.post) {
+    lines.push('   blog_post_title  : ' + opts.post.title);
+    lines.push('   blog_post_place  : ' + (opts.post.place || ''));
+    lines.push('   blog_post_summary: ' + (opts.post.summary || ''));
+  }
+  lines.push('   test_only : ' + (opts.testOnly ? 'true' : 'false'));
+  if(opts.testOnly) lines.push('   test_email: ' + (window.MOHAN_CONFIG.contactEmail || ''));
+  lines.push('');
+  lines.push('3. Click the green "Run workflow" button.');
+  lines.push('   Email arrives in ~60 seconds.');
+  notifySetStatus(lines.join('\n'), 'ok');
 }
 
 /* ── Status display ── */
@@ -1080,9 +1057,6 @@ function notifyBlogTest(){
   var panel = document.getElementById('notify-panel');
   var type  = panel ? (panel.getAttribute('data-notify-type') || 'blog') : 'blog';
   if(type === 'photos'){ notifyPhotosTest(); return; }
-  /* Auto-select first post if none chosen */
-  var sel = document.getElementById('notify-post-select');
-  if(sel && !sel.value && sel.options.length > 1) sel.selectedIndex = 1;
   var post = notifyGetPost();
   if(!post) return;
   notifyOpenGitHub({type:'blog', testOnly:true, post:post});
@@ -1090,9 +1064,7 @@ function notifyBlogTest(){
 
 /* ── CONFIRM SEND ── */
 function notifyBlogConfirm(){
-  /* Auto-select first post if none chosen */
-  var sel = document.getElementById('notify-post-select');
-  if(sel && !sel.value && sel.options.length > 1) sel.selectedIndex = 1;
+
   var post = notifyGetPost();
   if(!post) return;
 
@@ -1119,54 +1091,33 @@ function notifyBlogSend(post){
 }
 
 /* ── WORKFLOW TRIGGER (SAFE VERSION) ── */
-/* ══════════════════════════════════════════════════════
-   GITHUB ACTIONS API — direct workflow dispatch
-   PAT stored in content.json on Mac only, embedded at
-   build time into mohangraphy.js (excluded from secret
-   scanning via .github/secret_scanning.yml).
-   ══════════════════════════════════════════════════════ */
+function notifyCallWorkflow(post, testOnly){
 
-var _GH_PAT  = (window.MOHAN_CONFIG && window.MOHAN_CONFIG.githubPat)  || '';
-var _GH_REPO = (window.MOHAN_CONFIG && window.MOHAN_CONFIG.githubRepo) || 'mohangraphy/mohangraphy.github.io';
+  return new Promise(function(resolve){
 
-function notifyCallAPI(inputs) {
-  /* Call GitHub Actions workflow_dispatch API directly.
-     No UI, no copy-paste, fully automatic.             */
-  if(!_GH_PAT) {
-    return Promise.resolve({
-      ok:  false,
-      msg: 'GitHub PAT not set.\nAdd \"github_pat\": \"ghp_xxxx\" to content.json and redeploy.'
-    });
-  }
+    var url = 'https://github.com/mohangraphy/mohangraphy.github.io/actions/workflows/notify.yml';
 
-  var url = 'https://api.github.com/repos/' + _GH_REPO + '/actions/workflows/notify.yml/dispatches';
+    // Open GitHub Actions
+    window.open(url, '_blank');
 
-  return fetch(url, {
-    method:  'POST',
-    headers: {
-      'Accept':               'application/vnd.github+json',
-      'Authorization':        'Bearer ' + _GH_PAT,
-      'X-GitHub-Api-Version': '2022-11-28',
-      'Content-Type':         'application/json',
-    },
-    body: JSON.stringify({ ref: 'main', inputs: inputs }),
-  })
-  .then(function(res) {
-    if(res.status === 204) {
-      return { ok: true, msg: 'Workflow triggered. Email arrives in ~60 seconds.' };
-    }
-    if(res.status === 401) {
-      return { ok: false, msg: 'PAT invalid or expired. Update github_pat in content.json.' };
-    }
-    if(res.status === 404) {
-      return { ok: false, msg: 'Repo or workflow not found. Check github_repo in content.json.' };
-    }
-    return res.text().then(function(t) {
-      return { ok: false, msg: 'GitHub error ' + res.status + ': ' + t.slice(0, 120) };
-    });
-  })
-  .catch(function(err) {
-    return { ok: false, msg: 'Network error: ' + err.message };
+    var msg = [
+      'GitHub Actions page opened.',
+      '',
+      'Run workflow with:',
+      'notification_type : blog',
+      'test_only         : ' + (testOnly ? 'true' : 'false'),
+      (testOnly
+        ? 'test_email        : ' + (window.MOHAN_CONFIG.contactEmail || '')
+        : 'test_email        : (leave blank)'),
+      'blog_post_id      : ' + post.id,
+      'blog_post_title   : ' + post.title,
+      'blog_post_place   : ' + (post.place || ''),
+      'blog_post_summary : ' + (post.summary || ''),
+      '',
+      'Click "Run workflow". Email arrives in ~60 sec.'
+    ].join('\n');
+
+    resolve({ ok: true, msg: msg });
   });
 }
 
