@@ -19,9 +19,7 @@ const REPLY_TO  = 'info@mohangraphy.com';
 const SITE_URL  = 'https://www.mohangraphy.com';
 const SUPA_HOST = 'xjcpryfgodgqqtbblklg.supabase.co';
 
-// ── Determine what to send ───────────────────────────────────────────────────
-// push event → always photos
-// workflow_dispatch → use NOTIFICATION_TYPE
+// ── Determine mode ───────────────────────────────────────────────────────────
 const isBlog = (EVENT === 'workflow_dispatch') && (NOTIFY === 'blog');
 
 // ── HTTP helper ──────────────────────────────────────────────────────────────
@@ -44,32 +42,37 @@ async function fetchSubscribers() {
     console.log('TEST MODE — sending only to:', TEST_EMAIL);
     return [{ name: 'N C Mohan', email: TEST_EMAIL }];
   }
+
   const res = await request({
     hostname: SUPA_HOST,
-    path:     '/rest/v1/subscribers?select=email,name',
-    method:   'GET',
-    headers:  {
-      'apikey':        SUPA_KEY,
+    path: '/rest/v1/subscribers?select=email,name',
+    method: 'GET',
+    headers: {
+      'apikey': SUPA_KEY,
       'Authorization': 'Bearer ' + SUPA_KEY,
-      'Accept':        'application/json',
+      'Accept': 'application/json',
     },
   });
+
   const subs = JSON.parse(res.body);
   console.log('Subscribers:', subs.length);
   return subs;
 }
 
-// ── Email wrapper ────────────────────────────────────────────────────────────
+// ── Email wrapper (FIXED MOBILE SAFE) ────────────────────────────────────────
 function wrap(name, contentHtml, isTest) {
-  const greeting   = name ? 'Hi ' + name + ',' : 'Hello,';
+  const greeting = name ? 'Hi ' + name + ',' : 'Hello,';
+
   const testBanner = isTest
     ? '<p style="color:#c9a96e;font-size:11px;letter-spacing:2px;margin-bottom:16px">[TEST EMAIL — not sent to real subscribers]</p>'
     : '';
+
   const unsub = SITE_URL + '?unsubscribe=';
+
   return ''
-    + '<div style="font-family:sans-serif;max-width:600px;margin:auto;background:#080808;color:#fff;padding:40px">'
-    + '<h1 style="font-family:Georgia,serif;font-weight:300;letter-spacing:6px;text-transform:uppercase;color:#c9a96e">Mohangraphy</h1>'
-    + '<p style="color:rgba(255,255,255,0.6)">' + greeting + '</p>'
+    + '<div style="font-family:sans-serif;max-width:600px;margin:auto;background:#080808;color:#fff;padding:24px 18px">'
+    + '<h1 style="font-family:Georgia,serif;font-weight:300;letter-spacing:4px;text-transform:uppercase;color:#c9a96e;margin:0 0 10px 0">Mohangraphy</h1>'
+    + '<p style="color:rgba(255,255,255,0.6);margin:0 0 10px 0">' + greeting + '</p>'
     + testBanner
     + contentHtml
     + '<p style="color:rgba(255,255,255,0.2);font-size:11px;margin-top:40px">'
@@ -80,22 +83,23 @@ function wrap(name, contentHtml, isTest) {
     + '</div>';
 }
 
-// ── Content: photos ──────────────────────────────────────────────────────────
-// Button links to Recently Added section via hash — showNewPhotos() is
-// triggered when the URL has #recently-added, handled in site JS.
-// Simpler: link directly to site, visitor sees Recently Added banner.
+// ── Photos content ───────────────────────────────────────────────────────────
 function photosContent() {
   return ''
     + '<p style="color:rgba(255,255,255,0.6)">New photos have been uploaded to the gallery.</p>'
     + '<a href="' + SITE_URL + '" style="display:inline-block;margin-top:20px;padding:12px 28px;'
     + 'background:none;color:#c9a96e;border:1px solid #c9a96e;text-decoration:none;'
-    + 'font-family:sans-serif;font-size:12px;letter-spacing:3px;text-transform:uppercase">View the Photos</a>';
+    + 'font-size:12px;letter-spacing:3px;text-transform:uppercase">View the Photos</a>';
 }
 
-// ── Content: blog ────────────────────────────────────────────────────────────
+// ── Blog content ─────────────────────────────────────────────────────────────
 function blogContent(title, place, summary) {
-  // Replace apostrophes/smart quotes with safe equivalents
-  function safe(s) { return (s || '').replace(/['']/g, '\u2019').replace(/[""]/g, '\u201c'); }
+  function safe(s) {
+    return (s || '')
+      .replace(/['']/g, '\u2019')
+      .replace(/[""]/g, '\u201c');
+  }
+
   const t = safe(title);
   const p = safe(place);
   const s = safe(summary);
@@ -103,12 +107,13 @@ function blogContent(title, place, summary) {
   const metaHtml = p
     ? '<div style="font-size:11px;color:#c9a96e;letter-spacing:2px;text-transform:uppercase;margin-top:4px">' + p + '</div>'
     : '';
+
   const summaryHtml = s
     ? '<div style="font-size:13px;color:rgba(255,255,255,0.5);margin-top:8px">' + s + '</div>'
     : '';
 
   return ''
-  + (title ? '<p style="color:rgba(255,255,255,0.6)">A new travel story has been added to the site. Please visit the TRAVEL STORIES section:</p>' : '')
+    + (title ? '<p style="color:rgba(255,255,255,0.6)">A new travel story has been added to the site:</p>' : '')
     + '<div style="border-left:2px solid #c9a96e;padding:12px 16px;margin:16px 0;background:rgba(201,169,110,0.05)">'
     + '<div style="font-family:Georgia,serif;font-size:18px;color:#fff">' + t + '</div>'
     + metaHtml
@@ -116,23 +121,31 @@ function blogContent(title, place, summary) {
     + '</div>'
     + '<a href="' + SITE_URL + '" style="display:inline-block;margin-top:20px;padding:12px 28px;'
     + 'background:none;color:#c9a96e;border:1px solid #c9a96e;text-decoration:none;'
-    + 'font-family:sans-serif;font-size:12px;letter-spacing:3px;text-transform:uppercase">Read the Story</a>';
+    + 'font-size:12px;letter-spacing:3px;text-transform:uppercase">Read the Story</a>';
 }
 
-// ── Send via Resend ──────────────────────────────────────────────────────────
-async function send(to, subject, html) {
-  const payload = JSON.stringify({ from: FROM, reply_to: REPLY_TO, to: [to], subject: subject, html: html });
-  const res = await request({
+// ── Send email ───────────────────────────────────────────────────────────────
+function send(to, subject, html) {
+  const payload = JSON.stringify({
+    from: FROM,
+    reply_to: REPLY_TO,
+    to: [to],
+    subject,
+    html
+  });
+
+  return request({
     hostname: 'api.resend.com',
-    path:     '/emails',
-    method:   'POST',
-    headers:  {
-      'Authorization':  'Bearer ' + RESEND,
-      'Content-Type':   'application/json',
+    path: '/emails',
+    method: 'POST',
+    headers: {
+      'Authorization': 'Bearer ' + RESEND,
+      'Content-Type': 'application/json',
       'Content-Length': Buffer.byteLength(payload),
     },
-  }, payload);
-  console.log('Sent to', to, '— status:', res.status);
+  }, payload).then(res => {
+    console.log('Sent to', to, '— status:', res.status);
+  });
 }
 
 // ── Main ─────────────────────────────────────────────────────────────────────
@@ -141,20 +154,26 @@ async function send(to, subject, html) {
     const subs = await fetchSubscribers();
 
     if (isBlog) {
-      if (!TITLE) { console.log('No blog title — skipping.'); process.exit(0); }
-      const prefix  = TEST_ONLY ? '[TEST] ' : '';
-      const subject = prefix + 'New story on Mohangraphy: ' + TITLE;
+      if (!TITLE) {
+        console.log('No blog title — skipping.');
+        process.exit(0);
+      }
+
+      const subject = (TEST_ONLY ? '[TEST] ' : '') + 'New story on Mohangraphy: ' + TITLE;
       const content = blogContent(TITLE, PLACE, SUMMARY);
+
       console.log('Sending BLOG notification to', subs.length, 'subscriber(s)');
+
       for (const sub of subs) {
         await send(sub.email, subject, wrap(sub.name, content, TEST_ONLY));
       }
+
     } else {
-      // Photos — push trigger or manual photos type
-      const prefix  = TEST_ONLY ? '[TEST] ' : '';
-      const subject = prefix + 'New photos just added to Mohangraphy!';
+      const subject = (TEST_ONLY ? '[TEST] ' : '') + 'New photos just added to Mohangraphy!';
       const content = photosContent();
+
       console.log('Sending PHOTOS notification to', subs.length, 'subscriber(s)');
+
       for (const sub of subs) {
         await send(sub.email, subject, wrap(sub.name, content, TEST_ONLY));
       }
