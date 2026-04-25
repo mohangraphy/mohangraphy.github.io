@@ -40,7 +40,8 @@ jobs:
     
     # THIS IS THE CRITICAL PLACEMENT
     env:
-      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+      env:
+      ACTIONS_ALLOW_USE_UNSECURE_NODE_VERSION: true
 
     steps:
       - name: Checkout repo
