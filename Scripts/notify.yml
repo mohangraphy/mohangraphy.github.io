@@ -38,7 +38,7 @@ jobs:
   notify:
     runs-on: ubuntu-latest
     
-    # 1. This environment variable clears the Node.js 20 deprecation warning
+    # THIS IS THE CRITICAL PLACEMENT
     env:
       FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
@@ -49,7 +49,6 @@ jobs:
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
-          # 2. Updated to Node 22 (Current stable LTS)
           node-version: 22
 
       - name: Send Notification
