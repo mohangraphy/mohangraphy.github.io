@@ -59,7 +59,7 @@ function wrapHtml(name, contentHtml) {
 
   return `
     <div style="font-family:sans-serif;max-width:600px;margin:auto;background:#080808;color:#fff;padding:24px 18px">
-      <h1 style="font-family:Georgia,serif;font-weight:300;letter-spacing:4px;text-transform:uppercase;color:#c9a96e;margin:0 0 10px 0">Mohangraphy</h1>
+      <h1 style="font-family:Georgia,serif;font-weight:300;font-size:24px;letter-spacing:3px;text-transform:uppercase;color:#c9a96e;margin:0 0 10px 0;white-space:nowrap;overflow:hidden;">Mohangraphy</h1>
       <p style="color:rgba(255,255,255,0.6);margin:0 0 10px 0">${greeting}</p>
       ${testBanner}
       ${contentHtml}
@@ -80,7 +80,6 @@ function wrapHtml(name, contentHtml) {
 
     if (NOTIFY === 'blog') {
       if (!TITLE) throw new Error('Blog title is required.');
-      // Update: Explicitly route to travel-stories hash
       targetUrl = `${SITE_URL}/index.html#travel-stories`; 
       subject = (TEST_ONLY ? '[TEST] ' : '') + 'New story on Mohangraphy: ' + TITLE;
       content = `
@@ -92,7 +91,6 @@ function wrapHtml(name, contentHtml) {
         </div>
         <a href="${targetUrl}" style="display:inline-block;margin-top:20px;padding:12px 28px;border:1px solid #c9a96e;color:#c9a96e;text-decoration:none;text-transform:uppercase;font-size:11px;letter-spacing:2px;">Read the Story</a>`;
     } else {
-      // Update: Explicitly route to recently-added hash
       targetUrl = `${SITE_URL}/index.html#recently-added`;
       subject = (TEST_ONLY ? '[TEST] ' : '') + 'New photos added to Mohangraphy!';
       content = `
