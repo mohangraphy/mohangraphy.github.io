@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>N C Mohan — Fine Art Photography</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;0,700;1,400&family=Montserrat:wght@300;400;600;700;900&display=swap');
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root { --gold: #c9a96e; --gold2: #e8d4a0; --dark: #080808; --mid: #161616; --hdr: 80px; }
+html { scroll-behavior: smooth; font-size: 16px; }
+body { background: var(--dark); color: #fff; font-family: 'Montserrat', sans-serif; overflow-x: hidden; }
+header { position: fixed; top: 0; left: 0; right: 0; height: var(--hdr); background: rgba(8,8,8,0.97); z-index: 2000; display: flex; align-items: center; justify-content: space-between; padding: 0 40px; border-bottom: 1px solid rgba(201,169,110,0.15); }
+.site-logo { font-family: 'Cormorant Garamond', serif; font-size: 26px; letter-spacing: 5px; color: #fff; text-transform: uppercase; cursor: pointer; }
+.hdr-tabs { display: flex; gap: 20px; }
+.hdr-tab { font-size: 10px; font-weight: 600; letter-spacing: 2px; text-transform: uppercase; color: rgba(255,255,255,0.6); background: none; border: none; cursor: pointer; }
+.hdr-tab:hover, .hdr-tab.active { color: var(--gold); }
+
+/* Ensure correct default display: Hero visible, modals hidden */
+#hero { display: flex; position: relative; width: 100%; height: 100vh; align-items: center; justify-content: center; padding-top: var(--hdr); }
+.slide { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; opacity: 0; transition: opacity 1s; }
+.slide.active { opacity: 1; }
+#notify-panel, #img-modal, #rq-modal, .info-page { display: none !important; }
+#notify-panel.open, #img-modal.open, #rq-modal.open, .info-page.visible { display: flex !important; }
+</style>
+</head>
+<body>
+<header>
+  <div class="site-logo" onclick="showHome()">Mohangraphy</div>
+  <div class="hdr-tabs">
+    <button class="hdr-tab active" onclick="showHome()">Home</button>
+    <button class="hdr-tab" onclick="openNotify()">Stay in the Loop</button>
+  </div>
+</header>
+<section id="hero" class="visible">
+  <!-- Slideshow slides injected here -->
+</section>
+<div id="notify-panel">
+  <div style="background:#111; padding:40px; border:1px solid var(--gold);">
+    <h2>Stay in the Loop</h2>
+    <button onclick="closeNotify()">Close</button>
+  </div>
+</div>
+<script>
+function showHome() {
+  document.getElementById('notify-panel').classList.remove('open');
+  document.getElementById('hero').classList.add('visible');
+}
+function openNotify() {
+  document.getElementById('notify-panel').classList.add('open');
+}
+function closeNotify() {
+  document.getElementById('notify-panel').classList.remove('open');
+}
+</script>
+</body>
+</html>
