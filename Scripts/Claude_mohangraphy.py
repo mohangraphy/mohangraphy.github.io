@@ -2168,13 +2168,11 @@ header {
 
 /* ── FOOTER — non-persistent, scrollable at page bottom ── */
 footer {
-  display: none;
-  position: relative;
+  position: relative;   /* NOT fixed */
   background: #0a0a0a;
   border-top: 1px solid rgba(201,169,110,0.12);
   padding: 48px clamp(20px,6vw,80px) 40px;
 }
-footer.visible { display: block; }
 .footer-inner {
   max-width: 860px; margin: 0 auto;
   display: grid; grid-template-columns: 1fr 1fr;
@@ -2273,13 +2271,11 @@ footer.visible { display: block; }
 }
 
 #subscribe-section {
-  display: none;
   padding: clamp(48px,8vw,96px) clamp(20px,5vw,80px);
   text-align: center;
   border-top: 1px solid rgba(201,169,110,0.12);
   background: var(--dark);
 }
-#subscribe-section.visible { display: block; }
 .subscribe-inner { max-width: 520px; margin: 0 auto; }
 .subscribe-title {
   font-family: 'Cormorant Garamond', serif;
@@ -3166,15 +3162,12 @@ function hideAll(){
     if(el) el.classList.remove('visible', 'page-enter');
   });
   document.getElementById('copyright-banner').classList.remove('visible');
-  var sub = document.getElementById('subscribe-section');
-  if(sub) sub.classList.remove('visible');
-  var ftr = document.querySelector('footer');
-  if(ftr) ftr.classList.remove('visible');
   document.querySelectorAll('.info-page').forEach(function(p){ p.classList.remove('visible'); });
   document.querySelectorAll('.story-post').forEach(function(p){ p.classList.remove('visible'); });
   document.querySelectorAll('.sub-panel').forEach(function(p){ p.classList.remove('active'); });
   document.querySelectorAll('.section-block').forEach(function(b){ b.classList.remove('visible'); });
-  /* Remove dynamically injected blocks */
+  /* Remove dynamically injected blocks — these use inline display:block !important
+     so class removal alone won't hide them */
   ['gallery-new-photos','gallery-story-temp'].forEach(function(id){
     var el = document.getElementById(id); if(el) el.remove();
   });
@@ -3190,10 +3183,6 @@ function goHome(){
   hideAll();
   document.getElementById('hero').classList.add('visible');
   document.getElementById('tile-nav').classList.add('visible','page-enter');
-  var sub = document.getElementById('subscribe-section');
-  if(sub) sub.classList.add('visible');
-  var ftr = document.querySelector('footer');
-  if(ftr) ftr.classList.add('visible');
   setActiveTab('home');
   window.scrollTo(0,0);
 }
@@ -4611,6 +4600,11 @@ window.addEventListener('load', function() {
             }
         }
     }, 500); 
+});
+
+/* ── PAGE INIT — always call goHome() on first load ── */
+document.addEventListener('DOMContentLoaded', function(){
+  goHome();
 });
 """
 

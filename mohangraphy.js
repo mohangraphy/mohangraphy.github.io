@@ -16,15 +16,12 @@ function hideAll(){
     if(el) el.classList.remove('visible', 'page-enter');
   });
   document.getElementById('copyright-banner').classList.remove('visible');
-  var sub = document.getElementById('subscribe-section');
-  if(sub) sub.classList.remove('visible');
-  var ftr = document.querySelector('footer');
-  if(ftr) ftr.classList.remove('visible');
   document.querySelectorAll('.info-page').forEach(function(p){ p.classList.remove('visible'); });
   document.querySelectorAll('.story-post').forEach(function(p){ p.classList.remove('visible'); });
   document.querySelectorAll('.sub-panel').forEach(function(p){ p.classList.remove('active'); });
   document.querySelectorAll('.section-block').forEach(function(b){ b.classList.remove('visible'); });
-  /* Remove dynamically injected blocks */
+  /* Remove dynamically injected blocks — these use inline display:block !important
+     so class removal alone won't hide them */
   ['gallery-new-photos','gallery-story-temp'].forEach(function(id){
     var el = document.getElementById(id); if(el) el.remove();
   });
@@ -40,10 +37,6 @@ function goHome(){
   hideAll();
   document.getElementById('hero').classList.add('visible');
   document.getElementById('tile-nav').classList.add('visible','page-enter');
-  var sub = document.getElementById('subscribe-section');
-  if(sub) sub.classList.add('visible');
-  var ftr = document.querySelector('footer');
-  if(ftr) ftr.classList.add('visible');
   setActiveTab('home');
   window.scrollTo(0,0);
 }
@@ -1461,4 +1454,9 @@ window.addEventListener('load', function() {
             }
         }
     }, 500); 
+});
+
+/* ── PAGE INIT — always call goHome() on first load ── */
+document.addEventListener('DOMContentLoaded', function(){
+  goHome();
 });
