@@ -1730,5 +1730,111 @@
         "country": "",
         "remarks": "Ramayana - Dance Performance",
         "date_added": "2026-04-25"
+    },
+    "ad2166d10f18d11f4347ad25b6e69b77": {
+        "path": "Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4771.JPG",
+        "filename": "2026-0127-Megamalai-NCM-4771.JPG",
+        "categories": [
+            "Places/National",
+            "Nature/Landscapes",
+            "People & Culture/Street"
+        ],
+        "state": "Tamil Nadu",
+        "city": "Megamalai",
+        "country": "",
+        "remarks": "One of the several hairpin bends",
+        "date_added": "2026-08-17"
+    },
+    "612671ced7a0642e3a937740f74247a9": {
+        "path": "Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4783.JPG",
+        "filename": "2026-0127-Megamalai-NCM-4783.JPG",
+        "categories": [
+            "Places/National",
+            "Nature/Landscapes",
+            "People & Culture/Street"
+        ],
+        "state": "Tamil Nadu",
+        "city": "Megamalai",
+        "country": "",
+        "remarks": "A view of the residential area of the Tea Estate workers",
+        "date_added": "2026-08-17"
+    },
+    "a389bf61850c2f6a663def6daed86631": {
+        "path": "Photos/Vasudhara_Falls/2026-0801-VOF_D750_NCM_4248.JPG",
+        "filename": "2026-0801-VOF_D750_NCM_4248.JPG",
+        "categories": [
+            "Places/National",
+            "Nature/Landscapes"
+        ],
+        "state": "Uttarakhand",
+        "city": "Badrinath",
+        "country": "",
+        "remarks": "Enroute to Badrinath",
+        "date_added": "2026-08-17"
+    },
+    "9d7c07b4e9ce64d4b6cbfcd61b6776c5": {
+        "path": "Photos/Vasudhara_Falls/2026-0801-VOF_D750_NCM_4349.JPG",
+        "filename": "2026-0801-VOF_D750_NCM_4349.JPG",
+        "categories": [
+            "Places/National",
+            "Nature/Landscapes"
+        ],
+        "state": "Uttarakhand",
+        "city": "Badrinath",
+        "country": "",
+        "remarks": "Emerging from the mist",
+        "date_added": "2026-08-17"
+    },
+    "ac93d9787a9b4cd13cfa818ed95d1a26": {
+        "path": "Photos/Vasudhara_Falls/2026-0801-VOF_D750_NCM_4496.JPG",
+        "filename": "2026-0801-VOF_D750_NCM_4496.JPG",
+        "categories": [
+            "Places/National",
+            "Nature/Landscapes"
+        ],
+        "state": "Uttarakhand",
+        "city": "Badrinath",
+        "country": "",
+        "remarks": "High-altitude rest",
+        "date_added": "2026-08-17"
+    },
+    "b1453d9a226bb55f06b4abad59e7e941": {
+        "path": "Photos/Vasudhara_Falls/2026-0801-VOF_D750_NCM_4561.JPG",
+        "filename": "2026-0801-VOF_D750_NCM_4561.JPG",
+        "categories": [
+            "Places/National",
+            "Nature/Landscapes"
+        ],
+        "state": "Uttarakhand",
+        "city": "Badrinath",
+        "country": "",
+        "remarks": "Vasudhara Falls - A close up of glacier melt water",
+        "date_added": "2026-08-17"
+    },
+    "2bcbaf5e05c40335a3d93cf3ccfce898": {
+        "path": "Photos/Vasudhara_Falls/2026-0801-VOF_D750_NCM_4563.JPG",
+        "filename": "2026-0801-VOF_D750_NCM_4563.JPG",
+        "categories": [
+            "Places/National",
+            "Nature/Landscapes"
+        ],
+        "state": "Uttarakhand",
+        "city": "Badrinath",
+        "country": "",
+        "remarks": "Vasudhara Falls - A close up of glacier melt water",
+        "date_added": "2026-08-17"
+    },
+    "67bc89aca8854ff9ea4160553d0482f1": {
+        "path": "Photos/Vasudhara_Falls/2026-0801-VOF_D750_NCM_4596.JPG",
+        "filename": "2026-0801-VOF_D750_NCM_4596.JPG",
+        "categories": [
+            "Places/National",
+            "Nature/Landscapes"
+        ],
+        "state": "Uttarakhand",
+        "city": "Badrinath",
+        "country": "",
+        "remarks": "Grazing on the mountain slopes",
+        "date_added": "2026-08-17"
     }
 }
