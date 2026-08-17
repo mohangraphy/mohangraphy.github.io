@@ -69,6 +69,7 @@ jobs:
 
           RESEND_API_KEY: ${{ secrets.RESEND_API_KEY }}
           SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
 
           BLOG_TITLE: ${{ github.event.inputs.blog_post_title }}
           BLOG_PLACE: ${{ github.event.inputs.blog_post_place }}
