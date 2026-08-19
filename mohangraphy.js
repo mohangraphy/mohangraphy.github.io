@@ -1458,5 +1458,48 @@ window.addEventListener('load', function() {
 
 /* ── PAGE INIT — always call goHome() on first load ── */
 document.addEventListener('DOMContentLoaded', function(){
+  var hash = window.location.hash;
+  if(hash){
+    var val = hash.replace('#','');
+    if(val === 'travel-stories'){ showStoriesIndex(); return; }
+    if(val.indexOf('story-') === 0){
+      var postId = val.replace('story-','');
+      var el = document.getElementById(postId);
+      if(el && el.classList.contains('story-post')){ showStoryPost(postId); return; }
+    }
+    if(val.indexOf('category-') === 0){
+      var cat = val.replace('category-','').replace(/_/g,' ').replace(/n(?=\s|$)/g,'&');
+      openCategory(cat); return;
+    }
+    if(val.indexOf('gallery-') === 0){
+      var galId = val.replace('gallery-','');
+      var galEl = document.getElementById(galId);
+      if(galEl && galEl.classList.contains('section-block')){
+        var parts = galId.split('-');
+        if(parts.length >= 2) currentCat = parts[0].replace(/_/g,' ').replace(/n/g,'&');
+        showGallery(galId); return;
+      }
+    }
+  }
+  var _origOpenCategory = openCategory;
+  openCategory = function(cat){
+    _origOpenCategory(cat);
+    history.replaceState(null,'','#category-'+cat.replace(/ /g,'_').replace(/&/g,'n'));
+  };
+  var _origShowGallery = showGallery;
+  showGallery = function(id, bc){
+    _origShowGallery(id, bc);
+    history.replaceState(null,'','#gallery-'+id);
+  };
+  var _origShowStoryPost = showStoryPost;
+  showStoryPost = function(id){
+    _origShowStoryPost(id);
+    history.replaceState(null,'','#story-'+id);
+  };
+  var _origShowStoriesIndex = showStoriesIndex;
+  showStoriesIndex = function(){
+    _origShowStoriesIndex();
+    history.replaceState(null,'','#travel-stories');
+  };
   goHome();
 });
