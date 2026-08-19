@@ -424,47 +424,6 @@ def build_maps(unique_entries):
     return cat_city_map, all_paths, path_info_map
 
 
-
-# ── CLEAN STALE GENERATED PHOTO FILES ─────────────────────────────────────────
-def clean_generated_photo_files(valid_paths):
-    """
-    Remove Web/Photos and Thumbs/Photos files whose originals
-    no longer exist under Photos/.
-    """
-    valid = set(valid_paths)
-
-    removed_web = 0
-    removed_thumbs = 0
-
-    for base_dir, label in [
-        (WEB_DIR, "Web"),
-        (THUMBS_DIR, "Thumbs")
-    ]:
-        photos_dir = os.path.join(base_dir, "Photos")
-
-        if not os.path.isdir(photos_dir):
-            continue
-
-        for root, dirs, files in os.walk(photos_dir):
-            for filename in files:
-                full_path = os.path.join(root, filename)
-                rel_path = os.path.relpath(full_path, ROOT_DIR)
-
-                prefix = label + os.sep
-                original_path = rel_path[len(prefix):]
-
-                if original_path not in valid:
-                    os.remove(full_path)
-
-                    if label == "Web":
-                        removed_web += 1
-                    else:
-                        removed_thumbs += 1
-
-    print(f"  🧹 Removed stale Web files: {removed_web}")
-    print(f"  🧹 Removed stale Thumbs files: {removed_thumbs}")
-
-
 # ── THUMBNAIL BATCH ───────────────────────────────────────────────────────────
 def ensure_thumbs(all_paths, blog_paths=None):
     """Pre-generate thumbnails AND 2048px web copies for all photos.
@@ -601,7 +560,6 @@ def generate_html():
             print(f"     {os.path.basename(bp)}")
     else:
         print(f"  ⚠️  No blog photos found — folder may be empty or missing")
-    clean_generated_photo_files(all_paths + blog_only_paths)
     thumb_map, web_map = ensure_thumbs(all_paths, blog_only_paths)
 
     # Hero slides — Megamalai landscape only, 3-second rotation
