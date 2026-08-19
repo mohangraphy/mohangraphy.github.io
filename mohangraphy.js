@@ -279,6 +279,7 @@ function showNewPhotos(){
     + '</div></div>'
     + '<div class="grid">' + gridHTML + '</div>';
   galContainer.prepend(block);
+  history.replaceState(null,'','#recently-added');
   window.scrollTo(0, 0);
 }
 
