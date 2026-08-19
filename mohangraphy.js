@@ -51,6 +51,7 @@ function openCategory(cat){
   var p = document.getElementById(panelId);
   if(p) p.classList.add('active');
   setActiveTab('collections');
+  history.replaceState(null,'','#category-'+cat.replace(/ /g,'_').replace(/&/g,'n'));
   window.scrollTo(0,0);
 }
 
@@ -87,6 +88,7 @@ function showGallery(id, breadcrumbs){
     updateBreadcrumb(crumbs);
   }
   setActiveTab('collections');
+  history.replaceState(null,'','#gallery-'+id);
   window.scrollTo(0,0);
 }
 
@@ -1227,6 +1229,7 @@ function showStoriesIndex(){
   var pg=document.getElementById('page-stories');
   if(pg){pg.classList.add('visible');pg.scrollTop=0;window.scrollTo(0,0);}
   setActiveTab('stories');
+  history.replaceState(null,'','#travel-stories');
 }
 function showStoryPost(id){
   hideAll();
@@ -1237,6 +1240,7 @@ function showStoryPost(id){
     window.scrollTo(0,0);
   }
   setActiveTab('stories');
+  history.replaceState(null,'','#story-'+id);
 }
 function closeStoryPost(){
   document.querySelectorAll('.story-post.visible').forEach(function(p){p.classList.remove('visible');});
