@@ -1483,7 +1483,7 @@ function loadComments(postId){
         + '<span class="story-comment-name">' + c.name.replace(/</g,'&lt;') + '</span>'
         + '<span style="display:flex;align-items:center;gap:12px">'
         + '<span class="story-comment-date">' + dateStr + '</span>'
-        + '<button class="story-comment-delete" onclick="deleteComment('' + c.id + '','' + postId + '')">&#10005; Delete</button>'
+        + '<button class="story-comment-delete" onclick="deleteComment(this)">&#10005; Delete</button>'
         + '</span>'
         + '</div>'
         + '<div class="story-comment-text">' + c.comment.replace(/</g,'&lt;').replace(/\n/g,'<br>') + '</div>'
@@ -1525,7 +1525,12 @@ function submitComment(postId){
   .catch(function(){ msgEl.textContent='Connection error. Please try again.'; });
 }
 
-function deleteComment(commentId, postId){
+function deleteComment(btn){
+  var item = btn.closest('.story-comment-item');
+  var commentId = item ? item.getAttribute('data-id') : null;
+  var commentsEl = btn.closest('.story-comments');
+  var postId = commentsEl ? commentsEl.id.replace('comments-','') : null;
+  if(!commentId || !postId) return;
   if(!confirm('Delete this comment permanently?')) return;
   fetch(SUPA_URL + '/rest/v1/comments?id=eq.' + commentId, {
     method: 'DELETE',
