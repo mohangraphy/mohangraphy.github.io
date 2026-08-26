@@ -1570,41 +1570,24 @@ function dismissNudge(scrollToComments){
 }
 
 function initNudge(postId){
-  /* Reset seen flag so nudge shows fresh for each post */
+  /* Reset and hide any existing nudge */
   _nudgeSeen[postId] = false;
-  /* Hide any existing nudge cleanly */
   var el = document.getElementById('comment-nudge');
   if(el){ el.classList.remove('visible'); el.style.display='none'; }
   clearTimeout(_nudgeTimer);
 
-  var post = document.getElementById(postId);
-  if(!post) return;
-  if(!el) return;
-
-  function onScroll(){
-    if(!post.classList.contains('visible')) return;
-    var rect = post.getBoundingClientRect();
-    var postHeight = post.offsetHeight;
-    var scrolled = -rect.top;
-    var pct = scrolled / postHeight;
-    if(pct >= 0.50 && !_nudgeSeen[postId]){
-      _nudgeSeen[postId] = true;
-      el.style.display = 'block';
-      setTimeout(function(){ el.classList.add('visible'); }, 50);
-      /* No auto-dismiss — stays until reader clicks or closes */
-    } else if(pct < 0.50 && _nudgeSeen[postId]){
-      /* Hide if reader scrolls back up above 50% */
-      el.classList.remove('visible');
-      setTimeout(function(){ 
-        if(!el.classList.contains('visible')) el.style.display='none';
-        _nudgeSeen[postId] = false;
-      }, 500);
-    }
-  }
-  /* Use window scroll — story-post scrolls within the window */
-  window.addEventListener('scroll', onScroll, {passive:true});
-  /* Store cleanup function on post element for later removal */
-  post._nudgeCleanup = function(){ window.removeEventListener('scroll', onScroll); };
+  /* Show nudge after 30 seconds of reading */
+  _nudgeTimer = setTimeout(function(){
+    if(_nudgeSeen[postId]) return;
+    /* Only show if this post is still visible */
+    var post = document.getElementById(postId);
+    if(!post || !post.classList.contains('visible')) return;
+    var el2 = document.getElementById('comment-nudge');
+    if(!el2) return;
+    _nudgeSeen[postId] = true;
+    el2.style.display = 'block';
+    setTimeout(function(){ el2.classList.add('visible'); }, 50);
+  }, 30000);
 }
 
 /* ── PAGE INIT — always call goHome() on first load ── */
