@@ -1503,7 +1503,8 @@ function submitComment(postId){
   var email   = emailEl.value.trim();
   var comment = textEl.value.trim();
   if(!name){ msgEl.textContent='Please enter your name.'; return; }
-  if(!email || email.indexOf('@')<1){ msgEl.textContent='Please enter a valid email.'; return; }
+  var emailRegex = /^[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}$/;
+  if(!email || !emailRegex.test(email)){ msgEl.textContent='Please enter a valid email address (e.g. name@example.com).'; return; }
   if(!comment){ msgEl.textContent='Please write a comment.'; return; }
   msgEl.textContent = 'Posting...';
   fetch(SUPA_URL + '/rest/v1/comments', {
