@@ -1556,8 +1556,12 @@ function dismissNudge(scrollToComments){
   var el = document.getElementById('comment-nudge');
   if(el){ el.classList.remove('visible'); setTimeout(function(){ el.style.display='none'; }, 500); }
   clearTimeout(_nudgeTimer);
+  /* Clean up scroll listener */
+  var post = document.querySelector('.story-post.visible');
+  if(post && post._nudgeCleanup){ post._nudgeCleanup(); post._nudgeCleanup=null; }
+  /* Mark as permanently dismissed for this session */
+  if(post) _nudgeSeen[post.id] = true;
   if(scrollToComments){
-    var post = document.querySelector('.story-post.visible');
     if(post){
       var comments = post.querySelector('.story-comments');
       if(comments){ comments.scrollIntoView({behavior:'smooth', block:'start'}); }
@@ -1578,6 +1582,7 @@ function initNudge(postId){
   if(!el) return;
 
   function onScroll(){
+    if(!post.classList.contains('visible')) return;
     var rect = post.getBoundingClientRect();
     var postHeight = post.offsetHeight;
     var scrolled = -rect.top;
@@ -1586,13 +1591,20 @@ function initNudge(postId){
       _nudgeSeen[postId] = true;
       el.style.display = 'block';
       setTimeout(function(){ el.classList.add('visible'); }, 50);
-      _nudgeTimer = setTimeout(function(){ dismissNudge(false); }, 6000);
-      post.removeEventListener('scroll', onScroll);
-      window.removeEventListener('scroll', onScroll);
+      /* No auto-dismiss — stays until reader clicks or closes */
+    } else if(pct < 0.50 && _nudgeSeen[postId]){
+      /* Hide if reader scrolls back up above 50% */
+      el.classList.remove('visible');
+      setTimeout(function(){ 
+        if(!el.classList.contains('visible')) el.style.display='none';
+        _nudgeSeen[postId] = false;
+      }, 500);
     }
   }
-  post.addEventListener('scroll', onScroll, {passive:true});
+  /* Use window scroll — story-post scrolls within the window */
   window.addEventListener('scroll', onScroll, {passive:true});
+  /* Store cleanup function on post element for later removal */
+  post._nudgeCleanup = function(){ window.removeEventListener('scroll', onScroll); };
 }
 
 /* ── PAGE INIT — always call goHome() on first load ── */
