@@ -2671,6 +2671,7 @@ footer {
   cursor: pointer;
 }
 #comment-nudge.visible {
+  display: block;
   opacity: 1;
   transform: translateX(-50%) translateY(0);
 }
