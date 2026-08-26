@@ -2651,6 +2651,54 @@ footer {
 }
 .story-cta-btn-ghost:hover { border-color: rgba(201,169,110,0.4); color: var(--gold); }
 
+/* ── COMMENT NUDGE PROMPT ── */
+#comment-nudge {
+  display: none;
+  position: fixed;
+  bottom: 32px;
+  left: 50%;
+  transform: translateX(-50%) translateY(20px);
+  z-index: 8000;
+  background: rgba(8,8,8,0.96);
+  border: 1px solid rgba(201,169,110,0.5);
+  border-left: 3px solid var(--gold);
+  padding: 14px 24px 14px 20px;
+  max-width: min(480px, 90vw);
+  width: max-content;
+  backdrop-filter: blur(8px);
+  opacity: 0;
+  transition: opacity 0.5s ease, transform 0.5s ease;
+  cursor: pointer;
+}
+#comment-nudge.visible {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
+#comment-nudge-text {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: clamp(14px,2vw,18px);
+  font-weight: 300;
+  letter-spacing: 1px;
+  color: rgba(255,255,255,0.85);
+  line-height: 1.5;
+}
+#comment-nudge-text span {
+  color: var(--gold);
+}
+#comment-nudge-close {
+  position: absolute;
+  top: 8px; right: 10px;
+  background: none; border: none;
+  color: rgba(255,255,255,0.3);
+  font-size: 14px; cursor: pointer;
+  transition: color .2s;
+  line-height: 1;
+}
+#comment-nudge-close:hover { color: var(--gold); }
+@media (max-width: 480px) {
+  #comment-nudge { bottom: 16px; padding: 12px 32px 12px 16px; }
+}
+
 /* ── COMMENTS SECTION ── */
 .story-comments {
   margin-top: 40px;
@@ -4840,6 +4888,48 @@ function deleteComment(btn){
   .catch(function(){ showToast('Connection error.'); });
 }
 
+/* ── COMMENT NUDGE — slides up at 75% scroll through a blog post ── */
+var _nudgeSeen = {};
+var _nudgeTimer = null;
+
+function dismissNudge(scrollToComments){
+  var el = document.getElementById('comment-nudge');
+  if(el){ el.classList.remove('visible'); setTimeout(function(){ el.style.display='none'; }, 500); }
+  clearTimeout(_nudgeTimer);
+  if(scrollToComments){
+    var post = document.querySelector('.story-post.visible');
+    if(post){
+      var comments = post.querySelector('.story-comments');
+      if(comments){ comments.scrollIntoView({behavior:'smooth', block:'start'}); }
+    }
+  }
+}
+
+function initNudge(postId){
+  if(_nudgeSeen[postId]) return;
+  var post = document.getElementById(postId);
+  if(!post) return;
+  var el = document.getElementById('comment-nudge');
+  if(!el) return;
+
+  function onScroll(){
+    var rect = post.getBoundingClientRect();
+    var postHeight = post.offsetHeight;
+    var scrolled = -rect.top;
+    var pct = scrolled / postHeight;
+    if(pct >= 0.75 && !_nudgeSeen[postId]){
+      _nudgeSeen[postId] = true;
+      el.style.display = 'block';
+      setTimeout(function(){ el.classList.add('visible'); }, 50);
+      _nudgeTimer = setTimeout(function(){ dismissNudge(false); }, 6000);
+      post.removeEventListener('scroll', onScroll);
+      window.removeEventListener('scroll', onScroll);
+    }
+  }
+  post.addEventListener('scroll', onScroll, {passive:true});
+  window.addEventListener('scroll', onScroll, {passive:true});
+}
+
 /* ── PAGE INIT — always call goHome() on first load ── */
 document.addEventListener('DOMContentLoaded', function(){
   var hash = window.location.hash;
@@ -4880,6 +4970,7 @@ document.addEventListener('DOMContentLoaded', function(){
     _origShowStoryPost(id);
     history.replaceState(null,'','#story-'+id);
     setTimeout(function(){ loadComments(id); }, 300);
+    setTimeout(function(){ initNudge(id); }, 500);
   };
   var _origShowStoriesIndex = showStoriesIndex;
   showStoriesIndex = function(){
@@ -5390,6 +5481,10 @@ document.addEventListener('DOMContentLoaded', function(){
         '</div>\n\n'
 
         '<script>\nwindow.MOHAN_CONFIG=' + _config_json + ';\n</script>\n'
+        '<div id="comment-nudge" onclick="dismissNudge(true)" role="button" aria-label="Leave a comment">\n'
+        '  <button id="comment-nudge-close" onclick="dismissNudge(false);event.stopPropagation();" aria-label="Close">&#x2715;</button>\n'
+        '  <div id="comment-nudge-text"><span>Enjoying this story?</span> I would love to hear your thoughts, experiences or questions.</div>\n'
+        '</div>\n'
         '<script src="mohangraphy.js"></script>\n'
         '</body>\n'
         '</html>'

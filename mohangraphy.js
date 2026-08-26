@@ -1548,6 +1548,48 @@ function deleteComment(btn){
   .catch(function(){ showToast('Connection error.'); });
 }
 
+/* ── COMMENT NUDGE — slides up at 75% scroll through a blog post ── */
+var _nudgeSeen = {};
+var _nudgeTimer = null;
+
+function dismissNudge(scrollToComments){
+  var el = document.getElementById('comment-nudge');
+  if(el){ el.classList.remove('visible'); setTimeout(function(){ el.style.display='none'; }, 500); }
+  clearTimeout(_nudgeTimer);
+  if(scrollToComments){
+    var post = document.querySelector('.story-post.visible');
+    if(post){
+      var comments = post.querySelector('.story-comments');
+      if(comments){ comments.scrollIntoView({behavior:'smooth', block:'start'}); }
+    }
+  }
+}
+
+function initNudge(postId){
+  if(_nudgeSeen[postId]) return;
+  var post = document.getElementById(postId);
+  if(!post) return;
+  var el = document.getElementById('comment-nudge');
+  if(!el) return;
+
+  function onScroll(){
+    var rect = post.getBoundingClientRect();
+    var postHeight = post.offsetHeight;
+    var scrolled = -rect.top;
+    var pct = scrolled / postHeight;
+    if(pct >= 0.75 && !_nudgeSeen[postId]){
+      _nudgeSeen[postId] = true;
+      el.style.display = 'block';
+      setTimeout(function(){ el.classList.add('visible'); }, 50);
+      _nudgeTimer = setTimeout(function(){ dismissNudge(false); }, 6000);
+      post.removeEventListener('scroll', onScroll);
+      window.removeEventListener('scroll', onScroll);
+    }
+  }
+  post.addEventListener('scroll', onScroll, {passive:true});
+  window.addEventListener('scroll', onScroll, {passive:true});
+}
+
 /* ── PAGE INIT — always call goHome() on first load ── */
 document.addEventListener('DOMContentLoaded', function(){
   var hash = window.location.hash;
@@ -1588,6 +1630,7 @@ document.addEventListener('DOMContentLoaded', function(){
     _origShowStoryPost(id);
     history.replaceState(null,'','#story-'+id);
     setTimeout(function(){ loadComments(id); }, 300);
+    setTimeout(function(){ initNudge(id); }, 500);
   };
   var _origShowStoriesIndex = showStoriesIndex;
   showStoriesIndex = function(){
