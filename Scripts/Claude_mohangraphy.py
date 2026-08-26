@@ -2651,6 +2651,92 @@ footer {
 }
 .story-cta-btn-ghost:hover { border-color: rgba(201,169,110,0.4); color: var(--gold); }
 
+/* ── COMMENTS SECTION ── */
+.story-comments {
+  margin-top: 40px;
+  padding-top: 32px;
+  border-top: 1px solid rgba(201,169,110,0.12);
+}
+.story-comments-title {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: clamp(20px,3vw,28px); font-weight: 600;
+  letter-spacing: 3px; text-transform: uppercase;
+  color: #fff; margin-bottom: 24px;
+}
+.story-comment-form {
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(201,169,110,0.12);
+  padding: 24px; margin-bottom: 32px;
+}
+.story-comment-form input,
+.story-comment-form textarea {
+  width: 100%; background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(201,169,110,0.15);
+  color: #fff; padding: 10px 14px;
+  font-family: 'Montserrat', sans-serif; font-size: 13px;
+  outline: none; margin-bottom: 12px;
+  transition: border-color .25s; -webkit-appearance: none;
+}
+.story-comment-form input:focus,
+.story-comment-form textarea:focus { border-color: var(--gold); }
+.story-comment-form textarea { min-height: 100px; resize: vertical; }
+.story-comment-form label {
+  display: block; font-size: 8px; letter-spacing: 3px;
+  text-transform: uppercase; color: rgba(255,255,255,0.35);
+  margin-bottom: 5px;
+}
+.story-comment-form .form-row {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 12px;
+}
+@media (max-width: 480px) {
+  .story-comment-form .form-row { grid-template-columns: 1fr; }
+}
+.story-comment-msg {
+  font-size: 10px; letter-spacing: 2px;
+  color: var(--gold); margin-top: 8px; min-height: 18px;
+}
+.story-comment-list { margin-top: 8px; }
+.story-comment-item {
+  padding: 18px 0;
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+  position: relative;
+}
+.story-comment-item:last-child { border-bottom: none; }
+.story-comment-header {
+  display: flex; align-items: center;
+  justify-content: space-between; margin-bottom: 8px;
+}
+.story-comment-name {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 11px; font-weight: 600; letter-spacing: 2px;
+  color: var(--gold); text-transform: uppercase;
+}
+.story-comment-date {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 9px; letter-spacing: 1px;
+  color: rgba(255,255,255,0.25);
+}
+.story-comment-text {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 13px; letter-spacing: 0.3px; line-height: 1.75;
+  color: rgba(255,255,255,0.7);
+}
+.story-comment-delete {
+  display: none; background: none; border: none;
+  color: rgba(255,0,0,0.4); cursor: pointer;
+  font-size: 11px; letter-spacing: 1px;
+  text-transform: uppercase; padding: 0;
+  transition: color .2s;
+}
+.story-comment-delete:hover { color: rgba(255,0,0,0.8); }
+.admin-unlocked .story-comment-delete { display: inline-block; }
+.story-comments-empty {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 11px; letter-spacing: 2px;
+  color: rgba(255,255,255,0.2); text-transform: uppercase;
+  padding: 16px 0;
+}
+
 /* ── Empty state ── */
 .stories-empty {
   text-align: center;
@@ -3153,6 +3239,24 @@ footer {
                 + ('<div class="story-post-divider"></div>\n'
                    '<div class="story-cta-row">' + cta_html + '</div>\n'
                    if cta_html else '')
+                + '<div class="story-comments" id="comments-' + _ea(pid) + '">'
+                  '<div class="story-comments-title">Comments</div>'
+                  '<div class="story-comment-form">'
+                  '<div class="form-row">'
+                  '<div><label>Your Name *</label>'
+                  '<input type="text" id="cmt-name-' + _ea(pid) + '" placeholder="Your name"></div>'
+                  '<div><label>Email Address *</label>'
+                  '<input type="email" id="cmt-email-' + _ea(pid) + '" placeholder="your@email.com"></div>'
+                  '</div>'
+                  '<label>Comment *</label>'
+                  '<textarea id="cmt-text-' + _ea(pid) + '" placeholder="Share your thoughts..."></textarea>'
+                  '<button class="story-cta-btn" onclick="submitComment(\'' + _ea(pid) + '\')">Post Comment</button>'
+                  '<div class="story-comment-msg" id="cmt-msg-' + _ea(pid) + '"></div>'
+                  '</div>'
+                  '<div class="story-comment-list" id="cmt-list-' + _ea(pid) + '">'
+                  '<div class="story-comments-empty">Loading comments...</div>'
+                  '</div>'
+                  '</div>\n'
                 + '</div>\n</div>\n\n'
             )
 
@@ -4648,6 +4752,94 @@ window.addEventListener('load', function() {
         }
     }, 500); 
 });
+
+/* ── COMMENTS — Supabase-backed per-post comments ── */
+function loadComments(postId){
+  var listEl = document.getElementById('cmt-list-' + postId);
+  if(!listEl) return;
+  if(!SUPA_URL || SUPA_URL==='NONE'){ listEl.innerHTML='<div class="story-comments-empty">Comments unavailable.</div>'; return; }
+  fetch(SUPA_URL + '/rest/v1/comments?post_id=eq.' + encodeURIComponent(postId) + '&order=created_at.asc&select=id,name,comment,created_at', {
+    headers: { 'apikey': SUPA_KEY, 'Authorization': 'Bearer ' + SUPA_KEY }
+  })
+  .then(function(r){ return r.json(); })
+  .then(function(rows){
+    if(!rows || !rows.length){
+      listEl.innerHTML = '<div class="story-comments-empty">No comments yet — be the first!</div>';
+      return;
+    }
+    listEl.innerHTML = rows.map(function(c){
+      var d = new Date(c.created_at);
+      var dateStr = d.toLocaleDateString('en-IN', {day:'numeric', month:'short', year:'numeric'});
+      return '<div class="story-comment-item" data-id="' + c.id + '">'
+        + '<div class="story-comment-header">'
+        + '<span class="story-comment-name">' + c.name.replace(/</g,'&lt;') + '</span>'
+        + '<span style="display:flex;align-items:center;gap:12px">'
+        + '<span class="story-comment-date">' + dateStr + '</span>'
+        + '<button class="story-comment-delete" onclick="deleteComment('' + c.id + '','' + postId + '')">&#10005; Delete</button>'
+        + '</span>'
+        + '</div>'
+        + '<div class="story-comment-text">' + c.comment.replace(/</g,'&lt;').replace(/\n/g,'<br>') + '</div>'
+        + '</div>';
+    }).join('');
+  })
+  .catch(function(){ listEl.innerHTML='<div class="story-comments-empty">Could not load comments.</div>'; });
+}
+
+function submitComment(postId){
+  var nameEl  = document.getElementById('cmt-name-'  + postId);
+  var emailEl = document.getElementById('cmt-email-' + postId);
+  var textEl  = document.getElementById('cmt-text-'  + postId);
+  var msgEl   = document.getElementById('cmt-msg-'   + postId);
+  if(!nameEl||!emailEl||!textEl||!msgEl) return;
+  var name    = nameEl.value.trim();
+  var email   = emailEl.value.trim();
+  var comment = textEl.value.trim();
+  if(!name){ msgEl.textContent='Please enter your name.'; return; }
+  if(!email || email.indexOf('@')<1){ msgEl.textContent='Please enter a valid email.'; return; }
+  if(!comment){ msgEl.textContent='Please write a comment.'; return; }
+  msgEl.textContent = 'Posting...';
+  fetch(SUPA_URL + '/rest/v1/comments', {
+    method: 'POST',
+    headers: {
+      'apikey': SUPA_KEY, 'Authorization': 'Bearer ' + SUPA_KEY,
+      'Content-Type': 'application/json', 'Prefer': 'return=minimal'
+    },
+    body: JSON.stringify({ post_id: postId, name: name, email: email, comment: comment })
+  })
+  .then(function(r){
+    if(r.status===201||r.status===200){
+      msgEl.textContent = '✓ Comment posted — thank you!';
+      nameEl.value=''; emailEl.value=''; textEl.value='';
+      setTimeout(function(){ msgEl.textContent=''; }, 4000);
+      loadComments(postId);
+    } else { msgEl.textContent='Something went wrong. Please try again.'; }
+  })
+  .catch(function(){ msgEl.textContent='Connection error. Please try again.'; });
+}
+
+function deleteComment(commentId, postId){
+  if(!confirm('Delete this comment permanently?')) return;
+  fetch(SUPA_URL + '/rest/v1/comments?id=eq.' + commentId, {
+    method: 'DELETE',
+    headers: {
+      'apikey': SUPA_KEY, 'Authorization': 'Bearer ' + SUPA_KEY
+    }
+  })
+  .then(function(r){
+    if(r.status===204||r.status===200){
+      showToast('Comment deleted.');
+      loadComments(postId);
+    } else { showToast('Could not delete. Try again.'); }
+  })
+  .catch(function(){ showToast('Connection error.'); });
+}
+
+/* Load comments when a story post opens */
+var _origShowStoryPostForComments = showStoryPost;
+showStoryPost = function(id){
+  _origShowStoryPostForComments(id);
+  setTimeout(function(){ loadComments(id); }, 300);
+};
 
 /* ── PAGE INIT — always call goHome() on first load ── */
 document.addEventListener('DOMContentLoaded', function(){

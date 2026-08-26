@@ -1461,6 +1461,94 @@ window.addEventListener('load', function() {
     }, 500); 
 });
 
+/* ── COMMENTS — Supabase-backed per-post comments ── */
+function loadComments(postId){
+  var listEl = document.getElementById('cmt-list-' + postId);
+  if(!listEl) return;
+  if(!SUPA_URL || SUPA_URL==='NONE'){ listEl.innerHTML='<div class="story-comments-empty">Comments unavailable.</div>'; return; }
+  fetch(SUPA_URL + '/rest/v1/comments?post_id=eq.' + encodeURIComponent(postId) + '&order=created_at.asc&select=id,name,comment,created_at', {
+    headers: { 'apikey': SUPA_KEY, 'Authorization': 'Bearer ' + SUPA_KEY }
+  })
+  .then(function(r){ return r.json(); })
+  .then(function(rows){
+    if(!rows || !rows.length){
+      listEl.innerHTML = '<div class="story-comments-empty">No comments yet — be the first!</div>';
+      return;
+    }
+    listEl.innerHTML = rows.map(function(c){
+      var d = new Date(c.created_at);
+      var dateStr = d.toLocaleDateString('en-IN', {day:'numeric', month:'short', year:'numeric'});
+      return '<div class="story-comment-item" data-id="' + c.id + '">'
+        + '<div class="story-comment-header">'
+        + '<span class="story-comment-name">' + c.name.replace(/</g,'&lt;') + '</span>'
+        + '<span style="display:flex;align-items:center;gap:12px">'
+        + '<span class="story-comment-date">' + dateStr + '</span>'
+        + '<button class="story-comment-delete" onclick="deleteComment('' + c.id + '','' + postId + '')">&#10005; Delete</button>'
+        + '</span>'
+        + '</div>'
+        + '<div class="story-comment-text">' + c.comment.replace(/</g,'&lt;').replace(/\n/g,'<br>') + '</div>'
+        + '</div>';
+    }).join('');
+  })
+  .catch(function(){ listEl.innerHTML='<div class="story-comments-empty">Could not load comments.</div>'; });
+}
+
+function submitComment(postId){
+  var nameEl  = document.getElementById('cmt-name-'  + postId);
+  var emailEl = document.getElementById('cmt-email-' + postId);
+  var textEl  = document.getElementById('cmt-text-'  + postId);
+  var msgEl   = document.getElementById('cmt-msg-'   + postId);
+  if(!nameEl||!emailEl||!textEl||!msgEl) return;
+  var name    = nameEl.value.trim();
+  var email   = emailEl.value.trim();
+  var comment = textEl.value.trim();
+  if(!name){ msgEl.textContent='Please enter your name.'; return; }
+  if(!email || email.indexOf('@')<1){ msgEl.textContent='Please enter a valid email.'; return; }
+  if(!comment){ msgEl.textContent='Please write a comment.'; return; }
+  msgEl.textContent = 'Posting...';
+  fetch(SUPA_URL + '/rest/v1/comments', {
+    method: 'POST',
+    headers: {
+      'apikey': SUPA_KEY, 'Authorization': 'Bearer ' + SUPA_KEY,
+      'Content-Type': 'application/json', 'Prefer': 'return=minimal'
+    },
+    body: JSON.stringify({ post_id: postId, name: name, email: email, comment: comment })
+  })
+  .then(function(r){
+    if(r.status===201||r.status===200){
+      msgEl.textContent = '✓ Comment posted — thank you!';
+      nameEl.value=''; emailEl.value=''; textEl.value='';
+      setTimeout(function(){ msgEl.textContent=''; }, 4000);
+      loadComments(postId);
+    } else { msgEl.textContent='Something went wrong. Please try again.'; }
+  })
+  .catch(function(){ msgEl.textContent='Connection error. Please try again.'; });
+}
+
+function deleteComment(commentId, postId){
+  if(!confirm('Delete this comment permanently?')) return;
+  fetch(SUPA_URL + '/rest/v1/comments?id=eq.' + commentId, {
+    method: 'DELETE',
+    headers: {
+      'apikey': SUPA_KEY, 'Authorization': 'Bearer ' + SUPA_KEY
+    }
+  })
+  .then(function(r){
+    if(r.status===204||r.status===200){
+      showToast('Comment deleted.');
+      loadComments(postId);
+    } else { showToast('Could not delete. Try again.'); }
+  })
+  .catch(function(){ showToast('Connection error.'); });
+}
+
+/* Load comments when a story post opens */
+var _origShowStoryPostForComments = showStoryPost;
+showStoryPost = function(id){
+  _origShowStoryPostForComments(id);
+  setTimeout(function(){ loadComments(id); }, 300);
+};
+
 /* ── PAGE INIT — always call goHome() on first load ── */
 document.addEventListener('DOMContentLoaded', function(){
   var hash = window.location.hash;
