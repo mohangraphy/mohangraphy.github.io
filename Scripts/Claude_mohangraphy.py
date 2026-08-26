@@ -4834,13 +4834,6 @@ function deleteComment(commentId, postId){
   .catch(function(){ showToast('Connection error.'); });
 }
 
-/* Load comments when a story post opens */
-var _origShowStoryPostForComments = showStoryPost;
-showStoryPost = function(id){
-  _origShowStoryPostForComments(id);
-  setTimeout(function(){ loadComments(id); }, 300);
-};
-
 /* ── PAGE INIT — always call goHome() on first load ── */
 document.addEventListener('DOMContentLoaded', function(){
   var hash = window.location.hash;
@@ -4880,6 +4873,7 @@ document.addEventListener('DOMContentLoaded', function(){
   showStoryPost = function(id){
     _origShowStoryPost(id);
     history.replaceState(null,'','#story-'+id);
+    setTimeout(function(){ loadComments(id); }, 300);
   };
   var _origShowStoriesIndex = showStoriesIndex;
   showStoriesIndex = function(){
