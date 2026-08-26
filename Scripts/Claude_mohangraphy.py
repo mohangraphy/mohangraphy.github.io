@@ -3174,12 +3174,14 @@ footer {
             # ── CTA buttons at end of post ─────────────────────────────────
             place_lower = place_tag.lower().strip()
             place_photos = [
-                p for p, pi in path_info.items()
+                p for p, pi in meta_by_path.items()
                 if place_lower and place_lower in (
                     pi.get("city","").lower().strip(),
                     pi.get("state","").lower().strip(),
                     pi.get("place","").lower().strip()
                 )
+                and not p.startswith('Photos/Blog/')
+                and not p.startswith('Photos\\Blog\\')
             ]
 
             cta_html = ""
@@ -4906,10 +4908,15 @@ function dismissNudge(scrollToComments){
 }
 
 function initNudge(postId){
-  if(_nudgeSeen[postId]) return;
+  /* Reset seen flag so nudge shows fresh for each post */
+  _nudgeSeen[postId] = false;
+  /* Hide any existing nudge cleanly */
+  var el = document.getElementById('comment-nudge');
+  if(el){ el.classList.remove('visible'); el.style.display='none'; }
+  clearTimeout(_nudgeTimer);
+
   var post = document.getElementById(postId);
   if(!post) return;
-  var el = document.getElementById('comment-nudge');
   if(!el) return;
 
   function onScroll(){
@@ -4917,7 +4924,7 @@ function initNudge(postId){
     var postHeight = post.offsetHeight;
     var scrolled = -rect.top;
     var pct = scrolled / postHeight;
-    if(pct >= 0.75 && !_nudgeSeen[postId]){
+    if(pct >= 0.50 && !_nudgeSeen[postId]){
       _nudgeSeen[postId] = true;
       el.style.display = 'block';
       setTimeout(function(){ el.classList.add('visible'); }, 50);
