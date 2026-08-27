@@ -1583,8 +1583,6 @@ function initNudge(postId){
   /* Show nudge after 25 seconds — simple and reliable */
   _nudgeTimer = setTimeout(function(){
     if(_nudgeSeen[postId]) return;
-    var post = document.getElementById(postId);
-    if(!post || !post.classList.contains('visible')) return;
     var nudge = document.getElementById('comment-nudge');
     if(!nudge) return;
     _nudgeSeen[postId] = true;
