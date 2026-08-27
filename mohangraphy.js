@@ -1556,12 +1556,8 @@ function dismissNudge(scrollToComments){
   var el = document.getElementById('comment-nudge');
   if(el){ el.classList.remove('visible'); setTimeout(function(){ el.style.display='none'; }, 500); }
   clearTimeout(_nudgeTimer);
-  /* Clean up scroll listener */
-  var post = document.querySelector('.story-post.visible');
-  if(post && post._nudgeCleanup){ post._nudgeCleanup(); post._nudgeCleanup=null; }
-  /* Mark as permanently dismissed for this session */
-  if(post) _nudgeSeen[post.id] = true;
   if(scrollToComments){
+    var post = document.querySelector('.story-post.visible');
     if(post){
       var comments = post.querySelector('.story-comments');
       if(comments){ comments.scrollIntoView({behavior:'smooth', block:'start'}); }
