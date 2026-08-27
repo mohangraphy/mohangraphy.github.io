@@ -4919,7 +4919,7 @@ function initNudge(postId){
     el.classList.remove('visible');
     el.style.display = 'none';
   }
-  /* Show nudge after 10 seconds */
+  /* Show nudge after 20 seconds */
   _nudgeTimer = setTimeout(function(){
     if(_nudgeSeen[postId]) return;
     var nudge = document.getElementById('comment-nudge');
