@@ -1570,24 +1570,27 @@ function dismissNudge(scrollToComments){
 }
 
 function initNudge(postId){
-  /* Reset and hide any existing nudge */
-  _nudgeSeen[postId] = false;
-  var el = document.getElementById('comment-nudge');
-  if(el){ el.classList.remove('visible'); el.style.display='none'; }
+  /* Clear any previous timer */
   clearTimeout(_nudgeTimer);
-
-  /* Show nudge after 30 seconds of reading */
+  /* Reset seen flag */
+  _nudgeSeen[postId] = false;
+  /* Hide any existing nudge immediately */
+  var el = document.getElementById('comment-nudge');
+  if(el){
+    el.classList.remove('visible');
+    el.style.display = 'none';
+  }
+  /* Show nudge after 25 seconds — simple and reliable */
   _nudgeTimer = setTimeout(function(){
     if(_nudgeSeen[postId]) return;
-    /* Only show if this post is still visible */
     var post = document.getElementById(postId);
     if(!post || !post.classList.contains('visible')) return;
-    var el2 = document.getElementById('comment-nudge');
-    if(!el2) return;
+    var nudge = document.getElementById('comment-nudge');
+    if(!nudge) return;
     _nudgeSeen[postId] = true;
-    el2.style.display = 'block';
-    setTimeout(function(){ el2.classList.add('visible'); }, 50);
-  }, 30000);
+    nudge.style.display = 'block';
+    nudge.classList.add('visible');
+  }, 25000);
 }
 
 /* ── PAGE INIT — always call goHome() on first load ── */
