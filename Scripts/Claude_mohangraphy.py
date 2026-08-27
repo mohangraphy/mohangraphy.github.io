@@ -4923,13 +4923,13 @@ function initNudge(postId){
     el.classList.remove('visible');
     el.style.display = 'none';
   }
-  /* Show nudge after 25 seconds — simple and reliable */
+  /* Show nudge after 25 seconds */
   _nudgeTimer = setTimeout(function(){
     if(_nudgeSeen[postId]) return;
     var nudge = document.getElementById('comment-nudge');
     if(!nudge) return;
     _nudgeSeen[postId] = true;
-    nudge.style.display = 'block';
+    nudge.style.cssText = 'display:block !important; opacity:1 !important; transform:translateX(-50%) translateY(0) !important;';
     nudge.classList.add('visible');
   }, 25000);
 }
