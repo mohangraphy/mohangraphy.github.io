@@ -2651,6 +2651,113 @@ footer {
 }
 .story-cta-btn-ghost:hover { border-color: rgba(201,169,110,0.4); color: var(--gold); }
 
+/* ── END OF POST COMBINED CARD ── */
+.story-end-card {
+  margin: 40px 0 0;
+  border: 1px solid rgba(201,169,110,0.2);
+  border-top: 3px solid var(--gold);
+  overflow: hidden;
+}
+.story-end-comment {
+  padding: 28px 24px;
+  background: rgba(201,169,110,0.04);
+  border-bottom: 1px solid rgba(201,169,110,0.12);
+}
+.story-end-title {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: clamp(18px,2.5vw,24px); font-weight: 300;
+  letter-spacing: 3px; text-transform: uppercase;
+  color: rgba(255,255,255,0.85); margin-bottom: 4px;
+}
+.story-end-sub {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 10px; letter-spacing: 2px; text-transform: uppercase;
+  color: var(--gold); opacity: .7; margin-bottom: 20px;
+}
+.story-end-form input,
+.story-end-form textarea {
+  width: 100%; background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(201,169,110,0.15);
+  color: #fff; padding: 10px 14px;
+  font-family: 'Montserrat', sans-serif; font-size: 13px;
+  outline: none; margin-bottom: 12px;
+  transition: border-color .25s; -webkit-appearance: none;
+}
+.story-end-form input:focus,
+.story-end-form textarea:focus { border-color: var(--gold); }
+.story-end-form textarea { min-height: 100px; resize: vertical; }
+.story-end-form label {
+  display: block; font-size: 8px; letter-spacing: 3px;
+  text-transform: uppercase; color: rgba(255,255,255,0.35);
+  margin-bottom: 5px;
+}
+.story-end-form .form-row {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 12px;
+}
+@media (max-width: 480px) {
+  .story-end-form .form-row { grid-template-columns: 1fr; }
+}
+.story-end-msg {
+  font-size: 10px; letter-spacing: 2px;
+  color: var(--gold); margin-top: 8px; min-height: 18px;
+}
+.story-end-discover {
+  padding: 24px;
+  background: rgba(0,0,0,0.2);
+}
+.story-end-discover-title {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 9px; letter-spacing: 4px; text-transform: uppercase;
+  color: rgba(255,255,255,0.3); margin-bottom: 14px;
+}
+.story-end-gallery-btns {
+  display: flex; flex-wrap: wrap; gap: 10px;
+  margin-bottom: 18px;
+}
+.story-end-gallery-btn {
+  display: inline-flex; align-items: center; gap: 8px;
+  background: none; border: 1px solid rgba(201,169,110,0.5);
+  color: var(--gold); padding: 0 18px; height: 40px;
+  font-family: 'Montserrat', sans-serif;
+  font-size: 9px; letter-spacing: 3px; text-transform: uppercase;
+  cursor: pointer; transition: background .2s, color .2s;
+  -webkit-tap-highlight-color: transparent;
+}
+.story-end-gallery-btn:hover { background: var(--gold); color: #000; }
+.story-end-gallery-btn-ghost {
+  display: inline-flex; align-items: center; gap: 8px;
+  background: none; border: 1px solid rgba(255,255,255,0.12);
+  color: rgba(255,255,255,0.5); padding: 0 18px; height: 40px;
+  font-family: 'Montserrat', sans-serif;
+  font-size: 9px; letter-spacing: 3px; text-transform: uppercase;
+  cursor: pointer; transition: all .2s;
+  -webkit-tap-highlight-color: transparent;
+}
+.story-end-gallery-btn-ghost:hover { border-color: rgba(201,169,110,0.4); color: var(--gold); }
+.story-end-cat-label {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 9px; letter-spacing: 3px; text-transform: uppercase;
+  color: rgba(255,255,255,0.25); margin-bottom: 10px;
+}
+.story-end-cats {
+  display: flex; flex-wrap: wrap; gap: 8px;
+}
+.story-end-cat {
+  display: inline-flex; align-items: center;
+  background: none; border: 1px solid rgba(255,255,255,0.1);
+  color: rgba(255,255,255,0.45); padding: 0 14px; height: 34px;
+  font-family: 'Montserrat', sans-serif;
+  font-size: 8px; letter-spacing: 2px; text-transform: uppercase;
+  cursor: pointer; transition: all .2s;
+  -webkit-tap-highlight-color: transparent;
+}
+.story-end-cat:hover { border-color: var(--gold); color: var(--gold); }
+@media (max-width: 480px) {
+  .story-end-gallery-btns { flex-direction: column; }
+  .story-end-gallery-btn,
+  .story-end-gallery-btn-ghost { flex: 1; justify-content: center; }
+}
+
 /* ── END OF POST ACTION CARD ── */
 .story-action-card {
   margin: 32px 0 0;
@@ -3357,32 +3464,11 @@ footer {
                 + ('<div class="story-post-dates">' + dates + '</div>\n' if post.get("dates_visited") else '')
                 + '<div class="story-post-divider"></div>\n'
                 + '<div class="story-body">' + body_html + '</div>\n'
-                + '<div class="story-action-card">'
-                  '<div class="story-action-title">Enjoyed this story?</div>'
-                  '<div class="story-action-sub">Your feedback is greatly appreciated</div>'
-                  '<div class="story-action-btns">'
-                  + ('<button class="story-action-btn" onclick="showStoryGallery(\'' + _ea(pid) + '\',\'' + _ea(place_tag) + '\')">'
-                     '&#9654;&nbsp; View ' + _eh(place_tag) + ' Photos</button>'
-                     if place_photos else '')
-                  + '<button class="story-action-btn-ghost" onclick="showNewPhotos()">'
-                    '&#10022;&nbsp; Recently Added</button>'
-                  + '<button class="story-action-btn-ghost" onclick="'
-                    'var c=document.querySelector(\'.story-comments\');'
-                    'if(c)c.scrollIntoView({behavior:\'smooth\'});">'
-                    '&#128172;&nbsp; Leave a Comment</button>'
-                  + '</div>'
-                  '<div class="story-action-divider"></div>'
-                  '<div class="story-action-explore">Explore Collections</div>'
-                  '<div class="story-action-cats">'
-                  '<button class="story-action-cat" onclick="openCategory(\'Landscape\');closeStoryPost()">Landscape</button>'
-                  '<button class="story-action-cat" onclick="openCategory(\'Flora &amp; Fauna\');closeStoryPost()">Flora &amp; Fauna</button>'
-                  '<button class="story-action-cat" onclick="openCategory(\'Architecture\');closeStoryPost()">Architecture</button>'
-                  '<button class="story-action-cat" onclick="openCategory(\'People &amp; Culture\');closeStoryPost()">People &amp; Culture</button>'
-                  '</div>'
-                  '</div>\n'
-                + '<div class="story-comments" id="comments-' + _ea(pid) + '">'
-                  '<div class="story-comments-title">Comments</div>'
-                  '<div class="story-comment-form">'
+                + '<div class="story-end-card">'
+                  '<div class="story-end-comment">'
+                  '<div class="story-end-title">Enjoyed this story?</div>'
+                  '<div class="story-end-sub">Your feedback is greatly appreciated</div>'
+                  '<div class="story-end-form">'
                   '<div class="form-row">'
                   '<div><label>Your Name *</label>'
                   '<input type="text" id="cmt-name-' + _ea(pid) + '" placeholder="Your name"></div>'
@@ -3390,12 +3476,34 @@ footer {
                   '<input type="email" id="cmt-email-' + _ea(pid) + '" placeholder="your@email.com"></div>'
                   '</div>'
                   '<label>Comment *</label>'
-                  '<textarea id="cmt-text-' + _ea(pid) + '" placeholder="Share your thoughts..."></textarea>'
-                  '<button class="story-cta-btn" onclick="submitComment(\'' + _ea(pid) + '\')">Post Comment</button>'
-                  '<div class="story-comment-msg" id="cmt-msg-' + _ea(pid) + '"></div>'
+                  '<textarea id="cmt-text-' + _ea(pid) + '" placeholder="Share your thoughts, experiences or questions here..."></textarea>'
+                  '<button class="story-end-gallery-btn" onclick="submitComment(\'' + _ea(pid) + '\')">Post Comment</button>'
+                  '<div class="story-end-msg" id="cmt-msg-' + _ea(pid) + '"></div>'
                   '</div>'
+                  '<div id="comments-' + _ea(pid) + '">'
                   '<div class="story-comment-list" id="cmt-list-' + _ea(pid) + '">'
                   '<div class="story-comments-empty">Loading comments...</div>'
+                  '</div>'
+                  '</div>'
+                  '</div>'
+                  '<div class="story-end-discover">'
+                  '<div class="story-end-discover-title">For More Photos</div>'
+                  '<div class="story-end-gallery-btns">'
+                  + ('<button class="story-end-gallery-btn" onclick="showStoryGallery(\'' + _ea(pid) + '\',\'' + _ea(place_tag) + '\')">'
+                     '&#9654;&nbsp; ' + _eh(place_tag) + ' Photos</button>'
+                     if place_photos else
+                     '<button class="story-end-gallery-btn" onclick="goHome()">'
+                     '&#9654;&nbsp; Browse Collections</button>')
+                  + '<button class="story-end-gallery-btn-ghost" onclick="showNewPhotos()">'
+                    '&#10022;&nbsp; Recently Added</button>'
+                  + '</div>'
+                  '<div class="story-end-cat-label">Explore Collections</div>'
+                  '<div class="story-end-cats">'
+                  '<button class="story-end-cat" onclick="openCategory(\'Landscape\');closeStoryPost()">Landscape</button>'
+                  '<button class="story-end-cat" onclick="openCategory(\'Flora &amp; Fauna\');closeStoryPost()">Flora &amp; Fauna</button>'
+                  '<button class="story-end-cat" onclick="openCategory(\'Architecture\');closeStoryPost()">Architecture</button>'
+                  '<button class="story-end-cat" onclick="openCategory(\'People &amp; Culture\');closeStoryPost()">People &amp; Culture</button>'
+                  '</div>'
                   '</div>'
                   '</div>\n'
                 + '</div>\n</div>\n\n'
@@ -4931,6 +5039,8 @@ function submitComment(postId){
   var emailEl = document.getElementById('cmt-email-' + postId);
   var textEl  = document.getElementById('cmt-text-'  + postId);
   var msgEl   = document.getElementById('cmt-msg-'   + postId);
+  /* Clear placeholder feel when typing starts */
+  if(textEl) textEl.style.borderColor = 'rgba(201,169,110,0.4)';
   if(!nameEl||!emailEl||!textEl||!msgEl) return;
   var name    = nameEl.value.trim();
   var email   = emailEl.value.trim();

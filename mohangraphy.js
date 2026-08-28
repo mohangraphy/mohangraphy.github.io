@@ -1498,6 +1498,8 @@ function submitComment(postId){
   var emailEl = document.getElementById('cmt-email-' + postId);
   var textEl  = document.getElementById('cmt-text-'  + postId);
   var msgEl   = document.getElementById('cmt-msg-'   + postId);
+  /* Clear placeholder feel when typing starts */
+  if(textEl) textEl.style.borderColor = 'rgba(201,169,110,0.4)';
   if(!nameEl||!emailEl||!textEl||!msgEl) return;
   var name    = nameEl.value.trim();
   var email   = emailEl.value.trim();
