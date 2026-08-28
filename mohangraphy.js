@@ -1627,7 +1627,6 @@ document.addEventListener('DOMContentLoaded', function(){
     _origShowStoryPost(id);
     history.replaceState(null,'','#story-'+id);
     setTimeout(function(){ loadComments(id); }, 300);
-    setTimeout(function(){ initNudge(id); }, 500);
   };
   var _origShowStoriesIndex = showStoriesIndex;
   showStoriesIndex = function(){
