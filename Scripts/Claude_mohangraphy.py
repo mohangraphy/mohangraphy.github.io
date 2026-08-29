@@ -3517,7 +3517,8 @@ footer {
                   '<textarea id="cmt-text-' + _ea(pid) + '" placeholder="Share your thoughts, experiences or questions here..."></textarea>'
                   '<label style="display:flex;align-items:flex-start;gap:10px;margin-bottom:14px;cursor:pointer;">'
                   '<input type="checkbox" id="cmt-subscribe-' + _ea(pid) + '" checked="checked" '
-                  'style="margin-top:3px;accent-color:var(--gold);width:16px;height:16px;flex-shrink:0;cursor:pointer;">'
+                  'style="margin-top:3px;accent-color:var(--gold);width:16px;height:16px;flex-shrink:0;cursor:pointer;'
+                  'appearance:auto;-webkit-appearance:checkbox;background:#fff;border:2px solid var(--gold);">'
                   '<span style="font-family:Montserrat,sans-serif;font-size:10px;letter-spacing:1px;'
                   'color:rgba(255,255,255,0.45);line-height:1.6;">'
                   'Notify me when new photos and stories are added — no spam, unsubscribe anytime'
@@ -5132,8 +5133,9 @@ function submitComment(postId){
 function deleteComment(btn){
   var item = btn.closest('.story-comment-item');
   var commentId = item ? item.getAttribute('data-id') : null;
-  var commentsEl = btn.closest('.story-comments');
-  var postId = commentsEl ? commentsEl.id.replace('comments-','') : null;
+  /* Find postId from the comment list container */
+  var listEl = item ? item.closest('[id^="cmt-list-"]') : null;
+  var postId = listEl ? listEl.id.replace('cmt-list-','') : null;
   if(!commentId || !postId) return;
   if(!confirm('Delete this comment permanently?')) return;
   fetch(SUPA_URL + '/rest/v1/comments?id=eq.' + commentId, {

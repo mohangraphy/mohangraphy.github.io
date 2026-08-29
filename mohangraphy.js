@@ -1546,8 +1546,9 @@ function submitComment(postId){
 function deleteComment(btn){
   var item = btn.closest('.story-comment-item');
   var commentId = item ? item.getAttribute('data-id') : null;
-  var commentsEl = btn.closest('.story-comments');
-  var postId = commentsEl ? commentsEl.id.replace('comments-','') : null;
+  /* Find postId from the comment list container */
+  var listEl = item ? item.closest('[id^="cmt-list-"]') : null;
+  var postId = listEl ? listEl.id.replace('cmt-list-','') : null;
   if(!commentId || !postId) return;
   if(!confirm('Delete this comment permanently?')) return;
   fetch(SUPA_URL + '/rest/v1/comments?id=eq.' + commentId, {
