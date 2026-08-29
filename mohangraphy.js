@@ -1498,12 +1498,14 @@ function submitComment(postId){
   var emailEl = document.getElementById('cmt-email-' + postId);
   var textEl  = document.getElementById('cmt-text-'  + postId);
   var msgEl   = document.getElementById('cmt-msg-'   + postId);
+  var subEl   = document.getElementById('cmt-subscribe-' + postId);
   /* Clear placeholder feel when typing starts */
   if(textEl) textEl.style.borderColor = 'rgba(201,169,110,0.4)';
   if(!nameEl||!emailEl||!textEl||!msgEl) return;
   var name    = nameEl.value.trim();
   var email   = emailEl.value.trim();
   var comment = textEl.value.trim();
+  var doSub   = subEl ? subEl.checked : false;
   if(!name){ msgEl.textContent='Please enter your name.'; return; }
   var emailRegex = /^[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}$/;
   if(!email || !emailRegex.test(email)){ msgEl.textContent='Please enter a valid email address (e.g. name@example.com).'; return; }
@@ -1519,9 +1521,22 @@ function submitComment(postId){
   })
   .then(function(r){
     if(r.status===201||r.status===200){
-      msgEl.textContent = '✓ Comment posted — thank you!';
+      /* Also subscribe if checkbox is ticked */
+      if(doSub && SUPA_URL && SUPA_URL!=='NONE'){
+        fetch(SUPA_URL + '/rest/v1/subscribers', {
+          method: 'POST',
+          headers: {
+            'apikey': SUPA_KEY, 'Authorization': 'Bearer ' + SUPA_KEY,
+            'Content-Type': 'application/json', 'Prefer': 'return=minimal'
+          },
+          body: JSON.stringify({ name: name, email: email.toLowerCase() })
+        }).catch(function(){});
+      }
+      msgEl.textContent = doSub
+        ? '✓ Comment posted and you are now subscribed — thank you!'
+        : '✓ Comment posted — thank you!';
       nameEl.value=''; emailEl.value=''; textEl.value='';
-      setTimeout(function(){ msgEl.textContent=''; }, 4000);
+      setTimeout(function(){ msgEl.textContent=''; }, 5000);
       loadComments(postId);
     } else { msgEl.textContent='Something went wrong. Please try again.'; }
   })

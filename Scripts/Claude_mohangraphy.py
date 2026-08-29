@@ -3515,6 +3515,13 @@ footer {
                   '</div>'
                   '<label>Comment *</label>'
                   '<textarea id="cmt-text-' + _ea(pid) + '" placeholder="Share your thoughts, experiences or questions here..."></textarea>'
+                  '<label style="display:flex;align-items:flex-start;gap:10px;margin-bottom:14px;cursor:pointer;">'
+                  '<input type="checkbox" id="cmt-subscribe-' + _ea(pid) + '" checked '
+                  'style="margin-top:2px;accent-color:var(--gold);width:14px;height:14px;flex-shrink:0;">'
+                  '<span style="font-family:Montserrat,sans-serif;font-size:10px;letter-spacing:1px;'
+                  'color:rgba(255,255,255,0.45);line-height:1.6;">'
+                  '&#10003;&nbsp; Notify me when new photos and stories are added — no spam, unsubscribe anytime'
+                  '</span></label>'
                   '<button class="story-end-gallery-btn" onclick="submitComment(\'' + _ea(pid) + '\')">Post Comment</button>'
                   '<div class="story-end-msg" id="cmt-msg-' + _ea(pid) + '"></div>'
                   '</div>'
@@ -5077,12 +5084,14 @@ function submitComment(postId){
   var emailEl = document.getElementById('cmt-email-' + postId);
   var textEl  = document.getElementById('cmt-text-'  + postId);
   var msgEl   = document.getElementById('cmt-msg-'   + postId);
+  var subEl   = document.getElementById('cmt-subscribe-' + postId);
   /* Clear placeholder feel when typing starts */
   if(textEl) textEl.style.borderColor = 'rgba(201,169,110,0.4)';
   if(!nameEl||!emailEl||!textEl||!msgEl) return;
   var name    = nameEl.value.trim();
   var email   = emailEl.value.trim();
   var comment = textEl.value.trim();
+  var doSub   = subEl ? subEl.checked : false;
   if(!name){ msgEl.textContent='Please enter your name.'; return; }
   var emailRegex = /^[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}$/;
   if(!email || !emailRegex.test(email)){ msgEl.textContent='Please enter a valid email address (e.g. name@example.com).'; return; }
@@ -5098,9 +5107,22 @@ function submitComment(postId){
   })
   .then(function(r){
     if(r.status===201||r.status===200){
-      msgEl.textContent = '✓ Comment posted — thank you!';
+      /* Also subscribe if checkbox is ticked */
+      if(doSub && SUPA_URL && SUPA_URL!=='NONE'){
+        fetch(SUPA_URL + '/rest/v1/subscribers', {
+          method: 'POST',
+          headers: {
+            'apikey': SUPA_KEY, 'Authorization': 'Bearer ' + SUPA_KEY,
+            'Content-Type': 'application/json', 'Prefer': 'return=minimal'
+          },
+          body: JSON.stringify({ name: name, email: email.toLowerCase() })
+        }).catch(function(){});
+      }
+      msgEl.textContent = doSub
+        ? '✓ Comment posted and you are now subscribed — thank you!'
+        : '✓ Comment posted — thank you!';
       nameEl.value=''; emailEl.value=''; textEl.value='';
-      setTimeout(function(){ msgEl.textContent=''; }, 4000);
+      setTimeout(function(){ msgEl.textContent=''; }, 5000);
       loadComments(postId);
     } else { msgEl.textContent='Something went wrong. Please try again.'; }
   })
