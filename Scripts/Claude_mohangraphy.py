@@ -2315,7 +2315,6 @@ footer {
 #subscribe-section {
   padding: clamp(48px,8vw,80px) clamp(20px,5vw,80px);
   text-align: center;
-  border-top: 3px solid var(--gold);
   border-bottom: 1px solid rgba(201,169,110,0.15);
   background: linear-gradient(160deg, #0e0c08 0%, #0a0a0a 50%, #0e0c08 100%);
   position: relative;
@@ -5395,23 +5394,6 @@ document.addEventListener('DOMContentLoaded', function(){
         '\n  </div>\n'
         '\n</div>\n\n'
 
-        # ── SUBSCRIBE SECTION — prominent position after collections ──────────
-        '<section id="subscribe-section">\n'
-        '  <div class="subscribe-inner">\n'
-        '    <div class="subscribe-eyebrow">&#10022;&nbsp; Join the Community &nbsp;&#10022;</div>\n'
-        '    <div class="subscribe-title">Never Miss a New Story or Photo</div>\n'
-        '    <div class="subscribe-subtitle">Join fellow photography lovers who get first access'
-        ' to new galleries and travel stories from NC Mohan.</div>\n'
-        '    <div class="subscribe-form">\n'
-        '      <input type="text" id="sub-name" placeholder="Your Name (optional)">\n'
-        '      <input type="email" id="sub-email" placeholder="Your Email Address *">\n'
-        '      <button onclick="subscribeVisitor()">Keep Me Posted</button>\n'
-        '    </div>\n'
-        '    <div id="subscribe-msg"></div>\n'
-        '    <div class="subscribe-privacy">No spam. Only new photos and stories. Unsubscribe anytime.</div>\n'
-        '  </div>\n'
-        '</section>\n\n'
-
         # ── SUB-NAV ──────────────────────────────────────────────────────────
         '<div id="sub-nav">\n'
         '  <div class="breadcrumb-bar" id="bc-bar"></div>\n'
@@ -5691,6 +5673,21 @@ document.addEventListener('DOMContentLoaded', function(){
 
         # ── FOOTER — scrollable, rich, contains Licensing + Legal ────────────
         '<footer>\n'
+        '  <section id="subscribe-section">\n'
+        '    <div class="subscribe-inner">\n'
+        '      <div class="subscribe-eyebrow">&#10022;&nbsp; Join the Community &nbsp;&#10022;</div>\n'
+        '      <div class="subscribe-title">Never Miss a New Story or Photo</div>\n'
+        '      <div class="subscribe-subtitle">Join fellow photography lovers who get first access'
+        ' to new galleries and travel stories from NC Mohan.</div>\n'
+        '      <div class="subscribe-form">\n'
+        '        <input type="text" id="sub-name" placeholder="Your Name (optional)">\n'
+        '        <input type="email" id="sub-email" placeholder="Your Email Address *">\n'
+        '        <button onclick="subscribeVisitor()">Keep Me Posted</button>\n'
+        '      </div>\n'
+        '      <div id="subscribe-msg"></div>\n'
+        '      <div class="subscribe-privacy">No spam. Only new photos and stories. Unsubscribe anytime.</div>\n'
+        '    </div>\n'
+        '  </section>\n'
         '  <div class="footer-inner">\n'
 
         # Licensing section
