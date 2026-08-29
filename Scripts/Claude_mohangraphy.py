@@ -2313,41 +2313,80 @@ footer {
 }
 
 #subscribe-section {
-  padding: clamp(48px,8vw,96px) clamp(20px,5vw,80px);
+  padding: clamp(48px,8vw,80px) clamp(20px,5vw,80px);
   text-align: center;
-  border-top: 1px solid rgba(201,169,110,0.12);
-  background: var(--dark);
+  border-top: 3px solid var(--gold);
+  border-bottom: 1px solid rgba(201,169,110,0.15);
+  background: linear-gradient(160deg, #0e0c08 0%, #0a0a0a 50%, #0e0c08 100%);
+  position: relative;
+  overflow: hidden;
 }
-.subscribe-inner { max-width: 520px; margin: 0 auto; }
+#subscribe-section::before {
+  content: '✦';
+  position: absolute;
+  font-size: 280px;
+  color: rgba(201,169,110,0.03);
+  top: 50%; left: 50%;
+  transform: translate(-50%,-50%);
+  pointer-events: none;
+  line-height: 1;
+}
+.subscribe-inner { max-width: 560px; margin: 0 auto; position: relative; }
+.subscribe-eyebrow {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 8px; letter-spacing: 5px; text-transform: uppercase;
+  color: var(--gold); opacity: .8; margin-bottom: 14px;
+}
 .subscribe-title {
   font-family: 'Cormorant Garamond', serif;
-  font-size: clamp(26px,4vw,42px); font-weight: 300;
-  letter-spacing: clamp(4px,1.5vw,10px); text-transform: uppercase;
-  color: rgba(255,255,255,0.9); margin-bottom: 10px;
+  font-size: clamp(26px,4vw,48px); font-weight: 300;
+  letter-spacing: clamp(2px,1vw,6px); text-transform: uppercase;
+  color: #fff; margin-bottom: 14px; line-height: 1.1;
 }
 .subscribe-subtitle {
   font-family: 'Montserrat', sans-serif;
-  font-size: 9px; letter-spacing: 4px; text-transform: uppercase;
-  color: rgba(255,255,255,0.65); margin-bottom: 36px;
+  font-size: 11px; letter-spacing: 1px;
+  color: rgba(255,255,255,0.45); margin-bottom: 36px;
+  line-height: 1.8; max-width: 400px; margin-left: auto; margin-right: auto;
 }
-.subscribe-form { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; margin-bottom: 16px; }
+.subscribe-form {
+  display: grid;
+  grid-template-columns: 1fr 1fr auto;
+  gap: 10px;
+  margin-bottom: 16px;
+  text-align: left;
+}
+@media (max-width: 640px) {
+  .subscribe-form { grid-template-columns: 1fr; }
+}
 .subscribe-form input {
-  flex: 1 1 180px; background: transparent; border: none;
-  border-bottom: 1px solid rgba(201,169,110,0.3);
-  color: rgba(255,255,255,0.85); padding: 10px 4px;
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(201,169,110,0.2);
+  color: rgba(255,255,255,0.85); padding: 12px 16px;
   font-family: 'Montserrat', sans-serif; font-size: 12px; letter-spacing: 1px;
   outline: none; transition: border-color .25s;
+  -webkit-appearance: none;
 }
-.subscribe-form input::placeholder { color: rgba(255,255,255,0.5); }
+.subscribe-form input::placeholder { color: rgba(255,255,255,0.3); }
 .subscribe-form input:focus { border-color: var(--gold); }
 .subscribe-form button {
-  background: none; border: 1px solid rgba(201,169,110,0.5); color: var(--gold);
-  padding: 10px 28px; font-family: 'Montserrat', sans-serif;
+  background: var(--gold); border: 1px solid var(--gold); color: #000;
+  padding: 12px 28px; font-family: 'Montserrat', sans-serif;
   font-size: 9px; letter-spacing: 4px; text-transform: uppercase;
-  cursor: pointer; transition: background .25s, color .25s, border-color .25s; white-space: nowrap;
+  cursor: pointer; transition: background .25s, color .25s; white-space: nowrap;
+  font-weight: 700;
 }
-.subscribe-form button:hover { background: var(--gold); color: #000; border-color: var(--gold); }
-#subscribe-msg { font-family: 'Montserrat', sans-serif; font-size: 10px; letter-spacing: 2px; color: var(--gold); min-height: 20px; margin-top: 4px; }
+.subscribe-form button:hover { background: #e8c87a; border-color: #e8c87a; }
+#subscribe-msg {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 10px; letter-spacing: 2px; color: var(--gold);
+  min-height: 20px; margin-top: 8px; text-align: center;
+}
+.subscribe-privacy {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 8px; letter-spacing: 1px;
+  color: rgba(255,255,255,0.2); margin-top: 12px;
+}
 
 .new-photo-wrap { display: flex; flex-direction: column; }
 .new-photo-tags { display: flex; flex-wrap: wrap; gap: 6px; padding: 8px 4px 4px; }
@@ -5356,6 +5395,23 @@ document.addEventListener('DOMContentLoaded', function(){
         '\n  </div>\n'
         '\n</div>\n\n'
 
+        # ── SUBSCRIBE SECTION — prominent position after collections ──────────
+        '<section id="subscribe-section">\n'
+        '  <div class="subscribe-inner">\n'
+        '    <div class="subscribe-eyebrow">&#10022;&nbsp; Join the Community &nbsp;&#10022;</div>\n'
+        '    <div class="subscribe-title">Never Miss a New Story or Photo</div>\n'
+        '    <div class="subscribe-subtitle">Join fellow photography lovers who get first access'
+        ' to new galleries and travel stories from NC Mohan.</div>\n'
+        '    <div class="subscribe-form">\n'
+        '      <input type="text" id="sub-name" placeholder="Your Name (optional)">\n'
+        '      <input type="email" id="sub-email" placeholder="Your Email Address *">\n'
+        '      <button onclick="subscribeVisitor()">Keep Me Posted</button>\n'
+        '    </div>\n'
+        '    <div id="subscribe-msg"></div>\n'
+        '    <div class="subscribe-privacy">No spam. Only new photos and stories. Unsubscribe anytime.</div>\n'
+        '  </div>\n'
+        '</section>\n\n'
+
         # ── SUB-NAV ──────────────────────────────────────────────────────────
         '<div id="sub-nav">\n'
         '  <div class="breadcrumb-bar" id="bc-bar"></div>\n'
@@ -5627,19 +5683,6 @@ document.addEventListener('DOMContentLoaded', function(){
         '</div>\n\n'
 
         # Lightbox removed — replaced by img-modal
-# ── SUBSCRIBE SECTION ────────────────────────────────────────────────
-        '<section id="subscribe-section">\n'
-        '  <div class="subscribe-inner">\n'
-        '    <div class="subscribe-title">Stay in the Loop</div>\n'
-        '    <div class="subscribe-subtitle">Be the first to know when new photographs are added</div>\n'
-        '    <div class="subscribe-form">\n'
-        '      <input type="text" id="sub-name" placeholder="Your Name (optional)">\n'
-        '      <input type="email" id="sub-email" placeholder="Your Email Address *">\n'
-        '      <button onclick="subscribeVisitor()">Notify Me</button>\n'
-        '    </div>\n'
-        '    <div id="subscribe-msg"></div>\n'
-        '  </div>\n'
-        '</section>\n\n'
         # ── COPYRIGHT BANNER ─────────────────────────────────────────────────
         '<div id="copyright-banner">\n'
         '  &copy; All photographs are the exclusive property of N C Mohan and are protected under copyright law.'
