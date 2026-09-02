@@ -3706,9 +3706,15 @@ function setActiveTab(which){
   if(which){ var t=document.getElementById('tab-'+which); if(t) t.classList.add('active'); }
 }
 
+function syncUrl(section){
+  var url = window.location.pathname + (section ? '?section=' + section : '');
+  history.replaceState(null,'',url);
+}
+
 function copyCurrentLink(){
-  var hash = window.location.hash.replace('#','');
-  var url = window.location.origin + window.location.pathname + (hash ? '?section=' + hash : '');
+  var params = new URLSearchParams(window.location.search);
+  var sec = params.get('section') || '';
+  var url = window.location.origin + window.location.pathname + (sec ? '?section=' + sec : '');
   if(navigator.clipboard && navigator.clipboard.writeText){
     navigator.clipboard.writeText(url).then(function(){
       if(typeof showToast === 'function') showToast('Link copied!');
@@ -3737,7 +3743,7 @@ function openCategory(cat){
   var p = document.getElementById(panelId);
   if(p) p.classList.add('active');
   setActiveTab('collections');
-  history.replaceState(null,'','#category-'+cat.replace(/ /g,'_').replace(/&/g,'n'));
+  syncUrl('category-'+cat.replace(/ /g,'_').replace(/&/g,'n'));
   window.scrollTo(0,0);
 }
 
@@ -3774,7 +3780,7 @@ function showGallery(id, breadcrumbs){
     updateBreadcrumb(crumbs);
   }
   setActiveTab('collections');
-  history.replaceState(null,'','#gallery-'+id);
+  syncUrl('gallery-'+id);
   window.scrollTo(0,0);
 }
 
@@ -3966,7 +3972,7 @@ function showNewPhotos(){
     + '</div></div>'
     + '<div class="grid">' + gridHTML + '</div>';
   galContainer.prepend(block);
-  history.replaceState(null,'','#recently-added');
+  syncUrl('recently-added');
   window.scrollTo(0, 0);
 }
 
@@ -4917,7 +4923,7 @@ function showStoriesIndex(){
   var pg=document.getElementById('page-stories');
   if(pg){pg.classList.add('visible');pg.scrollTop=0;window.scrollTo(0,0);}
   setActiveTab('stories');
-  history.replaceState(null,'','#travel-stories');
+  syncUrl('travel-stories');
 }
 function showStoryPost(id){
   hideAll();
@@ -4928,7 +4934,7 @@ function showStoryPost(id){
     window.scrollTo(0,0);
   }
   setActiveTab('stories');
-  history.replaceState(null,'','#story-'+id);
+  syncUrl('story-'+id);
 }
 function closeStoryPost(){
   document.querySelectorAll('.story-post.visible').forEach(function(p){p.classList.remove('visible');});
@@ -5499,7 +5505,7 @@ function showJourneys(){
   var pg = document.getElementById('page-journeys');
   if(pg){ pg.classList.add('visible'); pg.scrollTop=0; window.scrollTo(0,0); }
   setActiveTab('journeys');
-  history.replaceState(null,'','#journeys');
+  syncUrl('footprints');
   loadLeaflet(function(){
     setTimeout(function(){
       initJourneysMap();
@@ -5626,28 +5632,28 @@ document.addEventListener('DOMContentLoaded', function(){
   var _origOpenCategory = openCategory;
   openCategory = function(cat){
     _origOpenCategory(cat);
-    history.replaceState(null,'','#category-'+cat.replace(/ /g,'_').replace(/&/g,'n'));
+    syncUrl('category-'+cat.replace(/ /g,'_').replace(/&/g,'n'));
   };
   var _origShowGallery = showGallery;
   showGallery = function(id, bc){
     _origShowGallery(id, bc);
-    history.replaceState(null,'','#gallery-'+id);
+    syncUrl('gallery-'+id);
   };
   var _origShowStoryPost = showStoryPost;
   showStoryPost = function(id){
     _origShowStoryPost(id);
-    history.replaceState(null,'','#story-'+id);
+    syncUrl('story-'+id);
     setTimeout(function(){ loadComments(id); }, 300);
   };
   var _origShowStoriesIndex = showStoriesIndex;
   showStoriesIndex = function(){
     _origShowStoriesIndex();
-    history.replaceState(null,'','#travel-stories');
+    syncUrl('travel-stories');
   };
   var _origShowJourneys = showJourneys;
   showJourneys = function(){
     _origShowJourneys();
-    history.replaceState(null,'','#footprints');
+    syncUrl('footprints');
   };
   goHome();
 });
