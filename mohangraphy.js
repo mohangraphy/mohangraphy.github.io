@@ -33,6 +33,18 @@ function setActiveTab(which){
   if(which){ var t=document.getElementById('tab-'+which); if(t) t.classList.add('active'); }
 }
 
+function copyCurrentLink(){
+  var hash = window.location.hash.replace('#','');
+  var url = window.location.origin + window.location.pathname + (hash ? '?section=' + hash : '');
+  if(navigator.clipboard && navigator.clipboard.writeText){
+    navigator.clipboard.writeText(url).then(function(){
+      if(typeof showToast === 'function') showToast('Link copied!');
+    }).catch(function(){ prompt('Copy this link:', url); });
+  } else {
+    prompt('Copy this link:', url);
+  }
+}
+
 function goHome(){
   hideAll();
   document.getElementById('hero').classList.add('visible');

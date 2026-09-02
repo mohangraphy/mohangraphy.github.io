@@ -3585,6 +3585,7 @@ footer {
                 + ('<div class="blog-post-loc">' + _eh(loc_str) + '</div>\n' if loc_str else '')
                 + '<div class="story-post-title">' + title + '</div>\n'
                 + ('<div class="story-post-dates">' + dates + '</div>\n' if post.get("dates_visited") else '')
+                + '<button class="copy-link-btn" onclick="copyCurrentLink()" style="cursor:pointer;background:none;border:1px solid rgba(255,255,255,0.3);color:rgba(255,255,255,0.7);padding:4px 10px;font-size:10px;letter-spacing:1px;margin:6px 0;border-radius:3px;" title="Copy link to this story">&#128279; Copy Link</button>\n'
                 + '<div class="story-post-divider"></div>\n'
                 + '<div class="story-body">' + body_html + '</div>\n'
                 + '<div class="story-end-card">'
@@ -3703,6 +3704,18 @@ function hideAll(){
 function setActiveTab(which){
   document.querySelectorAll('.hdr-tab').forEach(function(t){ t.classList.remove('active'); });
   if(which){ var t=document.getElementById('tab-'+which); if(t) t.classList.add('active'); }
+}
+
+function copyCurrentLink(){
+  var hash = window.location.hash.replace('#','');
+  var url = window.location.origin + window.location.pathname + (hash ? '?section=' + hash : '');
+  if(navigator.clipboard && navigator.clipboard.writeText){
+    navigator.clipboard.writeText(url).then(function(){
+      if(typeof showToast === 'function') showToast('Link copied!');
+    }).catch(function(){ prompt('Copy this link:', url); });
+  } else {
+    prompt('Copy this link:', url);
+  }
 }
 
 function goHome(){
@@ -5821,12 +5834,14 @@ document.addEventListener('DOMContentLoaded', function(){
         # ── SUB-NAV ──────────────────────────────────────────────────────────
         '<div id="sub-nav">\n'
         '  <div class="breadcrumb-bar" id="bc-bar"></div>\n'
+        '  <button class="copy-link-btn" onclick="copyCurrentLink()" style="cursor:pointer;background:none;border:1px solid rgba(255,255,255,0.3);color:rgba(255,255,255,0.7);padding:4px 10px;font-size:10px;letter-spacing:1px;margin:0 0 10px 0;border-radius:3px;" title="Copy link to this page">&#128279; Copy Link</button>\n'
         + sub_panels +
         '\n</div>\n\n'
 
         # ── GALLERY ──────────────────────────────────────────────────────────
         '<main id="gallery-container">\n'
         '  <div class="breadcrumb-bar" id="gal-bc-bar"></div>\n'
+        '  <button class="copy-link-btn" onclick="copyCurrentLink()" style="cursor:pointer;background:none;border:1px solid rgba(255,255,255,0.3);color:rgba(255,255,255,0.7);padding:4px 10px;font-size:10px;letter-spacing:1px;margin:0 0 10px 0;border-radius:3px;" title="Copy link to this gallery">&#128279; Copy Link</button>\n'
         + gallery_blocks +
         '\n</main>\n\n'
 
