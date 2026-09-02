@@ -1630,190 +1630,9 @@ function initNudge(postId){
    JOURNEYS — Interactive map of photographic travels
    ═══════════════════════════════════════════════════════ */
 
-var JOURNEYS_INDIA = [
-  {name:'Tawang',state:'Arunachal Pradesh',lat:27.5859,lng:91.8678,uploaded:false},
-  {name:'Kaziranga National Park',state:'Assam',lat:26.5775,lng:93.1711,uploaded:false},
-  {name:'Bodh Gaya',state:'Bihar',lat:24.6967,lng:84.9912,uploaded:false},
-  {name:'Goa',state:'Goa',lat:15.2993,lng:74.1240,uploaded:false},
-  {name:'Bhuj',state:'Gujarat',lat:23.2420,lng:69.6669,uploaded:false},
-  {name:'Little Rann of Kutch',state:'Gujarat',lat:23.4100,lng:71.3800,uploaded:false},
-  {name:'Modhera Sun Temple',state:'Gujarat',lat:23.5833,lng:72.1300,uploaded:false},
-  {name:'Dholavira',state:'Gujarat',lat:23.8877,lng:70.2165,uploaded:false},
-  {name:'Rani Ki Vav',state:'Gujarat',lat:23.8579,lng:72.1011,uploaded:false},
-  {name:'Sultanpur National Park',state:'Haryana',lat:28.4300,lng:76.8900,uploaded:false},
-  {name:'Pilani',state:'Haryana',lat:28.3675,lng:75.6042,uploaded:false},
-  {name:'Shimla',state:'Himachal Pradesh',lat:31.1048,lng:77.1734,uploaded:false},
-  {name:'Narkanda',state:'Himachal Pradesh',lat:31.2636,lng:77.4470,uploaded:false},
-  {name:'Fagu',state:'Himachal Pradesh',lat:31.1500,lng:77.2833,uploaded:false},
-  {name:'Chail',state:'Himachal Pradesh',lat:30.9700,lng:77.2000,uploaded:false},
-  {name:'Chandigarh',state:'Himachal Pradesh',lat:30.7333,lng:76.7794,uploaded:false},
-  {name:'Chindi',state:'Himachal Pradesh',lat:31.5500,lng:76.9500,uploaded:false},
-  {name:'Sarahan',state:'Himachal Pradesh',lat:31.5100,lng:77.7900,uploaded:false},
-  {name:'Sangla',state:'Himachal Pradesh',lat:31.4154,lng:78.2374,uploaded:false},
-  {name:'Chitkul',state:'Himachal Pradesh',lat:31.3500,lng:78.4400,uploaded:false},
-  {name:'Dharamshala',state:'Himachal Pradesh',lat:32.2190,lng:76.3234,uploaded:false},
-  {name:'McLeod Ganj',state:'Himachal Pradesh',lat:32.2427,lng:76.3234,uploaded:false},
-  {name:'Dalhousie',state:'Himachal Pradesh',lat:32.5387,lng:75.9735,uploaded:false},
-  {name:'Sach Pass',state:'Himachal Pradesh',lat:32.4700,lng:76.5800,uploaded:false},
-  {name:'Bharmour',state:'Himachal Pradesh',lat:32.4483,lng:76.5346,uploaded:false},
-  {name:'Manali',state:'Himachal Pradesh',lat:32.2396,lng:77.1887,uploaded:false},
-  {name:'Keylong',state:'Himachal Pradesh',lat:32.5544,lng:77.0353,uploaded:false},
-  {name:'Baralacha La',state:'Himachal Pradesh',lat:32.7400,lng:77.4000,uploaded:false},
-  {name:'Suraj Taal',state:'Himachal Pradesh',lat:32.8000,lng:77.3500,uploaded:false},
-  {name:'Jispa',state:'Himachal Pradesh',lat:32.6500,lng:77.1700,uploaded:false},
-  {name:'Chandra Taal',state:'Himachal Pradesh',lat:32.4800,lng:77.6200,uploaded:false},
-  {name:'Kullu',state:'Himachal Pradesh',lat:31.9592,lng:77.1089,uploaded:false},
-  {name:'Baijnath',state:'Himachal Pradesh',lat:32.0548,lng:76.6510,uploaded:false},
-  {name:'Minkiani Pass',state:'Himachal Pradesh',lat:31.8800,lng:77.2000,uploaded:false},
-  {name:'Kalatop',state:'Himachal Pradesh',lat:32.5500,lng:75.9800,uploaded:false},
-  {name:'Khajjiar',state:'Himachal Pradesh',lat:32.5500,lng:75.9998,uploaded:false},
-  {name:'Chamba',state:'Himachal Pradesh',lat:32.5531,lng:76.1252,uploaded:false},
-  {name:'Srinagar',state:'Jammu & Kashmir',lat:34.0837,lng:74.7973,uploaded:false},
-  {name:'Gulmarg',state:'Jammu & Kashmir',lat:34.0484,lng:74.3805,uploaded:false},
-  {name:'Pahalgam',state:'Jammu & Kashmir',lat:34.0161,lng:75.3153,uploaded:false},
-  {name:'Amritsar',state:'Punjab',lat:31.6340,lng:74.8723,uploaded:false},
-  {name:'Taran Taran',state:'Punjab',lat:31.4515,lng:74.9270,uploaded:false},
-  {name:'Dhanbad',state:'Jharkhand',lat:23.7957,lng:86.4304,uploaded:false},
-  {name:'Giridih',state:'Jharkhand',lat:24.1900,lng:86.3000,uploaded:false},
-  {name:'Mysuru',state:'Karnataka',lat:12.2958,lng:76.6394,uploaded:false},
-  {name:'Coorg',state:'Karnataka',lat:12.3375,lng:75.8069,uploaded:false},
-  {name:'Chikmagalur',state:'Karnataka',lat:13.3153,lng:75.7754,uploaded:false},
-  {name:'Gokarna',state:'Karnataka',lat:14.5479,lng:74.3188,uploaded:false},
-  {name:'Murudeshwar',state:'Karnataka',lat:14.0944,lng:74.4924,uploaded:false},
-  {name:'Udupi',state:'Karnataka',lat:13.3409,lng:74.7421,uploaded:false},
-  {name:'Badami',state:'Karnataka',lat:15.9210,lng:75.6794,uploaded:true,galleries:['gallery-Architecture-india-Badami']},
-  {name:'Pattadakal',state:'Karnataka',lat:15.9480,lng:75.8177,uploaded:true,galleries:['gallery-Architecture-india-Pattadhakal']},
-  {name:'Aihole',state:'Karnataka',lat:16.0025,lng:75.8794,uploaded:true,galleries:['gallery-Architecture-india-Aihole']},
-  {name:'Belur',state:'Karnataka',lat:13.1648,lng:75.8661,uploaded:false},
-  {name:'Halebidu',state:'Karnataka',lat:13.2146,lng:75.9946,uploaded:false},
-  {name:'Jog Falls',state:'Karnataka',lat:14.2261,lng:74.8029,uploaded:false},
-  {name:'Bandipur National Park',state:'Karnataka',lat:11.6854,lng:76.6340,uploaded:false},
-  {name:'Kabini',state:'Karnataka',lat:11.9300,lng:76.3500,uploaded:false},
-  {name:'Kudremukh',state:'Karnataka',lat:13.1667,lng:75.2333,uploaded:false},
-  {name:'Agumbe',state:'Karnataka',lat:13.5025,lng:75.0942,uploaded:false},
-  {name:'Karwar',state:'Karnataka',lat:14.8135,lng:74.1288,uploaded:false},
-  {name:'Maravanthe',state:'Karnataka',lat:13.7986,lng:74.6009,uploaded:false},
-  {name:'Shravanabelagola',state:'Karnataka',lat:12.8553,lng:76.4893,uploaded:false},
-  {name:'Sakleshpur',state:'Karnataka',lat:12.9447,lng:75.7867,uploaded:false},
-  {name:'Madikeri',state:'Karnataka',lat:12.4244,lng:75.7382,uploaded:false},
-  {name:'Nandi Hills',state:'Karnataka',lat:13.3702,lng:77.6835,uploaded:false},
-  {name:'Munnar',state:'Kerala',lat:10.0889,lng:77.0595,uploaded:true,galleries:['gallery-Flora_n_Fauna-india-Munnar','gallery-People_n_Culture-india-Munnar']},
-  {name:'Thekkady',state:'Kerala',lat:9.5988,lng:77.1633,uploaded:true,galleries:['gallery-Flora_n_Fauna-india-Thekkady']},
-  {name:'Kamarakom',state:'Kerala',lat:9.5920,lng:76.5272,uploaded:false},
-  {name:'Athirappilly Waterfalls',state:'Kerala',lat:10.2836,lng:76.5693,uploaded:false},
-  {name:'Guruvayur',state:'Kerala',lat:10.5942,lng:76.0409,uploaded:false},
-  {name:'Sabarimala',state:'Kerala',lat:9.4336,lng:77.0843,uploaded:false},
-  {name:'Leh',state:'Ladakh',lat:34.1526,lng:77.5771,uploaded:false},
-  {name:'Pangong',state:'Ladakh',lat:33.7500,lng:78.6700,uploaded:false},
-  {name:'Tso Moriri',state:'Ladakh',lat:32.9000,lng:78.2833,uploaded:false},
-  {name:'Nubra Valley',state:'Ladakh',lat:34.7700,lng:77.6800,uploaded:false},
-  {name:'Stok Pass',state:'Ladakh',lat:33.9700,lng:77.6200,uploaded:false},
-  {name:'Gwalior',state:'Madhya Pradesh',lat:26.2183,lng:78.1828,uploaded:false},
-  {name:'Shivpuri',state:'Madhya Pradesh',lat:25.4241,lng:77.6480,uploaded:false},
-  {name:'Orchha',state:'Madhya Pradesh',lat:25.3516,lng:78.6411,uploaded:false},
-  {name:'Sanchi',state:'Madhya Pradesh',lat:23.4793,lng:77.7399,uploaded:false},
-  {name:'Ujjain',state:'Madhya Pradesh',lat:23.1765,lng:75.7885,uploaded:false},
-  {name:'Mandu',state:'Madhya Pradesh',lat:22.3576,lng:75.3968,uploaded:false},
-  {name:'Omkareshwar',state:'Madhya Pradesh',lat:22.2400,lng:76.1500,uploaded:false},
-  {name:'Jabalpur',state:'Madhya Pradesh',lat:23.1815,lng:79.9864,uploaded:false},
-  {name:'Indore',state:'Madhya Pradesh',lat:22.7196,lng:75.8577,uploaded:false},
-  {name:'Bhopal',state:'Madhya Pradesh',lat:23.2599,lng:77.4126,uploaded:false},
-  {name:'Mumbai',state:'Maharashtra',lat:19.0760,lng:72.8777,uploaded:false},
-  {name:'Tadoba National Park',state:'Maharashtra',lat:20.3500,lng:79.3833,uploaded:true,galleries:['gallery-Flora_n_Fauna-india-Tadoba','gallery-People_n_Culture-india-Tadoba','gallery-Landscape-india-Tadoba']},
-  {name:'Panchgani',state:'Maharashtra',lat:17.9239,lng:73.8006,uploaded:false},
-  {name:'Malshej Ghat',state:'Maharashtra',lat:19.4300,lng:73.7800,uploaded:false},
-  {name:'Aurangabad',state:'Maharashtra',lat:19.8762,lng:75.3433,uploaded:true,galleries:['gallery-Architecture-india-Aurangabad']},
-  {name:'Shillong',state:'Meghalaya',lat:25.5788,lng:91.8933,uploaded:false},
-  {name:'Konark',state:'Odisha',lat:19.8876,lng:86.0945,uploaded:false},
-  {name:'Gopalpur on Sea',state:'Odisha',lat:19.2581,lng:84.9040,uploaded:false},
-  {name:'Bikaner',state:'Rajasthan',lat:28.0229,lng:73.3119,uploaded:false},
-  {name:'Ranthambore National Park',state:'Rajasthan',lat:26.0173,lng:76.5026,uploaded:false},
-  {name:'Udaipur',state:'Rajasthan',lat:24.5854,lng:73.7125,uploaded:false},
-  {name:'Jaipur',state:'Rajasthan',lat:26.9124,lng:75.7873,uploaded:false},
-  {name:'Pushkar',state:'Rajasthan',lat:26.4900,lng:74.5500,uploaded:false},
-  {name:'Keoladeo National Park',state:'Rajasthan',lat:27.1583,lng:77.5167,uploaded:false},
-  {name:'Gangtok',state:'Sikkim',lat:27.3389,lng:88.6065,uploaded:false},
-  {name:'Yuksom',state:'Sikkim',lat:27.3167,lng:88.2167,uploaded:false},
-  {name:'Pelling',state:'Sikkim',lat:27.3000,lng:88.2333,uploaded:false},
-  {name:'Namchi',state:'Sikkim',lat:27.1667,lng:88.3667,uploaded:false},
-  {name:'Zuluk',state:'Sikkim',lat:27.2000,lng:88.8167,uploaded:false},
-  {name:'Nathula',state:'Sikkim',lat:27.3878,lng:88.8367,uploaded:false},
-  {name:'Ravangla',state:'Sikkim',lat:27.3000,lng:88.3667,uploaded:false},
-  {name:'Mahabalipuram',state:'Tamil Nadu',lat:12.6269,lng:80.1927,uploaded:false},
-  {name:'Ooty',state:'Tamil Nadu',lat:11.4102,lng:76.6950,uploaded:false},
-  {name:'Kodaikanal',state:'Tamil Nadu',lat:10.2381,lng:77.4892,uploaded:false},
-  {name:'Madurai',state:'Tamil Nadu',lat:9.9252,lng:78.1198,uploaded:true,galleries:['gallery-Architecture-india-Madurai']},
-  {name:'Tanjore',state:'Tamil Nadu',lat:10.7870,lng:79.1378,uploaded:false},
-  {name:'Trichy',state:'Tamil Nadu',lat:10.8050,lng:78.6856,uploaded:false},
-  {name:'Rameshwaram',state:'Tamil Nadu',lat:9.2882,lng:79.3129,uploaded:false},
-  {name:'Kanyakumari',state:'Tamil Nadu',lat:8.0883,lng:77.5385,uploaded:false},
-  {name:'Coimbatore',state:'Tamil Nadu',lat:11.0168,lng:76.9558,uploaded:false},
-  {name:'Valparai',state:'Tamil Nadu',lat:10.3270,lng:76.9550,uploaded:false},
-  {name:'Megamalai',state:'Tamil Nadu',lat:9.9500,lng:77.4167,uploaded:true,galleries:['gallery-Landscape-india-Megamalai','gallery-People_n_Culture-india-Megamalai']},
-  {name:'Kumbakonam',state:'Tamil Nadu',lat:10.9602,lng:79.3845,uploaded:false},
-  {name:'Chidambaram',state:'Tamil Nadu',lat:11.3992,lng:79.6931,uploaded:false},
-  {name:'Kalakkad Mundanthurai Tiger Reserve',state:'Tamil Nadu',lat:8.7500,lng:77.3500,uploaded:false},
-  {name:'Pichavaram Mangrove Forest',state:'Tamil Nadu',lat:11.4300,lng:79.7700,uploaded:false},
-  {name:'Dhanushkodi',state:'Tamil Nadu',lat:9.1761,lng:79.4164,uploaded:false},
-  {name:'Velankanni',state:'Tamil Nadu',lat:10.6836,lng:79.8519,uploaded:false},
-  {name:'Agra',state:'Uttar Pradesh',lat:27.1767,lng:78.0081,uploaded:false},
-  {name:'Varanasi',state:'Uttar Pradesh',lat:25.3176,lng:82.9739,uploaded:false},
-  {name:'Allahabad',state:'Uttar Pradesh',lat:25.4358,lng:81.8463,uploaded:false},
-  {name:'Mathura',state:'Uttar Pradesh',lat:27.4924,lng:77.6737,uploaded:false},
-  {name:'Fatehpur Sikri',state:'Uttar Pradesh',lat:27.0945,lng:77.6614,uploaded:false},
-  {name:'Haridwar',state:'Uttarakhand',lat:29.9457,lng:78.1642,uploaded:false},
-  {name:'Rishikesh',state:'Uttarakhand',lat:30.0869,lng:78.2676,uploaded:false},
-  {name:'Mussoorie',state:'Uttarakhand',lat:30.4598,lng:78.0664,uploaded:false},
-  {name:'Devprayag',state:'Uttarakhand',lat:30.1461,lng:78.5965,uploaded:false},
-  {name:'Joshimath',state:'Uttarakhand',lat:30.5579,lng:79.5636,uploaded:false},
-  {name:'Badrinath',state:'Uttarakhand',lat:30.7433,lng:79.4938,uploaded:true,galleries:['gallery-Landscape-india-Badrinath','gallery-Flora_n_Fauna-india-Badrinath']},
-  {name:'Mana Village',state:'Uttarakhand',lat:30.7700,lng:79.5300,uploaded:false},
-  {name:'Valley of Flowers',state:'Uttarakhand',lat:30.7300,lng:79.6100,uploaded:true,galleries:['gallery-Landscape-india-Valley_of_Flowers','gallery-Flora_n_Fauna-india-Valley_of_Flowers']},
-  {name:'Hemkund Sahib',state:'Uttarakhand',lat:30.7167,lng:79.6000,uploaded:false},
-  {name:'Gangotri',state:'Uttarakhand',lat:30.9942,lng:78.9398,uploaded:false},
-  {name:'Gaumukh',state:'Uttarakhand',lat:30.9197,lng:79.0736,uploaded:false},
-  {name:'Kedarnath',state:'Uttarakhand',lat:30.7352,lng:79.0669,uploaded:false},
-  {name:'Chaukori',state:'Uttarakhand',lat:29.8600,lng:80.4700,uploaded:false},
-  {name:'Berinag',state:'Uttarakhand',lat:29.9200,lng:80.2500,uploaded:false},
-  {name:'Patal Bhuvaneshwar',state:'Uttarakhand',lat:29.8700,lng:80.4200,uploaded:false},
-  {name:'Munsyari',state:'Uttarakhand',lat:30.0667,lng:80.2333,uploaded:false},
-  {name:'Almora',state:'Uttarakhand',lat:29.5971,lng:79.6591,uploaded:false},
-  {name:'Ranikhet',state:'Uttarakhand',lat:29.6399,lng:79.4322,uploaded:false},
-  {name:'Mukteshwar',state:'Uttarakhand',lat:29.4700,lng:79.6500,uploaded:false},
-  {name:'Corbett National Park',state:'Uttarakhand',lat:29.5300,lng:78.7800,uploaded:false},
-  {name:'Auli',state:'Uttarakhand',lat:30.5219,lng:79.5664,uploaded:false},
-  {name:'Lansdowne',state:'Uttarakhand',lat:29.8378,lng:78.6872,uploaded:false},
-  {name:'Rajaji Tiger Reserve',state:'Uttarakhand',lat:29.9700,lng:78.1500,uploaded:false},
-];
+var JOURNEYS_INDIA = [];
 
-var JOURNEYS_WORLD = [
-  {name:'Adelaide',country:'Australia',lat:-34.9285,lng:138.6007,uploaded:false},
-  {name:'Melbourne',country:'Australia',lat:-37.8136,lng:144.9631,uploaded:false},
-  {name:'Tasmania',country:'Australia',lat:-42.0000,lng:146.5000,uploaded:false},
-  {name:'Niagara Falls',country:'Canada',lat:43.0896,lng:-79.0849,uploaded:false},
-  {name:'Montreal',country:'Canada',lat:45.5017,lng:-73.5673,uploaded:false},
-  {name:'Quebec City',country:'Canada',lat:46.8139,lng:-71.2082,uploaded:false},
-  {name:'Calgary',country:'Canada',lat:51.0447,lng:-114.0719,uploaded:true,galleries:['gallery-Landscape-overseas-Canada','gallery-Flora_n_Fauna-overseas-Canada','gallery-People_n_Culture-overseas-Canada']},
-  {name:'Jasper',country:'Canada',lat:52.8737,lng:-118.0814,uploaded:true,galleries:['gallery-Landscape-overseas-Canada']},
-  {name:'Waterton',country:'Canada',lat:49.0514,lng:-113.9019,uploaded:true,galleries:['gallery-Landscape-overseas-Canada']},
-  {name:'Athabasca Falls',country:'Canada',lat:52.6637,lng:-117.8845,uploaded:true,galleries:['gallery-Landscape-overseas-Canada']},
-  {name:'Santorini',country:'Greece',lat:36.3932,lng:25.4615,uploaded:false},
-  {name:'Delphi',country:'Greece',lat:38.4824,lng:22.5010,uploaded:false},
-  {name:'Hydra',country:'Greece',lat:37.3489,lng:23.4627,uploaded:false},
-  {name:'Kuala Lumpur',country:'Malaysia',lat:3.1390,lng:101.6869,uploaded:false},
-  {name:'Kota Kinabalu',country:'Malaysia',lat:5.9804,lng:116.0735,uploaded:false},
-  {name:'Doha',country:'Qatar',lat:25.2854,lng:51.5310,uploaded:false},
-  {name:'Singapore',country:'Singapore',lat:1.3521,lng:103.8198,uploaded:false},
-  {name:'Bangkok',country:'Thailand',lat:13.7563,lng:100.5018,uploaded:false},
-  {name:'Abu Dhabi',country:'UAE',lat:24.4539,lng:54.3773,uploaded:false},
-  {name:'San Francisco',country:'USA',lat:37.7749,lng:-122.4194,uploaded:false},
-  {name:'Oregon',country:'USA',lat:43.8041,lng:-120.5542,uploaded:false},
-  {name:'New York',country:'USA',lat:40.7128,lng:-74.0060,uploaded:false},
-  {name:'Washington DC',country:'USA',lat:38.9072,lng:-77.0369,uploaded:false},
-  {name:'Maryland',country:'USA',lat:39.0458,lng:-76.6413,uploaded:false},
-  {name:'Texas',country:'USA',lat:31.9686,lng:-99.9018,uploaded:false},
-  {name:'New Jersey',country:'USA',lat:40.0583,lng:-74.4057,uploaded:false},
-];
+var JOURNEYS_WORLD = [];
 
 function loadLeaflet(cb){
   if(window.L){ cb(); return; }
@@ -1827,20 +1646,40 @@ function loadLeaflet(cb){
   document.head.appendChild(js);
 }
 
+var _journeysDataLoaded = false;
+
+function loadJourneysData(cb){
+  if(_journeysDataLoaded){ cb(); return; }
+  fetch('journeys_data.json')
+    .then(function(r){ return r.json(); })
+    .then(function(data){
+      JOURNEYS_INDIA = data.india || [];
+      JOURNEYS_WORLD = data.world || [];
+      _journeysDataLoaded = true;
+      cb();
+    })
+    .catch(function(err){
+      console.error('Failed to load journeys_data.json', err);
+      cb();
+    });
+}
+
 function showJourneys(){
   hideAll();
   var pg = document.getElementById('page-journeys');
   if(pg){ pg.classList.add('visible'); pg.scrollTop=0; window.scrollTo(0,0); }
   setActiveTab('journeys');
   syncUrl('footprints');
-  loadLeaflet(function(){
-    setTimeout(function(){
-      initJourneysMap();
+  loadJourneysData(function(){
+    loadLeaflet(function(){
       setTimeout(function(){
-        if(_journeysMapIndia) _journeysMapIndia.invalidateSize();
-        if(_journeysMapWorld) _journeysMapWorld.invalidateSize();
-      }, 300);
-    }, 100);
+        initJourneysMap();
+        setTimeout(function(){
+          if(_journeysMapIndia) _journeysMapIndia.invalidateSize();
+          if(_journeysMapWorld) _journeysMapWorld.invalidateSize();
+        }, 300);
+      }, 100);
+    });
   });
 }
 
