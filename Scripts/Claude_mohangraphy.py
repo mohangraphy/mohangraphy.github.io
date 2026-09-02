@@ -5732,7 +5732,7 @@ document.addEventListener('DOMContentLoaded', function(){
         '    </div>\n'
         '    <button class="hdr-tab" id="tab-about" onclick="showInfoPage(\'page-about\')">About Me</button>\n'
         '    <button class="hdr-tab" id="tab-stories" onclick="showStoriesIndex()">Travel Stories</button>\n'
-        '    <button class="hdr-tab" id="tab-journeys" onclick="showJourneys()">Journeys</button>\n'
+        '    <button class="hdr-tab" id="tab-journeys" onclick="showJourneys()">Footprints</button>\n'
         '  </nav>\n'
 
         # Right — CTA + hamburger
@@ -5756,7 +5756,7 @@ document.addEventListener('DOMContentLoaded', function(){
         '  </div>\n'
         '  <button class="mob-menu-item" onclick="showInfoPage(\'page-about\');closeMobileMenu()">About Me</button>\n'
         '  <button class="mob-menu-item" onclick="showStoriesIndex();closeMobileMenu()">Travel Stories</button>\n'
-        '  <button class="mob-menu-item" onclick="showJourneys();closeMobileMenu()">Journeys</button>\n'
+        '  <button class="mob-menu-item" onclick="showJourneys();closeMobileMenu()">Footprints</button>\n'
         '  <button class="mob-menu-cta" onclick="showInfoPage(\'page-contact\');closeMobileMenu()">Get In Touch</button>\n'
         '</div>\n\n'
 
@@ -5930,7 +5930,7 @@ document.addEventListener('DOMContentLoaded', function(){
         # ── JOURNEYS PAGE ─────────────────────────────────────────────────────
         '<div id="page-journeys">\n'
         '  <div class="journeys-header">\n'
-        '    <div class="journeys-header-title">Journeys</div>\n'
+        '    <div class="journeys-header-title">Footprints</div>\n'
         '    <div class="journeys-header-sub">Places visited &middot; Stories told &middot; More coming soon</div>\n'
         '  </div>\n'
         '  <div class="journeys-tabs">\n'
