@@ -1905,6 +1905,11 @@ function _buildJourneysMap(containerId, places, type){
 /* ── PAGE INIT — always call goHome() on first load ── */
 document.addEventListener('DOMContentLoaded', function(){
   var hash = window.location.hash;
+  if(!hash){
+    var _params = new URLSearchParams(window.location.search);
+    var _sec = _params.get('section');
+    if(_sec) hash = '#' + _sec;
+  }
   if(hash){
     var val = hash.replace('#','');
     if(val === 'travel-stories'){ showStoriesIndex(); return; }
@@ -1925,6 +1930,10 @@ document.addEventListener('DOMContentLoaded', function(){
         if(parts.length >= 2) currentCat = parts[0].replace(/_/g,' ').replace(/n/g,'&');
         showGallery(galId); return;
       }
+    }
+    if(val === 'journeys' || val === 'footprints'){
+      if(typeof showJourneys === 'function') showJourneys();
+      return;
     }
   }
   var _origOpenCategory = openCategory;
@@ -1947,6 +1956,11 @@ document.addEventListener('DOMContentLoaded', function(){
   showStoriesIndex = function(){
     _origShowStoriesIndex();
     history.replaceState(null,'','#travel-stories');
+  };
+  var _origShowJourneys = showJourneys;
+  showJourneys = function(){
+    _origShowJourneys();
+    history.replaceState(null,'','#footprints');
   };
   goHome();
 });
