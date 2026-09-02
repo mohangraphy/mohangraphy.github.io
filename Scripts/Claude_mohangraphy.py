@@ -3711,6 +3711,7 @@ function goHome(){
   document.getElementById('tile-nav').classList.add('visible','page-enter');
   setActiveTab('home');
   window.scrollTo(0,0);
+  history.replaceState(null,'',window.location.pathname);
 }
 
 function openCategory(cat){
