@@ -3812,6 +3812,7 @@ function showInfoPage(id){
   var pg = document.getElementById(id);
   if(pg){ pg.classList.add('visible'); window.scrollTo(0,0); }
   if(id==='page-about') setActiveTab('about');
+  history.replaceState(null,'',window.location.pathname);
 }
 
 /* ── Breadcrumb ── */
