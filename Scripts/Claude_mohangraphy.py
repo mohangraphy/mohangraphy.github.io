@@ -5969,6 +5969,7 @@ document.addEventListener('DOMContentLoaded', function(){
         '  <div class="journeys-header">\n'
         '    <div class="journeys-header-title">Footprints</div>\n'
         '    <div class="journeys-header-sub">Places visited &middot; Stories told &middot; More coming soon</div>\n'
+        '    <button class="copy-link-btn" onclick="copyCurrentLink()" style="cursor:pointer;background:none;border:1px solid rgba(255,255,255,0.3);color:rgba(255,255,255,0.7);padding:4px 10px;font-size:10px;letter-spacing:1px;margin-top:12px;border-radius:3px;" title="Copy link to Footprints">&#128279; Copy Link</button>\n'
         '  </div>\n'
         '  <div class="journeys-tabs">\n'
         '    <button class="journeys-tab active" id="jtab-india" onclick="switchJourneysTab(\'india\')">India</button>\n'
