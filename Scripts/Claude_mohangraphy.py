@@ -5473,7 +5473,13 @@ function showJourneys(){
   if(pg){ pg.classList.add('visible'); pg.scrollTop=0; window.scrollTo(0,0); }
   setActiveTab('journeys');
   history.replaceState(null,'','#journeys');
-  setTimeout(function(){ initJourneysMap(); }, 200);
+  setTimeout(function(){
+    initJourneysMap();
+    setTimeout(function(){
+      if(_journeysMapIndia) _journeysMapIndia.invalidateSize();
+      if(_journeysMapWorld) _journeysMapWorld.invalidateSize();
+    }, 300);
+  }, 200);
 }
 
 var _journeysMapIndia = null;
