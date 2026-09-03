@@ -3305,23 +3305,6 @@ footer {
   .cat-card { background: var(--mid); }
   .cat-card-placeholder { background: linear-gradient(135deg, var(--mid) 0%, var(--dark) 100%); }
 }
-
-@media (max-width: 768px) {
-  .mob-menu-cta,
-  .info-page-subtitle,
-  .journeys-header-sub,
-  .stories-header-sub,
-  .subscribe-eyebrow {
-    font-weight: 700;
-    opacity: 1;
-  }
-  .info-page-subtitle,
-  .journeys-header-sub,
-  .stories-header-sub,
-  .subscribe-eyebrow {
-    font-size: 10px;
-  }
-}
 """
 
     # ── BUILD GALLERY BLOCKS + SUB-PANELS ────────────────────────────────────
