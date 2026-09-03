@@ -838,7 +838,100 @@ function adminOpenTagEditor(){
 
 function adminBackToChoice(){
   document.getElementById('admin-edit-screen').style.display='none';
+  var jscreen = document.getElementById('admin-journeys-screen');
+  if(jscreen) jscreen.style.display='none';
   document.getElementById('admin-choice-screen').style.display='block';
+}
+
+var _jformType = 'india';
+
+function adminOpenJourneysEditor(){
+  document.getElementById('admin-choice-screen').style.display='none';
+  document.getElementById('admin-journeys-screen').style.display='block';
+  document.getElementById('jform-name').value='';
+  document.getElementById('jform-region').value='';
+  document.getElementById('jform-lat').value='';
+  document.getElementById('jform-lng').value='';
+  document.getElementById('jform-geocode-status').textContent='';
+  document.getElementById('jform-error').style.display='none';
+  adminJourneysSetType('india');
+}
+
+function adminJourneysSetType(type){
+  _jformType = type;
+  document.getElementById('jform-type-india').classList.toggle('selected', type==='india');
+  document.getElementById('jform-type-world').classList.toggle('selected', type==='world');
+  document.getElementById('jform-region-label').textContent = type==='india' ? 'State' : 'Country';
+}
+
+function jformAutoGeocode(force){
+  var name = document.getElementById('jform-name').value.trim();
+  var region = document.getElementById('jform-region').value.trim();
+  var statusEl = document.getElementById('jform-geocode-status');
+  var latEl = document.getElementById('jform-lat');
+  var lngEl = document.getElementById('jform-lng');
+
+  if(!name || !region) return;
+  /* Don't clobber a manually-entered value unless the user explicitly asked to re-check */
+  if(!force && (latEl.value.trim() || lngEl.value.trim())) return;
+
+  var query = name + ', ' + region;
+  statusEl.textContent = 'Looking up coordinates…';
+  fetch('https://nominatim.openstreetmap.org/search?format=json&limit=1&q=' + encodeURIComponent(query))
+    .then(function(r){ return r.json(); })
+    .then(function(results){
+      if(results && results.length){
+        latEl.value = parseFloat(results[0].lat).toFixed(4);
+        lngEl.value = parseFloat(results[0].lon).toFixed(4);
+        statusEl.textContent = '✓ Coordinates found — check the pin looks right, or edit manually.';
+      } else {
+        statusEl.textContent = 'No match found — enter coordinates manually.';
+      }
+    })
+    .catch(function(){
+      statusEl.textContent = 'Lookup failed — enter coordinates manually.';
+    });
+}
+
+function saveAdminJourney(){
+  var name = document.getElementById('jform-name').value.trim();
+  var region = document.getElementById('jform-region').value.trim();
+  var lat = parseFloat(document.getElementById('jform-lat').value);
+  var lng = parseFloat(document.getElementById('jform-lng').value);
+  var errEl = document.getElementById('jform-error');
+
+  if(!name || !region || isNaN(lat) || isNaN(lng)){
+    errEl.textContent = 'Please fill in name, state/country, and coordinates (auto-lookup runs when you leave the state/country field).';
+    errEl.style.display='block';
+    return;
+  }
+  errEl.style.display='none';
+
+  var payload = {
+    type: _jformType,
+    name: name,
+    lat: lat,
+    lng: lng
+  };
+  if(_jformType === 'india'){ payload.state = region; }
+  else { payload.country = region; }
+
+  fetch('http://localhost:9393/journeys/add',{
+    method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(payload)
+  }).then(function(r){return r.json();})
+    .then(function(resp){
+      if(resp && resp.ok){
+        showToast('✓ Place added. Run deploy to publish.');
+        adminBackToChoice();
+      } else {
+        errEl.textContent = (resp && resp.error) || 'Save failed.';
+        errEl.style.display='block';
+      }
+    })
+    .catch(function(){
+      errEl.textContent = 'Server offline. Start patch_tags.py, then try again.';
+      errEl.style.display='block';
+    });
 }
 
 function closeAdminModal(){ document.getElementById('admin-modal').classList.remove('open'); adminItems=[]; }

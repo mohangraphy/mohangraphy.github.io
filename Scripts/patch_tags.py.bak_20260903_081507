@@ -23,13 +23,10 @@ import sys
 import threading
 from http.server import HTTPServer, BaseHTTPRequestHandler
 
-ROOT_DIR      = "/Users/ncm/Pictures/Mohangraphy"
-DATA_FILE     = os.path.join(ROOT_DIR, "Scripts/photo_metadata.json")
-MAIN_SCRIPT   = os.path.join(ROOT_DIR, "Scripts/Claude_mohangraphy.py")
-# journeys_data.json lives at the site root (next to index.html), NOT in
-# Scripts/, because the browser fetches it relative to index.html.
-JOURNEYS_FILE = os.path.join(ROOT_DIR, "journeys_data.json")
-PORT          = 9393
+ROOT_DIR    = "/Users/ncm/Pictures/Mohangraphy"
+DATA_FILE   = os.path.join(ROOT_DIR, "Scripts/photo_metadata.json")
+MAIN_SCRIPT = os.path.join(ROOT_DIR, "Scripts/Claude_mohangraphy.py")
+PORT        = 9393
 
 # ── helpers ──────────────────────────────────────────────────────────────────
 
@@ -97,8 +94,6 @@ class Handler(BaseHTTPRequestHandler):
             self.handle_patch(payload)
         elif self.path == "/delete":
             self.handle_delete(payload)
-        elif self.path == "/journeys/add":
-            self.handle_journeys_add(payload)
         elif self.path == "/deploy":
             self.handle_deploy()
         else:
@@ -150,58 +145,6 @@ class Handler(BaseHTTPRequestHandler):
             print(f"  ⚠ Skipped: {skipped}")
         print(f"\n  → {updated} photo(s) updated.\n")
         self.send_json(200, {"updated": updated, "skipped": skipped})
-
-    def load_journeys(self):
-        if not os.path.exists(JOURNEYS_FILE):
-            return {"india": [], "world": []}
-        with open(JOURNEYS_FILE, "r", encoding="utf-8") as f:
-            return json.load(f)
-
-    def save_journeys(self, data):
-        with open(JOURNEYS_FILE, "w", encoding="utf-8") as f:
-            json.dump(data, f, indent=2, ensure_ascii=False)
-
-    def handle_journeys_add(self, payload):
-        place_type = payload.get("type", "").strip().lower()
-        name       = payload.get("name", "").strip()
-        lat        = payload.get("lat")
-        lng        = payload.get("lng")
-
-        if place_type not in ("india", "world"):
-            self.send_json(400, {"ok": False, "error": "type must be 'india' or 'world'"})
-            return
-        if not name:
-            self.send_json(400, {"ok": False, "error": "Place name is required"})
-            return
-        try:
-            lat = float(lat)
-            lng = float(lng)
-        except (TypeError, ValueError):
-            self.send_json(400, {"ok": False, "error": "Latitude/longitude must be numbers"})
-            return
-
-        entry = {"name": name, "lat": lat, "lng": lng, "uploaded": False}
-        if place_type == "india":
-            state = payload.get("state", "").strip()
-            if not state:
-                self.send_json(400, {"ok": False, "error": "State is required"})
-                return
-            entry["state"] = state
-        else:
-            country = payload.get("country", "").strip()
-            if not country:
-                self.send_json(400, {"ok": False, "error": "Country is required"})
-                return
-            entry["country"] = country
-
-        data = self.load_journeys()
-        data.setdefault("india", [])
-        data.setdefault("world", [])
-        data[place_type].append(entry)
-        self.save_journeys(data)
-
-        print(f"  \u2713 Added footprint: {name} ({place_type})")
-        self.send_json(200, {"ok": True, "entry": entry})
 
     def handle_delete(self, payload):
         photos = payload.get("photos", [])

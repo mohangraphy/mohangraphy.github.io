@@ -4525,7 +4525,7 @@ function adminOpenJourneysEditor(){
   document.getElementById('jform-region').value='';
   document.getElementById('jform-lat').value='';
   document.getElementById('jform-lng').value='';
-  document.getElementById('jform-geocode-status').textContent='';
+  document.getElementById('jform-gallery').value='';
   document.getElementById('jform-error').style.display='none';
   adminJourneysSetType('india');
 }
@@ -4537,44 +4537,16 @@ function adminJourneysSetType(type){
   document.getElementById('jform-region-label').textContent = type==='india' ? 'State' : 'Country';
 }
 
-function jformAutoGeocode(force){
-  var name = document.getElementById('jform-name').value.trim();
-  var region = document.getElementById('jform-region').value.trim();
-  var statusEl = document.getElementById('jform-geocode-status');
-  var latEl = document.getElementById('jform-lat');
-  var lngEl = document.getElementById('jform-lng');
-
-  if(!name || !region) return;
-  /* Don't clobber a manually-entered value unless the user explicitly asked to re-check */
-  if(!force && (latEl.value.trim() || lngEl.value.trim())) return;
-
-  var query = name + ', ' + region;
-  statusEl.textContent = 'Looking up coordinates…';
-  fetch('https://nominatim.openstreetmap.org/search?format=json&limit=1&q=' + encodeURIComponent(query))
-    .then(function(r){ return r.json(); })
-    .then(function(results){
-      if(results && results.length){
-        latEl.value = parseFloat(results[0].lat).toFixed(4);
-        lngEl.value = parseFloat(results[0].lon).toFixed(4);
-        statusEl.textContent = '✓ Coordinates found — check the pin looks right, or edit manually.';
-      } else {
-        statusEl.textContent = 'No match found — enter coordinates manually.';
-      }
-    })
-    .catch(function(){
-      statusEl.textContent = 'Lookup failed — enter coordinates manually.';
-    });
-}
-
 function saveAdminJourney(){
   var name = document.getElementById('jform-name').value.trim();
   var region = document.getElementById('jform-region').value.trim();
   var lat = parseFloat(document.getElementById('jform-lat').value);
   var lng = parseFloat(document.getElementById('jform-lng').value);
+  var gallery = document.getElementById('jform-gallery').value.trim();
   var errEl = document.getElementById('jform-error');
 
   if(!name || !region || isNaN(lat) || isNaN(lng)){
-    errEl.textContent = 'Please fill in name, state/country, and coordinates (auto-lookup runs when you leave the state/country field).';
+    errEl.textContent = 'Please fill in name, state/country, latitude and longitude.';
     errEl.style.display='block';
     return;
   }
@@ -4584,7 +4556,8 @@ function saveAdminJourney(){
     type: _jformType,
     name: name,
     lat: lat,
-    lng: lng
+    lng: lng,
+    gallery: gallery
   };
   if(_jformType === 'india'){ payload.state = region; }
   else { payload.country = region; }
@@ -6079,11 +6052,10 @@ document.addEventListener('DOMContentLoaded', function(){
         '        <button class="btn-ghost" id="jform-type-world" style="flex:1" onclick="adminJourneysSetType(\'world\')">World</button>\n'
         '      </div>\n'
         '      <div class="admin-field"><label>Place Name</label><input id="jform-name" type="text" placeholder="e.g. Hampi"></div>\n'
-        '      <div class="admin-field"><label id="jform-region-label">State</label><input id="jform-region" type="text" placeholder="e.g. Karnataka" onblur="jformAutoGeocode()"></div>\n'
-        '      <div id="jform-geocode-status" style="font-size:9px;color:rgba(255,255,255,0.4);letter-spacing:1px;margin-bottom:8px"></div>\n'
-        '      <div class="admin-field"><label>Latitude</label><input id="jform-lat" type="text" placeholder="auto-filled — or enter manually"></div>\n'
-        '      <div class="admin-field"><label>Longitude</label><input id="jform-lng" type="text" placeholder="auto-filled — or enter manually"></div>\n'
-        '      <button class="btn-ghost" type="button" style="width:100%;margin-bottom:14px" onclick="jformAutoGeocode(true)">&#128269;&nbsp; Re-check Coordinates</button>\n'
+        '      <div class="admin-field"><label id="jform-region-label">State</label><input id="jform-region" type="text" placeholder="e.g. Karnataka"></div>\n'
+        '      <div class="admin-field"><label>Latitude</label><input id="jform-lat" type="text" placeholder="e.g. 15.3350"></div>\n'
+        '      <div class="admin-field"><label>Longitude</label><input id="jform-lng" type="text" placeholder="e.g. 76.4600"></div>\n'
+        '      <div class="admin-field"><label>Gallery Link (optional)</label><input id="jform-gallery" type="text" placeholder="optional"></div>\n'
         '      <div id="jform-error" style="display:none;color:#e04060;font-size:9px;letter-spacing:1px;margin-bottom:10px"></div>\n'
         '      <div class="admin-row">\n'
         '        <button class="btn-ghost" onclick="adminBackToChoice()">&#8249; Back</button>\n'
