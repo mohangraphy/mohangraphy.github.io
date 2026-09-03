@@ -3272,19 +3272,6 @@ footer {
     background-repeat: repeat;
   }
 }
-
-@media (max-width: 768px) {
-  .mob-menu-item:hover, .mob-menu-subitem:hover { font-weight: 700; }
-  .blog-row-loc, .blog-post-loc { font-weight: 700; opacity: .95; }
-  footer { background: var(--mid); }
-  #subscribe-section {
-    background: linear-gradient(160deg, var(--mid) 0%, var(--dark) 50%, var(--mid) 100%);
-  }
-  #copyright-banner {
-    background: rgba(244,241,234,0.95);
-    color: rgba(194,125,95,0.85);
-  }
-}
 """
 
     # ── BUILD GALLERY BLOCKS + SUB-PANELS ────────────────────────────────────
