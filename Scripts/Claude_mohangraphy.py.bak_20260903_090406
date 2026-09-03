@@ -3182,11 +3182,6 @@ footer {
     --text-rgb:  43,30,19;
   }
 }
-
-@media (max-width: 768px) {
-  #mobile-menu { background: rgba(244,241,234,0.97); }
-  .mob-menu-sub { background: rgba(234,229,217,0.6); }
-}
 """
 
     # ── BUILD GALLERY BLOCKS + SUB-PANELS ────────────────────────────────────
