@@ -3285,26 +3285,6 @@ footer {
     color: rgba(194,125,95,0.85);
   }
 }
-
-@media (max-width: 768px) {
-  /* Text overlaid directly on photos stays fixed white, like desktop,
-     since the underlying image brightness has nothing to do with theme */
-  .cat-card-name { color: #fff; }
-  .cat-card-count { color: rgba(255,255,255,0.6); }
-
-  /* Breadcrumb current category — bolder */
-  .bc-current { font-weight: 700; }
-
-  /* Sub-tile rows (place names) sit on their own hardcoded dark panels —
-     theme those backgrounds so the already-correct text becomes visible */
-  .sub-tile { background: var(--mid); }
-  .sub-tile:hover, .sub-tile:active { background: var(--dark); }
-  .sub-tile--city { background: var(--dark); }
-  .sub-tile--city:hover, .sub-tile--city:active { background: var(--mid); }
-  .sub-tile-thumb-placeholder { background: var(--mid); }
-  .cat-card { background: var(--mid); }
-  .cat-card-placeholder { background: linear-gradient(135deg, var(--mid) 0%, var(--dark) 100%); }
-}
 """
 
     # ── BUILD GALLERY BLOCKS + SUB-PANELS ────────────────────────────────────
