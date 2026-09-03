@@ -46,12 +46,14 @@ img {
   --dark:  #080808;
   --mid:   #161616;
   --hdr:   80px;
+  --text:      #fff;
+  --text-rgb:  255,255,255;
 }
 
 /* ── BASE ── */
 html { scroll-behavior: smooth; font-size: 16px; }
 body {
-  background: var(--dark); color: #fff;
+  background: var(--dark); color: var(--text);
   font-family: 'Montserrat', sans-serif;
   overflow-x: hidden;
   -webkit-tap-highlight-color: transparent;
@@ -82,7 +84,7 @@ header {
   font-weight: 300;
   font-size: 30px;
   letter-spacing: 6px;
-  color: rgba(255,255,255,0.9);
+  color: rgba(var(--text-rgb),0.9);
   text-transform: uppercase;
   cursor: pointer; user-select: none;
   white-space: nowrap;
@@ -101,15 +103,15 @@ header {
   font-family: 'Montserrat', sans-serif;
   font-size: 10px; font-weight: 600; letter-spacing: 3px;
   text-transform: uppercase;
-  color: rgba(255,255,255,0.55);
+  color: rgba(var(--text-rgb),0.55);
   cursor: pointer; background: none; border: none;
   padding: 0 14px; height: var(--hdr);
   display: flex; align-items: center; gap: 5px;
   transition: color .2s;
   white-space: nowrap;
 }
-.hdr-tab:hover { color: rgba(255,255,255,0.9); }
-.hdr-tab.active { color: #fff; }
+.hdr-tab:hover { color: rgba(var(--text-rgb),0.9); }
+.hdr-tab.active { color: var(--text); }
 .hdr-tab.active::after {
   content: '';
   position: absolute; bottom: 0; left: 14px; right: 14px;
@@ -142,11 +144,11 @@ header {
   display: block; padding: 13px 20px;
   font-family: 'Montserrat', sans-serif;
   font-size: 9px; font-weight: 600; letter-spacing: 3px; text-transform: uppercase;
-  color: rgba(255,255,255,0.6);
+  color: rgba(var(--text-rgb),0.6);
   cursor: pointer; border: none; background: none;
   width: 100%; text-align: left;
   transition: color .15s, background .15s;
-  border-bottom: 1px solid rgba(255,255,255,0.04);
+  border-bottom: 1px solid rgba(var(--text-rgb),0.04);
 }
 .hdr-dd-item:hover { color: var(--gold); background: rgba(201,169,110,0.06); }
 
@@ -169,7 +171,7 @@ header {
   display: none;
   width: 40px; height: 40px;
   background: none; border: none; cursor: pointer;
-  color: rgba(255,255,255,0.6);
+  color: rgba(var(--text-rgb),0.6);
   align-items: center; justify-content: center;
   flex-direction: column; gap: 5px;
   transition: color .2s;
@@ -212,7 +214,7 @@ header {
 .mob-menu-close {
   position: absolute; top: 12px; right: 14px;
   background: none; border: none; cursor: pointer;
-  color: rgba(255,255,255,0.4); font-size: 22px;
+  color: rgba(var(--text-rgb),0.4); font-size: 22px;
   width: 40px; height: 40px;
   display: flex; align-items: center; justify-content: center;
   transition: color .2s;
@@ -222,14 +224,14 @@ header {
   padding: 18px 32px;
   font-family: 'Montserrat', sans-serif;
   font-size: 11px; letter-spacing: 4px; text-transform: uppercase;
-  color: rgba(255,255,255,0.7); cursor: pointer;
-  border-bottom: 1px solid rgba(255,255,255,0.05);
+  color: rgba(var(--text-rgb),0.7); cursor: pointer;
+  border-bottom: 1px solid rgba(var(--text-rgb),0.05);
   transition: color .15s;
   background: none; border-left: none; border-right: none; border-top: none;
   text-align: left; width: 100%;
 }
 .mob-menu-item:hover { color: var(--gold); }
-.mob-menu-item.mob-menu-active { color: #fff; }
+.mob-menu-item.mob-menu-active { color: var(--text); }
 .mob-menu-sub {
   display: none; background: rgba(0,0,0,0.4);
 }
@@ -238,8 +240,8 @@ header {
   padding: 14px 32px 14px 48px;
   font-family: 'Montserrat', sans-serif;
   font-size: 10px; letter-spacing: 3px; text-transform: uppercase;
-  color: rgba(255,255,255,0.45); cursor: pointer;
-  border-bottom: 1px solid rgba(255,255,255,0.03);
+  color: rgba(var(--text-rgb),0.45); cursor: pointer;
+  border-bottom: 1px solid rgba(var(--text-rgb),0.03);
   transition: color .15s;
   background: none; border-left: none; border-right: none; border-top: none;
   text-align: left; width: 100%;
@@ -280,7 +282,7 @@ header {
 .info-page-back {
   display: inline-flex; align-items: center; gap: 8px;
   font-size: 8px; letter-spacing: 4px; text-transform: uppercase;
-  color: rgba(255,255,255,0.25); cursor: pointer; background: none; border: none;
+  color: rgba(var(--text-rgb),0.25); cursor: pointer; background: none; border: none;
   font-family: 'Montserrat', sans-serif; margin-bottom: 40px;
   transition: color .25s;
 }
@@ -301,7 +303,7 @@ header {
 .info-page-body {
   font-family: 'Cormorant Garamond', serif;
   font-size: clamp(16px, 2.2vw, 20px); font-weight: 300;
-  color: rgba(255,255,255,0.65); line-height: 1.9;
+  color: rgba(var(--text-rgb),0.65); line-height: 1.9;
   user-select: none; -webkit-user-select: none;
 }
 .info-page-body p { margin-bottom: 20px; }
@@ -328,7 +330,7 @@ header {
 .about-photo-caption {
   font-family: 'Montserrat', sans-serif;
   font-size: 8px; letter-spacing: 3px; text-transform: uppercase;
-  color: rgba(255,255,255,0.25); margin-top: 10px; text-align: center;
+  color: rgba(var(--text-rgb),0.25); margin-top: 10px; text-align: center;
 }
 @media (max-width: 640px) {
   .about-layout {
@@ -346,7 +348,7 @@ header {
 }
 .contact-field label {
   display: block; font-size: 8px; letter-spacing: 4px;
-  text-transform: uppercase; color: rgba(255,255,255,0.3);
+  text-transform: uppercase; color: rgba(var(--text-rgb),0.3);
   margin-bottom: 8px;
 }
 .contact-field input,
@@ -354,7 +356,7 @@ header {
 .contact-field select {
   width: 100%; background: #111;
   border: 1px solid rgba(201,169,110,0.15);
-  color: #fff; padding: 12px 14px;
+  color: var(--text); padding: 12px 14px;
   font-family: 'Montserrat', sans-serif; font-size: 13px;
   outline: none; border-radius: 0;
   transition: border-color .25s;
@@ -389,10 +391,10 @@ header {
 }
 .print-card-size {
   font-family: 'Cormorant Garamond', serif;
-  font-size: 22px; letter-spacing: 2px; color: #fff; margin-bottom: 8px;
+  font-size: 22px; letter-spacing: 2px; color: var(--text); margin-bottom: 8px;
 }
 .print-card-desc {
-  font-size: 9px; letter-spacing: 1.5px; color: rgba(255,255,255,0.75);
+  font-size: 9px; letter-spacing: 1.5px; color: rgba(var(--text-rgb),0.75);
   text-transform: uppercase; line-height: 2;
   white-space: pre-line;   /* honours 
  line breaks */
@@ -444,7 +446,7 @@ header {
   */
   font-size: clamp(14px, 4.2vw, 52px);
   letter-spacing: clamp(3px, 1.5vw, 14px);
-  color: rgba(255,255,255,0.9);
+  color: rgba(var(--text-rgb),0.9);
   text-transform: uppercase;
   line-height: 1;
   white-space: nowrap;
@@ -488,9 +490,9 @@ header {
 .scroll-cue span {
   font-family: 'Montserrat', sans-serif;
   font-size: 9px; letter-spacing: 5px; font-weight: 600;
-  color: rgba(255,255,255,0.65); text-transform: uppercase;
+  color: rgba(var(--text-rgb),0.65); text-transform: uppercase;
 }
-.scroll-cue svg path { stroke: rgba(255,255,255,0.65) !important; }
+.scroll-cue svg path { stroke: rgba(var(--text-rgb),0.65) !important; }
 @keyframes cue {
   0%,100% { transform: translateX(-50%) translateY(0); opacity:.6; }
   50%      { transform: translateX(-50%) translateY(9px); opacity:1; }
@@ -537,8 +539,8 @@ header {
   font-family: 'Montserrat', sans-serif;
   font-size: 10px; font-weight: 600; letter-spacing: 3px;
   text-transform: uppercase;
-  color: rgba(255,255,255,0.5);
-  border: 1px solid rgba(255,255,255,0.15);
+  color: rgba(var(--text-rgb),0.5);
+  border: 1px solid rgba(var(--text-rgb),0.15);
   background: none; cursor: pointer; border-radius: 20px;
   transition: all .2s;
 }
@@ -632,13 +634,13 @@ header {
   font-family: 'Cormorant Garamond', serif;
   font-size: clamp(16px, 2.8vw, 28px);
   font-weight: 700; letter-spacing: clamp(2px,.5vw,5px);
-  text-transform: uppercase; color: #fff; line-height: 1;
+  text-transform: uppercase; color: var(--text); line-height: 1;
   transition: color .25s;
 }
 .cat-card:hover .cat-card-name { color: var(--gold); }
 .cat-card-count {
   font-size: clamp(9px, 1.2vw, 11px); letter-spacing: 2px;
-  color: rgba(255,255,255,0.6); text-transform: uppercase;
+  color: rgba(var(--text-rgb),0.6); text-transform: uppercase;
   font-family: 'Montserrat', sans-serif; font-weight: 600;
 }
 /* Gold border reveal on hover */
@@ -672,9 +674,9 @@ header {
 }
 .bc-back {
   font-size: 9px; letter-spacing: 2px;
-  color: rgba(255,255,255,0.75);   /* clearly visible */
+  color: rgba(var(--text-rgb),0.75);   /* clearly visible */
   text-transform: uppercase;
-  cursor: pointer; background: rgba(255,255,255,0.06);
+  cursor: pointer; background: rgba(var(--text-rgb),0.06);
   border: none; border-radius: 3px;
   font-family: 'Montserrat', sans-serif; font-weight: 600;
   padding: 0 12px;
@@ -685,7 +687,7 @@ header {
   color: var(--gold);
   background: rgba(201,169,110,0.12);
 }
-.bc-sep { color: rgba(255,255,255,0.4); font-size: 11px; }
+.bc-sep { color: rgba(var(--text-rgb),0.4); font-size: 11px; }
 .bc-current {
   font-family: 'Cormorant Garamond', serif;
   font-size: 12px; letter-spacing: 4px;
@@ -730,7 +732,7 @@ header {
   font-size: clamp(18px, 3vw, 30px);
   font-weight: 400;
   letter-spacing: clamp(2px, .5vw, 5px);
-  text-transform: uppercase; color: rgba(255,255,255,0.9); line-height: 1;
+  text-transform: uppercase; color: rgba(var(--text-rgb),0.9); line-height: 1;
   transition: color .25s;
   white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
 }
@@ -740,14 +742,14 @@ header {
   font-size: clamp(11px, 1.6vw, 13px);
   font-weight: 600;
   letter-spacing: clamp(2px, .4vw, 4px);
-  color: rgba(255,255,255,0.7);
+  color: rgba(var(--text-rgb),0.7);
 }
 .sub-tile:hover .sub-tile-name,
 .sub-tile:active .sub-tile-name { color: var(--gold); }
 .sub-tile-count {
   margin-top: 4px;
   font-size: 8px; letter-spacing: 2px;
-  color: rgba(255,255,255,0.6); text-transform: uppercase;
+  color: rgba(var(--text-rgb),0.6); text-transform: uppercase;
 }
 .sub-tile-arrow {
   display: inline-block; margin-left: 7px;
@@ -801,11 +803,11 @@ header {
 }
 .gal-breadcrumb {
   font-size: 9px; letter-spacing: 2px;
-  color: rgba(255,255,255,0.75);   /* clearly visible */
+  color: rgba(var(--text-rgb),0.75);   /* clearly visible */
   text-transform: uppercase;
   margin-bottom: 8px; cursor: pointer;
   display: inline-flex; align-items: center; gap: 6px;
-  background: rgba(255,255,255,0.06); border: none;
+  background: rgba(var(--text-rgb),0.06); border: none;
   border-radius: 3px; padding: 0 12px; height: 32px;
   font-family: 'Montserrat', sans-serif; font-weight: 600;
   transition: color .2s, background .2s;
@@ -820,7 +822,7 @@ header {
   font-size: clamp(28px, 5vw, 52px);
   font-weight: 600; letter-spacing: clamp(3px, .8vw, 8px);
   text-transform: uppercase; line-height: 1.1;
-  color: #fff; margin-top: 6px;
+  color: var(--text); margin-top: 6px;
 }
 .gal-sub {
   font-size: 8px; letter-spacing: 3px;
@@ -922,7 +924,7 @@ header {
 .grid-item:hover .grid-item-info { opacity: 1; }
 .grid-item-info-text {
   font-size: 9px; letter-spacing: 1.2px;
-  color: rgba(255,255,255,0.92);
+  color: rgba(var(--text-rgb),0.92);
   font-family: 'Montserrat', sans-serif;
   white-space: normal;
   word-wrap: break-word;
@@ -946,7 +948,7 @@ header {
 }
 .ctx-item {
   padding: 13px 18px; font-size: 10px; letter-spacing: 2px;
-  text-transform: uppercase; color: rgba(255,255,255,0.8);
+  text-transform: uppercase; color: rgba(var(--text-rgb),0.8);
   cursor: pointer; font-family: 'Montserrat', sans-serif;
   transition: background .15s, color .15s;
   display: flex; align-items: center; gap: 10px;
@@ -978,30 +980,30 @@ header {
 .admin-field { margin-bottom: 14px; }
 .admin-field label {
   display: block; font-size: 8px; letter-spacing: 2px;
-  color: rgba(255,255,255,0.45); text-transform: uppercase; margin-bottom: 5px;
+  color: rgba(var(--text-rgb),0.45); text-transform: uppercase; margin-bottom: 5px;
 }
 .admin-field input, .admin-field textarea {
-  width: 100%; background: rgba(255,255,255,0.05);
-  border: 1px solid rgba(255,255,255,0.1); border-radius: 3px;
-  color: #fff; font-family: 'Montserrat', sans-serif;
+  width: 100%; background: rgba(var(--text-rgb),0.05);
+  border: 1px solid rgba(var(--text-rgb),0.1); border-radius: 3px;
+  color: var(--text); font-family: 'Montserrat', sans-serif;
   font-size: 11px; padding: 8px 10px;
 }
 .admin-field textarea { height: 60px; resize: vertical; }
 .admin-cats { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 4px; }
 .admin-cat {
   padding: 5px 10px; border-radius: 20px; font-size: 8px; letter-spacing: 1px;
-  cursor: pointer; border: 1px solid rgba(255,255,255,0.15);
-  background: rgba(255,255,255,0.04);
-  color: rgba(255,255,255,0.5); text-transform: uppercase;
+  cursor: pointer; border: 1px solid rgba(var(--text-rgb),0.15);
+  background: rgba(var(--text-rgb),0.04);
+  color: rgba(var(--text-rgb),0.5); text-transform: uppercase;
   transition: all .2s;
 }
-.admin-cat:hover { border-color: rgba(255,255,255,0.3); color: rgba(255,255,255,0.8); }
+.admin-cat:hover { border-color: rgba(var(--text-rgb),0.3); color: rgba(var(--text-rgb),0.8); }
 .admin-cat.selected {
   background: rgba(201,169,110,0.15); border-color: var(--gold);
   color: var(--gold);
 }
 .admin-row { display: flex; gap: 10px; justify-content: flex-end; margin-top: 18px; }
-.admin-note { font-size: 8px; color: rgba(255,255,255,0.3); letter-spacing: 1px; margin-top: 8px; }
+.admin-note { font-size: 8px; color: rgba(var(--text-rgb),0.3); letter-spacing: 1px; margin-top: 8px; }
 
 @media print {
   .grid-item-info, .like-badge, #ctx-menu, .grid-item-bar { display: none !important; }
@@ -1012,7 +1014,7 @@ header {
   text-align: center; padding: 80px 20px;
   font-family: 'Cormorant Garamond', serif;
   font-size: clamp(14px, 2.5vw, 20px);
-  color: rgba(255,255,255,0.1); text-transform: uppercase; letter-spacing: 6px;
+  color: rgba(var(--text-rgb),0.1); text-transform: uppercase; letter-spacing: 6px;
 }
 
 /* ── NOTIFICATION PANEL ── */
@@ -1035,12 +1037,12 @@ header {
 }
 .notify-sub {
   font-size: 8px; letter-spacing: 3px; text-transform: uppercase;
-  color: rgba(255,255,255,0.25); margin-bottom: 24px;
+  color: rgba(var(--text-rgb),0.25); margin-bottom: 24px;
 }
 .notify-select {
   width: 100%; background: #111;
   border: 1px solid rgba(201,169,110,0.2);
-  color: #fff; padding: 10px 12px;
+  color: var(--text); padding: 10px 12px;
   font-family: Montserrat,sans-serif; font-size: 11px;
   outline: none; margin-bottom: 16px; -webkit-appearance: none;
 }
@@ -1057,8 +1059,8 @@ header {
 .notify-btn:hover:not(:disabled) { background: var(--gold); color: #000; }
 .notify-btn:disabled { opacity: 0.35; cursor: not-allowed; }
 .notify-btn-ghost {
-  background: none; border: 1px solid rgba(255,255,255,0.15);
-  color: rgba(255,255,255,0.5); padding: 0 18px; height: 38px;
+  background: none; border: 1px solid rgba(var(--text-rgb),0.15);
+  color: rgba(var(--text-rgb),0.5); padding: 0 18px; height: 38px;
   font-family: Montserrat,sans-serif; font-size: 9px;
   letter-spacing: 3px; text-transform: uppercase; cursor: pointer;
 }
@@ -1066,7 +1068,7 @@ header {
   display: none; padding: 10px 12px; font-size: 10px;
   letter-spacing: 1px; line-height: 1.7; white-space: pre-line;
   border-left: 2px solid rgba(201,169,110,0.3);
-  color: rgba(255,255,255,0.6); background: rgba(0,0,0,0.4);
+  color: rgba(var(--text-rgb),0.6); background: rgba(0,0,0,0.4);
   margin-top: 4px;
 }
 .notify-status.visible { display: block; }
@@ -1075,7 +1077,7 @@ header {
 .notify-close {
   position: absolute; top: 12px; right: 14px;
   background: none; border: none; cursor: pointer;
-  color: rgba(255,255,255,0.3); font-size: 20px;
+  color: rgba(var(--text-rgb),0.3); font-size: 20px;
 }
 .notify-close:hover { color: var(--gold); }
 
@@ -1119,18 +1121,18 @@ header {
 }
 #ss-counter {
   font-family: 'Montserrat', sans-serif;
-  font-size: 9px; letter-spacing: 3px; color: rgba(255,255,255,0.35);
+  font-size: 9px; letter-spacing: 3px; color: rgba(var(--text-rgb),0.35);
   text-transform: uppercase; white-space: nowrap;
 }
 #ss-caption {
   flex: 1; text-align: center;
   font-family: 'Montserrat', sans-serif;
-  font-size: 11px; letter-spacing: 1px; color: rgba(255,255,255,0.65);
+  font-size: 11px; letter-spacing: 1px; color: rgba(var(--text-rgb),0.65);
   overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
 }
 #ss-hint {
   font-family: 'Montserrat', sans-serif;
-  font-size: 8px; letter-spacing: 2px; color: rgba(255,255,255,0.25);
+  font-size: 8px; letter-spacing: 2px; color: rgba(var(--text-rgb),0.25);
   text-transform: uppercase; white-space: nowrap;
 }
 #ss-progress {
@@ -1141,7 +1143,7 @@ header {
 .ss-nav-btn {
   position: absolute; top: 50%; transform: translateY(-50%);
   background: rgba(0,0,0,0.35); border: none; cursor: pointer;
-  color: rgba(255,255,255,0.5); font-size: 28px;
+  color: rgba(var(--text-rgb),0.5); font-size: 28px;
   width: 52px; height: 52px; border-radius: 50%;
   display: flex; align-items: center; justify-content: center;
   transition: color .2s, background .2s; z-index: 1;
@@ -1151,8 +1153,8 @@ header {
 #ss-next { right: 10px; }
 #ss-close {
   position: absolute; top: 12px; right: 14px; z-index: 9801;
-  background: rgba(0,0,0,0.5); border: 1px solid rgba(255,255,255,0.15);
-  cursor: pointer; color: rgba(255,255,255,0.6); font-size: 18px;
+  background: rgba(0,0,0,0.5); border: 1px solid rgba(var(--text-rgb),0.15);
+  cursor: pointer; color: rgba(var(--text-rgb),0.6); font-size: 18px;
   width: 38px; height: 38px; border-radius: 50%;
   display: flex; align-items: center; justify-content: center;
   transition: color .2s, border-color .2s;
@@ -1161,7 +1163,7 @@ header {
 #ss-pause-lbl {
   position: absolute; top: 14px; left: 50%; transform: translateX(-50%);
   font-family: 'Montserrat', sans-serif; font-size: 8px; letter-spacing: 3px;
-  text-transform: uppercase; color: rgba(255,255,255,0.4);
+  text-transform: uppercase; color: rgba(var(--text-rgb),0.4);
   background: rgba(0,0,0,0.55); padding: 4px 14px;
   pointer-events: none; opacity: 0; transition: opacity .3s;
 }
@@ -1209,7 +1211,7 @@ header {
 .lb-btn {
   position: absolute; background: rgba(0,0,0,0.4);
   border: none; cursor: pointer;
-  color: rgba(255,255,255,0.45); transition: color .2s, background .2s;
+  color: rgba(var(--text-rgb),0.45); transition: color .2s, background .2s;
   z-index: 9001; border-radius: 50%;
   /* Large touch targets */
   width: 48px; height: 48px;
@@ -1230,7 +1232,7 @@ header {
 }
 .lb-counter {
   font-size: 8px; letter-spacing: 3px;
-  color: rgba(255,255,255,0.25); text-transform: uppercase;
+  color: rgba(var(--text-rgb),0.25); text-transform: uppercase;
 }
 .lb-copyright {
   font-size: 8px; letter-spacing: 2px;
@@ -1238,7 +1240,7 @@ header {
 }
 .lb-hint {
   width: 100%; font-size: 7px; letter-spacing: 2px;
-  color: rgba(255,255,255,0.35); text-transform: uppercase; text-align: center;
+  color: rgba(var(--text-rgb),0.35); text-transform: uppercase; text-align: center;
 }
 
 /* ── SCREENSHOT DETERRENT ──
@@ -1278,8 +1280,8 @@ header {
   font-family: 'Montserrat', sans-serif;
   font-size: 9px; font-weight: 600; letter-spacing: 3px;
   text-transform: uppercase;
-  color: rgba(255,255,255,0.5);
-  border: 1px solid rgba(255,255,255,0.15);
+  color: rgba(var(--text-rgb),0.5);
+  border: 1px solid rgba(var(--text-rgb),0.15);
   background: none; cursor: pointer; border-radius: 20px;
   transition: all .2s;
 }
@@ -1354,7 +1356,7 @@ header {
 .img-modal-nav {
   position: absolute; top: 50%; transform: translateY(-50%);
   background: rgba(0,0,0,0.4); border: none; cursor: pointer;
-  color: rgba(255,255,255,0.5); font-size: 24px;
+  color: rgba(var(--text-rgb),0.5); font-size: 24px;
   width: 44px; height: 44px; border-radius: 50%;
   display: flex; align-items: center; justify-content: center;
   transition: color .2s, background .2s; z-index: 1;
@@ -1374,8 +1376,8 @@ header {
 }
 .img-modal-close {
   position: absolute; top: 12px; right: 14px;
-  background: rgba(0,0,0,0.5); border: 1px solid rgba(255,255,255,0.12);
-  cursor: pointer; color: rgba(255,255,255,0.6); font-size: 18px;
+  background: rgba(0,0,0,0.5); border: 1px solid rgba(var(--text-rgb),0.12);
+  cursor: pointer; color: rgba(var(--text-rgb),0.6); font-size: 18px;
   width: 34px; height: 34px; border-radius: 50%;
   display: flex; align-items: center; justify-content: center;
   transition: color .2s, border-color .2s; z-index: 10;
@@ -1383,15 +1385,15 @@ header {
 .img-modal-close:hover { color: var(--gold); border-color: var(--gold); }
 .img-modal-info {
   padding: 16px 24px 24px;
-  border-bottom: 1px solid rgba(255,255,255,0.06);
+  border-bottom: 1px solid rgba(var(--text-rgb),0.06);
 }
 .img-modal-counter {
-  font-size: 9px; letter-spacing: 3px; color: rgba(255,255,255,0.7);
+  font-size: 9px; letter-spacing: 3px; color: rgba(var(--text-rgb),0.7);
   text-transform: uppercase; margin-bottom: 8px; font-weight: 600;
 }
 .img-modal-title {
   font-family: 'Montserrat', sans-serif;
-  font-size: 13px; letter-spacing: 1.5px; color: #fff;
+  font-size: 13px; letter-spacing: 1.5px; color: var(--text);
   text-transform: uppercase; line-height: 1.5; font-weight: 500;
 }
 .img-modal-subtitle {
@@ -1404,8 +1406,8 @@ header {
 }
 .img-modal-like {
   display: flex; align-items: center; gap: 10px;
-  background: none; border: 1px solid rgba(255,255,255,0.12);
-  color: rgba(255,255,255,0.55); cursor: pointer;
+  background: none; border: 1px solid rgba(var(--text-rgb),0.12);
+  color: rgba(var(--text-rgb),0.55); cursor: pointer;
   padding: 11px 16px; font-family: 'Montserrat', sans-serif;
   font-size: 9px; letter-spacing: 3px; text-transform: uppercase;
   transition: all .2s;
@@ -1429,7 +1431,7 @@ header {
 .img-modal-copyright {
   margin-top: auto; padding: 20px 24px;
   font-size: 7px; letter-spacing: 2px;
-  color: rgba(255,255,255,0.2); text-transform: uppercase; line-height: 1.8;
+  color: rgba(var(--text-rgb),0.2); text-transform: uppercase; line-height: 1.8;
 }
 
 /* Loading spinner inside modal */
@@ -1456,7 +1458,7 @@ header {
   .img-modal-like, .img-modal-rq { flex: 1; justify-content: center; }
   .img-modal-copyright { display: none; }
   /* Force gold on mobile — override any OS default button colour */
-  .img-modal-like { color: rgba(255,255,255,0.55) !important; border-color: rgba(255,255,255,0.2) !important; }
+  .img-modal-like { color: rgba(var(--text-rgb),0.55) !important; border-color: rgba(var(--text-rgb),0.2) !important; }
   .img-modal-like:hover, .img-modal-like.liked { color: var(--gold) !important; border-color: var(--gold) !important; }
   .like-heart { color: inherit !important; }
 }
@@ -1481,31 +1483,31 @@ header {
   background: none; border: none; cursor: pointer;
   font-family: 'Montserrat', sans-serif;
   font-size: 9px; letter-spacing: 3px; text-transform: uppercase;
-  color: rgba(255,255,255,0.4); margin-bottom: 40px;
+  color: rgba(var(--text-rgb),0.4); margin-bottom: 40px;
   padding: 0; transition: color .2s;
 }
 .rq-back:hover { color: var(--gold); }
 .rq-title {
   font-family: 'Cormorant Garamond', serif;
   font-size: clamp(28px,5vw,44px); letter-spacing: 6px; text-transform: uppercase;
-  color: #fff; margin-bottom: 6px; font-weight: 300; line-height: 1.1;
+  color: var(--text); margin-bottom: 6px; font-weight: 300; line-height: 1.1;
 }
 .rq-subtitle {
   font-size: 9px; letter-spacing: 2px; text-transform: uppercase;
-  color: rgba(255,255,255,0.35); margin-bottom: 36px;
+  color: rgba(var(--text-rgb),0.35); margin-bottom: 36px;
 }
 /* Step indicator */
 .rq-steps {
   display: flex; align-items: center; gap: 12px;
   margin-bottom: 32px;
   padding-bottom: 24px;
-  border-bottom: 1px solid rgba(255,255,255,0.07);
+  border-bottom: 1px solid rgba(var(--text-rgb),0.07);
 }
 .rq-step {
   display: flex; align-items: center; gap: 10px;
   font-family: 'Montserrat', sans-serif;
   font-size: 9px; letter-spacing: 2px; text-transform: uppercase;
-  color: rgba(255,255,255,0.3); white-space: nowrap;
+  color: rgba(var(--text-rgb),0.3); white-space: nowrap;
 }
 .rq-step.active { color: var(--gold); }
 .rq-step.done { color: rgba(201,169,110,0.5); }
@@ -1516,9 +1518,9 @@ header {
   font-size: 9px; flex-shrink: 0;
 }
 .rq-step-sep {
-  flex: 1; height: 1px; background: rgba(255,255,255,0.12);
+  flex: 1; height: 1px; background: rgba(var(--text-rgb),0.12);
 }
-.rq-step-line { flex: 1; height: 1px; background: rgba(255,255,255,0.1); margin: 0 12px; }
+.rq-step-line { flex: 1; height: 1px; background: rgba(var(--text-rgb),0.1); margin: 0 12px; }
 
 /* Step 1: Size selection */
 .rq-size-grid {
@@ -1526,7 +1528,7 @@ header {
   gap: 10px; margin-bottom: 24px;
 }
 .rq-size-card {
-  border: 1px solid rgba(255,255,255,0.12);
+  border: 1px solid rgba(var(--text-rgb),0.12);
   padding: 14px 16px; cursor: pointer;
   transition: border-color .2s, background .2s;
 }
@@ -1536,11 +1538,11 @@ header {
 }
 .rq-size-name {
   font-family: 'Cormorant Garamond', serif;
-  font-size: 18px; letter-spacing: 1px; color: #fff;
+  font-size: 18px; letter-spacing: 1px; color: var(--text);
 }
 .rq-size-dims {
   font-size: 9px; letter-spacing: 1px;
-  color: rgba(255,255,255,0.75); margin-top: 4px; line-height: 1.7;
+  color: rgba(var(--text-rgb),0.75); margin-top: 4px; line-height: 1.7;
 }
 .rq-size-edition {
   font-size: 7px; letter-spacing: 2px;
@@ -1551,12 +1553,12 @@ header {
 .rq-field { margin-bottom: 16px; }
 .rq-field label {
   display: block; font-size: 8px; letter-spacing: 3px;
-  text-transform: uppercase; color: rgba(255,255,255,0.35); margin-bottom: 6px;
+  text-transform: uppercase; color: rgba(var(--text-rgb),0.35); margin-bottom: 6px;
 }
 .rq-field input, .rq-field textarea {
-  width: 100%; background: rgba(255,255,255,0.04);
+  width: 100%; background: rgba(var(--text-rgb),0.04);
   border: 1px solid rgba(201,169,110,0.15);
-  color: #fff; padding: 11px 14px;
+  color: var(--text); padding: 11px 14px;
   font-family: 'Montserrat', sans-serif; font-size: 13px;
   outline: none; transition: border-color .2s;
   -webkit-appearance: none;
@@ -1569,14 +1571,14 @@ header {
   margin-top: 24px; align-items: stretch;
 }
 .btn-ghost {
-  background: none; border: 1px solid rgba(255,255,255,0.15);
-  color: rgba(255,255,255,0.5); padding: 0 24px; height: 44px;
+  background: none; border: 1px solid rgba(var(--text-rgb),0.15);
+  color: rgba(var(--text-rgb),0.5); padding: 0 24px; height: 44px;
   font-family: 'Montserrat', sans-serif;
   font-size: 9px; letter-spacing: 3px; text-transform: uppercase;
   cursor: pointer; transition: all .2s;
   display: inline-flex; align-items: center; justify-content: center;
 }
-.btn-ghost:hover { border-color: rgba(255,255,255,0.3); color: rgba(255,255,255,0.8); }
+.btn-ghost:hover { border-color: rgba(var(--text-rgb),0.3); color: rgba(var(--text-rgb),0.8); }
 
 /* ── COPYRIGHT BANNER — inline in gallery flow ── */
 #copyright-banner {
@@ -1597,12 +1599,12 @@ header {
   font-family: 'Cormorant Garamond', serif;
   font-size: clamp(28px, 5vw, 52px);
   font-weight: 600; letter-spacing: clamp(4px,1vw,8px);
-  text-transform: uppercase; color: #fff; line-height: 1.1;
+  text-transform: uppercase; color: var(--text); line-height: 1.1;
   margin-bottom: 8px;
 }
 .subpanel-desc {
   font-size: clamp(11px,1.4vw,13px); letter-spacing: 2px;
-  color: rgba(255,255,255,0.4); text-transform: uppercase;
+  color: rgba(var(--text-rgb),0.4); text-transform: uppercase;
   margin-bottom: 0; font-family: 'Montserrat', sans-serif;
 }
 
@@ -1629,17 +1631,17 @@ footer {
 }
 .footer-section-body {
   font-size: 12px; letter-spacing: 0.5px; line-height: 1.9;
-  color: rgba(255,255,255,0.38);
+  color: rgba(var(--text-rgb),0.38);
   font-family: 'Montserrat', sans-serif;
 }
 .footer-section-body p { margin-bottom: 10px; }
-.footer-section-body strong { color: rgba(255,255,255,0.55); font-weight: 600; }
+.footer-section-body strong { color: rgba(var(--text-rgb),0.55); font-weight: 600; }
 .footer-copy {
   grid-column: 1 / -1;
-  border-top: 1px solid rgba(255,255,255,0.05);
+  border-top: 1px solid rgba(var(--text-rgb),0.05);
   padding-top: 20px;
   font-size: 10px; letter-spacing: 2px;
-  color: rgba(255,255,255,0.55); text-align: center;
+  color: rgba(var(--text-rgb),0.55); text-align: center;
 }
 
 /* ── NEW badge on recently added photos ── */
@@ -1688,7 +1690,7 @@ footer {
 #new-photos-banner:hover {
   background: rgba(201,169,110,0.12);
   border-color: var(--gold);
-  color: #fff;
+  color: var(--text);
 }
 @keyframes bannerPulse {
   0%, 100% { opacity: 0.7; }
@@ -1738,12 +1740,12 @@ footer {
   font-family: 'Cormorant Garamond', serif;
   font-size: clamp(26px,4vw,48px); font-weight: 300;
   letter-spacing: clamp(2px,1vw,6px); text-transform: uppercase;
-  color: #fff; margin-bottom: 14px; line-height: 1.1;
+  color: var(--text); margin-bottom: 14px; line-height: 1.1;
 }
 .subscribe-subtitle {
   font-family: 'Montserrat', sans-serif;
   font-size: 11px; letter-spacing: 1px;
-  color: rgba(255,255,255,0.45); margin-bottom: 36px;
+  color: rgba(var(--text-rgb),0.45); margin-bottom: 36px;
   line-height: 1.8; max-width: 400px; margin-left: auto; margin-right: auto;
 }
 .subscribe-form {
@@ -1757,14 +1759,14 @@ footer {
   .subscribe-form { grid-template-columns: 1fr; }
 }
 .subscribe-form input {
-  background: rgba(255,255,255,0.05);
+  background: rgba(var(--text-rgb),0.05);
   border: 1px solid rgba(201,169,110,0.2);
-  color: rgba(255,255,255,0.85); padding: 12px 16px;
+  color: rgba(var(--text-rgb),0.85); padding: 12px 16px;
   font-family: 'Montserrat', sans-serif; font-size: 12px; letter-spacing: 1px;
   outline: none; transition: border-color .25s;
   -webkit-appearance: none;
 }
-.subscribe-form input::placeholder { color: rgba(255,255,255,0.3); }
+.subscribe-form input::placeholder { color: rgba(var(--text-rgb),0.3); }
 .subscribe-form input:focus { border-color: var(--gold); }
 .subscribe-form button {
   background: var(--gold); border: 1px solid var(--gold); color: #000;
@@ -1782,7 +1784,7 @@ footer {
 .subscribe-privacy {
   font-family: 'Montserrat', sans-serif;
   font-size: 8px; letter-spacing: 1px;
-  color: rgba(255,255,255,0.2); margin-top: 12px;
+  color: rgba(var(--text-rgb),0.2); margin-top: 12px;
 }
 
 .new-photo-wrap { display: flex; flex-direction: column; }
@@ -1813,7 +1815,7 @@ footer {
   font-family: 'Cormorant Garamond', serif;
   font-size: clamp(28px,6vw,56px); font-weight: 300;
   letter-spacing: clamp(4px,1.5vw,12px); text-transform: uppercase;
-  color: rgba(255,255,255,0.92); line-height: 1;
+  color: rgba(var(--text-rgb),0.92); line-height: 1;
 }
 .journeys-header-sub {
   font-family: 'Montserrat', sans-serif;
@@ -1829,12 +1831,12 @@ footer {
   font-family: 'Montserrat', sans-serif;
   font-size: 10px; font-weight: 600; letter-spacing: 3px;
   text-transform: uppercase;
-  color: rgba(255,255,255,0.4);
-  border: 1px solid rgba(255,255,255,0.1);
+  color: rgba(var(--text-rgb),0.4);
+  border: 1px solid rgba(var(--text-rgb),0.1);
   background: none; cursor: pointer;
   transition: all .2s; border-right: none;
 }
-.journeys-tab:last-child { border-right: 1px solid rgba(255,255,255,0.1); }
+.journeys-tab:last-child { border-right: 1px solid rgba(var(--text-rgb),0.1); }
 .journeys-tab.active {
   color: var(--gold);
   border-color: rgba(201,169,110,0.5);
@@ -1854,7 +1856,7 @@ footer {
   padding: 12px 0 0;
   font-family: 'Montserrat', sans-serif;
   font-size: 9px; letter-spacing: 2px; text-transform: uppercase;
-  color: rgba(255,255,255,0.4);
+  color: rgba(var(--text-rgb),0.4);
 }
 .journeys-legend-dot {
   width: 12px; height: 12px; border-radius: 50%;
@@ -1868,7 +1870,7 @@ footer {
 .journeys-stat {
   font-family: 'Montserrat', sans-serif;
   font-size: 9px; letter-spacing: 3px; text-transform: uppercase;
-  color: rgba(255,255,255,0.3);
+  color: rgba(var(--text-rgb),0.3);
 }
 .journeys-stat strong {
   display: block; font-family: 'Cormorant Garamond', serif;
@@ -1878,10 +1880,10 @@ footer {
 .journeys-popup .leaflet-popup-content-wrapper {
   background: #111; border: 1px solid rgba(201,169,110,0.3);
   border-radius: 2px; box-shadow: 0 8px 32px rgba(0,0,0,0.7);
-  color: #fff;
+  color: var(--text);
 }
 .journeys-popup .leaflet-popup-tip { background: #111; }
-.journeys-popup .leaflet-popup-close-button { color: rgba(255,255,255,0.4) !important; }
+.journeys-popup .leaflet-popup-close-button { color: rgba(var(--text-rgb),0.4) !important; }
 
 .stories-header {
   padding: clamp(32px,5vw,64px) clamp(16px,4vw,64px) 0;
@@ -1892,7 +1894,7 @@ footer {
   font-family: 'Cormorant Garamond', serif;
   font-size: clamp(28px,6vw,60px); font-weight: 300;
   letter-spacing: clamp(4px,1.5vw,14px); text-transform: uppercase;
-  color: rgba(255,255,255,0.92); line-height: 1;
+  color: rgba(var(--text-rgb),0.92); line-height: 1;
 }
 .stories-header-sub {
   font-family: 'Montserrat', sans-serif;
@@ -1939,7 +1941,7 @@ footer {
 }
 .story-card-hero-placeholder span {
   font-size: 9px; letter-spacing: 3px;
-  color: rgba(255,255,255,0.15); text-transform: uppercase;
+  color: rgba(var(--text-rgb),0.15); text-transform: uppercase;
 }
 .story-card-body { padding: 18px 20px 20px; }
 .story-card-meta {
@@ -1950,17 +1952,17 @@ footer {
 .story-card-title {
   font-family: 'Cormorant Garamond', serif;
   font-size: clamp(18px, 2.8vw, 26px); font-weight: 600;
-  letter-spacing: 1px; color: #fff; line-height: 1.25;
+  letter-spacing: 1px; color: var(--text); line-height: 1.25;
   margin-bottom: 8px;
 }
 .story-card-summary {
   font-family: 'Montserrat', sans-serif;
   font-size: 11px; letter-spacing: 0.4px; line-height: 1.8;
-  color: rgba(255,255,255,0.42);
+  color: rgba(var(--text-rgb),0.42);
 }
 .story-card-footer {
   display: flex; align-items: center; gap: 10px;
-  padding: 12px 20px; border-top: 1px solid rgba(255,255,255,0.05);
+  padding: 12px 20px; border-top: 1px solid rgba(var(--text-rgb),0.05);
 }
 .story-card-cats { display: flex; flex-wrap: wrap; gap: 6px; flex: 1; }
 .story-card-cat {
@@ -2008,7 +2010,7 @@ footer {
 .story-post-back {
   display: inline-flex; align-items: center; gap: 8px;
   font-size: 8px; letter-spacing: 4px; text-transform: uppercase;
-  color: rgba(255,255,255,0.28); cursor: pointer;
+  color: rgba(var(--text-rgb),0.28); cursor: pointer;
   background: none; border: none;
   font-family: 'Montserrat', sans-serif;
   padding: clamp(20px,4vw,36px) 0 clamp(20px,4vw,32px);
@@ -2025,13 +2027,13 @@ footer {
   font-family: 'Cormorant Garamond', serif;
   font-size: clamp(26px, 6vw, 56px); font-weight: 600;
   letter-spacing: clamp(2px,0.8vw,6px); text-transform: uppercase;
-  color: #fff; line-height: 1.1; margin-bottom: 8px;
+  color: var(--text); line-height: 1.1; margin-bottom: 8px;
   user-select: none; -webkit-user-select: none;
 }
 .story-post-dates {
   font-family: 'Montserrat', sans-serif;
   font-size: 9px; letter-spacing: 3px; text-transform: uppercase;
-  color: rgba(255,255,255,0.32); margin-bottom: clamp(24px,4vw,40px);
+  color: rgba(var(--text-rgb),0.32); margin-bottom: clamp(24px,4vw,40px);
   user-select: none; -webkit-user-select: none;
 }
 .story-post-divider {
@@ -2046,7 +2048,7 @@ footer {
 .story-body {
   font-family: 'Montserrat', sans-serif;
   font-size: clamp(14px, 1.8vw, 16px); font-weight: 400;
-  color: rgba(255,255,255,0.82); line-height: 1.75;
+  color: rgba(var(--text-rgb),0.82); line-height: 1.75;
   user-select: none; -webkit-user-select: none;
 }
 .story-body p { margin-bottom: 14px; }
@@ -2054,7 +2056,7 @@ footer {
   font-family: 'Montserrat', sans-serif !important;
   font-size: clamp(14px, 1.8vw, 16px) !important;
   font-weight: 700 !important;
-  color: #fff !important;
+  color: var(--text) !important;
   letter-spacing: 0.5px;
   margin: 28px 0 10px;
   text-transform: none;
@@ -2072,7 +2074,7 @@ footer {
 .story-inline-caption {
   font-family: 'Montserrat', sans-serif;
   font-size: 11px; letter-spacing: 1.5px;
-  color: rgba(255,255,255,0.75); text-transform: uppercase;
+  color: rgba(var(--text-rgb),0.75); text-transform: uppercase;
   margin-top: 8px; text-align: center;
   line-height: 1.5;
 }
@@ -2096,7 +2098,7 @@ footer {
 .story-logistic-value {
   font-family: 'Montserrat', sans-serif;
   font-size: 11px; letter-spacing: 0.4px;
-  color: rgba(255,255,255,0.62); line-height: 1.7;
+  color: rgba(var(--text-rgb),0.62); line-height: 1.7;
 }
 
 /* ── Highlights ── */
@@ -2104,9 +2106,9 @@ footer {
 .story-highlights li {
   font-family: 'Cormorant Garamond', serif;
   font-size: clamp(15px,1.8vw,19px); font-weight: 300;
-  color: rgba(255,255,255,0.58); line-height: 1.8;
+  color: rgba(var(--text-rgb),0.58); line-height: 1.8;
   padding: 9px 0 9px 22px; position: relative;
-  border-bottom: 1px solid rgba(255,255,255,0.04);
+  border-bottom: 1px solid rgba(var(--text-rgb),0.04);
 }
 .story-highlights li::before {
   content: ''; position: absolute; left: 0; top: 50%;
@@ -2124,7 +2126,7 @@ footer {
 .story-tips-box li {
   font-family: 'Montserrat', sans-serif;
   font-size: 12px; letter-spacing: 0.4px;
-  color: rgba(255,255,255,0.58); line-height: 1.85;
+  color: rgba(var(--text-rgb),0.58); line-height: 1.85;
   padding-left: 16px; position: relative; margin-bottom: 5px;
 }
 .story-tips-box li::before {
@@ -2162,8 +2164,8 @@ footer {
 .story-cta-btn:hover { background: var(--gold); color: #000; }
 .story-cta-btn-ghost {
   display: inline-flex; align-items: center; gap: 8px;
-  background: none; border: 1px solid rgba(255,255,255,0.14);
-  color: rgba(255,255,255,0.55); padding: 0 20px; height: 42px;
+  background: none; border: 1px solid rgba(var(--text-rgb),0.14);
+  color: rgba(var(--text-rgb),0.55); padding: 0 20px; height: 42px;
   font-family: 'Montserrat', sans-serif;
   font-size: 9px; letter-spacing: 3px; text-transform: uppercase;
   cursor: pointer; transition: all .2s;
@@ -2188,7 +2190,7 @@ footer {
   font-family: 'Cormorant Garamond', serif;
   font-size: clamp(18px,2.5vw,24px); font-weight: 300;
   letter-spacing: 3px; text-transform: uppercase;
-  color: rgba(255,255,255,0.85); margin-bottom: 4px;
+  color: rgba(var(--text-rgb),0.85); margin-bottom: 4px;
 }
 .story-end-sub {
   font-family: 'Montserrat', sans-serif;
@@ -2197,9 +2199,9 @@ footer {
 }
 .story-end-form input,
 .story-end-form textarea {
-  width: 100%; background: rgba(255,255,255,0.05);
+  width: 100%; background: rgba(var(--text-rgb),0.05);
   border: 1px solid rgba(201,169,110,0.15);
-  color: #fff; padding: 10px 14px;
+  color: var(--text); padding: 10px 14px;
   font-family: 'Montserrat', sans-serif; font-size: 13px;
   outline: none; margin-bottom: 12px;
   transition: border-color .25s; -webkit-appearance: none;
@@ -2209,7 +2211,7 @@ footer {
 .story-end-form textarea { min-height: 100px; resize: vertical; }
 .story-end-form label {
   display: block; font-size: 8px; letter-spacing: 3px;
-  text-transform: uppercase; color: rgba(255,255,255,0.35);
+  text-transform: uppercase; color: rgba(var(--text-rgb),0.35);
   margin-bottom: 5px;
 }
 .story-end-form .form-row {
@@ -2229,7 +2231,7 @@ footer {
 .story-end-discover-title {
   font-family: 'Montserrat', sans-serif;
   font-size: 9px; letter-spacing: 4px; text-transform: uppercase;
-  color: rgba(255,255,255,0.3); margin-bottom: 14px;
+  color: rgba(var(--text-rgb),0.3); margin-bottom: 14px;
 }
 .story-end-gallery-btns {
   display: flex; flex-wrap: wrap; gap: 10px;
@@ -2247,8 +2249,8 @@ footer {
 .story-end-gallery-btn:hover { background: var(--gold); color: #000; }
 .story-end-gallery-btn-ghost {
   display: inline-flex; align-items: center; gap: 8px;
-  background: none; border: 1px solid rgba(255,255,255,0.12);
-  color: rgba(255,255,255,0.5); padding: 0 18px; height: 40px;
+  background: none; border: 1px solid rgba(var(--text-rgb),0.12);
+  color: rgba(var(--text-rgb),0.5); padding: 0 18px; height: 40px;
   font-family: 'Montserrat', sans-serif;
   font-size: 9px; letter-spacing: 3px; text-transform: uppercase;
   cursor: pointer; transition: all .2s;
@@ -2258,15 +2260,15 @@ footer {
 .story-end-cat-label {
   font-family: 'Montserrat', sans-serif;
   font-size: 9px; letter-spacing: 3px; text-transform: uppercase;
-  color: rgba(255,255,255,0.25); margin-bottom: 10px;
+  color: rgba(var(--text-rgb),0.25); margin-bottom: 10px;
 }
 .story-end-cats {
   display: flex; flex-wrap: wrap; gap: 8px;
 }
 .story-end-cat {
   display: inline-flex; align-items: center;
-  background: none; border: 1px solid rgba(255,255,255,0.1);
-  color: rgba(255,255,255,0.45); padding: 0 14px; height: 34px;
+  background: none; border: 1px solid rgba(var(--text-rgb),0.1);
+  color: rgba(var(--text-rgb),0.45); padding: 0 14px; height: 34px;
   font-family: 'Montserrat', sans-serif;
   font-size: 8px; letter-spacing: 2px; text-transform: uppercase;
   cursor: pointer; transition: all .2s;
@@ -2291,7 +2293,7 @@ footer {
   font-family: 'Cormorant Garamond', serif;
   font-size: clamp(18px,2.5vw,24px); font-weight: 300;
   letter-spacing: 3px; text-transform: uppercase;
-  color: rgba(255,255,255,0.85); margin-bottom: 6px;
+  color: rgba(var(--text-rgb),0.85); margin-bottom: 6px;
 }
 .story-action-sub {
   font-family: 'Montserrat', sans-serif;
@@ -2314,8 +2316,8 @@ footer {
 .story-action-btn:hover { background: var(--gold); color: #000; }
 .story-action-btn-ghost {
   display: inline-flex; align-items: center; gap: 8px;
-  background: none; border: 1px solid rgba(255,255,255,0.12);
-  color: rgba(255,255,255,0.55); padding: 0 18px; height: 40px;
+  background: none; border: 1px solid rgba(var(--text-rgb),0.12);
+  color: rgba(var(--text-rgb),0.55); padding: 0 18px; height: 40px;
   font-family: 'Montserrat', sans-serif;
   font-size: 9px; letter-spacing: 3px; text-transform: uppercase;
   cursor: pointer; transition: all .2s;
@@ -2329,15 +2331,15 @@ footer {
 .story-action-explore {
   font-family: 'Montserrat', sans-serif;
   font-size: 9px; letter-spacing: 3px; text-transform: uppercase;
-  color: rgba(255,255,255,0.35); margin-bottom: 12px;
+  color: rgba(var(--text-rgb),0.35); margin-bottom: 12px;
 }
 .story-action-cats {
   display: flex; flex-wrap: wrap; gap: 8px;
 }
 .story-action-cat {
   display: inline-flex; align-items: center;
-  background: none; border: 1px solid rgba(255,255,255,0.1);
-  color: rgba(255,255,255,0.5); padding: 0 14px; height: 34px;
+  background: none; border: 1px solid rgba(var(--text-rgb),0.1);
+  color: rgba(var(--text-rgb),0.5); padding: 0 14px; height: 34px;
   font-family: 'Montserrat', sans-serif;
   font-size: 8px; letter-spacing: 2px; text-transform: uppercase;
   cursor: pointer; transition: all .2s;
@@ -2378,7 +2380,7 @@ footer {
   font-size: clamp(14px,2vw,18px);
   font-weight: 300;
   letter-spacing: 1px;
-  color: rgba(255,255,255,0.85);
+  color: rgba(var(--text-rgb),0.85);
   line-height: 1.5;
 }
 #comment-nudge-text span {
@@ -2388,7 +2390,7 @@ footer {
   position: absolute;
   top: 8px; right: 10px;
   background: none; border: none;
-  color: rgba(255,255,255,0.3);
+  color: rgba(var(--text-rgb),0.3);
   font-size: 14px; cursor: pointer;
   transition: color .2s;
   line-height: 1;
@@ -2408,18 +2410,18 @@ footer {
   font-family: 'Cormorant Garamond', serif;
   font-size: clamp(20px,3vw,28px); font-weight: 600;
   letter-spacing: 3px; text-transform: uppercase;
-  color: #fff; margin-bottom: 24px;
+  color: var(--text); margin-bottom: 24px;
 }
 .story-comment-form {
-  background: rgba(255,255,255,0.03);
+  background: rgba(var(--text-rgb),0.03);
   border: 1px solid rgba(201,169,110,0.12);
   padding: 24px; margin-bottom: 32px;
 }
 .story-comment-form input,
 .story-comment-form textarea {
-  width: 100%; background: rgba(255,255,255,0.05);
+  width: 100%; background: rgba(var(--text-rgb),0.05);
   border: 1px solid rgba(201,169,110,0.15);
-  color: #fff; padding: 10px 14px;
+  color: var(--text); padding: 10px 14px;
   font-family: 'Montserrat', sans-serif; font-size: 13px;
   outline: none; margin-bottom: 12px;
   transition: border-color .25s; -webkit-appearance: none;
@@ -2429,7 +2431,7 @@ footer {
 .story-comment-form textarea { min-height: 100px; resize: vertical; }
 .story-comment-form label {
   display: block; font-size: 8px; letter-spacing: 3px;
-  text-transform: uppercase; color: rgba(255,255,255,0.35);
+  text-transform: uppercase; color: rgba(var(--text-rgb),0.35);
   margin-bottom: 5px;
 }
 .story-comment-form .form-row {
@@ -2445,7 +2447,7 @@ footer {
 .story-comment-list { margin-top: 8px; }
 .story-comment-item {
   padding: 18px 0;
-  border-bottom: 1px solid rgba(255,255,255,0.06);
+  border-bottom: 1px solid rgba(var(--text-rgb),0.06);
   position: relative;
 }
 .story-comment-item:last-child { border-bottom: none; }
@@ -2461,12 +2463,12 @@ footer {
 .story-comment-date {
   font-family: 'Montserrat', sans-serif;
   font-size: 9px; letter-spacing: 1px;
-  color: rgba(255,255,255,0.25);
+  color: rgba(var(--text-rgb),0.25);
 }
 .story-comment-text {
   font-family: 'Montserrat', sans-serif;
   font-size: 13px; letter-spacing: 0.3px; line-height: 1.75;
-  color: rgba(255,255,255,0.7);
+  color: rgba(var(--text-rgb),0.7);
 }
 .story-comment-delete {
   display: none; background: none; border: none;
@@ -2480,7 +2482,7 @@ footer {
 .story-comments-empty {
   font-family: 'Montserrat', sans-serif;
   font-size: 11px; letter-spacing: 2px;
-  color: rgba(255,255,255,0.2); text-transform: uppercase;
+  color: rgba(var(--text-rgb),0.2); text-transform: uppercase;
   padding: 16px 0;
 }
 
@@ -2493,12 +2495,12 @@ footer {
   font-family: 'Cormorant Garamond', serif;
   font-size: clamp(20px,4vw,38px); font-weight: 300;
   letter-spacing: 6px; text-transform: uppercase;
-  color: rgba(255,255,255,0.28); margin-bottom: 14px;
+  color: rgba(var(--text-rgb),0.28); margin-bottom: 14px;
 }
 .stories-empty-sub {
   font-family: 'Montserrat', sans-serif;
   font-size: 9px; letter-spacing: 4px; text-transform: uppercase;
-  color: rgba(255,255,255,0.18);
+  color: rgba(var(--text-rgb),0.18);
 }
 
 /* ── Blog list (Travel Stories index) ── */
@@ -2509,25 +2511,25 @@ footer {
 .blog-row {
   display: flex; align-items: center; justify-content: space-between;
   gap: 16px; padding: clamp(18px,2.5vw,28px) 0;
-  border-bottom: 1px solid rgba(255,255,255,0.06);
+  border-bottom: 1px solid rgba(var(--text-rgb),0.06);
   cursor: pointer;
   transition: border-color .2s;
   -webkit-tap-highlight-color: transparent;
 }
-.blog-row:first-child { border-top: 1px solid rgba(255,255,255,0.06); }
+.blog-row:first-child { border-top: 1px solid rgba(var(--text-rgb),0.06); }
 .blog-row:hover { border-bottom-color: rgba(201,169,110,0.3); }
 .blog-row-main { flex: 1; min-width: 0; }
 .blog-row-title {
   font-family: 'Cormorant Garamond', serif;
   font-size: clamp(18px,2.8vw,26px); font-weight: 600;
-  letter-spacing: 1px; color: #fff; line-height: 1.3;
+  letter-spacing: 1px; color: var(--text); line-height: 1.3;
   transition: color .2s;
 }
 .blog-row:hover .blog-row-title { color: var(--gold); }
 .blog-row-summary {
   font-family: 'Montserrat', sans-serif;
   font-size: 11px; letter-spacing: 0.3px; line-height: 1.7;
-  color: rgba(255,255,255,0.38); margin-top: 5px;
+  color: rgba(var(--text-rgb),0.38); margin-top: 5px;
 }
 .blog-row-meta {
   display: flex; flex-direction: column; align-items: flex-end;
@@ -2541,7 +2543,7 @@ footer {
 .blog-row-date {
   font-family: 'Montserrat', sans-serif;
   font-size: 9px; letter-spacing: 1px;
-  color: rgba(255,255,255,0.28);
+  color: rgba(var(--text-rgb),0.28);
 }
 .blog-row-arrow {
   font-size: 22px; color: rgba(201,169,110,0.4);
@@ -2565,6 +2567,19 @@ footer {
 }
 .new-photo-tag { font-family: 'Montserrat', sans-serif; font-size: 7px; letter-spacing: 2px; color: var(--gold); opacity: 0.8; border: 1px solid rgba(201,169,110,0.3); padding: 3px 7px; }
 
+
+
+/* ── MOBILE THEME — Earthy Editorial (phones / small screens only) ── */
+@media (max-width: 768px) {
+  :root {
+    --dark:      #F4F1EA;
+    --mid:       #EAE5D9;
+    --gold:      #C27D5F;
+    --gold2:     #D9A184;
+    --text:      #2B1E13;
+    --text-rgb:  43,30,19;
+  }
+}
 </style>
 </head>
 <body>
@@ -2632,13 +2647,13 @@ footer {
   <div class="tile-nav-label">Collections</div>
   <div class="cat-grid">
 
-<div class="cat-card" onclick="openCategory('Landscape')" role="button" tabindex="0" onkeypress="if(event.key==='Enter') this.click()"><img class="cat-card-img" src="Thumbs/Photos/Badrinath/2026-0801-VOF_D750_NCM_4563.JPG" loading="lazy" decoding="async" alt=""><div class="cat-card-bar"><div class="cat-card-name">Landscape</div></div>
+<div class="cat-card" onclick="openCategory('Landscape')" role="button" tabindex="0" onkeypress="if(event.key==='Enter') this.click()"><img class="cat-card-img" src="Thumbs/Photos/Valley_of_Flowers/2026-0801-VOF_D750_NCM_5440-47.jpg" loading="lazy" decoding="async" alt=""><div class="cat-card-bar"><div class="cat-card-name">Landscape</div></div>
 </div>
-<div class="cat-card" onclick="openCategory('Flora & Fauna')" role="button" tabindex="0" onkeypress="if(event.key==='Enter') this.click()"><img class="cat-card-img" src="Thumbs/Photos/Badrinath/2026-0801-VOF_D750_NCM_4248.JPG" loading="lazy" decoding="async" alt=""><div class="cat-card-bar"><div class="cat-card-name">Flora & Fauna</div></div>
+<div class="cat-card" onclick="openCategory('Flora & Fauna')" role="button" tabindex="0" onkeypress="if(event.key==='Enter') this.click()"><img class="cat-card-img" src="Thumbs/Photos/Birds/Munnar Birds/2026-0127-MunnarBirds-NCM-5870.JPG" loading="lazy" decoding="async" alt=""><div class="cat-card-bar"><div class="cat-card-name">Flora & Fauna</div></div>
 </div>
-<div class="cat-card" onclick="openCategory('Architecture')" role="button" tabindex="0" onkeypress="if(event.key==='Enter') this.click()"><img class="cat-card-img" src="Thumbs/Photos/Tadoba/2026-0324-Tadoba-NCM-8706.JPG" loading="lazy" decoding="async" alt=""><div class="cat-card-bar"><div class="cat-card-name">Architecture</div></div>
+<div class="cat-card" onclick="openCategory('Architecture')" role="button" tabindex="0" onkeypress="if(event.key==='Enter') this.click()"><img class="cat-card-img" src="Thumbs/Photos/Architecture/2024-01-Badami-JPG/2024-01-Badami-Day1-NCM_6264.jpg" loading="lazy" decoding="async" alt=""><div class="cat-card-bar"><div class="cat-card-name">Architecture</div></div>
 </div>
-<div class="cat-card" onclick="openCategory('People & Culture')" role="button" tabindex="0" onkeypress="if(event.key==='Enter') this.click()"><img class="cat-card-img" src="Thumbs/Photos/Tadoba/2026-0324-Tadoba-NCM-9729.JPG" loading="lazy" decoding="async" alt=""><div class="cat-card-bar"><div class="cat-card-name">People & Culture</div></div>
+<div class="cat-card" onclick="openCategory('People & Culture')" role="button" tabindex="0" onkeypress="if(event.key==='Enter') this.click()"><img class="cat-card-img" src="Thumbs/Photos/People/Kathakali/2026-0127-DanceMunnar-NCM-5220.JPG" loading="lazy" decoding="async" alt=""><div class="cat-card-bar"><div class="cat-card-name">People & Culture</div></div>
 </div>
 <div class="cat-card cat-card-wide" onclick="showNewPhotos()" role="button" tabindex="0" style="grid-column:1/-1;aspect-ratio:auto;min-height:120px;"><div class="cat-card-bar" style="position:relative;padding:clamp(16px,3vw,28px) clamp(16px,4vw,44px);background:linear-gradient(135deg,rgba(201,169,110,0.12) 0%,rgba(201,169,110,0.04) 100%);"><div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;"><div><div class="cat-card-name" style="color:var(--gold);">Recently Added</div><div class="cat-card-count" id="ra-card-count">Photos added in the last 14 days</div></div><div style="font-size:28px;color:var(--gold);opacity:0.5;">&#10022;</div></div></div></div>
 
@@ -2654,21 +2669,21 @@ footer {
 <div class="subpanel-header"><div class="subpanel-title">Landscape</div></div>
 <div class="places-filters" style="padding-top:clamp(16px,3vw,28px)"><button class="places-pill active" data-region="india-Landscape" onclick="setCatFilter(this,'india-Landscape')">India</button><button class="places-pill" data-region="overseas-Landscape" onclick="setCatFilter(this,'overseas-Landscape')">Overseas</button></div>
 <div class="cat-region-section cat-grid-4" id="india-Landscape">
-<div class="cat-card" onclick="showGallery('gallery-Landscape-india-Badrinath')"><img class="cat-card-img" src="Thumbs/Photos/Badrinath/2026-0801-VOF_D750_NCM_4349.JPG" loading="lazy" decoding="async" alt=""><div class="cat-card-bar"><div class="cat-card-name">Badrinath</div><div class="cat-card-count">Uttrakhand · 6 Photos</div></div>
+<div class="cat-card" onclick="showGallery('gallery-Landscape-india-Badrinath')"><img class="cat-card-img" src="Thumbs/Photos/Badrinath/2026-0801-VOF_D750_NCM_4561.JPG" loading="lazy" decoding="async" alt=""><div class="cat-card-bar"><div class="cat-card-name">Badrinath</div><div class="cat-card-count">Uttrakhand · 6 Photos</div></div>
 </div>
-<div class="cat-card" onclick="showGallery('gallery-Landscape-india-Megamalai')"><img class="cat-card-img" src="Thumbs/Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4649.jpg" loading="lazy" decoding="async" alt=""><div class="cat-card-bar"><div class="cat-card-name">Megamalai</div><div class="cat-card-count">Tamil Nadu · 15 Photos</div></div>
+<div class="cat-card" onclick="showGallery('gallery-Landscape-india-Megamalai')"><img class="cat-card-img" src="Thumbs/Photos/Megamalai/2026-0305-Megamalai-NCM-7720.jpg" loading="lazy" decoding="async" alt=""><div class="cat-card-bar"><div class="cat-card-name">Megamalai</div><div class="cat-card-count">Tamil Nadu · 15 Photos</div></div>
 </div>
-<div class="cat-card" onclick="showGallery('gallery-Landscape-india-Tadoba')"><img class="cat-card-img" src="Thumbs/Photos/Tadoba/2026-0324-Tadoba-NCM-9959.JPG" loading="lazy" decoding="async" alt=""><div class="cat-card-bar"><div class="cat-card-name">Tadoba</div><div class="cat-card-count">Maharashtra · 2 Photos</div></div>
+<div class="cat-card" onclick="showGallery('gallery-Landscape-india-Tadoba')"><img class="cat-card-img" src="Thumbs/Photos/Tadoba/2026-0324-Tadoba-NCM-9966.JPG" loading="lazy" decoding="async" alt=""><div class="cat-card-bar"><div class="cat-card-name">Tadoba</div><div class="cat-card-count">Maharashtra · 2 Photos</div></div>
 </div>
-<div class="cat-card" onclick="showGallery('gallery-Landscape-india-Valley_of_Flowers')"><img class="cat-card-img" src="Thumbs/Photos/Valley_of_Flowers/2026-0801-VOF_D750_NCM_5100.JPG" loading="lazy" decoding="async" alt=""><div class="cat-card-bar"><div class="cat-card-name">Valley of Flowers</div><div class="cat-card-count">Uttrakhand · 35 Photos</div></div>
+<div class="cat-card" onclick="showGallery('gallery-Landscape-india-Valley_of_Flowers')"><img class="cat-card-img" src="Thumbs/Photos/Valley_of_Flowers/2026-0801-VOF_D750_NCM_5561-63.jpg" loading="lazy" decoding="async" alt=""><div class="cat-card-bar"><div class="cat-card-name">Valley of Flowers</div><div class="cat-card-count">Uttrakhand · 35 Photos</div></div>
 </div>
 </div>
 <div class="cat-region-section cat-grid-4" id="overseas-Landscape" style="display:none">
-<div class="cat-card" onclick="showGallery('gallery-Landscape-overseas-Canada')"><img class="cat-card-img" src="Thumbs/Photos/Canada/2025-0713-Calgary-NCM_6212.jpg" loading="lazy" decoding="async" alt=""><div class="cat-card-bar"><div class="cat-card-name">Canada</div><div class="cat-card-count">29 Photos</div></div>
+<div class="cat-card" onclick="showGallery('gallery-Landscape-overseas-Canada')"><img class="cat-card-img" src="Thumbs/Photos/Canada/2025-0713-Peyto_Lake_BanffNP-NCM_6306.jpg" loading="lazy" decoding="async" alt=""><div class="cat-card-bar"><div class="cat-card-name">Canada</div><div class="cat-card-count">29 Photos</div></div>
 </div>
-<div class="cat-card" onclick="showGallery('gallery-Landscape-overseas-Greece')"><img class="cat-card-img" src="Thumbs/Photos/Greece/DSC_3521-Pano.jpg" loading="lazy" decoding="async" alt=""><div class="cat-card-bar"><div class="cat-card-name">Greece</div><div class="cat-card-count">6 Photos</div></div>
+<div class="cat-card" onclick="showGallery('gallery-Landscape-overseas-Greece')"><img class="cat-card-img" src="Thumbs/Photos/Greece/DSC_3601.jpg" loading="lazy" decoding="async" alt=""><div class="cat-card-bar"><div class="cat-card-name">Greece</div><div class="cat-card-count">6 Photos</div></div>
 </div>
-<div class="cat-card" onclick="showGallery('gallery-Landscape-overseas-USA')"><img class="cat-card-img" src="Thumbs/Photos/NewYork/2025-0727-NY-NCM_8766.jpg" loading="lazy" decoding="async" alt=""><div class="cat-card-bar"><div class="cat-card-name">USA</div><div class="cat-card-count">5 Photos</div></div>
+<div class="cat-card" onclick="showGallery('gallery-Landscape-overseas-USA')"><img class="cat-card-img" src="Thumbs/Photos/NewYork/2025-0727-NY-NCM_8731.jpg" loading="lazy" decoding="async" alt=""><div class="cat-card-bar"><div class="cat-card-name">USA</div><div class="cat-card-count">5 Photos</div></div>
 </div>
 </div>
 </div>
@@ -2676,15 +2691,15 @@ footer {
 <div class="subpanel-header"><div class="subpanel-title">Flora & Fauna</div></div>
 <div class="places-filters" style="padding-top:clamp(16px,3vw,28px)"><button class="places-pill active" data-region="india-Flora_n_Fauna" onclick="setCatFilter(this,'india-Flora_n_Fauna')">India</button><button class="places-pill" data-region="overseas-Flora_n_Fauna" onclick="setCatFilter(this,'overseas-Flora_n_Fauna')">Overseas</button></div>
 <div class="cat-region-section cat-grid-4" id="india-Flora_n_Fauna">
-<div class="cat-card" onclick="showGallery('gallery-Flora_n_Fauna-india-Badrinath')"><img class="cat-card-img" src="Thumbs/Photos/Badrinath/2026-0801-VOF_D750_NCM_4496.JPG" loading="lazy" decoding="async" alt=""><div class="cat-card-bar"><div class="cat-card-name">Badrinath</div><div class="cat-card-count">Uttrakhand · 6 Photos</div></div>
+<div class="cat-card" onclick="showGallery('gallery-Flora_n_Fauna-india-Badrinath')"><img class="cat-card-img" src="Thumbs/Photos/Badrinath/2026-0801-VOF_D750_NCM_4248.JPG" loading="lazy" decoding="async" alt=""><div class="cat-card-bar"><div class="cat-card-name">Badrinath</div><div class="cat-card-count">Uttrakhand · 6 Photos</div></div>
 </div>
-<div class="cat-card" onclick="showGallery('gallery-Flora_n_Fauna-india-Munnar')"><img class="cat-card-img" src="Thumbs/Photos/Birds/Munnar%20Birds/2026-0127-MunnarBirds-NCM-5397.JPG" loading="lazy" decoding="async" alt=""><div class="cat-card-bar"><div class="cat-card-name">Munnar</div><div class="cat-card-count">Kerala · 14 Photos</div></div>
+<div class="cat-card" onclick="showGallery('gallery-Flora_n_Fauna-india-Munnar')"><img class="cat-card-img" src="Thumbs/Photos/Birds/Munnar%20Birds/2026-0127-MunnarBirds-NCM-6507.JPG" loading="lazy" decoding="async" alt=""><div class="cat-card-bar"><div class="cat-card-name">Munnar</div><div class="cat-card-count">Kerala · 14 Photos</div></div>
 </div>
-<div class="cat-card" onclick="showGallery('gallery-Flora_n_Fauna-india-Tadoba')"><img class="cat-card-img" src="Thumbs/Photos/Tadoba/2026-0324-Tadoba-NCM-9845.JPG" loading="lazy" decoding="async" alt=""><div class="cat-card-bar"><div class="cat-card-name">Tadoba</div><div class="cat-card-count">Maharashtra · 9 Photos</div></div>
+<div class="cat-card" onclick="showGallery('gallery-Flora_n_Fauna-india-Tadoba')"><img class="cat-card-img" src="Thumbs/Photos/Tadoba/2026-0324-Tadoba-NCM-9463.JPG" loading="lazy" decoding="async" alt=""><div class="cat-card-bar"><div class="cat-card-name">Tadoba</div><div class="cat-card-count">Maharashtra · 9 Photos</div></div>
 </div>
 <div class="cat-card" onclick="showGallery('gallery-Flora_n_Fauna-india-Thekkady')"><img class="cat-card-img" src="Thumbs/Photos/People/Kathakali/2026-0127-DanceMunnar-NCM-5108.JPG" loading="lazy" decoding="async" alt=""><div class="cat-card-bar"><div class="cat-card-name">Thekkady</div><div class="cat-card-count">Kerala · 2 Photos</div></div>
 </div>
-<div class="cat-card" onclick="showGallery('gallery-Flora_n_Fauna-india-Valley_of_Flowers')"><img class="cat-card-img" src="Thumbs/Photos/Valley_of_Flowers/Flowers_05.jpg" loading="lazy" decoding="async" alt=""><div class="cat-card-bar"><div class="cat-card-name">Valley of Flowers</div><div class="cat-card-count">Uttrakhand · 37 Photos</div></div>
+<div class="cat-card" onclick="showGallery('gallery-Flora_n_Fauna-india-Valley_of_Flowers')"><img class="cat-card-img" src="Thumbs/Photos/Valley_of_Flowers/2026-08_VOF_Z6_5089.JPG" loading="lazy" decoding="async" alt=""><div class="cat-card-bar"><div class="cat-card-name">Valley of Flowers</div><div class="cat-card-count">Uttrakhand · 37 Photos</div></div>
 </div>
 </div>
 <div class="cat-region-section cat-grid-4" id="overseas-Flora_n_Fauna" style="display:none">
@@ -2696,19 +2711,19 @@ footer {
 <div class="subpanel-header"><div class="subpanel-title">Architecture</div></div>
 <div class="places-filters" style="padding-top:clamp(16px,3vw,28px)"><button class="places-pill active" data-region="india-Architecture" onclick="setCatFilter(this,'india-Architecture')">India</button><button class="places-pill" data-region="overseas-Architecture" onclick="setCatFilter(this,'overseas-Architecture')">Overseas</button></div>
 <div class="cat-region-section cat-grid-4" id="india-Architecture">
-<div class="cat-card" onclick="showGallery('gallery-Architecture-india-Aihole')"><img class="cat-card-img" src="Thumbs/Photos/Architecture/2024-01-Badami-JPG/2024-01-Badami-Day1-NCM_6596.jpg" loading="lazy" decoding="async" alt=""><div class="cat-card-bar"><div class="cat-card-name">Aihole</div><div class="cat-card-count">Karnataka · 2 Photos</div></div>
+<div class="cat-card" onclick="showGallery('gallery-Architecture-india-Aihole')"><img class="cat-card-img" src="Thumbs/Photos/Architecture/2024-01-Badami-JPG/2024-01-Badami-Day1-NCM_6545.jpg" loading="lazy" decoding="async" alt=""><div class="cat-card-bar"><div class="cat-card-name">Aihole</div><div class="cat-card-count">Karnataka · 2 Photos</div></div>
 </div>
-<div class="cat-card" onclick="showGallery('gallery-Architecture-india-Aurangabad')"><img class="cat-card-img" src="Thumbs/Photos/Tadoba/2026-0324-Tadoba-NCM-8706.JPG" loading="lazy" decoding="async" alt=""><div class="cat-card-bar"><div class="cat-card-name">Aurangabad</div><div class="cat-card-count">Maharashtra · 6 Photos</div></div>
+<div class="cat-card" onclick="showGallery('gallery-Architecture-india-Aurangabad')"><img class="cat-card-img" src="Thumbs/Photos/Tadoba/2026-0324-Tadoba-NCM-8736.JPG" loading="lazy" decoding="async" alt=""><div class="cat-card-bar"><div class="cat-card-name">Aurangabad</div><div class="cat-card-count">Maharashtra · 6 Photos</div></div>
 </div>
-<div class="cat-card" onclick="showGallery('gallery-Architecture-india-Badami')"><img class="cat-card-img" src="Thumbs/Photos/Architecture/2024-01-Badami-JPG/2024-01-Badami-Day0-NCM_6002.jpg" loading="lazy" decoding="async" alt=""><div class="cat-card-bar"><div class="cat-card-name">Badami</div><div class="cat-card-count">Karnataka · 6 Photos</div></div>
+<div class="cat-card" onclick="showGallery('gallery-Architecture-india-Badami')"><img class="cat-card-img" src="Thumbs/Photos/Architecture/2024-01-Badami-JPG/2024-01-Badami-Day0-NCM_6121.jpg" loading="lazy" decoding="async" alt=""><div class="cat-card-bar"><div class="cat-card-name">Badami</div><div class="cat-card-count">Karnataka · 6 Photos</div></div>
 </div>
-<div class="cat-card" onclick="showGallery('gallery-Architecture-india-Madurai')"><img class="cat-card-img" src="Thumbs/Photos/Madurai/2026-0308-Madurai-NCM-8651-53.jpg" loading="lazy" decoding="async" alt=""><div class="cat-card-bar"><div class="cat-card-name">Madurai</div><div class="cat-card-count">Tamil Nadu · 3 Photos</div></div>
+<div class="cat-card" onclick="showGallery('gallery-Architecture-india-Madurai')"><img class="cat-card-img" src="Thumbs/Photos/Madurai/2026-0308-Madurai-NCM-8622-24.jpg" loading="lazy" decoding="async" alt=""><div class="cat-card-bar"><div class="cat-card-name">Madurai</div><div class="cat-card-count">Tamil Nadu · 3 Photos</div></div>
 </div>
-<div class="cat-card" onclick="showGallery('gallery-Architecture-india-Pattadhakal')"><img class="cat-card-img" src="Thumbs/Photos/Architecture/2024-01-Badami-JPG/2024-01-Badami-Day1-NCM_6413.jpg" loading="lazy" decoding="async" alt=""><div class="cat-card-bar"><div class="cat-card-name">Pattadhakal</div><div class="cat-card-count">Karnataka · 3 Photos</div></div>
+<div class="cat-card" onclick="showGallery('gallery-Architecture-india-Pattadhakal')"><img class="cat-card-img" src="Thumbs/Photos/Architecture/2024-01-Badami-JPG/2024-01-Badami-Day1-NCM_6264.jpg" loading="lazy" decoding="async" alt=""><div class="cat-card-bar"><div class="cat-card-name">Pattadhakal</div><div class="cat-card-count">Karnataka · 3 Photos</div></div>
 </div>
 </div>
 <div class="cat-region-section cat-grid-4" id="overseas-Architecture" style="display:none">
-<div class="cat-card" onclick="showGallery('gallery-Architecture-overseas-Greece')"><img class="cat-card-img" src="Thumbs/Photos/Greece/DSC_3962-PanoBW.jpg" loading="lazy" decoding="async" alt=""><div class="cat-card-bar"><div class="cat-card-name">Greece</div><div class="cat-card-count">6 Photos</div></div>
+<div class="cat-card" onclick="showGallery('gallery-Architecture-overseas-Greece')"><img class="cat-card-img" src="Thumbs/Photos/Greece/DSC_3747.jpg" loading="lazy" decoding="async" alt=""><div class="cat-card-bar"><div class="cat-card-name">Greece</div><div class="cat-card-count">6 Photos</div></div>
 </div>
 </div>
 </div>
@@ -2716,15 +2731,15 @@ footer {
 <div class="subpanel-header"><div class="subpanel-title">People & Culture</div></div>
 <div class="places-filters" style="padding-top:clamp(16px,3vw,28px)"><button class="places-pill active" data-region="india-People_n_Culture" onclick="setCatFilter(this,'india-People_n_Culture')">India</button><button class="places-pill" data-region="overseas-People_n_Culture" onclick="setCatFilter(this,'overseas-People_n_Culture')">Overseas</button></div>
 <div class="cat-region-section cat-grid-4" id="india-People_n_Culture">
-<div class="cat-card" onclick="showGallery('gallery-People_n_Culture-india-Megamalai')"><img class="cat-card-img" src="Thumbs/Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4783.JPG" loading="lazy" decoding="async" alt=""><div class="cat-card-bar"><div class="cat-card-name">Megamalai</div><div class="cat-card-count">Tamil Nadu · 2 Photos</div></div>
+<div class="cat-card" onclick="showGallery('gallery-People_n_Culture-india-Megamalai')"><img class="cat-card-img" src="Thumbs/Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4771.JPG" loading="lazy" decoding="async" alt=""><div class="cat-card-bar"><div class="cat-card-name">Megamalai</div><div class="cat-card-count">Tamil Nadu · 2 Photos</div></div>
 </div>
-<div class="cat-card" onclick="showGallery('gallery-People_n_Culture-india-Munnar')"><img class="cat-card-img" src="Thumbs/Photos/People/Kathakali/2026-0127-DanceMunnar-NCM-5220.JPG" loading="lazy" decoding="async" alt=""><div class="cat-card-bar"><div class="cat-card-name">Munnar</div><div class="cat-card-count">Kerala · 9 Photos</div></div>
+<div class="cat-card" onclick="showGallery('gallery-People_n_Culture-india-Munnar')"><img class="cat-card-img" src="Thumbs/Photos/People/Kathakali/2026-0127-DanceMunnar-NCM-5222.JPG" loading="lazy" decoding="async" alt=""><div class="cat-card-bar"><div class="cat-card-name">Munnar</div><div class="cat-card-count">Kerala · 9 Photos</div></div>
 </div>
 <div class="cat-card" onclick="showGallery('gallery-People_n_Culture-india-Tadoba')"><img class="cat-card-img" src="Thumbs/Photos/Tadoba/2026-0324-Tadoba-NCM-9729.JPG" loading="lazy" decoding="async" alt=""><div class="cat-card-bar"><div class="cat-card-name">Tadoba</div><div class="cat-card-count">Maharashtra · 6 Photos</div></div>
 </div>
 </div>
 <div class="cat-region-section cat-grid-4" id="overseas-People_n_Culture" style="display:none">
-<div class="cat-card" onclick="showGallery('gallery-People_n_Culture-overseas-Canada')"><img class="cat-card-img" src="Thumbs/Photos/Canada/2025-0711-Calgary-NCM_5348_Original.jpg" loading="lazy" decoding="async" alt=""><div class="cat-card-bar"><div class="cat-card-name">Canada</div><div class="cat-card-count">3 Photos</div></div>
+<div class="cat-card" onclick="showGallery('gallery-People_n_Culture-overseas-Canada')"><img class="cat-card-img" src="Thumbs/Photos/Canada/2025-0712-Calgary-NCM_5986_Original.jpg" loading="lazy" decoding="async" alt=""><div class="cat-card-bar"><div class="cat-card-name">Canada</div><div class="cat-card-count">3 Photos</div></div>
 </div>
 </div>
 </div>
@@ -2761,9 +2776,9 @@ footer {
 <div class="section-block" id="gallery-Landscape-overseas-Canada">
   <div class="gal-header"><div class="gal-title">Canada</div><div class="gal-sub">Landscape · Overseas · 29 Photos</div></div>
   <div class="cat-grid-4">
-<div class="cat-card" onclick="showGallery('gallery-Landscape-overseas-Canada-Banff/Alberta')"><img class="cat-card-img" src="Thumbs/Photos/Canada/2025-0713-Calgary-NCM_6148.jpg" loading="lazy" decoding="async" alt=""><div class="cat-card-bar"><div class="cat-card-name">Banff/Alberta</div><div class="cat-card-count">10 Photos</div></div>
+<div class="cat-card" onclick="showGallery('gallery-Landscape-overseas-Canada-Banff/Alberta')"><img class="cat-card-img" src="Thumbs/Photos/Canada/Panorama-6267-68.jpg" loading="lazy" decoding="async" alt=""><div class="cat-card-bar"><div class="cat-card-name">Banff/Alberta</div><div class="cat-card-count">10 Photos</div></div>
 </div>
-<div class="cat-card" onclick="showGallery('gallery-Landscape-overseas-Canada-Calgary/Alberta')"><img class="cat-card-img" src="Thumbs/Photos/Canada/2025-0711-Calgary-NCM_5487_Original.jpg" loading="lazy" decoding="async" alt=""><div class="cat-card-bar"><div class="cat-card-name">Calgary/Alberta</div><div class="cat-card-count">19 Photos</div></div>
+<div class="cat-card" onclick="showGallery('gallery-Landscape-overseas-Canada-Calgary/Alberta')"><img class="cat-card-img" src="Thumbs/Photos/Canada/2025-0711-Calgary-NCM_5351_Original.jpg" loading="lazy" decoding="async" alt=""><div class="cat-card-bar"><div class="cat-card-name">Calgary/Alberta</div><div class="cat-card-count">19 Photos</div></div>
 </div>
   </div>
 </div>
@@ -2780,7 +2795,7 @@ footer {
   <div class="cat-grid-4">
 <div class="cat-card" onclick="showGallery('gallery-Landscape-overseas-Greece-Hydra')"><img class="cat-card-img" src="Thumbs/Photos/Greece/DSC_4094_01.jpg" loading="lazy" decoding="async" alt=""><div class="cat-card-bar"><div class="cat-card-name">Hydra</div><div class="cat-card-count">1 Photos</div></div>
 </div>
-<div class="cat-card" onclick="showGallery('gallery-Landscape-overseas-Greece-Santorini')"><img class="cat-card-img" src="Thumbs/Photos/Greece/DSC_3521-Pano.jpg" loading="lazy" decoding="async" alt=""><div class="cat-card-bar"><div class="cat-card-name">Santorini</div><div class="cat-card-count">5 Photos</div></div>
+<div class="cat-card" onclick="showGallery('gallery-Landscape-overseas-Greece-Santorini')"><img class="cat-card-img" src="Thumbs/Photos/Greece/DSC_3601.jpg" loading="lazy" decoding="async" alt=""><div class="cat-card-bar"><div class="cat-card-name">Santorini</div><div class="cat-card-count">5 Photos</div></div>
 </div>
   </div>
 </div>
@@ -2791,7 +2806,7 @@ footer {
 <div class="section-block" id="gallery-Landscape-overseas-USA">
   <div class="gal-header"><div class="gal-title">USA</div><div class="gal-sub">Landscape · Overseas · 5 Photos</div></div>
   <div class="cat-grid-4">
-<div class="cat-card" onclick="showGallery('gallery-Landscape-overseas-USA-New_York')"><img class="cat-card-img" src="Thumbs/Photos/NewYork/2025-0727-NY-NCM_8731.jpg" loading="lazy" decoding="async" alt=""><div class="cat-card-bar"><div class="cat-card-name">New York</div><div class="cat-card-count">5 Photos</div></div>
+<div class="cat-card" onclick="showGallery('gallery-Landscape-overseas-USA-New_York')"><img class="cat-card-img" src="Thumbs/Photos/NewYork/2025-0727-NY-NCM_8770.jpg" loading="lazy" decoding="async" alt=""><div class="cat-card-bar"><div class="cat-card-name">New York</div><div class="cat-card-count">5 Photos</div></div>
 </div>
   </div>
 </div>
@@ -2867,9 +2882,9 @@ footer {
 <div class="section-block" id="gallery-Architecture-overseas-Greece">
   <div class="gal-header"><div class="gal-title">Greece</div><div class="gal-sub">Architecture · Overseas · 6 Photos</div></div>
   <div class="cat-grid-4">
-<div class="cat-card" onclick="showGallery('gallery-Architecture-overseas-Greece-Delphi')"><img class="cat-card-img" src="Thumbs/Photos/Greece/DSC_3962-PanoBW.jpg" loading="lazy" decoding="async" alt=""><div class="cat-card-bar"><div class="cat-card-name">Delphi</div><div class="cat-card-count">3 Photos</div></div>
+<div class="cat-card" onclick="showGallery('gallery-Architecture-overseas-Greece-Delphi')"><img class="cat-card-img" src="Thumbs/Photos/Greece/DSC_3747.jpg" loading="lazy" decoding="async" alt=""><div class="cat-card-bar"><div class="cat-card-name">Delphi</div><div class="cat-card-count">3 Photos</div></div>
 </div>
-<div class="cat-card" onclick="showGallery('gallery-Architecture-overseas-Greece-Hydra')"><img class="cat-card-img" src="Thumbs/Photos/Greece/DSC_4235.jpg" loading="lazy" decoding="async" alt=""><div class="cat-card-bar"><div class="cat-card-name">Hydra</div><div class="cat-card-count">2 Photos</div></div>
+<div class="cat-card" onclick="showGallery('gallery-Architecture-overseas-Greece-Hydra')"><img class="cat-card-img" src="Thumbs/Photos/Greece/DSC_4215.jpg" loading="lazy" decoding="async" alt=""><div class="cat-card-bar"><div class="cat-card-name">Hydra</div><div class="cat-card-count">2 Photos</div></div>
 </div>
 <div class="cat-card" onclick="showGallery('gallery-Architecture-overseas-Greece-Santorini')"><img class="cat-card-img" src="Thumbs/Photos/Greece/DSC_3181.jpg" loading="lazy" decoding="async" alt=""><div class="cat-card-bar"><div class="cat-card-name">Santorini</div><div class="cat-card-count">1 Photos</div></div>
 </div>
@@ -3316,7 +3331,7 @@ footer {
 </div>
 
 <script>
-window.MOHAN_CONFIG={"heroThumbs": ["Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4795.JPG", "Thumbs/Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4655.jpg", "Thumbs/Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4736-38.jpg", "Thumbs/Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4783.JPG", "Thumbs/Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4771.JPG", "Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4812.JPG", "Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4860.JPG", "Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4875.JPG", "Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4785.JPG", "Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4868.JPG", "Thumbs/Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4921-23.jpg", "Thumbs/Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4649.jpg", "Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4802.JPG", "Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4847.JPG", "Thumbs/Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4715-17.jpg"], "supaUrl": "https://xjcpryfgodgqqtbblklg.supabase.co", "supaKey": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhqY3ByeWZnb2RncXF0YmJsa2xnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzIxODEzMjcsImV4cCI6MjA4Nzc1NzMyN30.M9KoprG4uaH3wcZ7nI0Hip4IAdqiy8m5UoiB9DzjreI", "adminPass": "mohan2024", "contactEmail": "info@mohangraphy.com", "categories": ["Architecture", "Nature/Birds", "Nature/Flora", "Nature/Landscapes", "Nature/Wildlife", "People & Culture", "Places/International", "Places/National"], "blogPhotoMap": {"story-Valley of Flowers-2026 Part-2": ["Photos/Valley_of_Flowers/2026-0801-VOF_D750_NCM_4646.jpg", "Photos/Valley_of_Flowers/2026-0801-VOF_D750_NCM_4770.JPG", "Photos/Valley_of_Flowers/2026-0801-VOF_D750_NCM_4788.JPG", "Photos/Valley_of_Flowers/2026-0801-VOF_D750_NCM_4879.JPG", "Photos/Valley_of_Flowers/2026-0801-VOF_D750_NCM_4977.JPG", "Photos/Valley_of_Flowers/2026-0801-VOF_D750_NCM_5012-19.jpg", "Photos/Valley_of_Flowers/2026-0801-VOF_D750_NCM_5043.JPG", "Photos/Valley_of_Flowers/2026-0801-VOF_D750_NCM_5059.JPG", "Photos/Valley_of_Flowers/2026-0801-VOF_D750_NCM_5068.JPG", "Photos/Valley_of_Flowers/2026-0801-VOF_D750_NCM_5093.JPG", "Photos/Valley_of_Flowers/2026-0801-VOF_D750_NCM_5100.JPG", "Photos/Valley_of_Flowers/2026-0801-VOF_D750_NCM_5112.JPG", "Photos/Valley_of_Flowers/2026-0801-VOF_D750_NCM_5118.JPG", "Photos/Valley_of_Flowers/2026-0801-VOF_D750_NCM_5163.JPG", "Photos/Valley_of_Flowers/2026-0801-VOF_D750_NCM_5205.JPG", "Photos/Valley_of_Flowers/2026-0801-VOF_D750_NCM_5211.JPG", "Photos/Valley_of_Flowers/2026-0801-VOF_D750_NCM_5346.JPG", "Photos/Valley_of_Flowers/2026-0801-VOF_D750_NCM_5404.JPG", "Photos/Valley_of_Flowers/2026-0801-VOF_D750_NCM_5440-47.jpg", "Photos/Valley_of_Flowers/2026-0801-VOF_D750_NCM_5521.JPG", "Photos/Valley_of_Flowers/2026-0801-VOF_D750_NCM_5524.JPG", "Photos/Valley_of_Flowers/2026-0801-VOF_D750_NCM_5541-50.jpg", "Photos/Valley_of_Flowers/2026-0801-VOF_D750_NCM_5561-63.jpg", "Photos/Valley_of_Flowers/2026-0801-VOF_D750_NCM_5718.JPG", "Photos/Valley_of_Flowers/2026-0801-VOF_D750_NCM_5773.JPG", "Photos/Valley_of_Flowers/2026-08_VOF_Z6_4944.JPG", "Photos/Valley_of_Flowers/2026-08_VOF_Z6_5028.JPG", "Photos/Valley_of_Flowers/2026-08_VOF_Z6_5034.JPG", "Photos/Valley_of_Flowers/2026-08_VOF_Z6_5079.JPG", "Photos/Valley_of_Flowers/2026-08_VOF_Z6_5089.JPG", "Photos/Valley_of_Flowers/2026-08_VOF_Z6_5120.JPG", "Photos/Valley_of_Flowers/2026-08_VOF_Z6_5158.JPG", "Photos/Valley_of_Flowers/2026-08_VOF_Z6_5163.JPG", "Photos/Valley_of_Flowers/2026-08_VOF_Z6_5217.JPG", "Photos/Valley_of_Flowers/2026-08_VOF_Z6_5219.JPG", "Photos/Valley_of_Flowers/Flowers_01.jpg", "Photos/Valley_of_Flowers/Flowers_02.jpg", "Photos/Valley_of_Flowers/Flowers_03.jpg", "Photos/Valley_of_Flowers/Flowers_04.jpg", "Photos/Valley_of_Flowers/Flowers_05.jpg"], "story-Valley of Flowers-2026": ["Photos/Badrinath/2026-0801-VOF_D750_NCM_4248.JPG", "Photos/Badrinath/2026-0801-VOF_D750_NCM_4349.JPG", "Photos/Badrinath/2026-0801-VOF_D750_NCM_4496.JPG", "Photos/Badrinath/2026-0801-VOF_D750_NCM_4561.JPG", "Photos/Badrinath/2026-0801-VOF_D750_NCM_4563.JPG", "Photos/Badrinath/2026-0801-VOF_D750_NCM_4596.JPG"], "story-Megamalai-2026": ["Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4733-35.jpg", "Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4736-38.jpg", "Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4915-17.jpg", "Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4955.jpg", "Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4897.jpg", "Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4921-23.jpg", "Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4715-17.jpg", "Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4655.jpg", "Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4675.jpg", "Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4649.jpg", "Photos/Megamalai/2026-0306-Megamalai-NCM-7879-81.jpg", "Photos/Megamalai/2026-0305-Megamalai-NCM-7807.jpg", "Photos/Megamalai/2026-0305-Megamalai-NCM-7720.jpg", "Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4771.JPG", "Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4783.JPG"], "story-Tadoba-2026": ["Photos/Thekkady/2026-0306-Thekkady-NCM-8176.JPG", "Photos/Tadoba/2026-0324-Tadoba-NCM-9088.JPG", "Photos/Tadoba/2026-0324-Tadoba-NCM-9197.JPG", "Photos/Tadoba/2026-0324-Tadoba-NCM-9318.JPG", "Photos/Tadoba/2026-0324-Tadoba-NCM-9333.JPG", "Photos/Tadoba/2026-0324-Tadoba-NCM-9463.JPG", "Photos/Tadoba/2026-0324-Tadoba-NCM-9481.JPG", "Photos/Tadoba/2026-0324-Tadoba-NCM-9512.JPG", "Photos/Tadoba/2026-0324-Tadoba-NCM-9729.JPG", "Photos/Tadoba/2026-0324-Tadoba-NCM-9774.JPG", "Photos/Tadoba/2026-0324-Tadoba-NCM-9800.JPG", "Photos/Tadoba/2026-0324-Tadoba-NCM-9845.JPG", "Photos/Tadoba/2026-0324-Tadoba-NCM-9959.JPG", "Photos/Tadoba/2026-0324-Tadoba-NCM-9966.JPG"]}, "blogPosts": [{"id": "Valley of Flowers-2026 Part-2", "title": "Heaven on Earth - Part 2", "place": "Valley of Flowers, Uttarakhand", "dates": "August 2026", "summary": "Gift of Nature"}, {"id": "Valley of Flowers-2026", "title": "Heaven on Earth", "place": "Badrinath, Uttarakhand", "dates": "August 2026", "summary": "A promise that took only 18 years to fulfil"}, {"id": "Megamalai-2026", "title": "Megamalai \u2013 The Plan That Wasn't!", "place": "Megamalai", "dates": "January 2026", "summary": "An unplanned detour to Megamalai, while on the way to Munnar \u2013 Tamil Nadu's Hill of Clouds \u2013 and one of the best mornings we never planned for."}, {"id": "Tadoba-2026", "title": "In search of the elusive Tiger @ Tadoba", "place": "Tadoba, Maharashtra", "dates": "March 2026", "summary": "2 days - 5 Safaris - to sight this elusive creature"}]};
+window.MOHAN_CONFIG={"heroThumbs": ["Thumbs/Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4675.jpg", "Thumbs/Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4771.JPG", "Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4847.JPG", "Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4814.JPG", "Thumbs/Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4915-17.jpg", "Thumbs/Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4715-17.jpg", "Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4782.JPG", "Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4875.JPG", "Thumbs/Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4736-38.jpg", "Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4830.JPG", "Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4812.JPG", "Thumbs/Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4897.jpg", "Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4867.JPG", "Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4823.JPG", "Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4818.JPG"], "supaUrl": "https://xjcpryfgodgqqtbblklg.supabase.co", "supaKey": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhqY3ByeWZnb2RncXF0YmJsa2xnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzIxODEzMjcsImV4cCI6MjA4Nzc1NzMyN30.M9KoprG4uaH3wcZ7nI0Hip4IAdqiy8m5UoiB9DzjreI", "adminPass": "mohan2024", "contactEmail": "info@mohangraphy.com", "categories": ["Architecture", "Nature/Birds", "Nature/Flora", "Nature/Landscapes", "Nature/Wildlife", "People & Culture", "Places/International", "Places/National"], "blogPhotoMap": {"story-Valley of Flowers-2026 Part-2": ["Photos/Valley_of_Flowers/2026-0801-VOF_D750_NCM_4646.jpg", "Photos/Valley_of_Flowers/2026-0801-VOF_D750_NCM_4770.JPG", "Photos/Valley_of_Flowers/2026-0801-VOF_D750_NCM_4788.JPG", "Photos/Valley_of_Flowers/2026-0801-VOF_D750_NCM_4879.JPG", "Photos/Valley_of_Flowers/2026-0801-VOF_D750_NCM_4977.JPG", "Photos/Valley_of_Flowers/2026-0801-VOF_D750_NCM_5012-19.jpg", "Photos/Valley_of_Flowers/2026-0801-VOF_D750_NCM_5043.JPG", "Photos/Valley_of_Flowers/2026-0801-VOF_D750_NCM_5059.JPG", "Photos/Valley_of_Flowers/2026-0801-VOF_D750_NCM_5068.JPG", "Photos/Valley_of_Flowers/2026-0801-VOF_D750_NCM_5093.JPG", "Photos/Valley_of_Flowers/2026-0801-VOF_D750_NCM_5100.JPG", "Photos/Valley_of_Flowers/2026-0801-VOF_D750_NCM_5112.JPG", "Photos/Valley_of_Flowers/2026-0801-VOF_D750_NCM_5118.JPG", "Photos/Valley_of_Flowers/2026-0801-VOF_D750_NCM_5163.JPG", "Photos/Valley_of_Flowers/2026-0801-VOF_D750_NCM_5205.JPG", "Photos/Valley_of_Flowers/2026-0801-VOF_D750_NCM_5211.JPG", "Photos/Valley_of_Flowers/2026-0801-VOF_D750_NCM_5346.JPG", "Photos/Valley_of_Flowers/2026-0801-VOF_D750_NCM_5404.JPG", "Photos/Valley_of_Flowers/2026-0801-VOF_D750_NCM_5440-47.jpg", "Photos/Valley_of_Flowers/2026-0801-VOF_D750_NCM_5521.JPG", "Photos/Valley_of_Flowers/2026-0801-VOF_D750_NCM_5524.JPG", "Photos/Valley_of_Flowers/2026-0801-VOF_D750_NCM_5541-50.jpg", "Photos/Valley_of_Flowers/2026-0801-VOF_D750_NCM_5561-63.jpg", "Photos/Valley_of_Flowers/2026-0801-VOF_D750_NCM_5718.JPG", "Photos/Valley_of_Flowers/2026-0801-VOF_D750_NCM_5773.JPG", "Photos/Valley_of_Flowers/2026-08_VOF_Z6_4944.JPG", "Photos/Valley_of_Flowers/2026-08_VOF_Z6_5028.JPG", "Photos/Valley_of_Flowers/2026-08_VOF_Z6_5034.JPG", "Photos/Valley_of_Flowers/2026-08_VOF_Z6_5079.JPG", "Photos/Valley_of_Flowers/2026-08_VOF_Z6_5089.JPG", "Photos/Valley_of_Flowers/2026-08_VOF_Z6_5120.JPG", "Photos/Valley_of_Flowers/2026-08_VOF_Z6_5158.JPG", "Photos/Valley_of_Flowers/2026-08_VOF_Z6_5163.JPG", "Photos/Valley_of_Flowers/2026-08_VOF_Z6_5217.JPG", "Photos/Valley_of_Flowers/2026-08_VOF_Z6_5219.JPG", "Photos/Valley_of_Flowers/Flowers_01.jpg", "Photos/Valley_of_Flowers/Flowers_02.jpg", "Photos/Valley_of_Flowers/Flowers_03.jpg", "Photos/Valley_of_Flowers/Flowers_04.jpg", "Photos/Valley_of_Flowers/Flowers_05.jpg"], "story-Valley of Flowers-2026": ["Photos/Badrinath/2026-0801-VOF_D750_NCM_4248.JPG", "Photos/Badrinath/2026-0801-VOF_D750_NCM_4349.JPG", "Photos/Badrinath/2026-0801-VOF_D750_NCM_4496.JPG", "Photos/Badrinath/2026-0801-VOF_D750_NCM_4561.JPG", "Photos/Badrinath/2026-0801-VOF_D750_NCM_4563.JPG", "Photos/Badrinath/2026-0801-VOF_D750_NCM_4596.JPG"], "story-Megamalai-2026": ["Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4733-35.jpg", "Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4736-38.jpg", "Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4915-17.jpg", "Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4955.jpg", "Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4897.jpg", "Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4921-23.jpg", "Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4715-17.jpg", "Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4655.jpg", "Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4675.jpg", "Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4649.jpg", "Photos/Megamalai/2026-0306-Megamalai-NCM-7879-81.jpg", "Photos/Megamalai/2026-0305-Megamalai-NCM-7807.jpg", "Photos/Megamalai/2026-0305-Megamalai-NCM-7720.jpg", "Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4771.JPG", "Photos/Nature/Landscape/Megamalai/2026-0127-Megamalai-NCM-4783.JPG"], "story-Tadoba-2026": ["Photos/Thekkady/2026-0306-Thekkady-NCM-8176.JPG", "Photos/Tadoba/2026-0324-Tadoba-NCM-9088.JPG", "Photos/Tadoba/2026-0324-Tadoba-NCM-9197.JPG", "Photos/Tadoba/2026-0324-Tadoba-NCM-9318.JPG", "Photos/Tadoba/2026-0324-Tadoba-NCM-9333.JPG", "Photos/Tadoba/2026-0324-Tadoba-NCM-9463.JPG", "Photos/Tadoba/2026-0324-Tadoba-NCM-9481.JPG", "Photos/Tadoba/2026-0324-Tadoba-NCM-9512.JPG", "Photos/Tadoba/2026-0324-Tadoba-NCM-9729.JPG", "Photos/Tadoba/2026-0324-Tadoba-NCM-9774.JPG", "Photos/Tadoba/2026-0324-Tadoba-NCM-9800.JPG", "Photos/Tadoba/2026-0324-Tadoba-NCM-9845.JPG", "Photos/Tadoba/2026-0324-Tadoba-NCM-9959.JPG", "Photos/Tadoba/2026-0324-Tadoba-NCM-9966.JPG"]}, "blogPosts": [{"id": "Valley of Flowers-2026 Part-2", "title": "Heaven on Earth - Part 2", "place": "Valley of Flowers, Uttarakhand", "dates": "August 2026", "summary": "Gift of Nature"}, {"id": "Valley of Flowers-2026", "title": "Heaven on Earth", "place": "Badrinath, Uttarakhand", "dates": "August 2026", "summary": "A promise that took only 18 years to fulfil"}, {"id": "Megamalai-2026", "title": "Megamalai \u2013 The Plan That Wasn't!", "place": "Megamalai", "dates": "January 2026", "summary": "An unplanned detour to Megamalai, while on the way to Munnar \u2013 Tamil Nadu's Hill of Clouds \u2013 and one of the best mornings we never planned for."}, {"id": "Tadoba-2026", "title": "In search of the elusive Tiger @ Tadoba", "place": "Tadoba, Maharashtra", "dates": "March 2026", "summary": "2 days - 5 Safaris - to sight this elusive creature"}]};
 </script>
 <div id="comment-nudge" onclick="dismissNudge(true)" role="button" aria-label="Leave a comment">
   <button id="comment-nudge-close" onclick="dismissNudge(false);event.stopPropagation();" aria-label="Close">&#x2715;</button>
