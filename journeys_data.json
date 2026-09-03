@@ -1307,6 +1307,13 @@
       "lat": 40.0583,
       "lng": -74.4057,
       "uploaded": false
+    },
+    {
+      "name": "Bali",
+      "lat": -8.2271,
+      "lng": 115.1919,
+      "uploaded": false,
+      "country": "Indonesia"
     }
   ]
 }
