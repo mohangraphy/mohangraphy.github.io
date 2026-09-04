@@ -3322,15 +3322,6 @@ footer {
     font-size: 10px;
   }
 }
-
-@media (max-width: 768px) {
-  #ss-overlay { background: var(--dark); }
-  #ss-bar { background: var(--mid); }
-  .ss-nav-btn { background: rgba(244,241,234,0.55); }
-  .ss-nav-btn:hover { background: rgba(244,241,234,0.8); }
-  #ss-close { background: rgba(244,241,234,0.75); }
-  #ss-pause-lbl { background: rgba(244,241,234,0.85); }
-}
 """
 
     # ── BUILD GALLERY BLOCKS + SUB-PANELS ────────────────────────────────────
@@ -5288,7 +5279,7 @@ function _ssShow(idx){
       };
       hi.src = entry.full;
     }
-  }, 500);
+  }, 300);
   var ctr = document.getElementById('ss-counter');
   if(ctr) ctr.textContent = (idx+1) + ' / ' + _ssPhotos.length;
   var cap = document.getElementById('ss-caption');
@@ -5309,11 +5300,8 @@ function _ssShow(idx){
 
 function _ssSchedule(){
   clearTimeout(_ssTimer);
-  if(_ssPaused) return;
-  if(_ssIdx < _ssPhotos.length - 1){
+  if(!_ssPaused && _ssIdx < _ssPhotos.length - 1){
     _ssTimer = setTimeout(function(){ _ssShow(_ssIdx + 1); _ssSchedule(); }, _ssDur);
-  } else {
-    _ssTimer = setTimeout(function(){ ssClose(); }, _ssDur);
   }
 }
 

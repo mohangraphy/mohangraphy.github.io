@@ -1451,7 +1451,7 @@ function _ssShow(idx){
       };
       hi.src = entry.full;
     }
-  }, 300);
+  }, 500);
   var ctr = document.getElementById('ss-counter');
   if(ctr) ctr.textContent = (idx+1) + ' / ' + _ssPhotos.length;
   var cap = document.getElementById('ss-caption');
@@ -1472,8 +1472,11 @@ function _ssShow(idx){
 
 function _ssSchedule(){
   clearTimeout(_ssTimer);
-  if(!_ssPaused && _ssIdx < _ssPhotos.length - 1){
+  if(_ssPaused) return;
+  if(_ssIdx < _ssPhotos.length - 1){
     _ssTimer = setTimeout(function(){ _ssShow(_ssIdx + 1); _ssSchedule(); }, _ssDur);
+  } else {
+    _ssTimer = setTimeout(function(){ ssClose(); }, _ssDur);
   }
 }
 
