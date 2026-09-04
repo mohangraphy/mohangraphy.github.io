@@ -1441,8 +1441,9 @@ function _ssShow(idx){
   _ssFade = setTimeout(function(){
     var img2 = document.getElementById('ss-img');
     if(!img2) return;
+    var reveal = function(){ var i4 = document.getElementById('ss-img'); if(i4) i4.classList.remove('ss-fade'); };
     if(entry.thumb) img2.src = entry.thumb;
-    img2.classList.remove('ss-fade');
+    if(img2.decode){ img2.decode().then(reveal).catch(reveal); } else { reveal(); }
     if(entry.full && entry.full !== entry.thumb){
       var hi = new Image();
       var cap = idx;
