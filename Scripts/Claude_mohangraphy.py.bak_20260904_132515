@@ -3338,12 +3338,6 @@ footer {
   .img-modal-nav:hover { background: rgba(244,241,234,0.8); }
   .img-modal-close { background: rgba(244,241,234,0.75); }
 }
-
-@media (max-width: 768px) {
-  #ss-overlay { justify-content: center; }
-  #ss-img-wrap { flex: 0 1 auto; }
-  #ss-img { max-width: 100vw; max-height: calc(100dvh - 52px); }
-}
 """
 
     # ── BUILD GALLERY BLOCKS + SUB-PANELS ────────────────────────────────────
