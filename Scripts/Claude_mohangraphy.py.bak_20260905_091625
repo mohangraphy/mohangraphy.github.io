@@ -653,21 +653,6 @@ img {
   --text-rgb:  255,255,255;
 }
 
-/* ── Universal brightness fixes (both desktop and mobile) ── */
-.mob-menu-cta,
-.info-page-subtitle,
-.journeys-header-sub,
-.stories-header-sub,
-.subscribe-eyebrow {
-  font-weight: 700;
-  opacity: 1;
-}
-.footer-copy {
-  opacity: 1;
-  font-weight: 600;
-}
-
-
 /* ── BASE ── */
 html { scroll-behavior: smooth; font-size: 16px; }
 .page-nav-row {
