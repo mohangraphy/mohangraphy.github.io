@@ -2632,7 +2632,7 @@ footer {
 .story-post-back {
   display: inline-flex; align-items: center; gap: 8px;
   font-size: 8px; letter-spacing: 4px; text-transform: uppercase;
-  color: var(--ta75); cursor: pointer;
+  color: var(--ta28); cursor: pointer;
   background: none; border: none;
   font-family: 'Montserrat', sans-serif;
   padding: clamp(20px,4vw,36px) 0 clamp(20px,4vw,32px);
@@ -2655,7 +2655,7 @@ footer {
 .story-post-dates {
   font-family: 'Montserrat', sans-serif;
   font-size: 9px; letter-spacing: 3px; text-transform: uppercase;
-  color: var(--ta6); margin-bottom: clamp(24px,4vw,40px);
+  color: var(--ta32); margin-bottom: clamp(24px,4vw,40px);
   user-select: none; -webkit-user-select: none;
 }
 .story-post-divider {
@@ -2786,8 +2786,8 @@ footer {
 .story-cta-btn:hover { background: var(--gold); color: #000; }
 .story-cta-btn-ghost {
   display: inline-flex; align-items: center; gap: 8px;
-  background: none; border: 1px solid var(--ta35);
-  color: var(--ta7); padding: 0 20px; height: 42px;
+  background: none; border: 1px solid var(--ta14);
+  color: var(--ta55); padding: 0 20px; height: 42px;
   font-family: 'Montserrat', sans-serif;
   font-size: 9px; letter-spacing: 3px; text-transform: uppercase;
   cursor: pointer; transition: all .2s;
@@ -2889,8 +2889,8 @@ footer {
 }
 .story-end-cat {
   display: inline-flex; align-items: center;
-  background: none; border: 1px solid var(--ta3);
-  color: var(--ta7); padding: 0 14px; height: 34px;
+  background: none; border: 1px solid var(--ta1);
+  color: var(--ta45); padding: 0 14px; height: 34px;
   font-family: 'Montserrat', sans-serif;
   font-size: 8px; letter-spacing: 2px; text-transform: uppercase;
   cursor: pointer; transition: all .2s;
@@ -2960,8 +2960,8 @@ footer {
 }
 .story-action-cat {
   display: inline-flex; align-items: center;
-  background: none; border: 1px solid var(--ta3);
-  color: var(--ta7); padding: 0 14px; height: 34px;
+  background: none; border: 1px solid var(--ta1);
+  color: var(--ta5); padding: 0 14px; height: 34px;
   font-family: 'Montserrat', sans-serif;
   font-size: 8px; letter-spacing: 2px; text-transform: uppercase;
   cursor: pointer; transition: all .2s;
@@ -3085,7 +3085,7 @@ footer {
 .story-comment-date {
   font-family: 'Montserrat', sans-serif;
   font-size: 9px; letter-spacing: 1px;
-  color: var(--ta6);
+  color: var(--ta25);
 }
 .story-comment-text {
   font-family: 'Montserrat', sans-serif;
@@ -3151,7 +3151,7 @@ footer {
 .blog-row-summary {
   font-family: 'Montserrat', sans-serif;
   font-size: 11px; letter-spacing: 0.3px; line-height: 1.7;
-  color: var(--ta7); margin-top: 5px;
+  color: var(--ta38); margin-top: 5px;
 }
 .blog-row-meta {
   display: flex; flex-direction: column; align-items: flex-end;
