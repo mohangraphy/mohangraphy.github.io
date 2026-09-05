@@ -3822,6 +3822,16 @@ footer {
                   '</div>'
                   '</div>'
                   '<div class="story-end-discover">'
+                  '<div class="story-end-discover-title">For More Photos</div>'
+                  '<div class="story-end-gallery-btns">'
+                  + ('<button class="story-end-gallery-btn" onclick="showStoryGallery(\'' + _ea(pid) + '\',\'' + _ea(place_tag) + '\')">'
+                     '&#9654;&nbsp; ' + _eh(place_tag) + ' Photos</button>'
+                     if place_photos else
+                     '<button class="story-end-gallery-btn" onclick="goHome()">'
+                     '&#9654;&nbsp; Browse Collections</button>')
+                  + '<button class="story-end-gallery-btn-ghost" onclick="showNewPhotos()">'
+                    '&#10022;&nbsp; Recently Added</button>'
+                  + '</div>'
                   '<div class="story-end-cat-label">Explore Collections</div>'
                   '<div class="story-end-cats">'
                   '<button class="story-end-cat" onclick="closeStoryPost();setTimeout(function(){openCategory(\'Landscape\')},100)">Landscape</button>'
@@ -5947,6 +5957,20 @@ document.addEventListener('DOMContentLoaded', function(){
         '  <div class="tile-nav-label">Collections</div>\n'
         '  <div class="cat-grid">\n'
         + cat_tiles_html +
+        # 5th card — Recently Added
+        '\n<div class="cat-card cat-card-wide" onclick="showNewPhotos()" role="button" tabindex="0"'
+        ' style="grid-column:1/-1;aspect-ratio:auto;min-height:120px;">'
+        '<div class="cat-card-bar" style="position:relative;padding:clamp(16px,3vw,28px) clamp(16px,4vw,44px);'
+        'background:linear-gradient(135deg,rgba(201,169,110,0.12) 0%,rgba(201,169,110,0.04) 100%);">'
+        '<div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;">'
+        '<div>'
+        '<div class="cat-card-name" style="color:var(--gold);">Recently Added</div>'
+        '<div class="cat-card-count" id="ra-card-count">Photos added in the last 14 days</div>'
+        '</div>'
+        '<div style="font-size:28px;color:var(--gold);opacity:0.5;">&#10022;</div>'
+        '</div>'
+        '</div>'
+        '</div>\n'
         '\n  </div>\n'
         '\n</div>\n\n'
 
