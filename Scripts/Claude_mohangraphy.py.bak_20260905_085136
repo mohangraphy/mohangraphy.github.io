@@ -4004,20 +4004,28 @@ function showInfoPage(id){
 
 /* ── Breadcrumb ── */
 function updateBreadcrumb(crumbs){
-  /* crumbs: [{label:'Home', fn:'goHome()'}, {label:'Places'}, ...] —
-     only the second-to-last crumb's fn is used, so this always jumps
-     back exactly one level, e.g. Badrinath -> Landscape -> Collections -> Home. */
+  /* crumbs: [{label:'Home', fn:'goHome()'}, {label:'Places'}, ...] */
   ['bc-bar','gal-bc-bar'].forEach(function(barId){
     var bar = document.getElementById(barId);
     if(!bar) return;
     bar.innerHTML = '';
-    if(crumbs.length < 2) return;
-    var parent = crumbs[crumbs.length - 2];
-    var btn = document.createElement('button');
-    btn.className = 'bc-back';
-    btn.innerHTML = '&larr; Back';
-    btn.setAttribute('onclick', parent.fn || 'goHome()');
-    bar.appendChild(btn);
+    crumbs.forEach(function(c, i){
+      if(i > 0){
+        var sep = document.createElement('span');
+        sep.className = 'bc-sep'; sep.textContent = '/';
+        bar.appendChild(sep);
+      }
+      if(c.fn && i < crumbs.length-1){
+        var btn = document.createElement('button');
+        btn.className = 'bc-back'; btn.textContent = c.label;
+        btn.setAttribute('onclick', c.fn);
+        bar.appendChild(btn);
+      } else {
+        var sp = document.createElement('span');
+        sp.className = 'bc-current'; sp.textContent = c.label;
+        bar.appendChild(sp);
+      }
+    });
   });
 }
 
@@ -5970,7 +5978,8 @@ document.addEventListener('DOMContentLoaded', function(){
         # ABOUT ME — combined About + Philosophy + Gear & Kit
         '<div id="page-about" class="info-page">\n'
         '  <div class="info-page-inner">\n'
-                '    <div class="info-page-title">' + c_about.get('title','About Me') + '</div>\n'
+        '    <button class="info-page-back" onclick="goHome()">&larr; Back to Home</button>\n'
+        '    <div class="info-page-title">' + c_about.get('title','About Me') + '</div>\n'
         '    <div class="info-page-subtitle">' + c_about.get('subtitle','Photographer · ' + photographer) + '</div>\n'
         '    <div class="info-page-divider"></div>\n'
         + about_body_html
@@ -5991,7 +6000,8 @@ document.addEventListener('DOMContentLoaded', function(){
         # CONTACT
         '<div id="page-contact" class="info-page">\n'
         '  <div class="info-page-inner">\n'
-                '    <div class="info-page-title">' + c_contact.get('title','Contact') + '</div>\n'
+        '    <button class="info-page-back" onclick="goHome()">&larr; Back to Home</button>\n'
+        '    <div class="info-page-title">' + c_contact.get('title','Contact') + '</div>\n'
         '    <div class="info-page-subtitle">' + c_contact.get('subtitle','Get in touch') + '</div>\n'
         '    <div class="info-page-divider"></div>\n'
         '    <div class="info-page-body"><p>' + c_contact.get('intro','') + '</p></div>\n'
@@ -6011,7 +6021,8 @@ document.addEventListener('DOMContentLoaded', function(){
         # PRINT SALES
         '<div id="page-prints" class="info-page">\n'
         '  <div class="info-page-inner">\n'
-                '    <div class="info-page-title">' + c_prints.get('title','Order Print(s)') + '</div>\n'
+        '    <button class="info-page-back" onclick="goHome()">&larr; Back to Home</button>\n'
+        '    <div class="info-page-title">' + c_prints.get('title','Order Print(s)') + '</div>\n'
         '    <div class="info-page-subtitle">' + c_prints.get('subtitle','Own a piece of the light') + '</div>\n'
         '    <div class="info-page-divider"></div>\n'
         '    <div class="info-page-body">'
@@ -6043,7 +6054,8 @@ document.addEventListener('DOMContentLoaded', function(){
         # LICENSING
         '<div id="page-licensing" class="info-page">\n'
         '  <div class="info-page-inner">\n'
-                '    <div class="info-page-title">' + c_licens.get('title','Licensing') + '</div>\n'
+        '    <button class="info-page-back" onclick="goHome()">&larr; Back to Home</button>\n'
+        '    <div class="info-page-title">' + c_licens.get('title','Licensing') + '</div>\n'
         '    <div class="info-page-subtitle">' + c_licens.get('subtitle','Usage rights &amp; commercial use') + '</div>\n'
         '    <div class="info-page-divider"></div>\n'
         '    <div class="info-page-body">\n'
@@ -6053,7 +6065,8 @@ document.addEventListener('DOMContentLoaded', function(){
         # LEGAL
         '<div id="page-legal" class="info-page">\n'
         '  <div class="info-page-inner">\n'
-                '    <div class="info-page-title">' + c_legal.get('title','Copyright &amp; Legal') + '</div>\n'
+        '    <button class="info-page-back" onclick="goHome()">&larr; Back to Home</button>\n'
+        '    <div class="info-page-title">' + c_legal.get('title','Copyright &amp; Legal') + '</div>\n'
         '    <div class="info-page-subtitle">' + c_legal.get('subtitle','Your rights and ours') + '</div>\n'
         '    <div class="info-page-divider"></div>\n'
         '    <div class="info-page-body">\n'

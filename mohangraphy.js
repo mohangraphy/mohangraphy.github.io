@@ -150,28 +150,20 @@ function showInfoPage(id){
 
 /* ── Breadcrumb ── */
 function updateBreadcrumb(crumbs){
-  /* crumbs: [{label:'Home', fn:'goHome()'}, {label:'Places'}, ...] */
+  /* crumbs: [{label:'Home', fn:'goHome()'}, {label:'Places'}, ...] —
+     only the second-to-last crumb's fn is used, so this always jumps
+     back exactly one level, e.g. Badrinath -> Landscape -> Collections -> Home. */
   ['bc-bar','gal-bc-bar'].forEach(function(barId){
     var bar = document.getElementById(barId);
     if(!bar) return;
     bar.innerHTML = '';
-    crumbs.forEach(function(c, i){
-      if(i > 0){
-        var sep = document.createElement('span');
-        sep.className = 'bc-sep'; sep.textContent = '/';
-        bar.appendChild(sep);
-      }
-      if(c.fn && i < crumbs.length-1){
-        var btn = document.createElement('button');
-        btn.className = 'bc-back'; btn.textContent = c.label;
-        btn.setAttribute('onclick', c.fn);
-        bar.appendChild(btn);
-      } else {
-        var sp = document.createElement('span');
-        sp.className = 'bc-current'; sp.textContent = c.label;
-        bar.appendChild(sp);
-      }
-    });
+    if(crumbs.length < 2) return;
+    var parent = crumbs[crumbs.length - 2];
+    var btn = document.createElement('button');
+    btn.className = 'bc-back';
+    btn.innerHTML = '&larr; Back';
+    btn.setAttribute('onclick', parent.fn || 'goHome()');
+    bar.appendChild(btn);
   });
 }
 
