@@ -2255,7 +2255,6 @@ footer {
   color: var(--ta38);
   font-family: 'Montserrat', sans-serif;
 }
-.footer-section-body { color: var(--ta7); }
 .footer-section-body p { margin-bottom: 10px; }
 .footer-section-body strong { color: var(--ta55); font-weight: 600; }
 .footer-copy {
@@ -2388,7 +2387,7 @@ footer {
   outline: none; transition: border-color .25s;
   -webkit-appearance: none;
 }
-.subscribe-form input::placeholder { color: var(--ta6); }
+.subscribe-form input::placeholder { color: var(--ta3); }
 .subscribe-form input:focus { border-color: var(--gold); }
 .subscribe-form button {
   background: var(--gold); border: 1px solid var(--gold); color: #000;
