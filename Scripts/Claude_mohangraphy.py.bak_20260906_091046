@@ -2828,8 +2828,6 @@ footer {
   outline: none; margin-bottom: 12px;
   transition: border-color .25s; -webkit-appearance: none;
 }
-.story-end-form input::placeholder,
-.story-end-form textarea::placeholder { color: var(--ta5); }
 .story-end-form input:focus,
 .story-end-form textarea:focus { border-color: var(--gold); }
 .story-end-form textarea { min-height: 100px; resize: vertical; }
@@ -3809,7 +3807,7 @@ footer {
                   'style="margin-top:3px;accent-color:var(--gold);width:16px;height:16px;flex-shrink:0;cursor:pointer;'
                   'appearance:auto;-webkit-appearance:checkbox;background:#fff;border:2px solid var(--gold);">'
                   '<span style="font-family:Montserrat,sans-serif;font-size:10px;letter-spacing:1px;'
-                  'color:var(--ta45);line-height:1.6;">'
+                  'color:rgba(255,255,255,0.45);line-height:1.6;">'
                   'Notify me when new photos and stories are added — no spam, unsubscribe anytime'
                   '</span></label>'
                   '<button class="story-end-gallery-btn" onclick="submitComment(\'' + _ea(pid) + '\')">Post Comment</button>'
