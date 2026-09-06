@@ -2257,7 +2257,7 @@ footer {
 }
 .footer-section-body { color: var(--ta7); }
 .footer-section-body p { margin-bottom: 10px; }
-.footer-section-body strong { color: var(--text); font-weight: 700; }
+.footer-section-body strong { color: var(--ta55); font-weight: 600; }
 .footer-copy {
   grid-column: 1 / -1;
   border-top: 1px solid var(--ta05);
