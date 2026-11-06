@@ -5603,6 +5603,32 @@ function loadLeaflet(cb){
 
 var _journeysDataLoaded = false;
 
+/* Auto-link map markers to galleries that exist in the page.
+   Only fills places that have no manual 'galleries' list. */
+function _autoLinkJourneys(){
+  var ids = Array.prototype.map.call(
+    document.querySelectorAll('.section-block[id^="gallery-"]'),
+    function(b){ return b.id; });
+  function norm(s){ return (s||'').toLowerCase().replace(/[^a-z0-9]/g,''); }
+  function link(list, marker, isWorld){
+    list.forEach(function(p){
+      if(p.galleries && p.galleries.length) return;
+      var want = norm(p.name);
+      if(!want) return;
+      var found = ids.filter(function(id){
+        var i = id.indexOf(marker);
+        if(i < 0) return false;
+        var rest = norm(id.slice(i + marker.length));
+        return isWorld ? (rest.length > want.length && rest.slice(-want.length) === want)
+                       : (rest === want);
+      });
+      if(found.length){ p.galleries = found; p.uploaded = true; }
+    });
+  }
+  link(JOURNEYS_INDIA, '-india-', false);
+  link(JOURNEYS_WORLD, '-overseas-', true);
+}
+
 function loadJourneysData(cb){
   if(_journeysDataLoaded){ cb(); return; }
   fetch('journeys_data.json')
@@ -5610,6 +5636,7 @@ function loadJourneysData(cb){
     .then(function(data){
       JOURNEYS_INDIA = data.india || [];
       JOURNEYS_WORLD = data.world || [];
+      _autoLinkJourneys();
       _journeysDataLoaded = true;
       cb();
     })
