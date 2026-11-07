@@ -1109,6 +1109,13 @@
       "lat": 29.97,
       "lng": 78.15,
       "uploaded": false
+    },
+    {
+      "name": "Coimbatore",
+      "lat": 11.0018,
+      "lng": 76.9628,
+      "uploaded": false,
+      "state": "Tamil Nadu"
     }
   ],
   "world": [

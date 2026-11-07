@@ -285,9 +285,12 @@ function showNewPhotos(){
     + '<div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;">'
     + '<div><div class="gal-title">Recently Added</div>'
     + '<div class="gal-sub">' + uniqueItems.length + ' Photo' + (uniqueItems.length > 1 ? 's' : '') + ' · Added in the last ' + NEW_DAYS + ' days · Most Recent First</div></div>'
+    + '<div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;">'
+    + '<button class="copy-link-btn" onclick="copyCurrentLink()" style="cursor:pointer;background:none;border:1px solid rgba(255,255,255,0.3);color:rgba(255,255,255,0.7);padding:0 14px;height:34px;font-size:10px;letter-spacing:1px;border-radius:3px;" title="Copy link to Recently Added">&#128279; Copy Link</button>'
     + '<button class="slideshow-btn" onclick="startSlideshow(\x27gallery-new-photos\x27)">'
     + '<svg width="11" height="11" viewBox="0 0 11 11" fill="none"><polygon points="1,0.5 10.5,5.5 1,10.5" fill="currentColor"/></svg>'
     + 'View Slideshow</button>'
+    + '</div>'
     + '</div></div>'
     + '<div class="grid">' + gridHTML + '</div>';
   galContainer.prepend(block);
@@ -1888,6 +1891,11 @@ document.addEventListener('DOMContentLoaded', function(){
   if(hash){
     var val = hash.replace('#','');
     if(val === 'travel-stories'){ showStoriesIndex(); return; }
+    if(val === 'recently-added'){
+      showNewPhotos();
+      if(!document.getElementById('gallery-new-photos')) goHome();
+      return;
+    }
     if(val.indexOf('story-') === 0){
       var postId = val.replace('story-','');
       var el = document.getElementById(postId);
