@@ -303,7 +303,7 @@ document.addEventListener('DOMContentLoaded', function(){
 });
 
 /* ══════════════════════════════════════════════════════
-   PLACES SEARCH — pull-down on the Footprints page
+   PLACES SEARCH v3 — pull-down on the Footprints page (follows the India / World tab)
    International (City, State, Country) then National (City, State),
    alphabetical. Gold dot = gallery uploaded, gold circle = coming soon.
    New cities are picked up automatically from the galleries the build creates.
@@ -335,7 +335,9 @@ document.addEventListener('DOMContentLoaded', function(){
     '.pl-dot.up{background:#c9a96e;box-shadow:0 0 5px rgba(201,169,110,0.5);}' +
     '.pl-empty{padding:20px 16px;font-family:Montserrat,sans-serif;font-size:11px;letter-spacing:2px;' +
     'color:rgba(255,255,255,0.4);text-transform:uppercase;}' +
-    '@media (min-width:1025px) and (max-width:1250px){.hdr-tab{padding:0 9px !important;letter-spacing:2px !important;}}';
+    '#jtab-world{border-right-width:1px;border-right-style:solid;}' +
+    '#fp-search-btn:hover{background:rgba(201,169,110,0.1);}' +
+    '@media (max-width:480px){#fp-search-btn{padding:10px 12px !important;letter-spacing:2px !important;}}';
   document.head.appendChild(st);
 })();
 
@@ -441,7 +443,8 @@ function _plRender(filter){
   if(!box) return;
   box.innerHTML = '';
   var q = (filter || '').toLowerCase().trim();
-  [['world', 'International'], ['india', 'National']].forEach(function(sec){
+  var tab = (typeof _journeysTab !== 'undefined' && _journeysTab === 'world') ? 'world' : 'india';
+  [[tab, tab === 'india' ? 'India' : 'International']].forEach(function(sec){
     var rows = _plList.filter(function(p){
       return p.region === sec[0] && (!q || p.label.toLowerCase().indexOf(q) > -1);
     });
@@ -485,7 +488,7 @@ function _plPosition(dd){
     if(btn){
       var r = btn.getBoundingClientRect();
       top = Math.max(hdrH, r.bottom + 6);
-      left = Math.min(Math.max(8, r.left), window.innerWidth - w - 8);
+      left = Math.min(Math.max(8, r.right - w), window.innerWidth - w - 8);
     }
     dd.style.top = top + 'px';
     dd.style.left = left + 'px'; dd.style.right = 'auto'; dd.style.width = w + 'px';
@@ -502,7 +505,11 @@ function openPlacesDD(){
     if(!_plOpen) return;
     _plList = _plGather();
     var inp = document.getElementById('pl-input');
-    if(inp) inp.value = '';
+    if(inp){
+      inp.value = '';
+      inp.placeholder = (typeof _journeysTab !== 'undefined' && _journeysTab === 'world')
+        ? 'Search a city, state or country...' : 'Search a city or state in India...';
+    }
     _plRender('');
     _plPosition(dd);
     dd.classList.add('open');
@@ -2105,6 +2112,7 @@ function initJourneysMap(){
 
 function switchJourneysTab(tab){
   _journeysTab = tab;
+  if(typeof closePlacesDD === 'function') closePlacesDD();
   document.querySelectorAll('.journeys-tab').forEach(function(t){ t.classList.remove('active'); });
   var bt = document.getElementById('jtab-' + tab);
   if(bt) bt.classList.add('active');

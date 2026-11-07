@@ -4169,7 +4169,7 @@ document.addEventListener('DOMContentLoaded', function(){
 });
 
 /* ══════════════════════════════════════════════════════
-   PLACES SEARCH — pull-down on the Footprints page
+   PLACES SEARCH v3 — pull-down on the Footprints page (follows the India / World tab)
    International (City, State, Country) then National (City, State),
    alphabetical. Gold dot = gallery uploaded, gold circle = coming soon.
    New cities are picked up automatically from the galleries the build creates.
@@ -4201,7 +4201,9 @@ document.addEventListener('DOMContentLoaded', function(){
     '.pl-dot.up{background:#c9a96e;box-shadow:0 0 5px rgba(201,169,110,0.5);}' +
     '.pl-empty{padding:20px 16px;font-family:Montserrat,sans-serif;font-size:11px;letter-spacing:2px;' +
     'color:rgba(255,255,255,0.4);text-transform:uppercase;}' +
-    '@media (min-width:1025px) and (max-width:1250px){.hdr-tab{padding:0 9px !important;letter-spacing:2px !important;}}';
+    '#jtab-world{border-right-width:1px;border-right-style:solid;}' +
+    '#fp-search-btn:hover{background:rgba(201,169,110,0.1);}' +
+    '@media (max-width:480px){#fp-search-btn{padding:10px 12px !important;letter-spacing:2px !important;}}';
   document.head.appendChild(st);
 })();
 
@@ -4307,7 +4309,8 @@ function _plRender(filter){
   if(!box) return;
   box.innerHTML = '';
   var q = (filter || '').toLowerCase().trim();
-  [['world', 'International'], ['india', 'National']].forEach(function(sec){
+  var tab = (typeof _journeysTab !== 'undefined' && _journeysTab === 'world') ? 'world' : 'india';
+  [[tab, tab === 'india' ? 'India' : 'International']].forEach(function(sec){
     var rows = _plList.filter(function(p){
       return p.region === sec[0] && (!q || p.label.toLowerCase().indexOf(q) > -1);
     });
@@ -4351,7 +4354,7 @@ function _plPosition(dd){
     if(btn){
       var r = btn.getBoundingClientRect();
       top = Math.max(hdrH, r.bottom + 6);
-      left = Math.min(Math.max(8, r.left), window.innerWidth - w - 8);
+      left = Math.min(Math.max(8, r.right - w), window.innerWidth - w - 8);
     }
     dd.style.top = top + 'px';
     dd.style.left = left + 'px'; dd.style.right = 'auto'; dd.style.width = w + 'px';
@@ -4368,7 +4371,11 @@ function openPlacesDD(){
     if(!_plOpen) return;
     _plList = _plGather();
     var inp = document.getElementById('pl-input');
-    if(inp) inp.value = '';
+    if(inp){
+      inp.value = '';
+      inp.placeholder = (typeof _journeysTab !== 'undefined' && _journeysTab === 'world')
+        ? 'Search a city, state or country...' : 'Search a city or state in India...';
+    }
     _plRender('');
     _plPosition(dd);
     dd.classList.add('open');
@@ -5971,6 +5978,7 @@ function initJourneysMap(){
 
 function switchJourneysTab(tab){
   _journeysTab = tab;
+  if(typeof closePlacesDD === 'function') closePlacesDD();
   document.querySelectorAll('.journeys-tab').forEach(function(t){ t.classList.remove('active'); });
   var bt = document.getElementById('jtab-' + tab);
   if(bt) bt.classList.add('active');
@@ -6399,11 +6407,11 @@ document.addEventListener('DOMContentLoaded', function(){
         '    <div class="journeys-header-title">Footprints</div>\n'
         '    <div class="journeys-header-sub">Places visited &middot; Stories told &middot; More coming soon</div>\n'
         '    <button class="copy-link-btn" onclick="copyCurrentLink()" style="cursor:pointer;background:none;border:1px solid rgba(255,255,255,0.3);color:rgba(255,255,255,0.7);padding:4px 10px;font-size:10px;letter-spacing:1px;margin-top:12px;border-radius:3px;" title="Copy link to Footprints">&#128279; Copy Link</button>\n'
-        '    <button class="copy-link-btn" id="fp-search-btn" onclick="togglePlacesDD(event)" style="cursor:pointer;background:none;border:1px solid rgba(201,169,110,0.6);color:var(--gold);padding:4px 10px;font-size:10px;letter-spacing:1px;margin-top:12px;margin-left:8px;border-radius:3px;" title="Search places">&#128269; Search Places &#9662;</button>\n'
         '  </div>\n'
         '  <div class="journeys-tabs">\n'
         '    <button class="journeys-tab active" id="jtab-india" onclick="switchJourneysTab(\'india\')">India</button>\n'
         '    <button class="journeys-tab" id="jtab-world" onclick="switchJourneysTab(\'world\')">World</button>\n'
+        '    <button id="fp-search-btn" onclick="togglePlacesDD(event)" style="margin-left:auto;cursor:pointer;background:none;border:1px solid rgba(201,169,110,0.5);color:var(--gold);padding:10px 18px;font-family:Montserrat,sans-serif;font-size:10px;font-weight:600;letter-spacing:3px;text-transform:uppercase;" title="Search places">&#128269; Search &#9662;</button>\n'
         '  </div>\n'
         '  <div class="journeys-map-wrap">\n'
         '    <div id="journeys-map-india" class="journeys-map"></div>\n'

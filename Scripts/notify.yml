@@ -11,6 +11,7 @@ on:
         options:
           - photos
           - blog
+          - both
         default: 'photos'
 
       test_only:
@@ -22,16 +23,16 @@ on:
       test_email:
         description: 'Email for test send (Required if Test Only is true)'
         required: false
-        default: 'your-email@example.com'
+        default: 'ncmohan.photos@gmail.com'
 
       blog_post_title:
-        description: 'Title (Blog only)'
+        description: 'Title (Blog, or Both)'
         required: false
       blog_post_place:
-        description: 'Place (Blog only)'
+        description: 'Place (Blog, or Both)'
         required: false
       blog_post_summary:
-        description: 'Summary (Blog only)'
+        description: 'Summary (Blog, or Both)'
         required: false
 
 jobs:
