@@ -78,7 +78,24 @@ function wrapHtml(name, contentHtml) {
     let content = '';
     let targetUrl = SITE_URL;
 
-    if (NOTIFY === 'blog') {
+    if (NOTIFY === 'both') {
+      // One combined email: new photos + new blog story
+      if (!TITLE) throw new Error('Blog title is required when sending photos + blog.');
+      const photosUrl = `${SITE_URL}/index.html#recently-added`;
+      const storyUrl  = `${SITE_URL}/index.html#travel-stories`;
+      subject = (TEST_ONLY ? '[TEST] ' : '') + 'New photos and a new story on Mohangraphy: ' + TITLE;
+      content = `
+        <p style="color:rgba(255,255,255,0.6)">I've just added new photos to the gallery, along with a new travel story:</p>
+        <div style="border-left:2px solid #c9a96e;padding:12px 16px;margin:16px 0;background:rgba(201,169,110,0.05)">
+          <div style="font-family:Georgia,serif;font-size:18px;color:#fff">${TITLE}</div>
+          ${PLACE ? `<div style="font-size:11px;color:#c9a96e;text-transform:uppercase;letter-spacing:2px;margin-top:4px">${PLACE}</div>` : ''}
+          ${SUMMARY ? `<div style="font-size:13px;color:rgba(255,255,255,0.5);margin-top:8px">${SUMMARY}</div>` : ''}
+        </div>
+        <div style="margin-top:20px">
+          <a href="${photosUrl}" style="display:inline-block;margin:0 10px 10px 0;padding:12px 28px;border:1px solid #c9a96e;color:#c9a96e;text-decoration:none;text-transform:uppercase;font-size:11px;letter-spacing:2px;">View New Photos</a>
+          <a href="${storyUrl}" style="display:inline-block;margin:0 10px 10px 0;padding:12px 28px;border:1px solid #c9a96e;color:#c9a96e;text-decoration:none;text-transform:uppercase;font-size:11px;letter-spacing:2px;">Read the Story</a>
+        </div>`;
+    } else if (NOTIFY === 'blog') {
       if (!TITLE) throw new Error('Blog title is required.');
       targetUrl = `${SITE_URL}/index.html#travel-stories`; 
       subject = (TEST_ONLY ? '[TEST] ' : '') + 'New story on Mohangraphy: ' + TITLE;

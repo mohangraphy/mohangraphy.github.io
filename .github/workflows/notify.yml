@@ -1,54 +1,48 @@
-name: Notify Subscribers
+name: Notify Subscribers (Manual Only)
 
 on:
-  push:
-    branches: [main]
-    paths:
-      - 'Photos/**'
-
+  # Triggered only via the Actions tab in GitHub
   workflow_dispatch:
     inputs:
       notification_type:
-        description: 'photos or blog'
-        required: false
-        default: 'photos'
+        description: 'What are you sending?'
+        required: true
         type: choice
         options:
           - photos
           - blog
+          - both
+        default: 'photos'
 
       test_only:
-        description: 'Send only to test email?'
-        required: false
-        default: 'true'
-        type: choice
-        options:
-          - 'true'
-          - 'false'
+        description: 'True = Send ONLY to test_email'
+        required: true
+        type: boolean
+        default: true
 
       test_email:
-        description: 'Email for test send'
+        description: 'Email for test send (Required if Test Only is true)'
         required: false
-        default: 'info@mohangraphy.com'
+        default: 'your-email@example.com'
 
       blog_post_title:
-        description: 'Blog post title'
+        description: 'Title (Blog, or Both)'
         required: false
-        default: ''
-
       blog_post_place:
-        description: 'Blog post place'
+        description: 'Place (Blog, or Both)'
         required: false
-        default: ''
-
       blog_post_summary:
-        description: 'Blog post summary'
+        description: 'Summary (Blog, or Both)'
         required: false
-        default: ''
 
 jobs:
   notify:
     runs-on: ubuntu-latest
+    
+    # THIS IS THE CRITICAL PLACEMENT
+    env:
+      env:
+      ACTIONS_ALLOW_USE_UNSECURE_NODE_VERSION: true
 
     steps:
       - name: Checkout repo
@@ -57,26 +51,16 @@ jobs:
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 22
 
-      # ─────────────────────────────────────────────
-      # SEND NOTIFICATIONS (single script)
-      # ─────────────────────────────────────────────
-      - name: Send notifications
+      - name: Send Notification
         env:
-          GITHUB_EVENT_NAME: ${{ github.event_name }}
-          NOTIFICATION_TYPE: ${{ github.event.inputs.notification_type || 'photos' }}
-
           RESEND_API_KEY: ${{ secrets.RESEND_API_KEY }}
           SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
-          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
-
+          NOTIFICATION_TYPE: ${{ github.event.inputs.notification_type }}
+          TEST_ONLY: ${{ github.event.inputs.test_only }}
+          TEST_EMAIL: ${{ github.event.inputs.test_email }}
           BLOG_TITLE: ${{ github.event.inputs.blog_post_title }}
           BLOG_PLACE: ${{ github.event.inputs.blog_post_place }}
           BLOG_SUMMARY: ${{ github.event.inputs.blog_post_summary }}
-
-          # 🔴 SAFETY: DEFAULT = TEST MODE
-          TEST_ONLY: ${{ github.event.inputs.test_only || 'true' }}
-          TEST_EMAIL: ${{ github.event.inputs.test_email || 'info@mohangraphy.com' }}
-
         run: node Scripts/send.js
