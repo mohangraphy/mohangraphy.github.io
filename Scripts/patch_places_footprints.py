@@ -1,22 +1,21 @@
 #!/usr/bin/env python3
-"""Footprints-only place search.
- - A 'Search Places' button on the Footprints page opens a pull-down of every place:
-   International (City, State, Country) then National (City, State), alphabetical,
-   gold dot = gallery uploaded, gold circle = coming soon.
+"""Footprints place search (final version).
+ - 'Search' button at the RIGHT edge of the India / World tab row on the Footprints page.
+ - The list follows the active tab: India tab -> Indian cities (City, State);
+   World tab -> international places (City, State, Country). Alphabetical.
+   Gold dot = gallery uploaded, gold circle = coming soon.
  - New cities are picked up automatically from the galleries the build creates.
- - NOTHING is added to the main header or mobile menu.
-Works whether or not patch_city_search.py / patch_places_search.py were applied
-earlier: it removes their header/mobile entries and code first. Aborts without changes if anchors are missing."""
+ - Nothing is added to the main header or the mobile menu.
+Works from any earlier state (original, patch_city_search.py, patch_places_search.py,
+or the previous patch_places_footprints.py). Aborts without changes if anchors are missing."""
 import sys
 path = sys.argv[1] if len(sys.argv) > 1 else "/Users/ncm/Pictures/Mohangraphy/Scripts/Claude_mohangraphy.py"
 src = open(path, encoding="utf-8").read()
-if 'id="fp-search-btn"' in src:
+if "PLACES SEARCH v3" in src:
     sys.exit("Already patched - nothing to do.")
 
-had_city = "function showSearch" in src
-
 JS = r"""/* ══════════════════════════════════════════════════════
-   PLACES SEARCH — pull-down on the Footprints page
+   PLACES SEARCH v3 — pull-down on the Footprints page (follows the India / World tab)
    International (City, State, Country) then National (City, State),
    alphabetical. Gold dot = gallery uploaded, gold circle = coming soon.
    New cities are picked up automatically from the galleries the build creates.
@@ -48,7 +47,9 @@ JS = r"""/* ══════════════════════�
     '.pl-dot.up{background:#c9a96e;box-shadow:0 0 5px rgba(201,169,110,0.5);}' +
     '.pl-empty{padding:20px 16px;font-family:Montserrat,sans-serif;font-size:11px;letter-spacing:2px;' +
     'color:rgba(255,255,255,0.4);text-transform:uppercase;}' +
-    '@media (min-width:1025px) and (max-width:1250px){.hdr-tab{padding:0 9px !important;letter-spacing:2px !important;}}';
+    '#jtab-world{border-right-width:1px;border-right-style:solid;}' +
+    '#fp-search-btn:hover{background:rgba(201,169,110,0.1);}' +
+    '@media (max-width:480px){#fp-search-btn{padding:10px 12px !important;letter-spacing:2px !important;}}';
   document.head.appendChild(st);
 })();
 
@@ -154,7 +155,8 @@ function _plRender(filter){
   if(!box) return;
   box.innerHTML = '';
   var q = (filter || '').toLowerCase().trim();
-  [['world', 'International'], ['india', 'National']].forEach(function(sec){
+  var tab = (typeof _journeysTab !== 'undefined' && _journeysTab === 'world') ? 'world' : 'india';
+  [[tab, tab === 'india' ? 'India' : 'International']].forEach(function(sec){
     var rows = _plList.filter(function(p){
       return p.region === sec[0] && (!q || p.label.toLowerCase().indexOf(q) > -1);
     });
@@ -198,7 +200,7 @@ function _plPosition(dd){
     if(btn){
       var r = btn.getBoundingClientRect();
       top = Math.max(hdrH, r.bottom + 6);
-      left = Math.min(Math.max(8, r.left), window.innerWidth - w - 8);
+      left = Math.min(Math.max(8, r.right - w), window.innerWidth - w - 8);
     }
     dd.style.top = top + 'px';
     dd.style.left = left + 'px'; dd.style.right = 'auto'; dd.style.width = w + 'px';
@@ -215,7 +217,11 @@ function openPlacesDD(){
     if(!_plOpen) return;
     _plList = _plGather();
     var inp = document.getElementById('pl-input');
-    if(inp) inp.value = '';
+    if(inp){
+      inp.value = '';
+      inp.placeholder = (typeof _journeysTab !== 'undefined' && _journeysTab === 'world')
+        ? 'Search a city, state or country...' : 'Search a city or state in India...';
+    }
     _plRender('');
     _plPosition(dd);
     dd.classList.add('open');
@@ -313,52 +319,61 @@ def swap(old, new):
 
 END = "function scrollToCollections(){"
 
-if had_city:
-    # a) magnifier tab in the header (3 source lines)
-    swap("""        '    <button class="hdr-tab" id="tab-search" onclick="showSearch()" aria-label="Search photos" title="Search photos">'\n"""
-         """        '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">'\n"""
-         """        '<circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg></button>\\n'\n""", "")
-    # b) 'Search' entry in the mobile menu
-    swap("""        '  <button class="mob-menu-item" onclick="showSearch();closeMobileMenu()">Search</button>\\n'\n""", "")
-    # c) the city-search JS block
-    cs = src.find("/* \u2500\u2500 CITY / PLACE SEARCH \u2500\u2500 */")
-    assert cs > 0 and src.count("/* \u2500\u2500 CITY / PLACE SEARCH \u2500\u2500 */") == 1, "city-search JS block not found"
-    ce = src.index(END)
-    assert cs < ce, "unexpected order of city-search block"
+# A) older city-search patch: magnifier tab, mobile entry, JS block
+if "function showSearch" in src:
+    swap(r"""        '    <button class="hdr-tab" id="tab-search" onclick="showSearch()" aria-label="Search photos" title="Search photos">'
+        '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">'
+        '<circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg></button>\n'
+""", "")
+    swap(r"""        '  <button class="mob-menu-item" onclick="showSearch();closeMobileMenu()">Search</button>\n'
+""", "")
+    marker = "/* \u2500\u2500 CITY / PLACE SEARCH \u2500\u2500 */"
+    assert src.count(marker) == 1, "city-search JS block not found"
+    cs, ce = src.index(marker), src.index(END)
+    assert cs < ce
     src = src[:cs] + src[ce:]
-    # d) hideAll no longer needs gallery-search
     swap("['gallery-new-photos','gallery-story-temp','gallery-search'].forEach(function(id){",
          "['gallery-new-photos','gallery-story-temp'].forEach(function(id){")
 
-had_v1 = "function openPlacesDD" in src
+# B) patch_places_search.py version: header tab + mobile entry
+if 'id="tab-search" onclick="togglePlacesDD(event)"' in src:
+    swap(r"""        '    <button class="hdr-tab" id="tab-search" onclick="togglePlacesDD(event)">Search <span class="hdr-tab-chevron">&#9662;</span></button>\n'
+""", "")
+    swap(r"""        '  <button class="mob-menu-item" onclick="closeMobileMenu();openPlacesDD()">Search</button>\n'
+""", "")
 
-if had_v1:
-    # remove the earlier header tab + mobile entry
-    swap("""        '    <button class="hdr-tab" id="tab-search" onclick="togglePlacesDD(event)">Search <span class="hdr-tab-chevron">&#9662;</span></button>\\n'\n""", "")
-    swap("""        '  <button class="mob-menu-item" onclick="closeMobileMenu();openPlacesDD()">Search</button>\\n'\n""", "")
-    # replace the earlier JS block with this version
-    marker = "   PLACES SEARCH MENU"
-    assert src.count(marker) == 1, "earlier places block not found"
-    start = src.rfind("/* \u2550", 0, src.index(marker))
+# C) previous Footprints version: old button beside Copy Link
+old_btn = r"""        '    <button class="copy-link-btn" id="fp-search-btn" onclick="togglePlacesDD(event)" style="cursor:pointer;background:none;border:1px solid rgba(201,169,110,0.6);color:var(--gold);padding:4px 10px;font-size:10px;letter-spacing:1px;margin-top:12px;margin-left:8px;border-radius:3px;" title="Search places">&#128269; Search Places &#9662;</button>\n'
+"""
+if src.count(old_btn) == 1:
+    src = src.replace(old_btn, "")
+
+# D) remove any earlier places JS block, then insert the current one
+pm = "   PLACES SEARCH"
+if src.count(pm) == 1:
+    start = src.rfind("/* \u2550", 0, src.index(pm))
     end = src.index(END)
-    assert 0 < start < end, "could not locate earlier JS block"
-    src = src[:start] + JS + src[end:]
-else:
-    two = "['gallery-new-photos','gallery-story-temp'].forEach(function(id){"
-    three = "['gallery-new-photos','gallery-story-temp','gallery-search'].forEach(function(id){"
-    if src.count(two) == 1:
-        src = src.replace(two, "['gallery-new-photos','gallery-story-temp','gallery-place'].forEach(function(id){")
-    else:
-        sys.exit("hideAll anchor not found - nothing changed.")
-    swap(END, JS + END)
+    assert 0 < start < end, "could not locate earlier places JS block"
+    src = src[:start] + src[end:]
+swap(END, JS + END)
 
-# Search button on the Footprints page, next to Copy Link
-c = """title="Copy link to Footprints">&#128279; Copy Link</button>\\n"""
-btn = ("""'\n        '    <button class="copy-link-btn" id="fp-search-btn" onclick="togglePlacesDD(event)" """
-       """style="cursor:pointer;background:none;border:1px solid rgba(201,169,110,0.6);color:var(--gold);padding:4px 10px;"""
-       """font-size:10px;letter-spacing:1px;margin-top:12px;margin-left:8px;border-radius:3px;" title="Search places">"""
-       """&#128269; Search Places &#9662;</button>\\n""")
-swap(c, c + btn)
+# E) hideAll must clear the place page
+if "'gallery-place'" not in src.split("function hideAll")[1].split("}")[0] + src.split("function hideAll")[1][:900]:
+    swap("['gallery-new-photos','gallery-story-temp'].forEach(function(id){",
+         "['gallery-new-photos','gallery-story-temp','gallery-place'].forEach(function(id){")
+
+# F) Search button at the right edge of the India / World tab row
+w = r"""onclick="switchJourneysTab(\'world\')">World</button>\n"""
+btn = (r"""'
+        '    <button id="fp-search-btn" onclick="togglePlacesDD(event)" """
+       r"""style="margin-left:auto;cursor:pointer;background:none;border:1px solid rgba(201,169,110,0.5);color:var(--gold);padding:10px 18px;"""
+       r"""font-family:Montserrat,sans-serif;font-size:10px;font-weight:600;letter-spacing:3px;text-transform:uppercase;" title="Search places">"""
+       r"""&#128269; Search &#9662;</button>\n""")
+swap(w, w + btn)
+
+# G) close the list when the India / World tab is switched
+swap("function switchJourneysTab(tab){\n  _journeysTab = tab;\n",
+     "function switchJourneysTab(tab){\n  _journeysTab = tab;\n  if(typeof closePlacesDD === 'function') closePlacesDD();\n")
 
 open(path, "w", encoding="utf-8").write(src)
 print("Patched OK:", path)
