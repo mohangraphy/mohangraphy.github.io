@@ -22,7 +22,7 @@ function hideAll(){
   document.querySelectorAll('.section-block').forEach(function(b){ b.classList.remove('visible'); });
   /* Remove dynamically injected blocks — these use inline display:block !important
      so class removal alone won't hide them */
-  ['gallery-new-photos','gallery-story-temp','gallery-search'].forEach(function(id){
+  ['gallery-new-photos','gallery-story-temp','gallery-place'].forEach(function(id){
     var el = document.getElementById(id); if(el) el.remove();
   });
   setActiveTab(null);
@@ -302,129 +302,294 @@ document.addEventListener('DOMContentLoaded', function(){
   markNewPhotos();
 });
 
-/* ── CITY / PLACE SEARCH ── */
-function _searchStyle(){
-  if(document.getElementById('search-style')) return;
+/* ══════════════════════════════════════════════════════
+   PLACES SEARCH — pull-down on the Footprints page
+   International (City, State, Country) then National (City, State),
+   alphabetical. Gold dot = gallery uploaded, gold circle = coming soon.
+   New cities are picked up automatically from the galleries the build creates.
+   ══════════════════════════════════════════════════════ */
+(function(){
   var st = document.createElement('style');
-  st.id = 'search-style';
+  st.id = 'places-style';
   st.textContent =
-    '.srch-wrap{padding:0 clamp(14px,4vw,44px) 8px;max-width:900px;}' +
-    '.srch-input{width:100%;background:rgba(255,255,255,0.05);border:1px solid rgba(201,169,110,0.35);' +
-    'color:#fff;padding:14px 16px;font-family:Montserrat,sans-serif;font-size:16px;letter-spacing:1px;' +
-    'outline:none;border-radius:3px;-webkit-appearance:none;}' +
-    '.srch-input:focus{border-color:var(--gold);}' +
-    '.srch-chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px;max-height:170px;overflow-y:auto;}' +
-    '.srch-chip{background:none;border:1px solid rgba(255,255,255,0.18);color:rgba(255,255,255,0.65);' +
-    'padding:6px 12px;border-radius:18px;font-family:Montserrat,sans-serif;font-size:10px;' +
-    'letter-spacing:1.5px;text-transform:uppercase;cursor:pointer;transition:all .2s;}' +
-    '.srch-chip:hover,.srch-chip.on{color:var(--gold);border-color:var(--gold);background:rgba(201,169,110,0.08);}' +
-    '.srch-count{padding:14px clamp(14px,4vw,44px) 10px;font-family:Montserrat,sans-serif;font-size:10px;' +
-    'letter-spacing:3px;text-transform:uppercase;color:var(--gold);opacity:.85;}';
+    '#places-dd{position:fixed;z-index:2002;display:none;flex-direction:column;background:rgba(10,10,10,0.985);' +
+    'border:1px solid rgba(201,169,110,0.22);border-top:2px solid #c9a96e;box-shadow:0 12px 40px rgba(0,0,0,0.7);}' +
+    '#places-dd.open{display:flex;}' +
+    '.pl-top{display:flex;gap:8px;align-items:center;padding:12px 14px 8px;}' +
+    '.pl-input{flex:1;min-width:0;background:rgba(255,255,255,0.05);border:1px solid rgba(201,169,110,0.3);color:#fff;' +
+    'padding:10px 12px;font-family:Montserrat,sans-serif;font-size:16px;outline:none;border-radius:3px;-webkit-appearance:none;}' +
+    '.pl-input:focus{border-color:#c9a96e;}' +
+    '.pl-close{background:none;border:none;color:rgba(255,255,255,0.5);font-size:18px;cursor:pointer;width:32px;height:32px;}' +
+    '.pl-close:hover{color:#c9a96e;}' +
+    '.pl-legend{display:flex;gap:16px;flex-wrap:wrap;padding:2px 16px 10px;font-family:Montserrat,sans-serif;font-size:9px;' +
+    'letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,0.5);}' +
+    '.pl-list{overflow-y:auto;-webkit-overflow-scrolling:touch;border-top:1px solid rgba(255,255,255,0.06);}' +
+    '.pl-head{position:sticky;top:0;background:#0a0a0a;padding:10px 16px;font-family:Montserrat,sans-serif;font-size:9px;' +
+    'font-weight:700;letter-spacing:3px;text-transform:uppercase;color:#c9a96e;border-bottom:1px solid rgba(201,169,110,0.15);}' +
+    '.pl-item{display:flex;align-items:center;gap:12px;width:100%;text-align:left;background:none;border:none;' +
+    'border-bottom:1px solid rgba(255,255,255,0.04);padding:11px 16px;cursor:pointer;font-family:Montserrat,sans-serif;' +
+    'font-size:11px;letter-spacing:1px;color:rgba(255,255,255,0.8);transition:background .15s,color .15s;}' +
+    '.pl-item:hover{background:rgba(201,169,110,0.07);color:#c9a96e;}' +
+    '.pl-item.soon{color:rgba(255,255,255,0.5);}' +
+    '.pl-dot{flex:0 0 auto;width:10px;height:10px;border-radius:50%;box-sizing:border-box;border:2px solid #c9a96e;}' +
+    '.pl-dot.up{background:#c9a96e;box-shadow:0 0 5px rgba(201,169,110,0.5);}' +
+    '.pl-empty{padding:20px 16px;font-family:Montserrat,sans-serif;font-size:11px;letter-spacing:2px;' +
+    'color:rgba(255,255,255,0.4);text-transform:uppercase;}' +
+    '@media (min-width:1025px) and (max-width:1250px){.hdr-tab{padding:0 9px !important;letter-spacing:2px !important;}}';
   document.head.appendChild(st);
+})();
+
+var _plOpen = false;
+var _plList = [];
+var _PL_BLOCKS = '.section-block[id*="-india-"], .section-block[id*="-overseas-"]';
+
+function _plNorm(s){ return (s || '').toLowerCase().replace(/[^a-z0-9]/g, ''); }
+function _plCityParts(s){ var a = (s || '').split('/'); return { name: a[0].trim(), extra: (a[1] || '').trim() }; }
+function _plCityKey(s){ return _plNorm((s || '').split('/')[0]); }
+function _plEsc(s){ return String(s).replace(/[&<>"]/g, function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]; }); }
+
+/* Cities that actually have photo galleries in the page */
+function _plScan(){
+  var info = {};
+  document.querySelectorAll(_PL_BLOCKS).forEach(function(b){
+    var region = b.id.indexOf('-overseas-') > -1 ? 'world' : 'india';
+    var first = b.querySelector('.grid-item[data-city]');
+    if(!first) return;
+    var cp = _plCityParts(first.getAttribute('data-city'));
+    if(!cp.name) return;
+    var key = region + ':' + _plNorm(cp.name);
+    var st = (first.getAttribute('data-state') || '').trim();
+    var country = '';
+    if(region === 'world'){
+      var sub = b.querySelector('.gal-sub');
+      if(sub) country = (sub.textContent.split('\u00b7')[1] || '').trim();
+    }
+    var state = (region === 'india')
+      ? (st || cp.extra)
+      : ((st && _plNorm(st) !== _plNorm(country) && _plNorm(st) !== _plNorm(cp.name)) ? st : cp.extra);
+    if(!info[key]) info[key] = { name: cp.name, region: region, state: state, country: country, ids: [] };
+    info[key].ids.push(b.id);
+    if(!info[key].state && state) info[key].state = state;
+    if(!info[key].country && country) info[key].country = country;
+  });
+  return info;
 }
 
-var _searchIdx = [];
-
-function _buildSearchIndex(){
-  var seen = {};
-  _searchIdx = [];
-  document.querySelectorAll('.section-block:not(#gallery-search) .grid-item[data-photo]').forEach(function(item){
-    var path = item.getAttribute('data-photo') || '';
-    if(!path || seen[path]) return;
-    seen[path] = true;
-    var blk = item.closest('.section-block');
-    var sub = blk ? blk.querySelector('.gal-sub') : null;
-    var subTxt = sub ? sub.textContent.replace(/[0-9]+\s*Photos?/i, '') : '';
-    var city  = item.getAttribute('data-city')    || '';
-    var state = item.getAttribute('data-state')   || '';
-    var rem   = item.getAttribute('data-remarks') || '';
-    var cats  = (item.getAttribute('data-cats') || '').replace(/Places[/][A-Za-z]+/g, '').replace(/,/g, ' ');
-    _searchIdx.push({
-      item: item, city: city,
-      hay: (city + ' ' + state + ' ' + rem + ' ' + subTxt + ' ' + cats).toLowerCase()
+/* Journeys places + any gallery city not already on that list */
+function _plGather(){
+  var info = _plScan();
+  var out = [], claimed = {}, used = {};
+  function add(list, region){
+    (list || []).forEach(function(p){
+      var key = region + ':' + _plNorm(p.name);
+      var ci = info[key];
+      var rec = {
+        name: p.name, region: region,
+        state: p.state || (ci ? ci.state : '') || '',
+        country: region === 'india' ? 'India' : (p.country || (ci ? ci.country : '') || ''),
+        uploaded: !!p.uploaded || !!ci,
+        galleries: p.galleries || []
+      };
+      rec.galleries.forEach(function(g){ claimed[g] = true; });
+      if(ci) used[key] = true;
+      out.push(rec);
     });
+  }
+  add(JOURNEYS_INDIA, 'india');
+  add(JOURNEYS_WORLD, 'world');
+  Object.keys(info).forEach(function(key){
+    var ci = info[key];
+    if(used[key]) return;
+    if(ci.ids.some(function(id){ return claimed[id]; })) return;
+    out.push({ name: ci.name, region: ci.region, state: ci.state,
+               country: ci.region === 'india' ? 'India' : ci.country,
+               uploaded: true, galleries: ci.ids });
+  });
+  out.forEach(function(p){
+    var parts = [p.name];
+    if(p.state && _plNorm(p.state) !== _plNorm(p.name)) parts.push(p.state);
+    if(p.region === 'world' && p.country && _plNorm(p.country) !== _plNorm(p.name)) parts.push(p.country);
+    p.label = parts.join(', ');
+  });
+  out.sort(function(a, b){
+    var x = a.name.toLowerCase(), y = b.name.toLowerCase();
+    return x < y ? -1 : (x > y ? 1 : 0);
+  });
+  return out;
+}
+
+function _plEnsureDD(){
+  var dd = document.getElementById('places-dd');
+  if(dd) return dd;
+  dd = document.createElement('div');
+  dd.id = 'places-dd';
+  dd.innerHTML =
+    '<div class="pl-top"><input class="pl-input" id="pl-input" type="search" placeholder="Search a place..." ' +
+    'autocomplete="off" autocapitalize="off" spellcheck="false">' +
+    '<button class="pl-close" type="button" aria-label="Close" onclick="closePlacesDD()">&#x2715;</button></div>' +
+    '<div class="pl-legend">' +
+    '<span><span class="pl-dot up" style="display:inline-block;vertical-align:middle;margin-right:6px"></span>Gallery uploaded</span>' +
+    '<span><span class="pl-dot" style="display:inline-block;vertical-align:middle;margin-right:6px"></span>Coming soon</span></div>' +
+    '<div class="pl-list" id="pl-list"></div>';
+  document.body.appendChild(dd);
+  document.getElementById('pl-input').addEventListener('input', function(){ _plRender(this.value); });
+  return dd;
+}
+
+function _plRender(filter){
+  var box = document.getElementById('pl-list');
+  if(!box) return;
+  box.innerHTML = '';
+  var q = (filter || '').toLowerCase().trim();
+  [['world', 'International'], ['india', 'National']].forEach(function(sec){
+    var rows = _plList.filter(function(p){
+      return p.region === sec[0] && (!q || p.label.toLowerCase().indexOf(q) > -1);
+    });
+    if(!rows.length) return;
+    var h = document.createElement('div');
+    h.className = 'pl-head';
+    h.textContent = sec[1] + ' \u00b7 ' + rows.length;
+    box.appendChild(h);
+    rows.forEach(function(p){
+      var b = document.createElement('button');
+      b.type = 'button';
+      b.className = 'pl-item' + (p.uploaded ? '' : ' soon');
+      var dot = document.createElement('span');
+      dot.className = 'pl-dot' + (p.uploaded ? ' up' : '');
+      var lbl = document.createElement('span');
+      lbl.textContent = p.label;
+      b.appendChild(dot);
+      b.appendChild(lbl);
+      b.onclick = function(){ _plOpenPlace(p); };
+      box.appendChild(b);
+    });
+  });
+  if(!box.children.length){
+    var e = document.createElement('div');
+    e.className = 'pl-empty';
+    e.textContent = 'No places match';
+    box.appendChild(e);
+  }
+}
+
+function _plPosition(dd){
+  var hdr = document.querySelector('header');
+  var hdrH = hdr ? hdr.offsetHeight : 80;
+  if(window.innerWidth <= 1024){
+    dd.style.top = hdrH + 'px';
+    dd.style.left = '0'; dd.style.right = '0'; dd.style.width = 'auto';
+    dd.style.maxHeight = (window.innerHeight - hdrH) + 'px';
+  } else {
+    var btn = document.getElementById('fp-search-btn');
+    var w = 380, left = 8, top = hdrH;
+    if(btn){
+      var r = btn.getBoundingClientRect();
+      top = Math.max(hdrH, r.bottom + 6);
+      left = Math.min(Math.max(8, r.left), window.innerWidth - w - 8);
+    }
+    dd.style.top = top + 'px';
+    dd.style.left = left + 'px'; dd.style.right = 'auto'; dd.style.width = w + 'px';
+    dd.style.maxHeight = Math.max(200, Math.min(window.innerHeight - top - 16, 560)) + 'px';
+  }
+}
+
+function openPlacesDD(){
+  _plOpen = true;
+  var tab = document.getElementById('fp-search-btn');
+  if(tab) tab.classList.add('dd-open');
+  var dd = _plEnsureDD();
+  loadJourneysData(function(){
+    if(!_plOpen) return;
+    _plList = _plGather();
+    var inp = document.getElementById('pl-input');
+    if(inp) inp.value = '';
+    _plRender('');
+    _plPosition(dd);
+    dd.classList.add('open');
+    if(window.innerWidth > 1024 && inp){ try{ inp.focus(); }catch(e){} }
   });
 }
 
-function showSearch(){
+function closePlacesDD(){
+  _plOpen = false;
+  var dd = document.getElementById('places-dd');
+  if(dd) dd.classList.remove('open');
+  var tab = document.getElementById('fp-search-btn');
+  if(tab) tab.classList.remove('dd-open');
+}
+
+function togglePlacesDD(e){
+  if(e && e.stopPropagation) e.stopPropagation();
+  if(_plOpen) closePlacesDD(); else openPlacesDD();
+}
+
+function _plOpenPlace(p){
+  closePlacesDD();
+  if(!p.uploaded){ showToast(p.name + ' \u2014 photos coming soon'); return; }
+  var key = _plNorm(p.name), seen = {}, items = [];
+  document.querySelectorAll(_PL_BLOCKS).forEach(function(b){
+    var region = b.id.indexOf('-overseas-') > -1 ? 'world' : 'india';
+    if(region !== p.region) return;
+    b.querySelectorAll('.grid-item[data-photo]').forEach(function(it){
+      var path = it.getAttribute('data-photo') || '';
+      if(seen[path]) return;
+      if(_plCityKey(it.getAttribute('data-city')) !== key) return;
+      seen[path] = true;
+      items.push(it);
+    });
+  });
+  if(!items.length){
+    if(p.galleries && p.galleries.length){ showGallery(p.galleries[0]); return; }
+    showToast(p.name + ' \u2014 photos coming soon');
+    return;
+  }
   hideAll();
   var gc = document.getElementById('gallery-container');
   if(!gc) return;
   gc.classList.add('visible');
-  _searchStyle();
-  _buildSearchIndex();
-
-  /* city chips with photo counts */
-  var counts = {};
-  _searchIdx.forEach(function(e){ if(e.city) counts[e.city] = (counts[e.city] || 0) + 1; });
-  var cities = Object.keys(counts).sort(function(a, b){ return a.toLowerCase() < b.toLowerCase() ? -1 : 1; });
-
+  var old = document.getElementById('gallery-place');
+  if(old) old.remove();
+  var where = [];
+  if(p.state && _plNorm(p.state) !== _plNorm(p.name)) where.push(p.state);
+  if(p.region === 'world' && p.country) where.push(p.country);
+  var sub = where.concat([items.length + ' Photo' + (items.length > 1 ? 's' : '')]).join(' \u00b7 ');
   var block = document.createElement('div');
-  block.id = 'gallery-search';
+  block.id = 'gallery-place';
   block.className = 'section-block visible';
   block.style.cssText = 'padding-top:calc(var(--hdr) + 32px);';
   block.innerHTML =
-    '<div class="gal-header"><div class="gal-title">Search</div>' +
-    '<div class="gal-sub">Find photos by city, state, country or keyword</div></div>' +
-    '<div class="srch-wrap" style="padding-top:18px;">' +
-    '<input class="srch-input" id="srch-input" type="search" placeholder="e.g. Coimbatore, Kerala, Canada, sunset..." ' +
-    'autocomplete="off" autocapitalize="off" spellcheck="false">' +
-    '<div class="srch-chips" id="srch-chips"></div></div>' +
-    '<div class="srch-count" id="srch-count"></div>' +
-    '<div class="grid" id="srch-grid"></div>';
+    '<div class="gal-header"><div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;">' +
+    '<div><div class="gal-title">' + _plEsc(p.name) + '</div><div class="gal-sub">' + _plEsc(sub) + '</div></div>' +
+    '<button class="slideshow-btn" onclick="startSlideshow(\x27gallery-place\x27)">' +
+    '<svg width="11" height="11" viewBox="0 0 11 11" fill="none"><polygon points="1,0.5 10.5,5.5 1,10.5" fill="currentColor"/></svg>' +
+    'View Slideshow</button></div></div>' +
+    '<div class="grid">' + items.map(function(it){ return it.outerHTML; }).join('') + '</div>';
   gc.prepend(block);
-
-  var chipBox = document.getElementById('srch-chips');
-  cities.forEach(function(c){
-    var b = document.createElement('button');
-    b.type = 'button';
-    b.className = 'srch-chip';
-    b.textContent = c + ' (' + counts[c] + ')';
-    b.onclick = function(){
-      var inp = document.getElementById('srch-input');
-      inp.value = c;
-      runSearch();
-    };
-    b.setAttribute('data-city', c);
-    chipBox.appendChild(b);
-  });
-
-  var input = document.getElementById('srch-input');
-  input.addEventListener('input', runSearch);
-  runSearch();
-  setActiveTab('search');
+  setActiveTab('journeys');
+  if(typeof updateBreadcrumb === 'function') updateBreadcrumb([{label:'Footprints',fn:'showJourneys()'},{label:p.name}]);
   syncUrl('');
   window.scrollTo(0, 0);
-  setTimeout(function(){ try{ input.focus(); }catch(e){} }, 150);
 }
 
-function runSearch(){
-  var inp = document.getElementById('srch-input');
-  var grid = document.getElementById('srch-grid');
-  var cnt = document.getElementById('srch-count');
-  if(!inp || !grid || !cnt) return;
-  var q = inp.value.toLowerCase().trim();
-  var tokens = q.split(/\s+/).filter(Boolean);
-
-  document.querySelectorAll('.srch-chip').forEach(function(ch){
-    ch.classList.toggle('on', !!q && ch.getAttribute('data-city').toLowerCase() === q);
-  });
-
-  if(!tokens.length){
-    grid.innerHTML = '';
-    cnt.textContent = 'Type a place or tap a city above';
-    return;
-  }
-  var matches = _searchIdx.filter(function(e){
-    return tokens.every(function(t){ return e.hay.indexOf(t) !== -1; });
-  });
-  var MAXR = 200;
-  grid.innerHTML = matches.slice(0, MAXR).map(function(m){ return m.item.outerHTML; }).join('');
-  cnt.textContent = matches.length
-    ? matches.length + ' photo' + (matches.length > 1 ? 's' : '') + ' found' +
-      (matches.length > MAXR ? ' · showing first ' + MAXR : '')
-    : 'No photos found for "' + inp.value.trim().replace(/[<>&"]/g, '') + '"';
-}
+/* close on outside click / Escape / resize (plain listeners — no DOMContentLoaded) */
+document.addEventListener('click', function(e){
+  if(!_plOpen) return;
+  if(e.target.closest('#places-dd') || e.target.closest('#fp-search-btn') || e.target.closest('#mobile-menu')) return;
+  closePlacesDD();
+});
+document.addEventListener('keydown', function(e){ if(e.key === 'Escape' && _plOpen) closePlacesDD(); });
+document.addEventListener('scroll', function(e){
+  if(!_plOpen || window.innerWidth <= 1024) return;
+  var t = e.target;
+  if(t && t.nodeType === 1 && t.closest('#places-dd')) return;
+  var dd = document.getElementById('places-dd');
+  if(dd) _plPosition(dd);
+}, true);
+window.addEventListener('resize', function(){
+  if(!_plOpen) return;
+  var dd = document.getElementById('places-dd');
+  if(dd) _plPosition(dd);
+});
 
 function scrollToCollections(){
   var tn=document.getElementById('tile-nav');
