@@ -2,3 +2,5 @@ Scripts/Github Token
 
 Scripts/admin_local.json
 *.docx
+# private settings - never upload
+Scripts/content.json
